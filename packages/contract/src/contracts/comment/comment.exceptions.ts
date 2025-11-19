@@ -1,0 +1,29 @@
+import z from 'zod';
+
+export const COMMENT_EXCEPTION_CODE = {
+  COMMENT_NOT_FOUND: 'COMMENT_NOT_FOUND',
+  POST_NOT_FOUND: 'POST_NOT_FOUND',
+  COMMENT_PERMISSION_DENIED: 'COMMENT_PERMISSION_DENIED',
+  COMMENT_DEPTH_EXCEEDED: 'COMMENT_DEPTH_EXCEEDED',
+} as const;
+export const CommentExceptionCode = z.enum(COMMENT_EXCEPTION_CODE);
+export type CommentExceptionCode = z.infer<typeof CommentExceptionCode>;
+
+export const COMMENT_EXCEPTION = {
+  COMMENT_NOT_FOUND: {
+    code: COMMENT_EXCEPTION_CODE.COMMENT_NOT_FOUND,
+    status: 404,
+  },
+  POST_NOT_FOUND: {
+    code: COMMENT_EXCEPTION_CODE.POST_NOT_FOUND,
+    status: 404,
+  },
+  COMMENT_PERMISSION_DENIED: {
+    code: COMMENT_EXCEPTION_CODE.COMMENT_PERMISSION_DENIED,
+    status: 403,
+  },
+  COMMENT_DEPTH_EXCEEDED: {
+    code: COMMENT_EXCEPTION_CODE.COMMENT_DEPTH_EXCEEDED,
+    status: 400,
+  },
+} as const;
