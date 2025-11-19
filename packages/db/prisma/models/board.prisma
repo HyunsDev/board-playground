@@ -7,9 +7,8 @@ model Board {
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
 
-    manager   User      @relation("BoardOwner", fields: [managerId], references: [id])
-    posts     Post[]
-    managers  Manager[]
+    posts    Post[]
+    managers Manager[]
 
     @@index([managerId])
 }

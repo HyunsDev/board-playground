@@ -33,18 +33,19 @@
     }
   },
   "dependencies": {
-    "@workspace/contract": "workspace:*",
     "@nestjs/mapped-types": "*",
+    "@prisma/client": "^6.19.0",
     "@ts-rest/core": "^3.52.1",
+    "@workspace/contract": "workspace:*",
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@types/node": "^22.10.7",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "@types/node": "^22.10.7",
+    "prisma": "^6.19.0",
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.2",
-    "typescript": "5.5.4",
-    "prisma": "^6.19.0"
+    "typescript": "5.5.4"
   }
 }
