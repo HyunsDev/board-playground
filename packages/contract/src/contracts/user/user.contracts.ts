@@ -1,4 +1,5 @@
 import { c } from 'common';
+import { listManagerOfUser } from 'contracts/manager';
 
 import {
   getUserMe,
@@ -24,6 +25,10 @@ export const userContract = c.router({
   }),
   get: getUser,
   search: searchUsers,
+
+  managers: c.router({
+    list: listManagerOfUser,
+  }),
 });
 
 export const userForAdminContract = c.router({

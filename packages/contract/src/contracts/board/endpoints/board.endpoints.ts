@@ -1,4 +1,4 @@
-import { c, paginatedQueryOf, paginatedResponseOf } from 'common';
+import { c, paginatedQueryOf, paginatedResponseOf, USER_ROLE } from 'common';
 import { exceptionResponseOf } from 'common/exception';
 import z from 'zod';
 
@@ -18,7 +18,7 @@ export const getBoard = c.query({
     404: exceptionResponseOf(BOARD_EXCEPTION.BOARD_NOT_FOUND),
   },
   metadata: {
-    roles: ['USER', 'ADMIN'],
+    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
   },
 });
 
@@ -34,7 +34,7 @@ export const searchBoards = c.query({
     200: paginatedResponseOf(BoardDtoSchema),
   },
   metadata: {
-    roles: ['USER', 'ADMIN'],
+    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
   },
 });
 
@@ -50,7 +50,7 @@ export const createBoard = c.mutation({
     404: exceptionResponseOf(BOARD_EXCEPTION.BOARD_NOT_FOUND),
   },
   metadata: {
-    roles: ['USER', 'ADMIN'],
+    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
   },
 });
 
@@ -69,7 +69,7 @@ export const updateBoard = c.mutation({
     404: exceptionResponseOf(BOARD_EXCEPTION.BOARD_NOT_FOUND),
   },
   metadata: {
-    roles: ['USER', 'ADMIN'],
+    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
   },
 });
 
@@ -88,6 +88,6 @@ export const deleteBoard = c.mutation({
     404: exceptionResponseOf(BOARD_EXCEPTION.BOARD_NOT_FOUND),
   },
   metadata: {
-    roles: ['USER', 'ADMIN'],
+    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
   },
 });

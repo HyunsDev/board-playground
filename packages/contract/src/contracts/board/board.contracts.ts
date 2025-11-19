@@ -1,4 +1,10 @@
 import { c } from 'common';
+import {
+  appointManagerToBoard,
+  changeManagerRole,
+  dismissManagerFromBoard,
+  listManagersOfBoard,
+} from 'contracts/manager';
 
 import {
   createBoard,
@@ -14,4 +20,11 @@ export const boardContract = c.router({
   create: createBoard,
   update: updateBoard,
   delete: deleteBoard,
+
+  manager: c.router({
+    list: listManagersOfBoard,
+    appoint: appointManagerToBoard,
+    dismiss: dismissManagerFromBoard,
+    changeRole: changeManagerRole,
+  }),
 });

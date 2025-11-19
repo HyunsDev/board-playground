@@ -1,4 +1,4 @@
-import { c, paginatedQueryOf, paginatedResponseOf, UserRole } from 'common';
+import { c, paginatedQueryOf, paginatedResponseOf, USER_ROLE, UserRole } from 'common';
 import z from 'zod';
 
 import { UserForAdminDtoSchema } from '../user.dto';
@@ -14,7 +14,7 @@ export const getUserForAdmin = c.query({
     }),
   },
   metadata: {
-    roles: ['ADMIN'],
+    roles: [USER_ROLE.ADMIN],
   },
 });
 
@@ -35,7 +35,7 @@ export const queryUsersForAdmin = c.query({
     200: paginatedResponseOf(UserForAdminDtoSchema),
   },
   metadata: {
-    roles: ['ADMIN'],
+    roles: [USER_ROLE.ADMIN],
   },
 });
 
@@ -57,7 +57,7 @@ export const updateUserForAdmin = c.mutation({
     }),
   },
   metadata: {
-    roles: ['ADMIN'],
+    roles: [USER_ROLE.ADMIN],
   },
 });
 
@@ -72,6 +72,6 @@ export const deleteUserForAdmin = c.mutation({
     204: c.noBody(),
   },
   metadata: {
-    roles: ['ADMIN'],
+    roles: [USER_ROLE.ADMIN],
   },
 });
