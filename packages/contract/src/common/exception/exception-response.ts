@@ -10,7 +10,7 @@ export const exceptionResponseSchema = z.object({
 });
 export type ExceptionResponse = z.infer<typeof exceptionResponseSchema>;
 
-export const exceptionResponse = <C extends string>({
+export const exceptionResponseOf = <C extends string>({
   code,
   status,
 }: {

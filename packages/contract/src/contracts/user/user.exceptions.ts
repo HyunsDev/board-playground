@@ -1,0 +1,7 @@
+import { BASE_EXCEPTION_CODE } from "common/exception";
+
+
+export const USER_EXCEPTION_CODE = {
+    ...BASE_EXCEPTION_CODE,
+    INVALID_PROFILE_IMAGE: 'INVALID_PROFILE_IMAGE',
+}
