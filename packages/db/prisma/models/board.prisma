@@ -1,0 +1,15 @@
+model Board {
+    id          String   @id @default(uuid())
+    slug        String   @unique
+    name        String
+    description String?
+    managerId   String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    manager   User      @relation("BoardOwner", fields: [managerId], references: [id])
+    posts     Post[]
+    managers  Manager[]
+
+    @@index([managerId])
+}

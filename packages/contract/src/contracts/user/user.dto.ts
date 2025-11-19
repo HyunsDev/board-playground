@@ -30,5 +30,6 @@ export const UserForAdminDtoSchema = UserDtoSchema.extend({
   updatedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: 'Invalid date format',
   }),
+  memo: z.string().max(500).nullable(),
 });
 export type UserForAdminDto = z.infer<typeof UserForAdminDtoSchema>;
