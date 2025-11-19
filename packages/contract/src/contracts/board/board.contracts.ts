@@ -6,7 +6,7 @@ import {
   getBoard,
   searchBoards,
   updateBoard,
-} from './endpoints/board.endpoint';
+} from './endpoints/board.endpoints';
 
 export const boardContract = c.router({
   get: getBoard,

@@ -1,1 +1,1 @@
-export * from './board.endpoint';
+export * from './board.endpoints';
