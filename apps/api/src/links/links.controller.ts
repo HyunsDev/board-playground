@@ -8,7 +8,10 @@ import {
   Delete,
 } from '@nestjs/common';
 
-import type { CreateLinkDto, UpdateLinkDto } from '@repo/api';
+import type {
+  CreateLinkDto,
+  UpdateLinkDto,
+} from '../../../../packages/contract/dist';
 
 import { LinksService } from './links.service';
 

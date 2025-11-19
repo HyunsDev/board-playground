@@ -1,5 +1,5 @@
-import type { Link } from '@repo/api';
-import { Button } from '@repo/ui/button';
+import type { Link } from '@workspace/api';
+import { Button } from '@workspace/ui/button';
 import Image, { type ImageProps } from 'next/image';
 
 import styles from './page.module.css';

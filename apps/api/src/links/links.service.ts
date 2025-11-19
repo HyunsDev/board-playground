@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
-import { Link, CreateLinkDto, UpdateLinkDto } from '@repo/api';
+import {
+  Link,
+  CreateLinkDto,
+  UpdateLinkDto,
+} from '../../../../packages/contract/dist';
 
 @Injectable()
 export class LinksService {
