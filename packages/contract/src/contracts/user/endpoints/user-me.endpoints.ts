@@ -1,47 +1,45 @@
-import { c, USER_ROLE } from "common";
-import { exceptionResponseOf } from "common/exception";
-import z from "zod";
+import { c, USER_ROLE } from 'common';
+import { exceptionResponseOf } from 'common/exception';
+import z from 'zod';
 
-import { UserDtoSchema } from "../user.dto";
-import { USER_EXCEPTION_CODE } from "../user.exceptions";
-
-
+import { UserDtoSchema } from '../user.dto';
+import { USER_EXCEPTION_CODE } from '../user.exceptions';
 
 export const getUserMe = c.query({
-    method: "GET",
-    path: "/users/me",
-    responses: {
-        200: z.object({
-            user: UserDtoSchema,
-        }),
-    },
-    metadata: {
-        roles: [USER_ROLE.USER],
-    }
-})
+  method: 'GET',
+  path: '/users/me',
+  responses: {
+    200: z.object({
+      user: UserDtoSchema,
+    }),
+  },
+  metadata: {
+    roles: [USER_ROLE.USER],
+  },
+});
 
 export const updateUserMeProfile = c.mutation({
-    method: "PATCH", 
-    path: "/users/me/profile",
-    body: z.object({
-        nickname: z.string().min(2).max(20).optional(),
-        bio: z.string().max(160).nullable().optional(),
+  method: 'PATCH',
+  path: '/users/me/profile',
+  body: z.object({
+    nickname: z.string().min(2).max(20).optional(),
+    bio: z.string().max(160).nullable().optional(),
+  }),
+  responses: {
+    200: z.object({
+      user: UserDtoSchema,
     }),
-    responses: {
-        200: z.object({
-            user: UserDtoSchema,
-        }),
-    },
-    metadata: {
-        roles: [USER_ROLE.USER],
-    }
-})
+  },
+  metadata: {
+    roles: [USER_ROLE.USER],
+  },
+});
 
 export const updateUserMeAvatar = c.mutation({
-    method: "PUT",
-    path: "/users/me/avatar",
-    body: c.type<{ files: File[] }>(),
-    
+  method: 'PUT',
+  path: '/users/me/avatar',
+  body: c.type<{ files: File[] }>(),
+
   headers: z.object({
     'Content-Type': z.literal('application/json'),
   }),
@@ -60,30 +58,29 @@ export const updateUserMeAvatar = c.mutation({
 });
 
 export const updateUserMeUsername = c.mutation({
-    method: "PUT",
-    path: "/users/me/username",
-    body: z.object({
-        username: z.string().min(3).max(30),
+  method: 'PUT',
+  path: '/users/me/username',
+  body: z.object({
+    username: z.string().min(3).max(30),
+  }),
+  responses: {
+    200: z.object({
+      user: UserDtoSchema,
     }),
-    responses: {
-        200: z.object({
-            user: UserDtoSchema,
-        }),
-    },
-    metadata: {
-        roles: [USER_ROLE.USER],
-    }
-})
-
+  },
+  metadata: {
+    roles: [USER_ROLE.USER],
+  },
+});
 
 export const deleteUserMe = c.mutation({
-    method: "DELETE",
-    path: "/users/me",
-    body: c.noBody(),
-    responses: {
-        204: c.noBody(),
-    },
-    metadata: {
-        roles: [USER_ROLE.USER],
-    }
-})  
+  method: 'DELETE',
+  path: '/users/me',
+  body: c.noBody(),
+  responses: {
+    204: c.noBody(),
+  },
+  metadata: {
+    roles: [USER_ROLE.USER],
+  },
+});
