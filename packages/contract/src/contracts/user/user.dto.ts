@@ -17,6 +17,14 @@ export const UserDtoSchema = z.object({
 });
 export type UserDto = z.infer<typeof UserDtoSchema>;
 
+export const UserSummaryDtoSchema = UserDtoSchema.pick({
+  id: true,
+  username: true,
+  nickname: true,
+  avatarUrl: true,
+});
+export type UserSummaryDto = z.infer<typeof UserSummaryDtoSchema>;
+
 export const UserForAdminDtoSchema = UserDtoSchema.extend({
   email: z.email(),
   updatedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
