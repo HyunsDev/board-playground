@@ -50,6 +50,9 @@ importers:
       '@workspace/contract':
         specifier: workspace:*
         version: link:../../packages/contract
+      '@workspace/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       dayjs:
         specifier: ^1.11.19
         version: 1.11.19
