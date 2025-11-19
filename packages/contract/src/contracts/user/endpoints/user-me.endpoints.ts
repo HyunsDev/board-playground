@@ -3,7 +3,7 @@ import { exceptionResponseOf } from 'common/exception';
 import z from 'zod';
 
 import { UserDtoSchema } from '../user.dto';
-import { USER_EXCEPTION_CODE } from '../user.exceptions';
+import { USER_EXCEPTION } from '../user.exceptions';
 
 export const getUserMe = c.query({
   method: 'GET',
@@ -47,10 +47,7 @@ export const updateUserMeAvatar = c.mutation({
     200: z.object({
       user: UserDtoSchema,
     }),
-    400: exceptionResponseOf({
-      code: USER_EXCEPTION_CODE.INVALID_PROFILE_IMAGE,
-      status: 400,
-    }),
+    400: exceptionResponseOf(USER_EXCEPTION.INVALID_PROFILE_IMAGE),
   },
   metadata: {
     roles: [USER_ROLE.USER],
