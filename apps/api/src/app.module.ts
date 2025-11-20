@@ -9,6 +9,7 @@ import { ClsAccessor } from './libs/cls';
 import { RequestContextService } from './modules/cls/request-context.service';
 import { RequestIdMiddleware } from './modules/cls/request-id.middleware';
 import { PrismaModule } from './modules/prisma/prisma.module';
+import { HelloModule } from './modules/hello/hello.module';
 
 const interceptors = [
   {
@@ -28,6 +29,7 @@ const interceptors = [
         mount: true,
       },
     }),
+    HelloModule,
   ],
   controllers: [],
   providers: [...interceptors, RequestContextService],

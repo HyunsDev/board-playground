@@ -15,5 +15,6 @@
   ],
   "cSpell.words": [
     "Userbook"
-  ]
+  ],
+  "prisma.pinToPrisma6": true
 }
