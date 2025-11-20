@@ -1,0 +1,28 @@
+model Device {
+    id                 String         @id @default(uuid())
+    userId             String
+    hashedRefreshToken String
+    name               String
+    userAgent          String
+    os                 DeviceOS       @default(OTHER)
+    platform           DevicePlatform @default(OTHER)
+    ipAddress          String
+    location           String?
+    lastRefreshedAt    DateTime       @default(now())
+    createdAt          DateTime       @default(now())
+    updatedAt          DateTime       @updatedAt
+}
+
+enum DeviceOS {
+    ANDROID
+    IOS
+    WINDOWS
+    MACOS
+    LINUX
+    OTHER
+}
+
+enum DevicePlatform {
+    WEB
+    OTHER
+}
