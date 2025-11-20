@@ -1,13 +1,14 @@
 import { c, exceptionResponseOf } from 'common';
 import z from 'zod';
 import { AUTH_EXCEPTION } from './auth.exceptions';
+import { passwordSchema } from './auth.schemas';
 
 export const registerAuth = c.mutation({
   method: 'POST',
   path: '/auth/register',
   body: z.object({
     email: z.email(),
-    password: z.string().min(8),
+    password: passwordSchema,
   }),
   responses: {
     200: z.object({
@@ -22,7 +23,7 @@ export const loginAuth = c.mutation({
   path: '/auth/login',
   body: z.object({
     email: z.email(),
-    password: z.string().min(8),
+    password: passwordSchema,
   }),
   responses: {
     200: z.object({
