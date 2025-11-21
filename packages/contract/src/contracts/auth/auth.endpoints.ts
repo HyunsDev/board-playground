@@ -1,15 +1,14 @@
 import { c, exceptionResponseOf } from 'common';
 import z from 'zod';
+
+import { registerAuthReqDto } from './auth.dto';
 import { AUTH_EXCEPTION } from './auth.exceptions';
 import { passwordSchema } from './auth.schemas';
 
 export const registerAuth = c.mutation({
   method: 'POST',
   path: '/auth/register',
-  body: z.object({
-    email: z.email(),
-    password: passwordSchema,
-  }),
+  body: registerAuthReqDto,
   responses: {
     200: z.object({
       accessToken: z.string(),
