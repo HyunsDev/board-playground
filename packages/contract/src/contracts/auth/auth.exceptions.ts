@@ -1,19 +1,24 @@
-import z from 'zod';
-
-export const AUTH_EXCEPTION_CODE = {
-  EMAIL_ALREADY_EXISTS: 'EMAIL_ALREADY_EXISTS',
-  INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
-} as const;
-export const AuthException = z.enum(AUTH_EXCEPTION_CODE);
-export type AuthException = z.infer<typeof AuthException>;
+import { ExceptionRecord } from 'common/interfaces/exception.interface';
 
 export const AUTH_EXCEPTION = {
-  EMAIL_ALREADY_EXISTS: {
-    code: AUTH_EXCEPTION_CODE.EMAIL_ALREADY_EXISTS,
-    status: 400,
+  UNAUTHORIZED: {
+    status: 401,
+    code: 'UNAUTHORIZED',
+    message: '인증에 실패하였습니다.',
+  },
+  INVALID_TOKEN: {
+    status: 401,
+    code: 'INVALID_TOKEN',
+    message: '유효하지 않은 토큰입니다.',
+  },
+  EXPIRED_TOKEN: {
+    status: 401,
+    code: 'EXPIRED_TOKEN',
+    message: '만료된 토큰입니다.',
   },
   INVALID_CREDENTIALS: {
-    code: AUTH_EXCEPTION_CODE.INVALID_CREDENTIALS,
     status: 400,
+    code: 'INVALID_CREDENTIALS',
+    message: '잘못된 인증 정보입니다.',
   },
-};
+} as const satisfies ExceptionRecord;

@@ -1,9 +1,10 @@
-import { c, ID, paginatedQueryOf, paginatedResponseOf, USER_ROLE } from 'common';
-import { exceptionResponseOf } from 'common/exception';
+import { c, ID, paginatedQueryOf, paginatedResponseOf } from 'common';
+import { EXCEPTION } from 'contracts/exception';
+import { USER_ROLE } from 'contracts/user';
+import { toExceptionSchema } from 'common/utils/toExceptionSchema';
 import z from 'zod';
 
 import { CommandDtoSchema, CreateCommentDtoSchema, UpdateCommentDtoSchema } from './comment.dto';
-import { COMMENT_EXCEPTION } from './comment.exceptions';
 
 export const getComment = c.query({
   method: 'GET',
@@ -15,7 +16,7 @@ export const getComment = c.query({
     200: z.object({
       comment: CommandDtoSchema,
     }),
-    404: exceptionResponseOf(COMMENT_EXCEPTION.COMMENT_NOT_FOUND),
+    404: toExceptionSchema(EXCEPTION.COMMENT.NOT_FOUND),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -32,7 +33,7 @@ export const listComments = c.query({
   ),
   responses: {
     200: paginatedResponseOf(CommandDtoSchema),
-    404: exceptionResponseOf(COMMENT_EXCEPTION.POST_NOT_FOUND),
+    404: toExceptionSchema(EXCEPTION.POST.NOT_FOUND),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -47,8 +48,8 @@ export const createComment = c.mutation({
     200: z.object({
       comment: CommandDtoSchema,
     }),
-    400: exceptionResponseOf(COMMENT_EXCEPTION.COMMENT_DEPTH_EXCEEDED),
-    404: exceptionResponseOf(COMMENT_EXCEPTION.POST_NOT_FOUND),
+    400: toExceptionSchema(EXCEPTION.COMMENT.DEPTH_EXCEEDED),
+    404: toExceptionSchema(EXCEPTION.POST.NOT_FOUND),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -66,8 +67,8 @@ export const updateComment = c.mutation({
     200: z.object({
       comment: CommandDtoSchema,
     }),
-    404: exceptionResponseOf(COMMENT_EXCEPTION.COMMENT_NOT_FOUND),
-    403: exceptionResponseOf(COMMENT_EXCEPTION.COMMENT_PERMISSION_DENIED),
+    404: toExceptionSchema(EXCEPTION.COMMENT.NOT_FOUND),
+    403: toExceptionSchema(EXCEPTION.COMMENT.PERMISSION_DENIED),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -83,8 +84,8 @@ export const deleteComment = c.mutation({
   body: c.noBody(),
   responses: {
     204: c.noBody(),
-    404: exceptionResponseOf(COMMENT_EXCEPTION.COMMENT_NOT_FOUND),
-    403: exceptionResponseOf(COMMENT_EXCEPTION.COMMENT_PERMISSION_DENIED),
+    404: toExceptionSchema(EXCEPTION.COMMENT.NOT_FOUND),
+    403: toExceptionSchema(EXCEPTION.COMMENT.PERMISSION_DENIED),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],

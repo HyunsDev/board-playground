@@ -1,9 +1,9 @@
 import { c, ID, paginatedQueryOf, paginatedResponseOf } from 'common';
-import { exceptionResponseOf } from 'common/exception';
+import { EXCEPTION } from 'contracts/exception';
+import { toExceptionSchema } from 'common/utils/toExceptionSchema';
 import z from 'zod';
 
 import { CreatePostDtoSchema, PostDtoSchema, UpdatePostDtoSchema } from '../post.dto';
-import { POST_EXCEPTION } from '../post.exceptions';
 
 export const getPost = c.query({
   method: 'GET',
@@ -15,7 +15,7 @@ export const getPost = c.query({
     200: z.object({
       post: PostDtoSchema,
     }),
-    404: exceptionResponseOf(POST_EXCEPTION.POST_NOT_FOUND),
+    404: toExceptionSchema(EXCEPTION.POST.NOT_FOUND),
   },
   metadata: {
     roles: ['USER', 'ADMIN'],
@@ -34,7 +34,7 @@ export const queryPosts = c.query({
   ),
   responses: {
     200: paginatedResponseOf(PostDtoSchema),
-    404: exceptionResponseOf(POST_EXCEPTION.BOARD_NOT_FOUND),
+    404: toExceptionSchema(EXCEPTION.BOARD.NOT_FOUND),
   },
   metadata: {
     roles: ['USER', 'ADMIN'],
@@ -49,7 +49,7 @@ export const createPost = c.mutation({
     200: z.object({
       post: PostDtoSchema,
     }),
-    404: exceptionResponseOf(POST_EXCEPTION.BOARD_NOT_FOUND),
+    404: toExceptionSchema(EXCEPTION.BOARD.NOT_FOUND),
   },
   metadata: {
     roles: ['USER', 'ADMIN'],
@@ -67,10 +67,10 @@ export const updatePost = c.mutation({
     200: z.object({
       post: PostDtoSchema,
     }),
-    403: exceptionResponseOf(POST_EXCEPTION.POST_PERMISSION_DENIED),
+    403: toExceptionSchema(EXCEPTION.POST.PERMISSION_DENIED),
     404: z.union([
-      exceptionResponseOf(POST_EXCEPTION.POST_NOT_FOUND),
-      exceptionResponseOf(POST_EXCEPTION.BOARD_NOT_FOUND),
+      toExceptionSchema(EXCEPTION.POST.NOT_FOUND),
+      toExceptionSchema(EXCEPTION.BOARD.NOT_FOUND),
     ]),
   },
   metadata: {
@@ -89,8 +89,8 @@ export const deletePost = c.mutation({
     200: z.object({
       success: z.boolean(),
     }),
-    403: exceptionResponseOf(POST_EXCEPTION.POST_PERMISSION_DENIED),
-    404: exceptionResponseOf(POST_EXCEPTION.POST_NOT_FOUND),
+    403: toExceptionSchema(EXCEPTION.POST.PERMISSION_DENIED),
+    404: toExceptionSchema(EXCEPTION.POST.NOT_FOUND),
   },
   metadata: {
     roles: ['USER', 'ADMIN'],

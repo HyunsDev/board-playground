@@ -1,8 +1,10 @@
-import { c, exceptionResponseOf } from 'common';
+import { c } from 'common';
+import { toExceptionSchema } from 'common/utils/toExceptionSchema';
+import { EXCEPTION } from 'contracts/exception';
+import { USER_ROLE } from 'contracts/user';
 import z from 'zod';
 
 import { registerAuthReqDto } from './auth.dto';
-import { AUTH_EXCEPTION } from './auth.exceptions';
 import { passwordSchema } from './auth.schemas';
 
 export const registerAuth = c.mutation({
@@ -13,7 +15,7 @@ export const registerAuth = c.mutation({
     200: z.object({
       accessToken: z.string(),
     }),
-    400: exceptionResponseOf(AUTH_EXCEPTION.EMAIL_ALREADY_EXISTS),
+    400: toExceptionSchema(EXCEPTION.USER.EMAIL_ALREADY_EXISTS),
   },
 });
 
@@ -28,7 +30,7 @@ export const loginAuth = c.mutation({
     200: z.object({
       accessToken: z.string(),
     }),
-    400: exceptionResponseOf(AUTH_EXCEPTION.INVALID_CREDENTIALS),
+    400: toExceptionSchema(EXCEPTION.AUTH.INVALID_CREDENTIALS),
   },
 });
 
@@ -38,6 +40,9 @@ export const logoutAuth = c.mutation({
   body: c.noBody(),
   responses: {
     204: c.noBody(),
+  },
+  metadata: {
+    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
   },
 });
 
@@ -49,5 +54,8 @@ export const refreshTokenAuth = c.mutation({
     200: z.object({
       accessToken: z.string(),
     }),
+  },
+  metadata: {
+    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
   },
 });

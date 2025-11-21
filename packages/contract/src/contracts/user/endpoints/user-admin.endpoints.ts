@@ -1,8 +1,11 @@
-import { c, paginatedQueryOf, paginatedResponseOf, USER_ROLE, UserRole } from 'common';
+import { c, paginatedQueryOf, paginatedResponseOf } from 'common';
+import { EXCEPTION } from 'contracts/exception';
+import { USER_ROLE } from 'contracts/user';
+import { toExceptionSchema } from 'common/utils/toExceptionSchema';
 import z from 'zod';
 
 import { UserForAdminDtoSchema } from '../user.dto';
-import { UserStatus } from '../user.enums';
+import { UserRole, UserStatus } from '../user.enums';
 
 export const getUserForAdmin = c.query({
   method: 'GET',
@@ -12,6 +15,7 @@ export const getUserForAdmin = c.query({
     200: z.object({
       user: UserForAdminDtoSchema,
     }),
+    404: toExceptionSchema(EXCEPTION.USER.NOT_FOUND),
   },
   metadata: {
     roles: [USER_ROLE.ADMIN],
@@ -23,8 +27,8 @@ export const queryUsersForAdmin = c.query({
   path: '/admin/users',
   query: paginatedQueryOf(
     z.object({
-      userId: z.string().uuid().optional(),
-      email: z.string().email().optional(),
+      userId: z.uuid().optional(),
+      email: z.email().optional(),
       username: z.string().min(3).max(30).optional(),
       nickname: z.string().min(2).max(20).optional(),
       role: z.enum(['USER', 'ADMIN']).optional(),

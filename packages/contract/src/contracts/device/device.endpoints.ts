@@ -1,20 +1,22 @@
-import { c, exceptionResponseOf, USER_ROLE } from 'common';
+import { c } from 'common';
+import { EXCEPTION } from 'contracts/exception';
+import { USER_ROLE } from 'contracts/user';
+import { toExceptionSchema } from 'common/utils/toExceptionSchema';
 import z from 'zod';
 
 import { DeviceDtoSchema } from './device.dto';
-import { DEVICE_EXCEPTION } from './device.exceptions';
 
 export const getDevice = c.query({
   method: 'GET',
   path: '/devices/:deviceId',
   pathParams: z.object({
-    deviceId: z.string().uuid(),
+    deviceId: z.uuid(),
   }),
   responses: {
     200: z.object({
       device: DeviceDtoSchema,
     }),
-    404: exceptionResponseOf(DEVICE_EXCEPTION.DEVICE_NOT_FOUND),
+    404: toExceptionSchema(EXCEPTION.DEVICE.NOT_FOUND),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -43,7 +45,7 @@ export const deleteDevice = c.mutation({
   }),
   responses: {
     204: z.undefined(),
-    404: exceptionResponseOf(DEVICE_EXCEPTION.DEVICE_NOT_FOUND),
+    404: toExceptionSchema(EXCEPTION.DEVICE.NOT_FOUND),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],

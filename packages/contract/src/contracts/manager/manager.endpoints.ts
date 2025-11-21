@@ -1,10 +1,11 @@
-import { BoardSlug, c, ID, USER_ROLE } from 'common';
-import { MANAGER_ROLE } from 'common/enums/manager-role.enums';
-import { exceptionResponseOf } from 'common/exception';
+import { BoardSlug, c, ID } from 'common';
+import { EXCEPTION } from 'contracts/exception';
+import { USER_ROLE } from 'contracts/user';
+import { toExceptionSchema } from 'common/utils/toExceptionSchema';
 import z from 'zod';
 
 import { ManagerWithBoardDtoSchema, ManagerWithUserDtoSchema } from './manager.dto';
-import { MANAGER_EXCEPTION } from './manager.exceptions';
+import { ManagerRole } from './manager.enums';
 
 export const listManagersOfBoard = c.query({
   method: 'GET',
@@ -16,7 +17,7 @@ export const listManagersOfBoard = c.query({
     200: z.object({
       managers: z.array(ManagerWithUserDtoSchema),
     }),
-    404: exceptionResponseOf(MANAGER_EXCEPTION.BOARD_NOT_FOUND),
+    404: toExceptionSchema(EXCEPTION.BOARD.NOT_FOUND),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -33,7 +34,7 @@ export const listManagerOfUser = c.query({
     200: z.object({
       managers: z.array(ManagerWithBoardDtoSchema),
     }),
-    404: exceptionResponseOf(MANAGER_EXCEPTION.USER_NOT_FOUND),
+    404: toExceptionSchema(EXCEPTION.USER.NOT_FOUND),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -53,10 +54,10 @@ export const appointManagerToBoard = c.mutation({
     200: z.object({
       manager: ManagerWithUserDtoSchema,
     }),
-    403: exceptionResponseOf(MANAGER_EXCEPTION.FORBIDDEN),
+    403: toExceptionSchema(EXCEPTION.MANAGER.FORBIDDEN),
     404: z.union([
-      exceptionResponseOf(MANAGER_EXCEPTION.BOARD_NOT_FOUND),
-      exceptionResponseOf(MANAGER_EXCEPTION.USER_NOT_FOUND),
+      toExceptionSchema(EXCEPTION.BOARD.NOT_FOUND),
+      toExceptionSchema(EXCEPTION.USER.NOT_FOUND),
     ]),
   },
   metadata: {
@@ -74,11 +75,11 @@ export const dismissManagerFromBoard = c.mutation({
   }),
   responses: {
     204: c.noBody(),
-    403: exceptionResponseOf(MANAGER_EXCEPTION.FORBIDDEN),
+    403: toExceptionSchema(EXCEPTION.MANAGER.FORBIDDEN),
     404: z.union([
-      exceptionResponseOf(MANAGER_EXCEPTION.BOARD_NOT_FOUND),
-      exceptionResponseOf(MANAGER_EXCEPTION.USER_NOT_FOUND),
-      exceptionResponseOf(MANAGER_EXCEPTION.MANAGER_NOT_FOUND),
+      toExceptionSchema(EXCEPTION.BOARD.NOT_FOUND),
+      toExceptionSchema(EXCEPTION.USER.NOT_FOUND),
+      toExceptionSchema(EXCEPTION.MANAGER.NOT_FOUND),
     ]),
   },
   metadata: {
@@ -94,17 +95,17 @@ export const changeManagerRole = c.mutation({
     userId: ID,
   }),
   body: z.object({
-    role: MANAGER_ROLE,
+    role: ManagerRole,
   }),
   responses: {
     200: z.object({
       manager: ManagerWithUserDtoSchema,
     }),
-    403: exceptionResponseOf(MANAGER_EXCEPTION.FORBIDDEN),
+    403: toExceptionSchema(EXCEPTION.MANAGER.FORBIDDEN),
     404: z.union([
-      exceptionResponseOf(MANAGER_EXCEPTION.BOARD_NOT_FOUND),
-      exceptionResponseOf(MANAGER_EXCEPTION.USER_NOT_FOUND),
-      exceptionResponseOf(MANAGER_EXCEPTION.MANAGER_NOT_FOUND),
+      toExceptionSchema(EXCEPTION.BOARD.NOT_FOUND),
+      toExceptionSchema(EXCEPTION.USER.NOT_FOUND),
+      toExceptionSchema(EXCEPTION.MANAGER.NOT_FOUND),
     ]),
   },
   metadata: {

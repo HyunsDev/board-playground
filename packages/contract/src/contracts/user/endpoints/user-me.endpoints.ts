@@ -1,9 +1,10 @@
-import { c, USER_ROLE } from 'common';
-import { exceptionResponseOf } from 'common/exception';
+import { c } from 'common';
+import { toExceptionSchema } from 'common/utils/toExceptionSchema';
+import { EXCEPTION } from 'contracts/exception';
 import z from 'zod';
 
 import { UserDtoSchema } from '../user.dto';
-import { USER_EXCEPTION } from '../user.exceptions';
+import { USER_ROLE } from '../user.enums';
 
 export const getUserMe = c.query({
   method: 'GET',
@@ -47,7 +48,7 @@ export const updateUserMeAvatar = c.mutation({
     200: z.object({
       user: UserDtoSchema,
     }),
-    400: exceptionResponseOf(USER_EXCEPTION.INVALID_PROFILE_IMAGE),
+    400: toExceptionSchema(EXCEPTION.USER.INVALID_PROFILE_IMAGE),
   },
   metadata: {
     roles: [USER_ROLE.USER],

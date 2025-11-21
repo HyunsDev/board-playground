@@ -1,2 +1,2 @@
 export * from './id.schema';
-export * from './board-slug.schema';
+export * from '../../contracts/board/board.schemas';

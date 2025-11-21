@@ -1,5 +1,7 @@
-import { c, paginatedQueryOf, paginatedResponseOf, USER_ROLE } from 'common';
-import { exceptionResponseOf } from 'common/exception';
+import { c, paginatedQueryOf, paginatedResponseOf } from 'common';
+import { EXCEPTION } from 'contracts/exception';
+import { USER_ROLE } from 'contracts/user';
+import { toExceptionSchema } from 'common/utils/toExceptionSchema';
 import z from 'zod';
 
 import { BoardDtoSchema, CreateBoardDtoSchema, UpdateBoardDtoSchema } from '../board.dto';
@@ -15,7 +17,7 @@ export const getBoard = c.query({
     200: z.object({
       board: BoardDtoSchema,
     }),
-    404: exceptionResponseOf(BOARD_EXCEPTION.BOARD_NOT_FOUND),
+    404: toExceptionSchema(BOARD_EXCEPTION.NOT_FOUND),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -46,8 +48,8 @@ export const createBoard = c.mutation({
     200: z.object({
       board: BoardDtoSchema,
     }),
-    400: exceptionResponseOf(BOARD_EXCEPTION.SLUG_ALREADY_EXISTS),
-    404: exceptionResponseOf(BOARD_EXCEPTION.BOARD_NOT_FOUND),
+    400: toExceptionSchema(EXCEPTION.BOARD.SLUG_ALREADY_EXISTS),
+    404: toExceptionSchema(EXCEPTION.BOARD.NOT_FOUND),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -65,8 +67,8 @@ export const updateBoard = c.mutation({
     200: z.object({
       board: BoardDtoSchema,
     }),
-    403: exceptionResponseOf(BOARD_EXCEPTION.BOARD_PERMISSION_DENIED),
-    404: exceptionResponseOf(BOARD_EXCEPTION.BOARD_NOT_FOUND),
+    403: toExceptionSchema(EXCEPTION.BOARD.PERMISSION_DENIED),
+    404: toExceptionSchema(EXCEPTION.BOARD.NOT_FOUND),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -84,8 +86,8 @@ export const deleteBoard = c.mutation({
     200: z.object({
       board: BoardDtoSchema,
     }),
-    403: exceptionResponseOf(BOARD_EXCEPTION.BOARD_PERMISSION_DENIED),
-    404: exceptionResponseOf(BOARD_EXCEPTION.BOARD_NOT_FOUND),
+    403: toExceptionSchema(EXCEPTION.BOARD.PERMISSION_DENIED),
+    404: toExceptionSchema(EXCEPTION.BOARD.NOT_FOUND),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],

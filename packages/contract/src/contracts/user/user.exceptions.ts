@@ -1,19 +1,19 @@
-import z from 'zod';
-
-export const USER_EXCEPTION_CODE = {
-  USER_NOT_FOUND: 'USER_NOT_FOUND',
-  INVALID_PROFILE_IMAGE: 'INVALID_PROFILE_IMAGE',
-} as const;
-export const UserExceptionCode = z.enum(USER_EXCEPTION_CODE);
-export type UserExceptionCode = z.infer<typeof UserExceptionCode>;
+import { ExceptionRecord } from 'common/interfaces/exception.interface';
 
 export const USER_EXCEPTION = {
-  USER_NOT_FOUND: {
-    code: USER_EXCEPTION_CODE.USER_NOT_FOUND,
+  NOT_FOUND: {
     status: 404,
+    code: 'USER_NOT_FOUND',
+    message: '요청한 사용자를 찾을 수 없습니다.',
   },
   INVALID_PROFILE_IMAGE: {
-    code: USER_EXCEPTION_CODE.INVALID_PROFILE_IMAGE,
     status: 400,
+    code: 'INVALID_PROFILE_IMAGE',
+    message: '유효하지 않은 프로필 이미지입니다.',
   },
-} as const;
+  EMAIL_ALREADY_EXISTS: {
+    status: 409,
+    code: 'EMAIL_ALREADY_EXISTS',
+    message: '이미 존재하는 이메일입니다.',
+  },
+} as const satisfies ExceptionRecord;

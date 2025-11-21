@@ -1,29 +1,19 @@
-import z from 'zod';
-
-export const COMMENT_EXCEPTION_CODE = {
-  COMMENT_NOT_FOUND: 'COMMENT_NOT_FOUND',
-  POST_NOT_FOUND: 'POST_NOT_FOUND',
-  COMMENT_PERMISSION_DENIED: 'COMMENT_PERMISSION_DENIED',
-  COMMENT_DEPTH_EXCEEDED: 'COMMENT_DEPTH_EXCEEDED',
-} as const;
-export const CommentExceptionCode = z.enum(COMMENT_EXCEPTION_CODE);
-export type CommentExceptionCode = z.infer<typeof CommentExceptionCode>;
+import { ExceptionRecord } from 'common/interfaces/exception.interface';
 
 export const COMMENT_EXCEPTION = {
-  COMMENT_NOT_FOUND: {
-    code: COMMENT_EXCEPTION_CODE.COMMENT_NOT_FOUND,
+  NOT_FOUND: {
     status: 404,
+    code: 'COMMENT_NOT_FOUND',
+    message: '요청한 댓글을 찾을 수 없습니다.',
   },
-  POST_NOT_FOUND: {
-    code: COMMENT_EXCEPTION_CODE.POST_NOT_FOUND,
-    status: 404,
-  },
-  COMMENT_PERMISSION_DENIED: {
-    code: COMMENT_EXCEPTION_CODE.COMMENT_PERMISSION_DENIED,
+  PERMISSION_DENIED: {
     status: 403,
+    code: 'COMMENT_PERMISSION_DENIED',
+    message: '댓글에 대한 권한이 없습니다.',
   },
-  COMMENT_DEPTH_EXCEEDED: {
-    code: COMMENT_EXCEPTION_CODE.COMMENT_DEPTH_EXCEEDED,
+  DEPTH_EXCEEDED: {
     status: 400,
+    code: 'COMMENT_DEPTH_EXCEEDED',
+    message: '댓글의 최대 깊이를 초과했습니다.',
   },
-} as const;
+} as const satisfies ExceptionRecord;

@@ -1,7 +1,7 @@
-import { ID, UserRole } from 'common';
+import { ID } from 'common';
 import z from 'zod';
 
-import { UserStatus } from './user.enums';
+import { UserRole, UserStatus } from './user.enums';
 
 export const UserDtoSchema = z.object({
   id: ID,
