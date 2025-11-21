@@ -10,6 +10,7 @@
  */
 export type * from './models/Board'
 export type * from './models/Comment'
+export type * from './models/Device'
 export type * from './models/Hello'
 export type * from './models/Manager'
 export type * from './models/Post'

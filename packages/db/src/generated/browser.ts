@@ -28,6 +28,11 @@ export type Board = Prisma.BoardModel
  */
 export type Comment = Prisma.CommentModel
 /**
+ * Model Device
+ * 
+ */
+export type Device = Prisma.DeviceModel
+/**
  * Model Hello
  * 
  */

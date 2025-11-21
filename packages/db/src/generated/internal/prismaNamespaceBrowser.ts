@@ -51,6 +51,7 @@ export const AnyNull = runtime.objectEnumValues.instances.AnyNull
 export const ModelName = {
   Board: 'Board',
   Comment: 'Comment',
+  Device: 'Device',
   Hello: 'Hello',
   Manager: 'Manager',
   Post: 'Post',
@@ -99,6 +100,26 @@ export const CommentScalarFieldEnum = {
 } as const
 
 export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
+
+
+export const DeviceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  deviceIdentifier: 'deviceIdentifier',
+  hashedRefreshToken: 'hashedRefreshToken',
+  name: 'name',
+  userAgent: 'userAgent',
+  os: 'os',
+  device: 'device',
+  browser: 'browser',
+  platform: 'platform',
+  ipAddress: 'ipAddress',
+  lastRefreshedAt: 'lastRefreshedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DeviceScalarFieldEnum = (typeof DeviceScalarFieldEnum)[keyof typeof DeviceScalarFieldEnum]
 
 
 export const HelloScalarFieldEnum = {

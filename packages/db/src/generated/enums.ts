@@ -9,6 +9,14 @@
 * 🟢 You can import this file directly.
 */
 
+export const DevicePlatform = {
+  WEB: 'WEB',
+  OTHER: 'OTHER'
+} as const
+
+export type DevicePlatform = (typeof DevicePlatform)[keyof typeof DevicePlatform]
+
+
 export const ManagerRole = {
   MAIN_MANAGER: 'MAIN_MANAGER',
   SUB_MANAGER: 'SUB_MANAGER'
