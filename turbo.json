@@ -9,7 +9,14 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "env": [
+        "NODE_ENV",
+        "JWT_ACCESS_SECRET",
+        "JWT_ACCESS_EXPIRATION",
+        "JWT_REFRESH_SECRET",
+        "JWT_REFRESH_EXPIRATION"
+      ]
     },
     "lint": {},
     "test": {},
