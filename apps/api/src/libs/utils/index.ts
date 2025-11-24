@@ -1,1 +1,1 @@
-export * from './convert-props-to-object.util';
+export * from './page-take-to-skip-take';

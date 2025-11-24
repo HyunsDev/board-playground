@@ -1,15 +1,15 @@
 export class ApiErrorResponse {
-  readonly statusCode: number;
+  readonly code: string;
+  readonly status: number;
   readonly message: string;
-  readonly error: string;
-  readonly correlationId: string;
-  readonly subErrors?: string[];
+  readonly correlationId?: string;
+  readonly details?: any;
 
   constructor(body: ApiErrorResponse) {
-    this.statusCode = body.statusCode;
+    this.code = body.code;
+    this.status = body.status;
     this.message = body.message;
-    this.error = body.error;
     this.correlationId = body.correlationId;
-    this.subErrors = body.subErrors;
+    this.details = body.details;
   }
 }

@@ -1,2 +1,2 @@
-export * from './exception.base';
+export * from './base.exception';
 export * from './exceptions';

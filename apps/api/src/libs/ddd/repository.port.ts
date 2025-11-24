@@ -1,20 +1,20 @@
-import { Paginated } from '@workspace/contract';
+export type OrderBy = { field: string; param: 'asc' | 'desc' };
 
-export type OrderBy = { field: string | true; param: 'asc' | 'desc' };
-
-export type PaginatedQueryParams = {
+export interface PaginatedQueryParams {
   page: number;
   take: number;
-  orderBy: OrderBy;
-};
+  orderBy?: OrderBy;
+}
+export interface PaginatedResult<T> {
+  items: T[];
+  total: number;
+}
 
 export interface RepositoryPort<Entity> {
   insert(entity: Entity | Entity[]): Promise<void>;
-  findOneById(id: string): Promise<Entity>;
+  findOneById(id: string): Promise<Entity | null>;
   findAll(): Promise<Entity[]>;
-  findAllPaginated(params: PaginatedQueryParams): Promise<Paginated<Entity>>;
-  delete(entity: Entity): Promise<boolean>;
+  findAllPaginated(params: PaginatedQueryParams): Promise<PaginatedResult<Entity>>;
   update(entity: Entity): Promise<Entity>;
-
-  transaction<T>(handler: () => Promise<T>): Promise<T>;
+  delete(entity: Entity): Promise<boolean>;
 }

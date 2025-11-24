@@ -1,74 +1,33 @@
-import { BASE_EXCEPTION_CODE } from '@workspace/contract';
+import { EXCEPTION } from '@workspace/contract';
 
-import { ExceptionBase } from './exception.base';
+import { ExceptionBase } from './base.exception';
 
-/**
- * Used to indicate that an incorrect argument was provided to a method/function/class constructor
- *
- * @class ArgumentInvalidException
- * @extends {ExceptionBase}
- */
 export class ArgumentInvalidException extends ExceptionBase {
-  readonly code = BASE_EXCEPTION_CODE.ARGUMENT_INVALID;
+  readonly code = EXCEPTION.COMMON.ARGUMENT_INVALID.code;
+  readonly message = EXCEPTION.COMMON.ARGUMENT_INVALID.message;
 }
 
-/**
- * Used to indicate that an argument was not provided (is empty object/array, null of undefined).
- *
- * @class ArgumentNotProvidedException
- * @extends {ExceptionBase}
- */
 export class ArgumentNotProvidedException extends ExceptionBase {
-  readonly code = BASE_EXCEPTION_CODE.ARGUMENT_NOT_PROVIDED;
+  readonly code = EXCEPTION.COMMON.ARGUMENT_NOT_PROVIDED.code;
+  readonly message = EXCEPTION.COMMON.ARGUMENT_NOT_PROVIDED.message;
 }
 
-/**
- * Used to indicate that an argument is out of allowed range
- * (for example: incorrect string/array length, number not in allowed min/max range etc)
- *
- * @class ArgumentOutOfRangeException
- * @extends {ExceptionBase}
- */
-export class ArgumentOutOfRangeException extends ExceptionBase {
-  readonly code = BASE_EXCEPTION_CODE.ARGUMENT_OUT_OF_RANGE;
-}
-
-/**
- * Used to indicate conflicting entities (usually in the database)
- *
- * @class ConflictException
- * @extends {ExceptionBase}
- */
 export class ConflictException extends ExceptionBase {
-  readonly code = BASE_EXCEPTION_CODE.CONFLICT;
+  readonly code = EXCEPTION.COMMON.CONFLICT.code;
+  readonly message = EXCEPTION.COMMON.CONFLICT.message;
 }
 
-/**
- * Used to indicate that entity is not found
- *
- * @class NotFoundException
- * @extends {ExceptionBase}
- */
 export class NotFoundException extends ExceptionBase {
-  readonly code = BASE_EXCEPTION_CODE.NOT_FOUND;
-  static readonly message = 'Not found';
-
-  constructor(message = NotFoundException.message) {
-    super(message);
-  }
+  readonly code = EXCEPTION.COMMON.NOT_FOUND.code;
+  readonly message = EXCEPTION.COMMON.NOT_FOUND.message;
 }
 
-/**
- * Used to indicate an internal server error that does not fall under all other errors
- *
- * @class InternalServerErrorException
- * @extends {ExceptionBase}
- */
-export class InternalServerErrorException extends ExceptionBase {
-  readonly code = BASE_EXCEPTION_CODE.INTERNAL_SERVER_ERROR;
-  static readonly message = 'Internal server error';
+export class ForbiddenException extends ExceptionBase {
+  readonly code = EXCEPTION.COMMON.FORBIDDEN.code;
+  readonly message = EXCEPTION.COMMON.FORBIDDEN.message;
+}
 
-  constructor(message = InternalServerErrorException.message) {
-    super(message);
-  }
+export class InternalServerErrorException extends ExceptionBase {
+  readonly code = EXCEPTION.COMMON.INTERNAL_SERVER_ERROR.code;
+  readonly message = EXCEPTION.COMMON.INTERNAL_SERVER_ERROR.message;
 }
