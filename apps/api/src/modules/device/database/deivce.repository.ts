@@ -27,10 +27,13 @@ export class DeviceRepository
     return (this.prisma as PrismaClient).device;
   }
 
-  async findOneByDeviceIdentifier(deviceIdentifier: string): Promise<DeviceEntity | null> {
-    const record = await this.delegate.findUnique({
-      where: { deviceIdentifier },
+  async findByUserIdAndHashedRefreshToken(userId: string, hashedRefreshToken: string) {
+    const record = await this.delegate.findFirst({
+      where: { userId, hashedRefreshToken },
     });
-    return record ? this.mapper.toDomain(record) : null;
+    if (!record) {
+      return null;
+    }
+    return this.mapper.toDomain(record);
   }
 }

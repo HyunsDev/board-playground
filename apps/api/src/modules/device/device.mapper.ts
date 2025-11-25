@@ -11,7 +11,6 @@ export class DeviceMapper extends BaseMapper<DeviceEntity, Device> {
   toDomain(record: Device): DeviceEntity {
     const props: DeviceProps = {
       userId: record.userId,
-      deviceIdentifier: record.deviceIdentifier,
       hashedRefreshToken: record.hashedRefreshToken,
       name: record.name,
       userAgent: record.userAgent,
@@ -32,7 +31,6 @@ export class DeviceMapper extends BaseMapper<DeviceEntity, Device> {
     return {
       id: props.id,
       userId: props.userId,
-      deviceIdentifier: props.deviceIdentifier,
       hashedRefreshToken: props.hashedRefreshToken,
       name: props.name,
       userAgent: props.userAgent,

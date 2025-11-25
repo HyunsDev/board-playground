@@ -15,15 +15,8 @@ export class DeviceService {
     });
   }
 
-  async getDeviceByIdentifier(userId: string, deviceIdentifier: string) {
-    return this.prisma.device.findUnique({
-      where: { deviceIdentifier, userId },
-    });
-  }
-
   async createDevice(data: {
     userId: string;
-    deviceIdentifier: string;
     hashedRefreshToken: string;
     userAgent: string;
     ipAddress: string;
@@ -32,7 +25,6 @@ export class DeviceService {
     return this.prisma.device.create({
       data: {
         userId: data.userId,
-        deviceIdentifier: data.deviceIdentifier,
         hashedRefreshToken: data.hashedRefreshToken,
         name: `${userAgentResult.os.toString()} - ${userAgentResult.browser.toString()}`,
         userAgent: data.userAgent,

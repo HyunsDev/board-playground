@@ -1,3 +1,4 @@
+import { UAParser } from 'ua-parser-js';
 import { v7 as uuidv7 } from 'uuid';
 
 import { DevicePlatform } from '@workspace/contract';
@@ -9,7 +10,6 @@ import { AggregateRoot, CommandMetadata } from '@/libs/ddd';
 
 export interface DeviceProps {
   userId: string;
-  deviceIdentifier: string;
   hashedRefreshToken: string | null;
   name: string;
   userAgent: string;
@@ -25,13 +25,8 @@ export interface DeviceProps {
 
 export interface CreateDeviceProps {
   userId: string;
-  deviceIdentifier: string;
   hashedRefreshToken: string;
-  name: string;
   userAgent: string;
-  os: string;
-  device: string;
-  browser: string;
   platform: DevicePlatform;
   ipAddress: string;
 }
@@ -46,15 +41,16 @@ export class DeviceEntity extends AggregateRoot<DeviceProps> {
 
   public static create(createProps: CreateDeviceProps, metadata?: CommandMetadata): DeviceEntity {
     const id = uuidv7();
+    const userAgentResult = new UAParser(createProps.userAgent).getResult();
+
     const props: DeviceProps = {
       userId: createProps.userId,
-      deviceIdentifier: createProps.deviceIdentifier,
       hashedRefreshToken: createProps.hashedRefreshToken,
-      name: createProps.name,
+      name: `${userAgentResult.os.toString()} - ${userAgentResult.browser.toString()}`,
       userAgent: createProps.userAgent,
-      os: createProps.os,
-      device: createProps.device,
-      browser: createProps.browser,
+      os: userAgentResult.os.toString(),
+      device: userAgentResult.device.toString(),
+      browser: userAgentResult.browser.toString(),
       platform: createProps.platform,
       ipAddress: createProps.ipAddress,
       lastRefreshedAt: null,

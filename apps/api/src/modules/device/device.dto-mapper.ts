@@ -13,7 +13,6 @@ export class DeviceDtoMapper extends BaseDtoMapper<DeviceEntity, DeviceDto> {
     return {
       id: props.id,
       userId: props.userId,
-      deviceIdentifier: props.deviceIdentifier,
       name: props.name,
       os: props.os,
       device: props.device,
