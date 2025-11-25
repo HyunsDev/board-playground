@@ -27,7 +27,6 @@ export type AggregateDevice = {
 export type DeviceMinAggregateOutputType = {
   id: string | null
   userId: string | null
-  deviceIdentifier: string | null
   hashedRefreshToken: string | null
   name: string | null
   userAgent: string | null
@@ -44,7 +43,6 @@ export type DeviceMinAggregateOutputType = {
 export type DeviceMaxAggregateOutputType = {
   id: string | null
   userId: string | null
-  deviceIdentifier: string | null
   hashedRefreshToken: string | null
   name: string | null
   userAgent: string | null
@@ -61,7 +59,6 @@ export type DeviceMaxAggregateOutputType = {
 export type DeviceCountAggregateOutputType = {
   id: number
   userId: number
-  deviceIdentifier: number
   hashedRefreshToken: number
   name: number
   userAgent: number
@@ -80,7 +77,6 @@ export type DeviceCountAggregateOutputType = {
 export type DeviceMinAggregateInputType = {
   id?: true
   userId?: true
-  deviceIdentifier?: true
   hashedRefreshToken?: true
   name?: true
   userAgent?: true
@@ -97,7 +93,6 @@ export type DeviceMinAggregateInputType = {
 export type DeviceMaxAggregateInputType = {
   id?: true
   userId?: true
-  deviceIdentifier?: true
   hashedRefreshToken?: true
   name?: true
   userAgent?: true
@@ -114,7 +109,6 @@ export type DeviceMaxAggregateInputType = {
 export type DeviceCountAggregateInputType = {
   id?: true
   userId?: true
-  deviceIdentifier?: true
   hashedRefreshToken?: true
   name?: true
   userAgent?: true
@@ -204,7 +198,6 @@ export type DeviceGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 export type DeviceGroupByOutputType = {
   id: string
   userId: string
-  deviceIdentifier: string
   hashedRefreshToken: string
   name: string
   userAgent: string
@@ -242,7 +235,6 @@ export type DeviceWhereInput = {
   NOT?: Prisma.DeviceWhereInput | Prisma.DeviceWhereInput[]
   id?: Prisma.StringFilter<"Device"> | string
   userId?: Prisma.StringFilter<"Device"> | string
-  deviceIdentifier?: Prisma.StringFilter<"Device"> | string
   hashedRefreshToken?: Prisma.StringFilter<"Device"> | string
   name?: Prisma.StringFilter<"Device"> | string
   userAgent?: Prisma.StringFilter<"Device"> | string
@@ -259,7 +251,6 @@ export type DeviceWhereInput = {
 export type DeviceOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  deviceIdentifier?: Prisma.SortOrder
   hashedRefreshToken?: Prisma.SortOrder
   name?: Prisma.SortOrder
   userAgent?: Prisma.SortOrder
@@ -275,7 +266,6 @@ export type DeviceOrderByWithRelationInput = {
 
 export type DeviceWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  deviceIdentifier?: string
   AND?: Prisma.DeviceWhereInput | Prisma.DeviceWhereInput[]
   OR?: Prisma.DeviceWhereInput[]
   NOT?: Prisma.DeviceWhereInput | Prisma.DeviceWhereInput[]
@@ -291,12 +281,11 @@ export type DeviceWhereUniqueInput = Prisma.AtLeast<{
   lastRefreshedAt?: Prisma.DateTimeFilter<"Device"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Device"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Device"> | Date | string
-}, "id" | "deviceIdentifier">
+}, "id">
 
 export type DeviceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  deviceIdentifier?: Prisma.SortOrder
   hashedRefreshToken?: Prisma.SortOrder
   name?: Prisma.SortOrder
   userAgent?: Prisma.SortOrder
@@ -319,7 +308,6 @@ export type DeviceScalarWhereWithAggregatesInput = {
   NOT?: Prisma.DeviceScalarWhereWithAggregatesInput | Prisma.DeviceScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Device"> | string
   userId?: Prisma.StringWithAggregatesFilter<"Device"> | string
-  deviceIdentifier?: Prisma.StringWithAggregatesFilter<"Device"> | string
   hashedRefreshToken?: Prisma.StringWithAggregatesFilter<"Device"> | string
   name?: Prisma.StringWithAggregatesFilter<"Device"> | string
   userAgent?: Prisma.StringWithAggregatesFilter<"Device"> | string
@@ -336,7 +324,6 @@ export type DeviceScalarWhereWithAggregatesInput = {
 export type DeviceCreateInput = {
   id?: string
   userId: string
-  deviceIdentifier: string
   hashedRefreshToken: string
   name: string
   userAgent: string
@@ -353,7 +340,6 @@ export type DeviceCreateInput = {
 export type DeviceUncheckedCreateInput = {
   id?: string
   userId: string
-  deviceIdentifier: string
   hashedRefreshToken: string
   name: string
   userAgent: string
@@ -370,7 +356,6 @@ export type DeviceUncheckedCreateInput = {
 export type DeviceUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  deviceIdentifier?: Prisma.StringFieldUpdateOperationsInput | string
   hashedRefreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
@@ -387,7 +372,6 @@ export type DeviceUpdateInput = {
 export type DeviceUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  deviceIdentifier?: Prisma.StringFieldUpdateOperationsInput | string
   hashedRefreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
@@ -404,7 +388,6 @@ export type DeviceUncheckedUpdateInput = {
 export type DeviceCreateManyInput = {
   id?: string
   userId: string
-  deviceIdentifier: string
   hashedRefreshToken: string
   name: string
   userAgent: string
@@ -421,7 +404,6 @@ export type DeviceCreateManyInput = {
 export type DeviceUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  deviceIdentifier?: Prisma.StringFieldUpdateOperationsInput | string
   hashedRefreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
@@ -438,7 +420,6 @@ export type DeviceUpdateManyMutationInput = {
 export type DeviceUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  deviceIdentifier?: Prisma.StringFieldUpdateOperationsInput | string
   hashedRefreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
@@ -455,7 +436,6 @@ export type DeviceUncheckedUpdateManyInput = {
 export type DeviceCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  deviceIdentifier?: Prisma.SortOrder
   hashedRefreshToken?: Prisma.SortOrder
   name?: Prisma.SortOrder
   userAgent?: Prisma.SortOrder
@@ -472,7 +452,6 @@ export type DeviceCountOrderByAggregateInput = {
 export type DeviceMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  deviceIdentifier?: Prisma.SortOrder
   hashedRefreshToken?: Prisma.SortOrder
   name?: Prisma.SortOrder
   userAgent?: Prisma.SortOrder
@@ -489,7 +468,6 @@ export type DeviceMaxOrderByAggregateInput = {
 export type DeviceMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  deviceIdentifier?: Prisma.SortOrder
   hashedRefreshToken?: Prisma.SortOrder
   name?: Prisma.SortOrder
   userAgent?: Prisma.SortOrder
@@ -512,7 +490,6 @@ export type EnumDevicePlatformFieldUpdateOperationsInput = {
 export type DeviceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  deviceIdentifier?: boolean
   hashedRefreshToken?: boolean
   name?: boolean
   userAgent?: boolean
@@ -529,7 +506,6 @@ export type DeviceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type DeviceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  deviceIdentifier?: boolean
   hashedRefreshToken?: boolean
   name?: boolean
   userAgent?: boolean
@@ -546,7 +522,6 @@ export type DeviceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type DeviceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  deviceIdentifier?: boolean
   hashedRefreshToken?: boolean
   name?: boolean
   userAgent?: boolean
@@ -563,7 +538,6 @@ export type DeviceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type DeviceSelectScalar = {
   id?: boolean
   userId?: boolean
-  deviceIdentifier?: boolean
   hashedRefreshToken?: boolean
   name?: boolean
   userAgent?: boolean
@@ -577,7 +551,7 @@ export type DeviceSelectScalar = {
   updatedAt?: boolean
 }
 
-export type DeviceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "deviceIdentifier" | "hashedRefreshToken" | "name" | "userAgent" | "os" | "device" | "browser" | "platform" | "ipAddress" | "lastRefreshedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["device"]>
+export type DeviceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "hashedRefreshToken" | "name" | "userAgent" | "os" | "device" | "browser" | "platform" | "ipAddress" | "lastRefreshedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["device"]>
 
 export type $DevicePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Device"
@@ -585,7 +559,6 @@ export type $DevicePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     userId: string
-    deviceIdentifier: string
     hashedRefreshToken: string
     name: string
     userAgent: string
@@ -1022,7 +995,6 @@ export interface Prisma__DeviceClient<T, Null = never, ExtArgs extends runtime.T
 export interface DeviceFieldRefs {
   readonly id: Prisma.FieldRef<"Device", 'String'>
   readonly userId: Prisma.FieldRef<"Device", 'String'>
-  readonly deviceIdentifier: Prisma.FieldRef<"Device", 'String'>
   readonly hashedRefreshToken: Prisma.FieldRef<"Device", 'String'>
   readonly name: Prisma.FieldRef<"Device", 'String'>
   readonly userAgent: Prisma.FieldRef<"Device", 'String'>

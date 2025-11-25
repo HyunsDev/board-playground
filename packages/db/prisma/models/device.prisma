@@ -1,7 +1,6 @@
 model Device {
     id                 String         @id @default(uuid())
     userId             String
-    deviceIdentifier   String         @unique
     hashedRefreshToken String
     name               String
     userAgent          String

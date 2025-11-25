@@ -7,7 +7,6 @@ import { ID } from '@/common';
 export const DeviceDtoSchema = z.object({
   id: ID,
   userId: ID,
-  deviceIdentifier: z.string(),
   name: z.string(),
   os: z.string(),
   device: z.string(),

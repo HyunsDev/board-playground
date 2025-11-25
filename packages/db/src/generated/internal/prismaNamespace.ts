@@ -1004,7 +1004,6 @@ export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeo
 export const DeviceScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  deviceIdentifier: 'deviceIdentifier',
   hashedRefreshToken: 'hashedRefreshToken',
   name: 'name',
   userAgent: 'userAgent',
@@ -1066,7 +1065,6 @@ export const UserScalarFieldEnum = {
   status: 'status',
   memo: 'memo',
   password: 'password',
-  passwordSalt: 'passwordSalt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
