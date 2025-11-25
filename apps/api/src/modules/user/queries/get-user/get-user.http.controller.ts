@@ -1,17 +1,16 @@
 import { Controller } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
 import { contract, EXCEPTION } from '@workspace/contract';
 
-import { UserNotFoundException } from '../domain/user.exceptions';
-import { GetUserQuery } from '../queries/get-user/get-user.query';
-import { UserDtoMapper } from '../user.dto-mapper';
+import { GetUserQuery } from './get-user.query';
+import { UserNotFoundException } from '../../domain/user.exceptions';
+import { UserDtoMapper } from '../../user.dto-mapper';
 
 @Controller()
-export class UserHttpController {
+export class GetUserHttpController {
   constructor(
-    private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
     private readonly userDtoMapper: UserDtoMapper,
   ) {}

@@ -1,11 +1,27 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module, Provider } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 
-import { UserService } from './user.service';
+import { UserRepository } from './database/user.repository';
+import { GetUserHttpController } from './queries/get-user/get-user.http.controller';
+import { GetUserQueryHandler } from './queries/get-user/get-user.query';
+import { USER_REPOSITORY } from './user.di-tokens';
+import { UserMapper } from './user.mapper';
+
+const httpControllers = [GetUserHttpController];
+const commandHandlers: Provider[] = [];
+const queryHandlers: Provider[] = [GetUserQueryHandler];
+const mappers: Provider[] = [];
+const repositories: Provider[] = [
+  {
+    provide: USER_REPOSITORY,
+    useClass: UserRepository,
+  },
+];
 
 @Module({
-  imports: [],
-  providers: [UserService],
-  controllers: [],
-  exports: [UserService],
+  imports: [CqrsModule],
+  providers: [Logger, ...commandHandlers, ...queryHandlers, ...mappers, ...repositories],
+  controllers: [...httpControllers],
+  exports: [UserRepository, UserMapper],
 })
 export class UserModule {}
