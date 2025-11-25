@@ -1,9 +1,11 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ClsModule, ClsService } from 'nestjs-cls';
 
+import { envSchema } from './config/env.validation';
 import { GlobalExceptionsFilter } from './libs/application/filters/global-exception.filer';
 import { ClsAccessor } from './libs/cls';
 import { RequestContextService } from './modules/cls/request-context.service';
@@ -22,6 +24,17 @@ const filters = [
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validate: (env) => {
+        const parsed = envSchema.safeParse(env);
+        if (!parsed.success) {
+          console.error(parsed.error.format());
+          throw new Error('❌ Invalid environment variables');
+        }
+        return parsed.data;
+      },
+    }),
     EventEmitterModule.forRoot(),
     PrismaModule,
     CqrsModule,
