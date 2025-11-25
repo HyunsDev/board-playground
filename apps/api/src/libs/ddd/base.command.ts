@@ -1,6 +1,7 @@
+import { Command } from '@nestjs/cqrs';
 import { v7 as uuidv7 } from 'uuid';
 
-export type CommandProps<T> = Omit<T, 'id' | 'metadata'> & Partial<Command>;
+export type CommandProps<T, TRes> = Omit<T, 'id' | 'metadata'> & Partial<CommandBase<TRes>>;
 
 export type CommandMetadata = {
   /**
@@ -25,11 +26,12 @@ export type CommandMetadata = {
   readonly timestamp: number;
 };
 
-export class Command {
+export abstract class CommandBase<TRes> extends Command<TRes> {
   readonly id: string;
   readonly metadata: CommandMetadata;
 
   constructor(props: Partial<CommandMetadata> & { id?: string } = {}) {
+    super();
     this.id = props.id || uuidv7();
 
     // 메타데이터 설정
