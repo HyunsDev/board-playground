@@ -3,6 +3,7 @@ import { v7 as uuidv7 } from 'uuid';
 import { USER_ROLE, USER_STATUS, UserRole, UserStatus } from '@workspace/contract';
 
 import { UserCreatedEvent } from './events/user-created.event';
+import { UserAdminCannotBeDeletedException } from './user.exceptions';
 
 import { AggregateRoot, CommandMetadata } from '@/libs/ddd';
 
@@ -17,6 +18,8 @@ export interface UserProps {
   memo: string | null;
   password: string;
   passwordSalt: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface CreateUserProps {
@@ -63,6 +66,29 @@ export class UserEntity extends AggregateRoot<UserProps> {
     );
 
     return user;
+  }
+
+  public updateProfile(data: {
+    nickname?: string;
+    bio?: string | null;
+    avatarUrl?: string | null;
+  }) {
+    if (data.nickname !== undefined) {
+      this.props.nickname = data.nickname;
+    }
+    if (data.bio !== undefined) {
+      this.props.bio = data.bio;
+    }
+    if (data.avatarUrl !== undefined) {
+      this.props.avatarUrl = data.avatarUrl;
+    }
+    this.props.updatedAt = new Date();
+  }
+
+  public validateDelete(): void {
+    if (this.props.role === USER_ROLE.ADMIN) {
+      throw new UserAdminCannotBeDeletedException();
+    }
   }
 
   static reconstruct(props: UserProps, id: string): UserEntity {

@@ -1,0 +1,123 @@
+import {
+  Injectable,
+  ForbiddenException,
+  UnauthorizedException,
+  ConflictException,
+} from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+
+import { TokenService } from './token.service';
+import { DeviceService } from '../device/device.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { UserService } from '../user/user.service';
+
+import { Tokens } from '@/common/types/tokens';
+
+@Injectable()
+export class AuthService {
+  constructor(
+    private prisma: PrismaService,
+    private userService: UserService,
+    private deviceService: DeviceService,
+    private tokenService: TokenService,
+  ) {}
+
+  // [1] 회원가입
+  async signup(data: {
+    email: string;
+    password: string;
+    username: string;
+    nickname: string;
+    ipAddress: string;
+    userAgent: string;
+    deviceIdentifier: string;
+  }): Promise<Tokens> {
+    const exists = await this.prisma.user.findUnique({ where: { email: data.email } });
+    if (exists) throw new ConflictException('이미 존재하는 이메일입니다.');
+
+    const passwordSalt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(data.password, passwordSalt);
+
+    const user = await this.userService.createUser({
+      email: data.email,
+      password: hashedPassword,
+      passwordSalt: passwordSalt,
+      username: data.username,
+      nickname: data.nickname,
+    });
+
+    const tokens = await this.tokenService.generateTokens(
+      user.id,
+      user.email,
+      data.deviceIdentifier,
+    );
+
+    const device = await this.deviceService.createDevice({
+      userId: user.id,
+      deviceIdentifier: data.deviceIdentifier,
+      hashedRefreshToken: await bcrypt.hash(tokens.refreshToken, 10),
+      userAgent: data.userAgent,
+      ipAddress: data.ipAddress,
+    });
+
+    return tokens;
+  }
+
+  // [2] 로그인
+  async signin(data: {
+    email: string;
+    password: string;
+    ipAddress: string;
+    userAgent: string;
+    deviceIdentifier: string;
+  }): Promise<Tokens> {
+    const user = await this.prisma.user.findUnique({ where: { email: data.email } });
+    if (!user) throw new UnauthorizedException('자격 증명이 유효하지 않습니다.');
+
+    const isMatch = await bcrypt.compare(data.password, user.password);
+    if (!isMatch) throw new UnauthorizedException('자격 증명이 유효하지 않습니다.');
+
+    const tokens = await this.getTokens(user.id, user.email);
+    await this.updateRtHash(user.id, tokens.refreshToken);
+    return tokens;
+  }
+
+  // [3] 로그아웃
+  async logout(userId: string, deviceIdentifier: string): Promise<void> {
+    await this.prisma.device.delete({
+      where: { deviceIdentifier: deviceIdentifier, userId: userId },
+    });
+  }
+
+  // [4] 토큰 갱신 (Refresh Token Rotation)
+  async refreshTokens(userId: string, deviceIdentifier: string, rt: string): Promise<Tokens> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    const device = await this.prisma.device.findUnique({
+      where: {
+        deviceIdentifier: deviceIdentifier,
+        userId: userId,
+      },
+    });
+
+    if (!user || !device || !device.hashedRefreshToken)
+      throw new ForbiddenException('Access Denied');
+
+    const rtMatch = await bcrypt.compare(rt, device.hashedRefreshToken);
+    if (!rtMatch) throw new ForbiddenException('Access Denied');
+
+    // 새 토큰 발급 및 RT 교체 (Rotation)
+    const tokens = await this.getTokens(user.id, user.email);
+    await this.updateRtHash(user.id, device.id, tokens.refreshToken);
+    return tokens;
+  }
+
+  // --- Helper Functions ---
+  async updateRtHash(userId: string, deviceId: string, rt: string) {
+    const hash = await bcrypt.hash(rt, 10);
+
+    await this.prisma.device.update({
+      where: { id: deviceId, userId: userId },
+      data: { hashedRefreshToken: hash },
+    });
+  }
+}

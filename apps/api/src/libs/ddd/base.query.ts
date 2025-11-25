@@ -1,15 +1,20 @@
+import { Query } from '@nestjs/cqrs';
+
 import { OrderBy, PaginatedQueryParams } from './repository.port';
 
 /**
  * Base class for regular queries
  */
-export abstract class QueryBase {}
+export abstract class QueryBase<TRes> extends Query<TRes> {}
 
 /**
  * Base class for paginated queries
  * RepositoryPort의 PaginatedQueryParams 인터페이스를 구현하거나 호환됩니다.
  */
-export abstract class PaginatedQueryBase extends QueryBase implements PaginatedQueryParams {
+export abstract class PaginatedQueryBase<TRes>
+  extends QueryBase<TRes>
+  implements PaginatedQueryParams
+{
   readonly page: number;
   readonly take: number;
   readonly orderBy?: OrderBy;
@@ -22,3 +27,7 @@ export abstract class PaginatedQueryBase extends QueryBase implements PaginatedQ
     this.orderBy = props.orderBy;
   }
 }
+
+// Paginated query parameters
+export type PaginatedParams<T> = Omit<T, 'page' | 'take' | 'orderBy'> &
+  Partial<Omit<PaginatedQueryParams, 'take'>>;

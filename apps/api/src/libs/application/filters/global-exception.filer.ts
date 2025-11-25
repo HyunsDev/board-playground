@@ -17,7 +17,7 @@ import {
   ArgumentInvalidException,
   ArgumentNotProvidedException,
   ConflictException,
-  ExceptionBase,
+  BaseException,
   ForbiddenException,
   InternalServerErrorException,
   NotFoundException,
@@ -71,7 +71,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       return this.handleHttpException(exception);
     }
-    if (exception instanceof ExceptionBase) {
+    if (exception instanceof BaseException) {
       return this.handleDomainException(exception);
     }
     return this.handleUnknownError(exception);
@@ -111,7 +111,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
   /**
    * 커스텀 도메인 예외 처리
    */
-  private handleDomainException(exception: ExceptionBase): ErrorResolution {
+  private handleDomainException(exception: BaseException): ErrorResolution {
     let status = HttpStatus.BAD_REQUEST;
 
     if (exception instanceof NotFoundException) {

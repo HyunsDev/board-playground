@@ -10,7 +10,7 @@ export interface SerializedException {
  * Base class for custom exceptions.
  * Framework independent (No NestJS/CLS dependency).
  */
-export abstract class ExceptionBase extends Error {
+export abstract class BaseException extends Error {
   abstract code: string;
 
   public readonly correlationId?: string;

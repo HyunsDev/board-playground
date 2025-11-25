@@ -1,5 +1,7 @@
 import { v7 as uuidv7 } from 'uuid';
 
+export type CommandProps<T> = Omit<T, 'id' | 'metadata'> & Partial<Command>;
+
 export type CommandMetadata = {
   /**
    * 요청 추적 ID (로그, MSA 간 추적용)
