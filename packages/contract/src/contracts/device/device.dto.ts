@@ -19,7 +19,5 @@ export const DeviceDtoSchema = z.object({
   createdAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: 'Invalid date format',
   }),
-  updatedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: 'Invalid date format',
-  }),
 });
+export type DeviceDto = z.infer<typeof DeviceDtoSchema>;
