@@ -18,3 +18,20 @@ export class UserNotFoundException extends NotFoundException {
     super(EXCEPTION.USER.NOT_FOUND.message, EXCEPTION.USER.NOT_FOUND.code);
   }
 }
+
+export class UserEmailAlreadyExistsException extends BaseException {
+  code = EXCEPTION.USER.EMAIL_ALREADY_EXISTS.code;
+  constructor() {
+    super(EXCEPTION.USER.EMAIL_ALREADY_EXISTS.message, EXCEPTION.USER.EMAIL_ALREADY_EXISTS.code);
+  }
+}
+
+export class UserUsernameAlreadyExistsException extends BaseException {
+  code = EXCEPTION.USER.USERNAME_ALREADY_EXISTS.code;
+  constructor() {
+    super(
+      EXCEPTION.USER.USERNAME_ALREADY_EXISTS.message,
+      EXCEPTION.USER.USERNAME_ALREADY_EXISTS.code,
+    );
+  }
+}

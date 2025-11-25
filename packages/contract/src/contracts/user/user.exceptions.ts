@@ -16,6 +16,11 @@ export const USER_EXCEPTION = {
     code: 'EMAIL_ALREADY_EXISTS',
     message: '이미 존재하는 이메일입니다.',
   },
+  USERNAME_ALREADY_EXISTS: {
+    status: 409,
+    code: 'USERNAME_ALREADY_EXISTS',
+    message: '이미 존재하는 사용자 이름입니다.',
+  },
   ADMIN_CANNOT_BE_DELETED: {
     status: 400,
     code: 'ADMIN_CANNOT_BE_DELETED',

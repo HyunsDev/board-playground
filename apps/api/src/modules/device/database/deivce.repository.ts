@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import { Device, PrismaClient } from '@workspace/db';
 
@@ -8,6 +7,7 @@ import { DeviceMapper } from '../device.mapper';
 import { DeviceEntity } from '../domain/device.entity';
 
 import { BaseRepository } from '@/libs/db/base.repository';
+import { DomainEventDispatcher } from '@/libs/db/domain-event.dispatcher';
 import { LoggerPort } from '@/libs/ports/logger.port';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 
@@ -19,10 +19,10 @@ export class DeviceRepository
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly mapper: DeviceMapper,
-    protected readonly eventEmitter: EventEmitter2,
+    protected readonly eventDispatcher: DomainEventDispatcher,
     protected readonly logger: LoggerPort,
   ) {
-    super(prisma, mapper, eventEmitter, logger);
+    super(prisma, mapper, eventDispatcher, logger);
   }
 
   protected get delegate() {

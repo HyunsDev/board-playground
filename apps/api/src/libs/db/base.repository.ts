@@ -1,7 +1,7 @@
 import { ConflictException } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Prisma } from '@prisma/client';
 
+import { DomainEventDispatcher } from './domain-event.dispatcher';
 import { AggregateRoot } from '../ddd/base.aggregate-root';
 import { Mapper } from '../ddd/base.mapper';
 import { RepositoryPort, PaginatedQueryParams, PaginatedResult } from '../ddd/repository.port';
@@ -20,7 +20,7 @@ export abstract class BaseRepository<
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly mapper: Mapper<Aggregate, DbModel>,
-    protected readonly eventEmitter: EventEmitter2,
+    protected readonly eventDispatcher: DomainEventDispatcher,
     protected readonly logger: LoggerPort,
   ) {}
 
@@ -110,14 +110,7 @@ export abstract class BaseRepository<
   private async publishEvents(entities: Aggregate[]): Promise<void> {
     for (const entity of entities) {
       const events = entity.pullEvents();
-
-      // 발행
-      await Promise.all(
-        events.map((event) => {
-          this.logger.debug(`Publishing Domain Event: ${event.constructor.name}`);
-          return this.eventEmitter.emitAsync(event.constructor.name, event);
-        }),
-      );
+      this.eventDispatcher.addEvents(events);
     }
   }
 }

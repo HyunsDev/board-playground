@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import { PrismaClient, User } from '@workspace/db';
 
@@ -8,6 +7,7 @@ import { UserRepositoryPort } from './user.repository.port';
 import { UserEntity } from '../domain/user.entity';
 
 import { BaseRepository } from '@/libs/db/base.repository';
+import { DomainEventDispatcher } from '@/libs/db/domain-event.dispatcher';
 import { LoggerPort } from '@/libs/ports/logger.port';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 
@@ -16,10 +16,10 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly mapper: UserMapper,
-    protected readonly eventEmitter: EventEmitter2,
+    protected readonly eventDispatcher: DomainEventDispatcher,
     protected readonly logger: LoggerPort,
   ) {
-    super(prisma, mapper, eventEmitter, logger);
+    super(prisma, mapper, eventDispatcher, logger);
   }
 
   protected get delegate() {
