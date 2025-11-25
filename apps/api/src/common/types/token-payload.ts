@@ -1,6 +1,8 @@
+import { UserRole } from '@workspace/contract';
+
 export type TokenPayload = {
   sub: string;
-  tokenType: 'access' | 'refresh';
+  role: UserRole;
   email: string;
-  deviceIdentifier: string;
+  deviceId: string;
 };
