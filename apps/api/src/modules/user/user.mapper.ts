@@ -20,6 +20,8 @@ export class UserMapper extends BaseMapper<UserEntity, User> {
       memo: record.memo,
       password: record.password,
       passwordSalt: record.passwordSalt,
+      createdAt: record.createdAt,
+      updatedAt: record.updatedAt,
     };
     return UserEntity.reconstruct(props, record.id);
   }

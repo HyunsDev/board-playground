@@ -18,8 +18,8 @@ export interface UserProps {
   memo: string | null;
   password: string;
   passwordSalt: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface CreateUserProps {
@@ -51,6 +51,8 @@ export class UserEntity extends AggregateRoot<UserProps> {
       memo: null,
       password: createProps.password,
       passwordSalt: createProps.passwordSalt,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     const user = new UserEntity(props, id);
