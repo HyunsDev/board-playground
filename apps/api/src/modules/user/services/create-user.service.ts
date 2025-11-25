@@ -31,4 +31,14 @@ export class CreateUserService {
     await this.userRepo.insert(user);
     return ok(user);
   }
+
+  async checkEmailExists(email: string): Promise<boolean> {
+    const existing = await this.userRepo.findOneByEmail(email);
+    return !!existing;
+  }
+
+  async checkUsernameExists(username: string): Promise<boolean> {
+    const existing = await this.userRepo.findOneByUsername(username);
+    return !!existing;
+  }
 }

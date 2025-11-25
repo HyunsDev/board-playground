@@ -19,7 +19,6 @@ export class UserMapper extends BaseMapper<UserEntity, User> {
       status: record.status,
       memo: record.memo,
       password: record.password,
-      passwordSalt: record.passwordSalt,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
     };
@@ -39,7 +38,6 @@ export class UserMapper extends BaseMapper<UserEntity, User> {
       status: props.status as UserStatus,
       memo: props.memo,
       password: props.password,
-      passwordSalt: props.passwordSalt,
       createdAt: props.createdAt,
       updatedAt: props.updatedAt,
     };

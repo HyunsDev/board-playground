@@ -7,33 +7,32 @@ import { UserEntity } from '../../domain/user.entity';
 import { UserNotFoundException } from '../../domain/user.exceptions';
 import { USER_REPOSITORY } from '../../user.di-tokens';
 
-import { Command, CommandProps } from '@/libs/ddd';
+import { CommandBase, CommandProps } from '@/libs/ddd';
 
-export class UpdateUserMeProfileCommand extends Command {
+export class UpdateUserMeProfileCommand extends CommandBase<UpdateUserMeProfileCommandResult> {
   public readonly userId: string;
   public readonly nickname?: string;
   public readonly bio?: string | null;
 
-  constructor(props: CommandProps<UpdateUserMeProfileCommand>) {
+  constructor(props: CommandProps<UpdateUserMeProfileCommand, UpdateUserMeProfileCommandResult>) {
     super(props);
     this.userId = props.userId!;
     this.nickname = props.nickname;
     this.bio = props.bio;
   }
 }
+export type UpdateUserMeProfileCommandResult = Result<UserEntity, UserNotFoundException>;
 
 @CommandHandler(UpdateUserMeProfileCommand)
 export class UpdateUserMeProfileCommandHandler
-  implements ICommandHandler<UpdateUserMeProfileCommand>
+  implements ICommandHandler<UpdateUserMeProfileCommand, UpdateUserMeProfileCommandResult>
 {
   constructor(
     @Inject(USER_REPOSITORY)
     private readonly userRepo: UserRepositoryPort,
   ) {}
 
-  async execute(
-    command: UpdateUserMeProfileCommand,
-  ): Promise<Result<UserEntity, UserNotFoundException>> {
+  async execute(command: UpdateUserMeProfileCommand) {
     const user = await this.userRepo.findOneById(command.userId);
     if (!user) return err(new UserNotFoundException());
 

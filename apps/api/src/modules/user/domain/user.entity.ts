@@ -17,7 +17,6 @@ export interface UserProps {
   status: UserStatus;
   memo: string | null;
   password: string;
-  passwordSalt: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -27,7 +26,6 @@ export interface CreateUserProps {
   nickname: string;
   email: string;
   password: string;
-  passwordSalt: string;
 }
 
 export class UserEntity extends AggregateRoot<UserProps> {
@@ -36,6 +34,26 @@ export class UserEntity extends AggregateRoot<UserProps> {
       id: id || uuidv7(),
       props,
     });
+  }
+
+  get username(): string {
+    return this.props.username;
+  }
+
+  get nickname(): string {
+    return this.props.nickname;
+  }
+
+  get email(): string {
+    return this.props.email;
+  }
+
+  get role(): UserRole {
+    return this.props.role;
+  }
+
+  get password(): string {
+    return this.props.password;
   }
 
   public static create(createProps: CreateUserProps, metadata?: CommandMetadata): UserEntity {
@@ -50,7 +68,6 @@ export class UserEntity extends AggregateRoot<UserProps> {
       status: USER_STATUS.ACTIVE,
       memo: null,
       password: createProps.password,
-      passwordSalt: createProps.passwordSalt,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
