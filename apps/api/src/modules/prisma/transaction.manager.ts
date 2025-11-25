@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { DomainEventDispatcher } from './domain-event.dispatcher';
-import { ClsAccessor } from '../cls';
+import { ClsAccessor } from '../../libs/cls';
 
 import { PrismaService } from '@/modules/prisma/prisma.service';
 

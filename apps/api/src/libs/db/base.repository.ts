@@ -1,7 +1,7 @@
 import { ConflictException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
-import { DomainEventDispatcher } from './domain-event.dispatcher';
+import { DomainEventDispatcher } from '../../modules/prisma/domain-event.dispatcher';
 import { AggregateRoot } from '../ddd/base.aggregate-root';
 import { Mapper } from '../ddd/base.mapper';
 import { RepositoryPort, PaginatedQueryParams, PaginatedResult } from '../ddd/repository.port';

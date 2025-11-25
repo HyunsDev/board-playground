@@ -8,8 +8,10 @@ import { GlobalExceptionsFilter } from './libs/application/filters/global-except
 import { ClsAccessor } from './libs/cls';
 import { RequestContextService } from './modules/cls/request-context.service';
 import { RequestIdMiddleware } from './modules/cls/request-id.middleware';
+import { DeviceModule } from './modules/device/device.module';
 import { HelloModule } from './modules/hello/hello.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
+import { UserModule } from './modules/user/user.module';
 
 const filters = [
   {
@@ -30,6 +32,8 @@ const filters = [
       },
     }),
     HelloModule,
+    UserModule,
+    DeviceModule,
   ],
   controllers: [],
   providers: [...filters, RequestContextService],

@@ -32,6 +32,6 @@ const repositories: Provider[] = [
     ...repositories,
   ],
   controllers: [...httpControllers],
-  exports: [UserRepository, UserMapper, UserDtoMapper, CreateUserService],
+  exports: [USER_REPOSITORY, UserMapper, UserDtoMapper, CreateUserService],
 })
 export class UserModule {}
