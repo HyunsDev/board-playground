@@ -1,8 +1,10 @@
-import { BoardDtoSchema } from 'contracts/board';
-import { UserDtoSchema } from 'contracts/user';
 import z from 'zod';
 
 import { ManagerRole } from './manager.enums';
+
+import { BoardDtoSchema } from '@/contracts/board';
+import { UserDtoSchema } from '@/contracts/user';
+
 
 export const ManagerDtoSchema = z.object({
   id: z.string().uuid(),

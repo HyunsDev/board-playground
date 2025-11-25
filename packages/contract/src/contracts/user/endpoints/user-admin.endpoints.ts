@@ -1,11 +1,11 @@
-import { c, paginatedQueryOf, paginatedResponseOf } from 'common';
-import { toExceptionSchema } from 'common/utils/toExceptionSchema';
-import { EXCEPTION } from 'contracts/exception';
-import { USER_ROLE } from 'contracts/user';
 import z from 'zod';
 
 import { UserForAdminDtoSchema } from '../user.dto';
-import { UserRole, UserStatus } from '../user.enums';
+import { USER_ROLE, UserRole, UserStatus } from '../user.enums';
+
+import { c, paginatedQueryOf, paginatedResponseOf } from '@/common';
+import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
+import { EXCEPTION } from '@/contracts/exception';
 
 export const getUserForAdmin = c.query({
   method: 'GET',

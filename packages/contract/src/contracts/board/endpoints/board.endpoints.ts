@@ -1,11 +1,12 @@
-import { c, paginatedQueryOf, paginatedResponseOf } from 'common';
-import { toExceptionSchema } from 'common/utils/toExceptionSchema';
-import { EXCEPTION } from 'contracts/exception';
-import { USER_ROLE } from 'contracts/user';
 import z from 'zod';
 
 import { BoardDtoSchema, CreateBoardDtoSchema, UpdateBoardDtoSchema } from '../board.dto';
 import { BOARD_EXCEPTION } from '../board.exceptions';
+
+import { c, paginatedQueryOf, paginatedResponseOf } from '@/common';
+import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
+import { EXCEPTION } from '@/contracts/exception';
+import { USER_ROLE } from '@/contracts/user/user.enums';
 
 export const getBoard = c.query({
   method: 'GET',

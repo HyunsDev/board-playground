@@ -1,4 +1,4 @@
-import { ExceptionRecord } from 'common/interfaces/exception.interface';
+import { ExceptionRecord } from '@/common/interfaces/exception.interface';
 
 export const AUTH_EXCEPTION = {
   UNAUTHORIZED: {

@@ -1,10 +1,12 @@
-import { c } from 'common';
-import { toExceptionSchema } from 'common/utils/toExceptionSchema';
-import { EXCEPTION } from 'contracts/exception';
-import { USER_ROLE } from 'contracts/user';
 import z from 'zod';
 
 import { DeviceDtoSchema } from './device.dto';
+
+import { c } from '@/common';
+import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
+import { EXCEPTION } from '@/contracts/exception';
+import { USER_ROLE } from '@/contracts/user';
+
 
 export const getDevice = c.query({
   method: 'GET',

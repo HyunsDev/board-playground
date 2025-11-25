@@ -1,5 +1,6 @@
-import { BaseException } from 'common/interfaces/exception.interface';
 import z from 'zod';
+
+import { BaseException } from '@/common';
 
 export const toExceptionSchema = <const T extends BaseException>(exception: T) => {
   return z.object({

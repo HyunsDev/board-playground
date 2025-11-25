@@ -63,6 +63,7 @@ export const config = [
           alphabetize: { order: 'asc', caseInsensitive: true },
         },
       ],
+      'import/no-cycle': ['error', { maxDepth: 1 }],
     },
   },
   {

@@ -1,6 +1,3 @@
-import { c } from 'common';
-import { listManagerOfUser } from 'contracts/manager';
-
 import {
   getUserMe,
   updateUserMeProfile,
@@ -14,6 +11,9 @@ import {
   updateUserForAdmin,
   deleteUserForAdmin,
 } from './endpoints';
+import { listManagerOfUser } from '../manager/manager.endpoints';
+
+import { c } from '@/common';
 
 export const userContract = c.router({
   me: c.router({

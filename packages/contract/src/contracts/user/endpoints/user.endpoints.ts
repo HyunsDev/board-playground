@@ -1,10 +1,11 @@
-import { c, paginatedQueryOf, paginatedResponseOf } from 'common';
-import { toExceptionSchema } from 'common/utils/toExceptionSchema';
-import { EXCEPTION } from 'contracts/exception';
 import z from 'zod';
 
 import { UserDtoSchema } from '../user.dto';
 import { USER_ROLE } from '../user.enums';
+
+import { c, paginatedQueryOf, paginatedResponseOf } from '@/common';
+import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
+import { EXCEPTION } from '@/contracts/exception';
 
 export const getUser = c.query({
   method: 'GET',

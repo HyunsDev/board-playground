@@ -1,7 +1,8 @@
-import { ID } from 'common';
-import { BoardSlug } from 'contracts/board/board.schemas';
-import { UserSummaryDtoSchema } from 'contracts/user';
 import z from 'zod';
+
+import { ID } from '@/common';
+import { BoardSlug } from '@/contracts/board/board.schemas';
+import { UserSummaryDtoSchema } from '@/contracts/user';
 
 export const PostDtoSchema = z.object({
   id: ID,

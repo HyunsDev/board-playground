@@ -1,5 +1,6 @@
-import { ID } from 'common';
 import z from 'zod';
+
+import { ID } from '@/common';
 
 export const CommandDtoSchema = z.object({
   id: ID,

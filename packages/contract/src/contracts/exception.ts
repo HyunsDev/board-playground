@@ -1,11 +1,11 @@
-import { AUTH_EXCEPTION } from './auth';
-import { BOARD_EXCEPTION } from './board';
-import { COMMENT_EXCEPTION } from './comment';
-import { COMMON_EXCEPTION } from './common';
-import { DEVICE_EXCEPTION } from './device';
-import { MANAGER_EXCEPTION } from './manager';
-import { POST_EXCEPTION } from './post';
-import { USER_EXCEPTION } from './user';
+import { AUTH_EXCEPTION } from './auth/auth.exceptions';
+import { BOARD_EXCEPTION } from './board/board.exceptions';
+import { COMMENT_EXCEPTION } from './comment/comment.exceptions';
+import { COMMON_EXCEPTION } from './common/common.exceptions';
+import { DEVICE_EXCEPTION } from './device/device.exceptions';
+import { MANAGER_EXCEPTION } from './manager/manager.exceptions';
+import { POST_EXCEPTION } from './post/post.exceptions';
+import { USER_EXCEPTION } from './user/user.exceptions';
 
 export const EXCEPTION = {
   AUTH: AUTH_EXCEPTION,

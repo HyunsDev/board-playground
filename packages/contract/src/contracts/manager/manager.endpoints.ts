@@ -1,12 +1,14 @@
-import { c, ID } from 'common';
-import { toExceptionSchema } from 'common/utils/toExceptionSchema';
-import { BoardSlug } from 'contracts/board/board.schemas';
-import { EXCEPTION } from 'contracts/exception';
-import { USER_ROLE } from 'contracts/user';
 import z from 'zod';
 
 import { ManagerWithBoardDtoSchema, ManagerWithUserDtoSchema } from './manager.dto';
 import { ManagerRole } from './manager.enums';
+
+import { c, ID } from '@/common';
+import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
+import { BoardSlug } from '@/contracts/board/board.schemas';
+import { EXCEPTION } from '@/contracts/exception';
+import { USER_ROLE } from '@/contracts/user';
+
 
 export const listManagersOfBoard = c.query({
   method: 'GET',

@@ -1,9 +1,11 @@
-import { c, ID, paginatedQueryOf, paginatedResponseOf } from 'common';
-import { toExceptionSchema } from 'common/utils/toExceptionSchema';
-import { EXCEPTION } from 'contracts/exception';
 import z from 'zod';
 
 import { CreatePostDtoSchema, PostDtoSchema, UpdatePostDtoSchema } from '../post.dto';
+
+import { c, ID, paginatedQueryOf, paginatedResponseOf } from '@/common';
+import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
+import { EXCEPTION } from '@/contracts/exception';
+
 
 export const getPost = c.query({
   method: 'GET',

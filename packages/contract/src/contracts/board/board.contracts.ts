@@ -1,11 +1,3 @@
-import { c } from 'common';
-import {
-  appointManagerToBoard,
-  changeManagerRole,
-  dismissManagerFromBoard,
-  listManagersOfBoard,
-} from 'contracts/manager';
-
 import {
   createBoard,
   deleteBoard,
@@ -13,6 +5,15 @@ import {
   searchBoards,
   updateBoard,
 } from './endpoints/board.endpoints';
+
+import { c } from '@/common';
+import {
+  appointManagerToBoard,
+  changeManagerRole,
+  dismissManagerFromBoard,
+  listManagersOfBoard,
+} from '@/contracts/manager';
+
 
 export const boardContract = c.router({
   get: getBoard,

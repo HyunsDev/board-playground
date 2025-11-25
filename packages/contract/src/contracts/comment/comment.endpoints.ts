@@ -1,10 +1,12 @@
-import { c, ID, paginatedQueryOf, paginatedResponseOf } from 'common';
-import { toExceptionSchema } from 'common/utils/toExceptionSchema';
-import { EXCEPTION } from 'contracts/exception';
-import { USER_ROLE } from 'contracts/user';
 import z from 'zod';
 
 import { CommandDtoSchema, CreateCommentDtoSchema, UpdateCommentDtoSchema } from './comment.dto';
+
+import { c, ID, paginatedQueryOf, paginatedResponseOf } from '@/common';
+import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
+import { EXCEPTION } from '@/contracts/exception';
+import { USER_ROLE } from '@/contracts/user';
+
 
 export const getComment = c.query({
   method: 'GET',

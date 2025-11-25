@@ -1,7 +1,8 @@
-import { ID } from 'common';
 import z from 'zod';
 
 import { DevicePlatform } from './device.enums';
+
+import { ID } from '@/common';
 
 export const DeviceDtoSchema = z.object({
   id: ID,

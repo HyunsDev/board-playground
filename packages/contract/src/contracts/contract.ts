@@ -1,12 +1,13 @@
-import { c } from 'common';
 import z from 'zod';
 
 import { authContract } from './auth/auth.contract';
-import { boardContract } from './board';
-import { commentContract } from './comment';
-import { deviceContract } from './device';
-import { postContracts } from './post';
-import { userContract, userForAdminContract } from './user';
+import { boardContract } from './board/board.contracts';
+import { commentContract } from './comment/comment.contracts';
+import { deviceContract } from './device/device.contract';
+import { postContracts } from './post/post.contracts';
+import { userContract, userForAdminContract } from './user/user.contracts';
+
+import { c } from '@/common';
 
 export const contract = c.router(
   {
