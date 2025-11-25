@@ -1,4 +1,5 @@
-import { BoardSlug, ID } from 'common';
+import { ID } from 'common';
+import { BoardSlug } from 'contracts/board/board.schemas';
 import { UserSummaryDtoSchema } from 'contracts/user';
 import z from 'zod';
 

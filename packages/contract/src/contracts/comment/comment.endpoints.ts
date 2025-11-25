@@ -1,7 +1,7 @@
 import { c, ID, paginatedQueryOf, paginatedResponseOf } from 'common';
+import { toExceptionSchema } from 'common/utils/toExceptionSchema';
 import { EXCEPTION } from 'contracts/exception';
 import { USER_ROLE } from 'contracts/user';
-import { toExceptionSchema } from 'common/utils/toExceptionSchema';
 import z from 'zod';
 
 import { CommandDtoSchema, CreateCommentDtoSchema, UpdateCommentDtoSchema } from './comment.dto';

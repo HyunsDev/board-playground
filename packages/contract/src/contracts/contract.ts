@@ -21,12 +21,12 @@ export const contract = c.router(
     comment: commentContract,
   },
   {
-    baseHeaders: {
-      'x-device-id': z.uuid().optional(),
+    baseHeaders: z.object({
+      'x-device-id': z.string().uuid().optional(),
       authorization: z
         .string()
         .regex(/^Bearer\s.+$/)
         .optional(),
-    },
+    }),
   },
 );

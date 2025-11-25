@@ -1,7 +1,8 @@
-import { BoardSlug, c, ID } from 'common';
+import { c, ID } from 'common';
+import { toExceptionSchema } from 'common/utils/toExceptionSchema';
+import { BoardSlug } from 'contracts/board/board.schemas';
 import { EXCEPTION } from 'contracts/exception';
 import { USER_ROLE } from 'contracts/user';
-import { toExceptionSchema } from 'common/utils/toExceptionSchema';
 import z from 'zod';
 
 import { ManagerWithBoardDtoSchema, ManagerWithUserDtoSchema } from './manager.dto';

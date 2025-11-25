@@ -1,5 +1,7 @@
-import { BoardSlug, ID } from 'common';
+import { ID } from 'common';
 import z from 'zod';
+
+import { BoardSlug } from './board.schemas';
 
 export const BoardDtoSchema = z.object({
   id: ID,

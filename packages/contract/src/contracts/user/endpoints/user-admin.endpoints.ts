@@ -1,7 +1,7 @@
 import { c, paginatedQueryOf, paginatedResponseOf } from 'common';
+import { toExceptionSchema } from 'common/utils/toExceptionSchema';
 import { EXCEPTION } from 'contracts/exception';
 import { USER_ROLE } from 'contracts/user';
-import { toExceptionSchema } from 'common/utils/toExceptionSchema';
 import z from 'zod';
 
 import { UserForAdminDtoSchema } from '../user.dto';
@@ -27,12 +27,12 @@ export const queryUsersForAdmin = c.query({
   path: '/admin/users',
   query: paginatedQueryOf(
     z.object({
-      userId: z.uuid().optional(),
-      email: z.email().optional(),
+      userId: z.string().uuid().optional(),
+      email: z.string().email().optional(),
       username: z.string().min(3).max(30).optional(),
       nickname: z.string().min(2).max(20).optional(),
-      role: z.enum(['USER', 'ADMIN']).optional(),
-      status: z.enum(['ACTIVE', 'INACTIVE', 'BANNED']).optional(),
+      role: UserRole.optional(),
+      status: UserStatus.optional(),
     }),
   ),
   responses: {
@@ -51,7 +51,7 @@ export const updateUserForAdmin = c.mutation({
     nickname: z.string().min(2).max(20).optional(),
     username: z.string().min(3).max(30).optional(),
     bio: z.string().max(160).nullable().optional(),
-    avatarUrl: z.url().nullable().optional(),
+    avatarUrl: z.string().url().nullable().optional(),
     status: UserStatus.optional(),
     role: UserRole.optional(),
   }),

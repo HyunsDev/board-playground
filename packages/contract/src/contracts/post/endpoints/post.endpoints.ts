@@ -1,6 +1,6 @@
 import { c, ID, paginatedQueryOf, paginatedResponseOf } from 'common';
-import { EXCEPTION } from 'contracts/exception';
 import { toExceptionSchema } from 'common/utils/toExceptionSchema';
+import { EXCEPTION } from 'contracts/exception';
 import z from 'zod';
 
 import { CreatePostDtoSchema, PostDtoSchema, UpdatePostDtoSchema } from '../post.dto';

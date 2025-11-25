@@ -40,10 +40,7 @@ export const updateUserMeAvatar = c.mutation({
   method: 'PUT',
   path: '/users/me/avatar',
   body: c.type<{ files: File[] }>(),
-
-  headers: z.object({
-    'Content-Type': z.literal('application/json'),
-  }),
+  contentType: 'multipart/form-data',
   responses: {
     200: z.object({
       user: UserDtoSchema,
@@ -77,6 +74,7 @@ export const deleteUserMe = c.mutation({
   body: c.noBody(),
   responses: {
     204: c.noBody(),
+    400: toExceptionSchema(EXCEPTION.USER.ADMIN_CANNOT_BE_DELETED),
   },
   metadata: {
     roles: [USER_ROLE.USER],

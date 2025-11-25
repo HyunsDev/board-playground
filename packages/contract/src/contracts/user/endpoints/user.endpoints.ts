@@ -1,6 +1,6 @@
 import { c, paginatedQueryOf, paginatedResponseOf } from 'common';
-import { EXCEPTION } from 'contracts/exception';
 import { toExceptionSchema } from 'common/utils/toExceptionSchema';
+import { EXCEPTION } from 'contracts/exception';
 import z from 'zod';
 
 import { UserDtoSchema } from '../user.dto';
@@ -10,7 +10,7 @@ export const getUser = c.query({
   method: 'GET',
   path: '/users/:userId',
   pathParams: z.object({
-    userId: z.uuid(),
+    userId: z.string().uuid(),
   }),
   responses: {
     200: z.object({

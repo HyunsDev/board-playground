@@ -23,7 +23,7 @@ export const loginAuth = c.mutation({
   method: 'POST',
   path: '/auth/login',
   body: z.object({
-    email: z.email(),
+    email: z.string().email(),
     password: passwordSchema,
   }),
   responses: {

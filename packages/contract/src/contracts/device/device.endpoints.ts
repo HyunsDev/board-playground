@@ -1,7 +1,7 @@
 import { c } from 'common';
+import { toExceptionSchema } from 'common/utils/toExceptionSchema';
 import { EXCEPTION } from 'contracts/exception';
 import { USER_ROLE } from 'contracts/user';
-import { toExceptionSchema } from 'common/utils/toExceptionSchema';
 import z from 'zod';
 
 import { DeviceDtoSchema } from './device.dto';
@@ -10,7 +10,7 @@ export const getDevice = c.query({
   method: 'GET',
   path: '/devices/:deviceId',
   pathParams: z.object({
-    deviceId: z.uuid(),
+    deviceId: z.string().uuid(),
   }),
   responses: {
     200: z.object({
@@ -41,7 +41,7 @@ export const deleteDevice = c.mutation({
   path: '/devices/:deviceId',
   body: c.noBody(),
   pathParams: z.object({
-    deviceId: z.uuid(),
+    deviceId: z.string().uuid(),
   }),
   responses: {
     204: z.undefined(),

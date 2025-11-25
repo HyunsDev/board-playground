@@ -16,4 +16,9 @@ export const USER_EXCEPTION = {
     code: 'EMAIL_ALREADY_EXISTS',
     message: '이미 존재하는 이메일입니다.',
   },
+  ADMIN_CANNOT_BE_DELETED: {
+    status: 400,
+    code: 'ADMIN_CANNOT_BE_DELETED',
+    message: '관리자 계정은 삭제할 수 없습니다.',
+  },
 } as const satisfies ExceptionRecord;
