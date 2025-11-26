@@ -8,8 +8,10 @@ import { ClsModule, ClsService } from 'nestjs-cls';
 import { envSchema } from './config/env.validation';
 import { GlobalExceptionsFilter } from './libs/application/filters/global-exception.filer';
 import { ClsAccessor } from './libs/cls';
+import { AuthModule } from './modules/auth/auth.module';
+import { ClientInfoMiddleware } from './modules/cls/middlewares/client-info.middleware';
+import { RequestIdMiddleware } from './modules/cls/middlewares/request-id.middleware';
 import { RequestContextService } from './modules/cls/request-context.service';
-import { RequestIdMiddleware } from './modules/cls/request-id.middleware';
 import { DeviceModule } from './modules/device/device.module';
 import { HelloModule } from './modules/hello/hello.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
@@ -36,7 +38,6 @@ const filters = [
       },
     }),
     EventEmitterModule.forRoot(),
-    PrismaModule,
     CqrsModule,
     ClsModule.forRoot({
       global: true,
@@ -44,6 +45,8 @@ const filters = [
         mount: true,
       },
     }),
+    PrismaModule,
+    AuthModule,
     HelloModule,
     UserModule,
     DeviceModule,
@@ -57,5 +60,6 @@ export class AppModule {
   }
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(RequestIdMiddleware).forRoutes('*');
+    consumer.apply(ClientInfoMiddleware).forRoutes('*');
   }
 }

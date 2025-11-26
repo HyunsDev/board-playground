@@ -58,7 +58,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       throw err || new UnauthorizedException();
     }
 
-    ClsAccessor.setCurrentUser(token as TokenPayload);
+    ClsAccessor.setToken(token as TokenPayload);
 
     return token;
   }
