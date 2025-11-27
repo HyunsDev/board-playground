@@ -6,6 +6,11 @@ export const AUTH_EXCEPTION = {
     code: 'UNAUTHORIZED',
     message: '인증에 실패하였습니다.',
   },
+  MISSING_TOKEN: {
+    status: 401,
+    code: 'MISSING_TOKEN',
+    message: '토큰이 제공되지 않았습니다.',
+  },
   INVALID_TOKEN: {
     status: 401,
     code: 'INVALID_TOKEN',
