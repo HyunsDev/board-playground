@@ -1,7 +1,9 @@
 import { Command } from '@nestjs/cqrs';
 import { v7 as uuidv7 } from 'uuid';
 
-export type CommandProps<T, TRes> = Omit<T, 'id' | 'metadata'> & Partial<CommandBase<TRes>>;
+import { ClsAccessor } from '../cls';
+
+export type CommandProps<T, TRes> = Omit<T, keyof CommandBase<TRes>> & Partial<CommandBase<TRes>>;
 
 export type CommandMetadata = {
   /**
@@ -30,16 +32,16 @@ export abstract class CommandBase<TRes> extends Command<TRes> {
   readonly id: string;
   readonly metadata: CommandMetadata;
 
-  constructor(props: Partial<CommandMetadata> & { id?: string } = {}) {
+  constructor(props: CommandProps<CommandBase<TRes>, TRes>) {
     super();
     this.id = props.id || uuidv7();
 
     // 메타데이터 설정
     this.metadata = {
-      correlationId: props.correlationId || uuidv7(), // 없으면 새로 생성 (Fallback)
-      causationId: props.causationId,
-      userId: props.userId,
-      timestamp: props.timestamp || Date.now(),
+      correlationId: props?.metadata?.correlationId || ClsAccessor.getRequestId(),
+      causationId: props?.metadata?.causationId,
+      userId: props?.metadata?.userId,
+      timestamp: props?.metadata?.timestamp || Date.now(),
     };
   }
 }
