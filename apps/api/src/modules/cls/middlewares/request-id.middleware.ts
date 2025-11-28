@@ -1,15 +1,15 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { v4 as uuid } from 'uuid';
 
-import { RequestContextService } from '../request-context.service';
+import { ClsAccessor } from '@/libs/cls';
 
 @Injectable()
 export class RequestIdMiddleware implements NestMiddleware {
-  constructor(private readonly ctx: RequestContextService) {}
-
-  use(req: any, res: any, next: () => void) {
+  use(req: Request, res: Response, next: () => void) {
     const id = uuid();
-    this.ctx.setRequestId(id);
+    ClsAccessor.setRequestId(id);
+    res.setHeader('X-Request-Id', id);
     next();
   }
 }

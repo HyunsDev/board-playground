@@ -11,7 +11,6 @@ import { ClsAccessor } from './libs/cls';
 import { AuthModule } from './modules/auth/auth.module';
 import { ClientInfoMiddleware } from './modules/cls/middlewares/client-info.middleware';
 import { RequestIdMiddleware } from './modules/cls/middlewares/request-id.middleware';
-import { RequestContextService } from './modules/cls/request-context.service';
 import { DeviceModule } from './modules/device/device.module';
 import { HelloModule } from './modules/hello/hello.module';
 import { IdentityModule } from './modules/identity/identity.module';
@@ -54,7 +53,7 @@ const filters = [
     IdentityModule,
   ],
   controllers: [],
-  providers: [...filters, RequestContextService],
+  providers: [...filters],
 })
 export class AppModule {
   constructor(private readonly cls: ClsService) {
