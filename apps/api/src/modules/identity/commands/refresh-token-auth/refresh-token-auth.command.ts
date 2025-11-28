@@ -12,12 +12,10 @@ import { UserNotFoundException } from '@/modules/user/domain/user.exceptions';
 import { USER_REPOSITORY } from '@/modules/user/user.di-tokens';
 
 export class RefreshTokenAuthCommand extends CommandBase<RefreshTokenCommandResult> {
-  public readonly userId: string;
   public readonly refreshToken: string;
 
-  constructor(props: { userId: string; refreshToken: string }) {
+  constructor(props: { refreshToken: string }) {
     super(props);
-    this.userId = props.userId;
     this.refreshToken = props.refreshToken;
   }
 }
@@ -45,13 +43,10 @@ export class RefreshTokenAuthCommandHandler
   async execute(command: RefreshTokenAuthCommand) {
     const hashedRefreshToken = this.tokenService.hashToken(command.refreshToken);
 
-    const device = await this.deviceRepo.findByUserIdAndHashedRefreshToken(
-      command.userId,
-      hashedRefreshToken,
-    );
+    const device = await this.deviceRepo.findByHashedRefreshToken(hashedRefreshToken);
     if (!device) return err(new InvalidTokenException());
 
-    const user = await this.userRepo.findOneById(command.userId);
+    const user = await this.userRepo.findOneById(device.userId);
     if (!user) return err(new UserNotFoundException());
 
     const newAccessToken = this.tokenService.generateAccessToken({

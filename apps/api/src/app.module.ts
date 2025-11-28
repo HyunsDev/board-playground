@@ -14,6 +14,7 @@ import { RequestIdMiddleware } from './modules/cls/middlewares/request-id.middle
 import { RequestContextService } from './modules/cls/request-context.service';
 import { DeviceModule } from './modules/device/device.module';
 import { HelloModule } from './modules/hello/hello.module';
+import { IdentityModule } from './modules/identity/identity.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { UserModule } from './modules/user/user.module';
 
@@ -50,6 +51,7 @@ const filters = [
     HelloModule,
     UserModule,
     DeviceModule,
+    IdentityModule,
   ],
   controllers: [],
   providers: [...filters, RequestContextService],

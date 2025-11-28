@@ -27,9 +27,9 @@ export class DeviceRepository
     return (this.prisma as PrismaClient).device;
   }
 
-  async findByUserIdAndHashedRefreshToken(userId: string, hashedRefreshToken: string) {
+  async findByHashedRefreshToken(hashedRefreshToken: string) {
     const record = await this.delegate.findFirst({
-      where: { userId, hashedRefreshToken },
+      where: { hashedRefreshToken },
     });
     if (!record) {
       return null;

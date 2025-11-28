@@ -73,6 +73,10 @@ export class DeviceEntity extends AggregateRoot<DeviceProps> {
     return device;
   }
 
+  get userId(): string {
+    return this.props.userId;
+  }
+
   public updateRefreshToken(hashedRefreshToken: string) {
     this.props.hashedRefreshToken = hashedRefreshToken;
     this.props.lastRefreshedAt = new Date();

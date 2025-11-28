@@ -8,12 +8,10 @@ import { DeviceRepositoryPort } from '@/modules/device/database/device.repositor
 import { DEVICE_REPOSITORY } from '@/modules/device/device.di-tokens';
 
 export class LogoutAuthCommand extends CommandBase<LogoutAuthCommandResult> {
-  public readonly userId: string;
   public readonly refreshToken: string;
 
-  constructor(props: { userId: string; refreshToken: string }) {
+  constructor(props: { refreshToken: string }) {
     super(props);
-    this.userId = props.userId;
     this.refreshToken = props.refreshToken;
   }
 }
@@ -32,10 +30,7 @@ export class LogoutAuthCommandHandler
   async execute(command: LogoutAuthCommand) {
     const hashedRefreshToken = this.tokenService.hashToken(command.refreshToken);
 
-    const device = await this.deviceRepo.findByUserIdAndHashedRefreshToken(
-      command.userId,
-      hashedRefreshToken,
-    );
+    const device = await this.deviceRepo.findByHashedRefreshToken(hashedRefreshToken);
     if (device) await this.deviceRepo.delete(device);
 
     return ok(null);
