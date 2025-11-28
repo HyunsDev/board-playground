@@ -30,7 +30,7 @@ export class LogoutAuthHttpController {
 
   @TsRestHandler(contract.auth.logout)
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    return tsRestHandler(contract.auth.logout, async ({}) => {
+    return tsRestHandler(contract.auth.logout, async () => {
       const refreshToken = req.cookies?.['refreshToken'];
 
       if (!refreshToken) {
