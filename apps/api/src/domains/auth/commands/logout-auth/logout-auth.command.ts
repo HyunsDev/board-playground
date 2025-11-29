@@ -5,7 +5,7 @@ import { ok, Result } from 'neverthrow';
 import { DeviceRepositoryPort } from '@/domains/device/database/device.repository.port';
 import { DEVICE_REPOSITORY } from '@/domains/device/device.di-tokens';
 import { TokenService } from '@/infra/security/services/token.service';
-import { CommandBase } from '@/libs/ddd';
+import { CommandBase } from '@/shared/ddd';
 
 export class LogoutAuthCommand extends CommandBase<LogoutAuthCommandResult> {
   public readonly refreshToken: string;

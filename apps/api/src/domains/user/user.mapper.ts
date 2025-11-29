@@ -4,7 +4,7 @@ import { User, UserRole, UserStatus } from '@workspace/db';
 
 import { UserEntity, UserProps } from './domain/user.entity';
 
-import { BaseMapper } from '@/libs/ddd';
+import { BaseMapper } from '@/shared/ddd';
 
 @Injectable()
 export class UserMapper extends BaseMapper<UserEntity, User> {

@@ -1,4 +1,8 @@
-import { ArgumentInvalidException, ConflictException, NotFoundException } from '@/libs/exceptions';
+import {
+  ArgumentInvalidException,
+  ConflictException,
+  NotFoundException,
+} from '@/shared/exceptions';
 
 export function mapDomainErrorToResponse(error: Error) {
   if (error instanceof NotFoundException) {

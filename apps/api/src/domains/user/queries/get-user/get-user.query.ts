@@ -7,7 +7,7 @@ import { UserEntity } from '../../domain/user.entity';
 import { UserNotFoundException } from '../../domain/user.exceptions';
 import { USER_REPOSITORY } from '../../user.di-tokens';
 
-import { QueryBase } from '@/libs/ddd';
+import { QueryBase } from '@/shared/ddd';
 
 export class GetUserQuery extends QueryBase<GetUserQueryResult> {
   constructor(public readonly userId: string) {

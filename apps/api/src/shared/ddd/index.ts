@@ -4,6 +4,6 @@ export * from './base.value-object';
 export * from './base.domain-event';
 export * from './base.query';
 export * from './base.command';
-export * from './repository.port';
+export * from './base.repository.port';
 export * from './base.mapper';
 export * from './base.dto-mapper';

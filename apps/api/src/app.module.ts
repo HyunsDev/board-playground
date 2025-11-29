@@ -12,7 +12,7 @@ import { UserModule } from './domains/user/user.module';
 import { ContextModule } from './infra/context/context.module';
 import { PrismaModule } from './infra/prisma/prisma.module';
 import { SecurityModule } from './infra/security/security.module';
-import { GlobalExceptionsFilter } from './libs/application/filters/global-exception.filer';
+import { GlobalExceptionsFilter } from './shared/application/filters/global-exception.filer';
 
 const filters = [
   {

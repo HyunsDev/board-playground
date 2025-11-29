@@ -1,10 +1,10 @@
 import { ConflictException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
-import { AggregateRoot } from '../ddd/base.aggregate-root';
-import { Mapper } from '../ddd/base.mapper';
-import { RepositoryPort, PaginatedQueryParams, PaginatedResult } from '../ddd/repository.port';
-import { LoggerPort } from '../ports/logger.port';
+import { AggregateRoot } from './base.aggregate-root';
+import { Mapper } from './base.mapper';
+import { RepositoryPort, PaginatedQueryParams, PaginatedResult } from './base.repository.port';
+import { LoggerPort } from '../logger/logger.port';
 
 import { ContextService } from '@/infra/context/context.service';
 import { DomainEventDispatcher } from '@/infra/prisma/domain-event.dispatcher';

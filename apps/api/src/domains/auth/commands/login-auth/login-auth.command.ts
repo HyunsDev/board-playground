@@ -10,7 +10,7 @@ import { USER_REPOSITORY } from '@/domains/user/user.di-tokens';
 import { InvalidCredentialsException } from '@/infra/security/domain/security.exceptions';
 import { PasswordService } from '@/infra/security/services/password.service';
 import { TokenService } from '@/infra/security/services/token.service';
-import { CommandBase, CommandProps } from '@/libs/ddd';
+import { CommandBase, CommandProps } from '@/shared/ddd';
 
 export class LoginAuthCommand extends CommandBase<LoginAuthCommandResult> {
   public readonly email: string;

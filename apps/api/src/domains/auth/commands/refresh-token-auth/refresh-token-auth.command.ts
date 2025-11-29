@@ -9,7 +9,7 @@ import { UserRepositoryPort } from '@/domains/user/database/user.repository.port
 import { UserNotFoundException } from '@/domains/user/domain/user.exceptions';
 import { USER_REPOSITORY } from '@/domains/user/user.di-tokens';
 import { TokenService } from '@/infra/security/services/token.service';
-import { CommandBase } from '@/libs/ddd';
+import { CommandBase } from '@/shared/ddd';
 
 export class RefreshTokenAuthCommand extends CommandBase<RefreshTokenCommandResult> {
   public readonly refreshToken: string;

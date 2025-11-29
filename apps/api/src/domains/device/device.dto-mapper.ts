@@ -4,7 +4,7 @@ import { DeviceDto } from '@workspace/contract';
 
 import { DeviceEntity } from './domain/device.entity';
 
-import { BaseDtoMapper } from '@/libs/ddd';
+import { BaseDtoMapper } from '@/shared/ddd';
 
 @Injectable()
 export class DeviceDtoMapper extends BaseDtoMapper<DeviceEntity, DeviceDto> {

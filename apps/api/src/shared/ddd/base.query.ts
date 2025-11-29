@@ -1,6 +1,6 @@
 import { Query } from '@nestjs/cqrs';
 
-import { OrderBy, PaginatedQueryParams } from './repository.port';
+import { OrderBy, PaginatedQueryParams } from './base.repository.port';
 
 /**
  * Base class for regular queries

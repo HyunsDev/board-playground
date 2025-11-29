@@ -7,7 +7,7 @@ import { UserEntity } from '../../domain/user.entity';
 import { UserNotFoundException } from '../../domain/user.exceptions';
 import { USER_REPOSITORY } from '../../user.di-tokens';
 
-import { CommandBase, CommandProps } from '@/libs/ddd';
+import { CommandBase, CommandProps } from '@/shared/ddd';
 
 export class UpdateUserMeProfileCommand extends CommandBase<UpdateUserMeProfileCommandResult> {
   public readonly userId: string;

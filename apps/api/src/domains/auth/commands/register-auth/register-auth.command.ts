@@ -12,7 +12,7 @@ import { CreateUserService } from '@/domains/user/services/create-user.service';
 import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { PasswordService } from '@/infra/security/services/password.service';
 import { TokenService } from '@/infra/security/services/token.service';
-import { CommandBase, CommandProps } from '@/libs/ddd';
+import { CommandBase, CommandProps } from '@/shared/ddd';
 
 export class RegisterAuthCommand extends CommandBase<RegisterAuthCommandResult> {
   public readonly email: string;

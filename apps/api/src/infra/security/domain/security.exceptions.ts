@@ -1,6 +1,6 @@
 import { EXCEPTION } from '@workspace/contract';
 
-import { BaseException } from '@/libs/exceptions';
+import { BaseException } from '@/shared/exceptions';
 
 export class InvalidCredentialsException extends BaseException {
   code = EXCEPTION.AUTH.INVALID_CREDENTIALS.code;

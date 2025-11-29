@@ -1,6 +1,6 @@
 import { EXCEPTION } from '@workspace/contract';
 
-import { BaseException, NotFoundException } from '@/libs/exceptions';
+import { BaseException, NotFoundException } from '@/shared/exceptions';
 
 export class UserAdminCannotBeDeletedException extends BaseException {
   code = EXCEPTION.USER.ADMIN_CANNOT_BE_DELETED.code;

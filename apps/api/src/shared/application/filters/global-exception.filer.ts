@@ -12,7 +12,6 @@ import { ZodError } from 'zod';
 import { EXCEPTION } from '@workspace/contract';
 
 import { ContextService } from '@/infra/context/context.service';
-import { ApiErrorResponse } from '@/libs/api/api-error-responase.base';
 import {
   ArgumentInvalidException,
   ArgumentNotProvidedException,
@@ -21,7 +20,8 @@ import {
   ForbiddenException,
   InternalServerErrorException,
   NotFoundException,
-} from '@/libs/exceptions';
+} from '@/shared/exceptions';
+import { ApiErrorResponse } from '@/shared/exceptions/api-error-responase.base';
 
 // 내부적으로 사용할 에러 처리 결과 인터페이스
 interface ErrorResolution {

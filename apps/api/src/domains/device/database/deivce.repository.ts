@@ -9,7 +9,7 @@ import { DeviceEntity } from '../domain/device.entity';
 import { ContextService } from '@/infra/context/context.service';
 import { DomainEventDispatcher } from '@/infra/prisma/domain-event.dispatcher';
 import { PrismaService } from '@/infra/prisma/prisma.service';
-import { BaseRepository } from '@/libs/db/base.repository';
+import { BaseRepository } from '@/shared/ddd/base.repository';
 
 @Injectable()
 export class DeviceRepository
