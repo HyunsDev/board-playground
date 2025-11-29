@@ -8,7 +8,7 @@ import { EXCEPTION } from '@workspace/contract';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 import { ContextService } from '@/infra/context/context.service';
-import { TokenPayload, tokenPayloadSchema } from '@/shared/types';
+import { TokenPayload, tokenPayloadSchema } from '@/shared/types/token-payload.type';
 
 const parseTokenPayload = (payload: unknown): TokenPayload => {
   const parsed = tokenPayloadSchema.safeParse(payload);

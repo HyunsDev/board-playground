@@ -3,7 +3,7 @@ import { createHash, randomBytes } from 'crypto';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-import { TokenPayload } from '@/shared/types';
+import { TokenPayload } from '@/shared/types/token-payload.type';
 
 @Injectable()
 export class TokenService {

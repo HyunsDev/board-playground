@@ -5,11 +5,14 @@ import { UserRole } from '@workspace/contract';
 
 import { ROLES_KEY } from '../decorators/roles.decorator';
 
-import { TokenPayload } from '@/shared/types';
+import { ContextService } from '@/infra/context/context.service';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(
+    private reflector: Reflector,
+    private readonly appContext: ContextService,
+  ) {}
 
   canActivate(context: ExecutionContext): boolean {
     const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(ROLES_KEY, [
@@ -22,11 +25,9 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    // Request에서 User(TokenPayload) 추출
-    const { user } = context.switchToHttp().getRequest();
-    const payload = user as TokenPayload;
+    const token = this.appContext.getToken();
 
-    if (!payload || !requiredRoles.includes(payload.role)) {
+    if (!token || !requiredRoles.includes(token.role)) {
       throw new ForbiddenException('Access denied: insufficient permissions');
     }
 
