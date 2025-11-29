@@ -5,10 +5,10 @@ import { err, ok, Result } from 'neverthrow';
 import { DEVICE_PLATFORM } from '@workspace/contract';
 
 import { CommandBase, CommandProps } from '@/libs/ddd';
-import { InvalidCredentialsException } from '@/modules/auth/domain/auth.exceptions';
-import { PasswordService } from '@/modules/auth/services/password.service';
-import { TokenService } from '@/modules/auth/services/token.service';
 import { CreateDeviceService } from '@/modules/device/services/create-device.service';
+import { InvalidCredentialsException } from '@/modules/security/domain/security.exceptions';
+import { PasswordService } from '@/modules/security/services/password.service';
+import { TokenService } from '@/modules/security/services/token.service';
 import { UserRepositoryPort } from '@/modules/user/database/user.repository.port';
 import { USER_REPOSITORY } from '@/modules/user/user.di-tokens';
 

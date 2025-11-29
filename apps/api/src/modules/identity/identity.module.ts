@@ -1,8 +1,8 @@
 import { Logger, Module, Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { AuthModule } from '../auth/auth.module';
 import { DeviceModule } from '../device/device.module';
+import { SecurityModule } from '../security/security.module';
 import { UserModule } from '../user/user.module';
 import { LoginAuthCommandHandler } from './commands/login-auth/login-auth.command';
 import { LoginAuthHttpController } from './commands/login-auth/login-auth.http.controller';
@@ -31,7 +31,7 @@ const mappers: Provider[] = [];
 const repositories: Provider[] = [];
 
 @Module({
-  imports: [CqrsModule, UserModule, AuthModule, DeviceModule],
+  imports: [CqrsModule, UserModule, SecurityModule, DeviceModule],
   providers: [
     Logger,
     ...commandHandlers,

@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ok, Result } from 'neverthrow';
 
 import { CommandBase } from '@/libs/ddd';
-import { TokenService } from '@/modules/auth/services/token.service';
+import { TokenService } from '@/modules/security/services/token.service';
 import { DeviceRepositoryPort } from '@/modules/device/database/device.repository.port';
 import { DEVICE_REPOSITORY } from '@/modules/device/device.di-tokens';
 

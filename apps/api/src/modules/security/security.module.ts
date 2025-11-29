@@ -34,4 +34,4 @@ const strategies: Provider[] = [JwtStrategy];
   controllers: [],
   exports: [...services],
 })
-export class AuthModule {}
+export class SecurityModule {}

@@ -8,13 +8,13 @@ import { ClsModule, ClsService } from 'nestjs-cls';
 import { envSchema } from './config/env.validation';
 import { GlobalExceptionsFilter } from './libs/application/filters/global-exception.filer';
 import { ClsAccessor } from './libs/cls';
-import { AuthModule } from './modules/auth/auth.module';
 import { ClientInfoMiddleware } from './modules/cls/middlewares/client-info.middleware';
 import { RequestIdMiddleware } from './modules/cls/middlewares/request-id.middleware';
 import { DeviceModule } from './modules/device/device.module';
 import { HelloModule } from './modules/hello/hello.module';
 import { IdentityModule } from './modules/identity/identity.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
+import { SecurityModule } from './modules/security/security.module';
 import { UserModule } from './modules/user/user.module';
 
 const filters = [
@@ -46,7 +46,7 @@ const filters = [
       },
     }),
     PrismaModule,
-    AuthModule,
+    SecurityModule,
     HelloModule,
     UserModule,
     DeviceModule,

@@ -4,8 +4,8 @@ import { err, ok, Result } from 'neverthrow';
 import { DEVICE_PLATFORM } from '@workspace/contract';
 
 import { CommandBase, CommandProps } from '@/libs/ddd';
-import { PasswordService } from '@/modules/auth/services/password.service';
-import { TokenService } from '@/modules/auth/services/token.service';
+import { PasswordService } from '@/modules/security/services/password.service';
+import { TokenService } from '@/modules/security/services/token.service';
 import { CreateDeviceService } from '@/modules/device/services/create-device.service';
 import { TransactionManager } from '@/modules/prisma/transaction.manager';
 import {
