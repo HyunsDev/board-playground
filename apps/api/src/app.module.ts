@@ -1,18 +1,15 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { ClsModule, ClsService } from 'nestjs-cls';
 
 import { envSchema } from './config/env.validation';
 import { AuthModule } from './domains/auth/auth.module';
 import { DeviceModule } from './domains/device/device.module';
 import { HelloModule } from './domains/hello/hello.module';
 import { UserModule } from './domains/user/user.module';
-import { ClsAccessor } from './infra/cls';
-import { ClientInfoMiddleware } from './infra/cls/middlewares/client-info.middleware';
-import { RequestIdMiddleware } from './infra/cls/middlewares/request-id.middleware';
+import { ContextModule } from './infra/context/context.module';
 import { PrismaModule } from './infra/prisma/prisma.module';
 import { SecurityModule } from './infra/security/security.module';
 import { GlobalExceptionsFilter } from './libs/application/filters/global-exception.filer';
@@ -39,12 +36,7 @@ const filters = [
     }),
     EventEmitterModule.forRoot(),
     CqrsModule,
-    ClsModule.forRoot({
-      global: true,
-      middleware: {
-        mount: true,
-      },
-    }),
+    ContextModule,
     PrismaModule,
     SecurityModule,
     HelloModule,
@@ -55,12 +47,4 @@ const filters = [
   controllers: [],
   providers: [...filters],
 })
-export class AppModule {
-  constructor(private readonly cls: ClsService) {
-    ClsAccessor.setClsService(this.cls);
-  }
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestIdMiddleware).forRoutes('*');
-    consumer.apply(ClientInfoMiddleware).forRoutes('*');
-  }
-}
+export class AppModule {}

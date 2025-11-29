@@ -1,8 +1,6 @@
 import { Command } from '@nestjs/cqrs';
 import { v7 as uuidv7 } from 'uuid';
 
-import { ClsAccessor } from '../../infra/cls';
-
 export type CommandProps<T, TRes> = Omit<T, keyof CommandBase<TRes>> & Partial<CommandBase<TRes>>;
 
 export type CommandMetadata = {
@@ -38,7 +36,7 @@ export abstract class CommandBase<TRes> extends Command<TRes> {
 
     // 메타데이터 설정
     this.metadata = {
-      correlationId: props?.metadata?.correlationId || ClsAccessor.getRequestId(),
+      correlationId: props?.metadata?.correlationId,
       causationId: props?.metadata?.causationId,
       userId: props?.metadata?.userId,
       timestamp: props?.metadata?.timestamp || Date.now(),

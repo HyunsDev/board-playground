@@ -6,7 +6,7 @@ import { Mapper } from '../ddd/base.mapper';
 import { RepositoryPort, PaginatedQueryParams, PaginatedResult } from '../ddd/repository.port';
 import { LoggerPort } from '../ports/logger.port';
 
-import { ClsAccessor } from '@/infra/cls';
+import { ContextService } from '@/infra/context/context.service';
 import { DomainEventDispatcher } from '@/infra/prisma/domain-event.dispatcher';
 import { PrismaService } from '@/infra/prisma/prisma.service';
 
@@ -19,13 +19,14 @@ export abstract class BaseRepository<
 
   constructor(
     protected readonly prisma: PrismaService,
+    protected readonly context: ContextService,
     protected readonly mapper: Mapper<Aggregate, DbModel>,
     protected readonly eventDispatcher: DomainEventDispatcher,
     protected readonly logger: LoggerPort,
   ) {}
 
   protected get client(): Prisma.TransactionClient | PrismaService {
-    const tx = ClsAccessor.getTransactionClient();
+    const tx = this.context.getTx();
     return tx ?? this.prisma;
   }
 

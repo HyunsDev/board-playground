@@ -7,12 +7,26 @@ import { EXCEPTION } from '@workspace/contract';
 
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
-import { ClsAccessor } from '@/infra/cls';
-import { TokenPayload } from '@/shared/types';
+import { ContextService } from '@/infra/context/context.service';
+import { TokenPayload, tokenPayloadSchema } from '@/shared/types';
+
+const parseTokenPayload = (payload: unknown): TokenPayload => {
+  const parsed = tokenPayloadSchema.safeParse(payload);
+  if (!parsed.success) {
+    throw new UnauthorizedException({
+      code: EXCEPTION.AUTH.INVALID_TOKEN.code,
+      message: EXCEPTION.AUTH.INVALID_TOKEN.message,
+    });
+  }
+  return parsed.data;
+};
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  constructor(private reflector: Reflector) {
+  constructor(
+    private reflector: Reflector,
+    private readonly context: ContextService,
+  ) {
     super();
   }
 
@@ -53,12 +67,17 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
           message: EXCEPTION.AUTH.MISSING_TOKEN.message,
         });
       }
-
       // 그 외 알 수 없는 인증 에러
       throw err || new UnauthorizedException();
     }
 
-    ClsAccessor.setToken(token as TokenPayload);
+    const parsedToken = parseTokenPayload(token);
+    this.context.setToken({
+      id: parsedToken.sub,
+      email: parsedToken.email,
+      role: parsedToken.role,
+      deviceId: parsedToken.deviceId,
+    });
 
     return token;
   }

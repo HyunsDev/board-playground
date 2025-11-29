@@ -6,6 +6,7 @@ import { DeviceRepositoryPort } from './device.repository.port';
 import { DeviceMapper } from '../device.mapper';
 import { DeviceEntity } from '../domain/device.entity';
 
+import { ContextService } from '@/infra/context/context.service';
 import { DomainEventDispatcher } from '@/infra/prisma/domain-event.dispatcher';
 import { PrismaService } from '@/infra/prisma/prisma.service';
 import { BaseRepository } from '@/libs/db/base.repository';
@@ -17,10 +18,11 @@ export class DeviceRepository
 {
   constructor(
     protected readonly prisma: PrismaService,
+    protected readonly context: ContextService,
     protected readonly mapper: DeviceMapper,
     protected readonly eventDispatcher: DomainEventDispatcher,
   ) {
-    super(prisma, mapper, eventDispatcher, new Logger(DeviceRepository.name));
+    super(prisma, context, mapper, eventDispatcher, new Logger(DeviceRepository.name));
   }
 
   protected get delegate() {

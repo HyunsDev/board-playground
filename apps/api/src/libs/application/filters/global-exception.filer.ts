@@ -11,8 +11,8 @@ import { ZodError } from 'zod';
 
 import { EXCEPTION } from '@workspace/contract';
 
+import { ContextService } from '@/infra/context/context.service';
 import { ApiErrorResponse } from '@/libs/api/api-error-responase.base';
-import { ClsAccessor } from '@/infra/cls';
 import {
   ArgumentInvalidException,
   ArgumentNotProvidedException,
@@ -35,12 +35,15 @@ interface ErrorResolution {
 export class GlobalExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(GlobalExceptionsFilter.name);
 
-  constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
+  constructor(
+    private readonly httpAdapterHost: HttpAdapterHost,
+    private readonly context: ContextService,
+  ) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
     const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
-    const requestId = ClsAccessor.getRequestId() || 'unknown';
+    const requestId = this.context.getRequestId() || 'unknown';
 
     // 1. 예외 분석 및 표준화된 정보 추출
     const errorInfo = this.resolveError(exception);

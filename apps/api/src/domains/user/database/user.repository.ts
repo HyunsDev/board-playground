@@ -6,6 +6,7 @@ import { UserMapper } from '../user.mapper';
 import { UserRepositoryPort } from './user.repository.port';
 import { UserEntity } from '../domain/user.entity';
 
+import { ContextService } from '@/infra/context/context.service';
 import { DomainEventDispatcher } from '@/infra/prisma/domain-event.dispatcher';
 import { PrismaService } from '@/infra/prisma/prisma.service';
 import { BaseRepository } from '@/libs/db/base.repository';
@@ -14,10 +15,11 @@ import { BaseRepository } from '@/libs/db/base.repository';
 export class UserRepository extends BaseRepository<UserEntity, User> implements UserRepositoryPort {
   constructor(
     protected readonly prisma: PrismaService,
+    protected readonly context: ContextService,
     protected readonly mapper: UserMapper,
     protected readonly eventDispatcher: DomainEventDispatcher,
   ) {
-    super(prisma, mapper, eventDispatcher, new Logger(UserRepository.name));
+    super(prisma, context, mapper, eventDispatcher, new Logger(UserRepository.name));
   }
 
   protected get delegate() {
