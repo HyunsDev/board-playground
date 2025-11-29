@@ -3,7 +3,7 @@ import { ClsService } from 'nestjs-cls';
 import { USER_ROLE, UserRole } from '@workspace/contract';
 import { Prisma } from '@workspace/db/dist';
 
-import { TokenPayload } from '@/common/types';
+import { TokenPayload } from '@/shared/types';
 
 export class ClsAccessor {
   private static cls: ClsService;

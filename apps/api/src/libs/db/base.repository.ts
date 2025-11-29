@@ -1,14 +1,14 @@
 import { ConflictException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
-import { DomainEventDispatcher } from '../../modules/prisma/domain-event.dispatcher';
 import { AggregateRoot } from '../ddd/base.aggregate-root';
 import { Mapper } from '../ddd/base.mapper';
 import { RepositoryPort, PaginatedQueryParams, PaginatedResult } from '../ddd/repository.port';
 import { LoggerPort } from '../ports/logger.port';
 
+import { DomainEventDispatcher } from '@/infra/prisma/domain-event.dispatcher';
+import { PrismaService } from '@/infra/prisma/prisma.service';
 import { ClsAccessor } from '@/libs/cls';
-import { PrismaService } from '@/modules/prisma/prisma.service';
 
 export abstract class BaseRepository<
   Aggregate extends AggregateRoot<any>,
