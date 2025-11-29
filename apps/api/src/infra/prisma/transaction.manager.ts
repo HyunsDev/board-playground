@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { DomainEventDispatcher } from './domain-event.dispatcher';
 import { PrismaService } from './prisma.service';
-import { ClsAccessor } from '../../libs/cls';
+import { ClsAccessor } from '../cls';
 
 @Injectable()
 export class TransactionManager {

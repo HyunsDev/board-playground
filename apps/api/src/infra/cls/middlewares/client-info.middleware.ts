@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
-import { ClsAccessor } from '@/libs/cls';
+import { ClsAccessor } from '@/infra/cls';
 
 @Injectable()
 export class ClientInfoMiddleware implements NestMiddleware {

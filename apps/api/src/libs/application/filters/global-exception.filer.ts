@@ -12,7 +12,7 @@ import { ZodError } from 'zod';
 import { EXCEPTION } from '@workspace/contract';
 
 import { ApiErrorResponse } from '@/libs/api/api-error-responase.base';
-import { ClsAccessor } from '@/libs/cls';
+import { ClsAccessor } from '@/infra/cls';
 import {
   ArgumentInvalidException,
   ArgumentNotProvidedException,

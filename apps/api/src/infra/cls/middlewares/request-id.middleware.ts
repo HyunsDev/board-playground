@@ -2,7 +2,7 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { v4 as uuid } from 'uuid';
 
-import { ClsAccessor } from '@/libs/cls';
+import { ClsAccessor } from '@/infra/cls';
 
 @Injectable()
 export class RequestIdMiddleware implements NestMiddleware {

@@ -6,9 +6,9 @@ import { Mapper } from '../ddd/base.mapper';
 import { RepositoryPort, PaginatedQueryParams, PaginatedResult } from '../ddd/repository.port';
 import { LoggerPort } from '../ports/logger.port';
 
+import { ClsAccessor } from '@/infra/cls';
 import { DomainEventDispatcher } from '@/infra/prisma/domain-event.dispatcher';
 import { PrismaService } from '@/infra/prisma/prisma.service';
-import { ClsAccessor } from '@/libs/cls';
 
 export abstract class BaseRepository<
   Aggregate extends AggregateRoot<any>,

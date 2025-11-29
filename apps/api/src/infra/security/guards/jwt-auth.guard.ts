@@ -7,7 +7,7 @@ import { EXCEPTION } from '@workspace/contract';
 
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
-import { ClsAccessor } from '@/libs/cls';
+import { ClsAccessor } from '@/infra/cls';
 import { TokenPayload } from '@/shared/types';
 
 @Injectable()

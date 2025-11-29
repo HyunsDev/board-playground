@@ -1,7 +1,7 @@
 import { Command } from '@nestjs/cqrs';
 import { v7 as uuidv7 } from 'uuid';
 
-import { ClsAccessor } from '../cls';
+import { ClsAccessor } from '../../infra/cls';
 
 export type CommandProps<T, TRes> = Omit<T, keyof CommandBase<TRes>> & Partial<CommandBase<TRes>>;
 

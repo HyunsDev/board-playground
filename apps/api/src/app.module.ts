@@ -7,15 +7,15 @@ import { ClsModule, ClsService } from 'nestjs-cls';
 
 import { envSchema } from './config/env.validation';
 import { AuthModule } from './domains/auth/auth.module';
-import { ClientInfoMiddleware } from './domains/cls/middlewares/client-info.middleware';
-import { RequestIdMiddleware } from './domains/cls/middlewares/request-id.middleware';
 import { DeviceModule } from './domains/device/device.module';
 import { HelloModule } from './domains/hello/hello.module';
 import { UserModule } from './domains/user/user.module';
+import { ClsAccessor } from './infra/cls';
+import { ClientInfoMiddleware } from './infra/cls/middlewares/client-info.middleware';
+import { RequestIdMiddleware } from './infra/cls/middlewares/request-id.middleware';
 import { PrismaModule } from './infra/prisma/prisma.module';
 import { SecurityModule } from './infra/security/security.module';
 import { GlobalExceptionsFilter } from './libs/application/filters/global-exception.filer';
-import { ClsAccessor } from './libs/cls';
 
 const filters = [
   {
