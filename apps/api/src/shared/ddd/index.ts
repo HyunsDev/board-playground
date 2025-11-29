@@ -9,3 +9,4 @@ export * from './base.query';
 export * from './base.repository';
 export * from './base.repository.port';
 export * from './base.value-object';
+export * from './domain-errors';

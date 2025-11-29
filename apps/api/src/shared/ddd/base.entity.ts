@@ -1,4 +1,3 @@
-// libs/common/src/base/base.entity.ts
 import { ArgumentNotProvidedException } from '../exceptions';
 
 export interface BaseEntityProps {

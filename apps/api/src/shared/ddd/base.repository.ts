@@ -2,9 +2,9 @@ import { Prisma } from '@prisma/client';
 import { err, ok } from 'neverthrow';
 
 import { AggregateRoot } from './base.aggregate-root';
-import { ConflictError, ConflictErrorDetail, NotFoundError } from './base.error';
 import { Mapper } from './base.mapper';
 import { RepositoryPort } from './base.repository.port';
+import { ConflictError, ConflictErrorDetail, NotFoundError } from './domain-errors';
 import { LoggerPort } from '../logger/logger.port';
 import { Result } from '../types/result.type';
 

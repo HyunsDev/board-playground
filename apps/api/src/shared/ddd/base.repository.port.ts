@@ -1,4 +1,4 @@
-import { ConflictError, NotFoundError } from './base.error';
+import { ConflictError, NotFoundError } from './domain-errors';
 import { Result } from '../types/result.type';
 
 export interface RepositoryPort<Entity> {
