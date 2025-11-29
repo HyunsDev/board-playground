@@ -43,4 +43,4 @@ const repositories: Provider[] = [];
   controllers: [...httpControllers],
   exports: [],
 })
-export class IdentityModule {}
+export class AuthModule {}
