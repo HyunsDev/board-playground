@@ -1,33 +1,44 @@
 import { Query } from '@nestjs/cqrs';
+import { v7 as uuidv7 } from 'uuid';
 
-import { OrderBy, PaginatedQueryParams } from './base.repository.port';
+export type QueryProps<T, TRes> = Omit<T, keyof QueryBase<TRes>> & Partial<QueryBase<TRes>>;
 
-/**
- * Base class for regular queries
- */
-export abstract class QueryBase<TRes> extends Query<TRes> {}
+export type QueryMetadata = {
+  readonly correlationId: string;
+  readonly causationId?: string;
+  readonly userId?: string;
+  readonly timestamp: number;
+};
 
-/**
- * Base class for paginated queries
- * RepositoryPort의 PaginatedQueryParams 인터페이스를 구현하거나 호환됩니다.
- */
-export abstract class PaginatedQueryBase<TRes>
-  extends QueryBase<TRes>
-  implements PaginatedQueryParams
-{
-  readonly page: number;
-  readonly take: number;
-  readonly orderBy?: OrderBy;
+export abstract class QueryBase<TRes> extends Query<TRes> {
+  readonly id: string;
+  readonly metadata: QueryMetadata;
 
-  constructor(props: PaginatedQueryParams) {
+  constructor(props?: QueryProps<QueryBase<TRes>, TRes>) {
     super();
-    // 1-based paging이 일반적이므로 기본값 1, take 20 설정
-    this.page = props.page ? Math.max(1, props.page) : 1;
-    this.take = props.take ? Math.max(1, props.take) : 20;
-    this.orderBy = props.orderBy;
+    this.id = props?.id || uuidv7();
+
+    this.metadata = {
+      correlationId: props?.metadata?.correlationId || '',
+      causationId: props?.metadata?.causationId,
+      userId: props?.metadata?.userId,
+      timestamp: props?.metadata?.timestamp || Date.now(),
+    };
   }
 }
 
-// Paginated query parameters
-export type PaginatedParams<T> = Omit<T, 'page' | 'take' | 'orderBy'> &
-  Partial<Omit<PaginatedQueryParams, 'take'>>;
+export type PaginatedQueryProps<T, TRes> = QueryProps<T, TRes> & {
+  readonly page?: number;
+  readonly take?: number;
+};
+
+export abstract class PaginatedQueryBase<TRes> extends QueryBase<TRes> {
+  readonly page: number;
+  readonly take: number;
+
+  constructor(props: PaginatedQueryProps<PaginatedQueryBase<TRes>, TRes>) {
+    super(props);
+    this.page = props.page ? Math.max(1, props.page) : 1;
+    this.take = props.take ? Math.max(1, props.take) : 20;
+  }
+}

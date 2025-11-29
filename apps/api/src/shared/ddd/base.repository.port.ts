@@ -1,20 +1,9 @@
-export type OrderBy = { field: string; param: 'asc' | 'desc' };
-
-export interface PaginatedQueryParams {
-  page: number;
-  take: number;
-  orderBy?: OrderBy;
-}
-export interface PaginatedResult<T> {
-  items: T[];
-  total: number;
-}
+import { ConflictError, NotFoundError } from './base.error';
+import { Result } from '../types/result.type';
 
 export interface RepositoryPort<Entity> {
-  insert(entity: Entity | Entity[]): Promise<void>;
+  insert(entity: Entity): Promise<Result<Entity, ConflictError>>;
   findOneById(id: string): Promise<Entity | null>;
-  findAll(): Promise<Entity[]>;
-  findAllPaginated(params: PaginatedQueryParams): Promise<PaginatedResult<Entity>>;
-  update(entity: Entity): Promise<Entity>;
-  delete(entity: Entity): Promise<boolean>;
+  update(entity: Entity): Promise<Result<Entity, NotFoundError | ConflictError>>;
+  delete(entity: Entity): Promise<Result<void, NotFoundError>>;
 }
