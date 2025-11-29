@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { User, UserRole, UserStatus } from '@workspace/db';
 
-import { UserEntity, UserProps } from './domain/user.entity';
+import { UserEntity, UserProps } from '../domain/user.entity';
 
 import { BaseMapper } from '@/shared/ddd';
 

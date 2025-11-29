@@ -2,11 +2,10 @@ import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { err, ok, Result } from 'neverthrow';
 
-import { UserRepositoryPort } from '../../database/user.repository.port';
-import { UserEntity } from '../../domain/user.entity';
-import { UserNotFoundException } from '../../domain/user.exceptions';
-import { USER_REPOSITORY } from '../../user.di-tokens';
-
+import { UserEntity } from '@/domains/user/domain/user.entity';
+import { UserNotFoundException } from '@/domains/user/domain/user.exceptions';
+import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
+import { USER_REPOSITORY } from '@/domains/user/user.constant';
 import { QueryBase } from '@/shared/ddd';
 
 export class GetUserQuery extends QueryBase<GetUserQueryResult> {

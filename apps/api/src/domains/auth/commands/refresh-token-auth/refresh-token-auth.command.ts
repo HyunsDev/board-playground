@@ -5,9 +5,8 @@ import { err, ok, Result } from 'neverthrow';
 import { DeviceRepositoryPort } from '@/domains/device/database/device.repository.port';
 import { DEVICE_REPOSITORY } from '@/domains/device/device.di-tokens';
 import { InvalidTokenException } from '@/domains/device/domain/device.exceptions';
-import { UserRepositoryPort } from '@/domains/user/database/user.repository.port';
 import { UserNotFoundException } from '@/domains/user/domain/user.exceptions';
-import { USER_REPOSITORY } from '@/domains/user/user.di-tokens';
+import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TokenService } from '@/infra/security/services/token.service';
 import { CommandBase } from '@/shared/ddd';
 
@@ -33,8 +32,7 @@ export class RefreshTokenAuthCommandHandler
   implements ICommandHandler<RefreshTokenAuthCommand, RefreshTokenCommandResult>
 {
   constructor(
-    @Inject(USER_REPOSITORY)
-    private readonly userRepo: UserRepositoryPort,
+    private readonly userFacade: UserFacade,
     @Inject(DEVICE_REPOSITORY)
     private readonly deviceRepo: DeviceRepositoryPort,
     private readonly tokenService: TokenService,
@@ -46,7 +44,7 @@ export class RefreshTokenAuthCommandHandler
     const device = await this.deviceRepo.findByHashedRefreshToken(hashedRefreshToken);
     if (!device) return err(new InvalidTokenException());
 
-    const user = await this.userRepo.findOneById(device.userId);
+    const user = await this.userFacade.findOneById(device.userId);
     if (!user) return err(new UserNotFoundException());
 
     const newAccessToken = this.tokenService.generateAccessToken({

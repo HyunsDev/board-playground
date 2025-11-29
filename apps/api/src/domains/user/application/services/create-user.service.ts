@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { err, ok, Result } from 'neverthrow';
 
-import { UserRepositoryPort } from '../database/user.repository.port';
-import { CreateUserProps, UserEntity } from '../domain/user.entity';
+import { CreateUserProps, UserEntity } from '../../domain/user.entity';
 import {
   UserEmailAlreadyExistsException,
   UserUsernameAlreadyExistsException,
-} from '../domain/user.exceptions';
-import { USER_REPOSITORY } from '../user.di-tokens';
+} from '../../domain/user.exceptions';
+import { UserRepositoryPort } from '../../domain/user.repository.port';
+import { USER_REPOSITORY } from '../../user.constant';
 
 @Injectable()
 export class CreateUserService {
@@ -30,15 +30,5 @@ export class CreateUserService {
     const user = UserEntity.create(props);
     await this.userRepo.insert(user);
     return ok(user);
-  }
-
-  async checkEmailExists(email: string): Promise<boolean> {
-    const existing = await this.userRepo.findOneByEmail(email);
-    return !!existing;
-  }
-
-  async checkUsernameExists(username: string): Promise<boolean> {
-    const existing = await this.userRepo.findOneByUsername(username);
-    return !!existing;
   }
 }

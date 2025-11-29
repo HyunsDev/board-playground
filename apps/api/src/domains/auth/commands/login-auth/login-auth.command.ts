@@ -1,12 +1,10 @@
-import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok, Result } from 'neverthrow';
 
 import { DEVICE_PLATFORM } from '@workspace/contract';
 
 import { CreateDeviceService } from '@/domains/device/services/create-device.service';
-import { UserRepositoryPort } from '@/domains/user/database/user.repository.port';
-import { USER_REPOSITORY } from '@/domains/user/user.di-tokens';
+import { UserFacade } from '@/domains/user/interface/user.facade';
 import { InvalidCredentialsException } from '@/infra/security/domain/security.exceptions';
 import { PasswordService } from '@/infra/security/services/password.service';
 import { TokenService } from '@/infra/security/services/token.service';
@@ -40,15 +38,14 @@ export class LoginAuthCommandHandler
   implements ICommandHandler<LoginAuthCommand, LoginAuthCommandResult>
 {
   constructor(
-    @Inject(USER_REPOSITORY)
-    private readonly userRepo: UserRepositoryPort,
+    private readonly userFacade: UserFacade,
     private readonly createDeviceService: CreateDeviceService,
     private readonly passwordService: PasswordService,
     private readonly tokenService: TokenService,
   ) {}
 
   async execute(command: LoginAuthCommand) {
-    const user = await this.userRepo.findOneByEmail(command.email);
+    const user = await this.userFacade.findOneByEmail(command.email);
     if (!user) return err(new InvalidCredentialsException());
 
     const isValid = await this.passwordService.comparePassword(command.password, user.password);

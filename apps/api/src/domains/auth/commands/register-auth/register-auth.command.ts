@@ -8,7 +8,7 @@ import {
   UserEmailAlreadyExistsException,
   UserUsernameAlreadyExistsException,
 } from '@/domains/user/domain/user.exceptions';
-import { CreateUserService } from '@/domains/user/services/create-user.service';
+import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { PasswordService } from '@/infra/security/services/password.service';
 import { TokenService } from '@/infra/security/services/token.service';
@@ -46,7 +46,7 @@ export class RegisterAuthCommandHandler
   implements ICommandHandler<RegisterAuthCommand, RegisterAuthCommandResult>
 {
   constructor(
-    private readonly createUserService: CreateUserService,
+    private readonly userFacade: UserFacade,
     private readonly createDeviceService: CreateDeviceService,
     private readonly passwordService: PasswordService,
     private readonly tokenService: TokenService,
@@ -54,16 +54,10 @@ export class RegisterAuthCommandHandler
   ) {}
 
   async execute(command: RegisterAuthCommand) {
-    const userEmailExists = await this.createUserService.checkEmailExists(command.email);
-    if (userEmailExists) return err(new UserEmailAlreadyExistsException());
-
-    const userNameExists = await this.createUserService.checkUsernameExists(command.username);
-    if (userNameExists) return err(new UserUsernameAlreadyExistsException());
-
     const hashedPassword = await this.passwordService.hashPassword(command.password);
 
     return this.txManager.run(async () => {
-      const createUserResult = await this.createUserService.create({
+      const createUserResult = await this.userFacade.createUser({
         email: command.email,
         username: command.username,
         nickname: command.nickname,

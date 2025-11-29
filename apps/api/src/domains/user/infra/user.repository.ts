@@ -2,9 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 
 import { PrismaClient, User } from '@workspace/db';
 
-import { UserMapper } from '../user.mapper';
-import { UserRepositoryPort } from './user.repository.port';
+import { UserMapper } from './user.mapper';
 import { UserEntity } from '../domain/user.entity';
+import { UserRepositoryPort } from '../domain/user.repository.port';
 
 import { ContextService } from '@/infra/context/context.service';
 import { DomainEventDispatcher } from '@/infra/prisma/domain-event.dispatcher';

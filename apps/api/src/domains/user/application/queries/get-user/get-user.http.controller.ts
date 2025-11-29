@@ -5,8 +5,9 @@ import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { contract, EXCEPTION } from '@workspace/contract';
 
 import { GetUserQuery } from './get-user.query';
-import { UserNotFoundException } from '../../domain/user.exceptions';
-import { UserDtoMapper } from '../../user.dto-mapper';
+
+import { UserNotFoundException } from '@/domains/user/domain/user.exceptions';
+import { UserDtoMapper } from '@/domains/user/interface/user.dto-mapper';
 
 @Controller()
 export class GetUserHttpController {
