@@ -1,9 +1,18 @@
-import { Global, Module } from '@nestjs/common';
+import { Global, Module, Provider } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Request } from 'express';
 import { ClsModule } from 'nestjs-cls';
 import { v7 as uuidv7 } from 'uuid';
 
 import { ContextService } from './context.service';
+import { RequestIdInterceptor } from './interceptors/request-id.interceptor';
+
+const interceptors: Provider[] = [
+  {
+    provide: APP_INTERCEPTOR,
+    useClass: RequestIdInterceptor,
+  },
+];
 
 @Global()
 @Module({
@@ -26,7 +35,7 @@ import { ContextService } from './context.service';
       },
     }),
   ],
-  providers: [ContextService],
+  providers: [ContextService, ...interceptors],
   exports: [ContextService],
 })
 export class ContextModule {}
