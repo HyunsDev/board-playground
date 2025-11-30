@@ -4,6 +4,7 @@ import { authContract } from './auth/auth.contract';
 import { boardContract } from './board/board.contracts';
 import { commentContract } from './comment/comment.contracts';
 import { deviceContract } from './device/device.contract';
+import { DevtoolsContract } from './devtools/devtools.contract';
 import { postContracts } from './post/post.contracts';
 import { userContract, userForAdminContract } from './user/user.contracts';
 
@@ -20,6 +21,8 @@ export const contract = c.router(
     board: boardContract,
     post: postContracts,
     comment: commentContract,
+
+    devtools: DevtoolsContract,
   },
   {
     baseHeaders: z.object({
