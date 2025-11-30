@@ -4,7 +4,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
-import { envSchema } from './config/env.validation';
+import { envSchema } from './core/config/env.validation';
 import { AuthModule } from './domains/auth/auth.module';
 import { DeviceModule } from './domains/device/device.module';
 import { HelloModule } from './domains/hello/hello.module';

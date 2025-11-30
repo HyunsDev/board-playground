@@ -9,7 +9,7 @@ import { PasswordService } from './services/password.service';
 import { TokenService } from './services/token.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
-import { EnvSchema } from '@/config/env.validation';
+import { EnvSchema } from '@/core/config/env.validation';
 
 const services: Provider[] = [PasswordService, TokenService];
 const guards: Provider[] = [JwtAuthGuard, RolesGuard];

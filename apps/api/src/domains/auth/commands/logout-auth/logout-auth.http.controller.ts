@@ -8,7 +8,7 @@ import { contract } from '@workspace/contract';
 
 import { LogoutAuthCommand } from './logout-auth.command';
 
-import { EnvSchema } from '@/config/env.validation';
+import { EnvSchema } from '@/core/config/env.validation';
 import { mapDomainErrorToResponse } from '@/shared/utils/map-error-to-response';
 
 @Controller()

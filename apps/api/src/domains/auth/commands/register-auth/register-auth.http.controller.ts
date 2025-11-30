@@ -8,7 +8,7 @@ import { contract } from '@workspace/contract';
 
 import { RegisterAuthCommand } from './register-auth.command';
 
-import { EnvSchema } from '@/config/env.validation';
+import { EnvSchema } from '@/core/config/env.validation';
 import { IpAddress } from '@/shared/decorators/ip-address.decorator';
 import { UserAgent } from '@/shared/decorators/user-agent.decorator';
 import { mapDomainErrorToResponse } from '@/shared/utils/map-error-to-response';
