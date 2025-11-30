@@ -49,6 +49,7 @@ function getNestRoutes(app: INestApplication): RouteInfo[] {
       for (const methodName of methods) {
         if (methodName === 'constructor') continue;
         const methodRef = prototype[methodName];
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         const methodMetadata = reflector.get<number>(METHOD_METADATA, methodRef);
 
         if (methodMetadata !== undefined) {
@@ -80,6 +81,7 @@ function getNestRoutes(app: INestApplication): RouteInfo[] {
               break;
           }
 
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           const methodPathMetadata = reflector.get<string | string[]>(PATH_METADATA, methodRef);
           const mPaths = Array.isArray(methodPathMetadata)
             ? methodPathMetadata
@@ -191,7 +193,7 @@ async function run() {
     imports: [AppModule],
   });
 
-  moduleBuilder.useMocker((token) => {
+  moduleBuilder.useMocker(() => {
     // 모든 의존성 주입 요청에 대해 '빈 객체'를 반환합니다.
     // DB 연결, 외부 API 호출 등을 원천 차단합니다.
     return {
@@ -282,4 +284,4 @@ async function run() {
   else process.exit(0);
 }
 
-run();
+void run();
