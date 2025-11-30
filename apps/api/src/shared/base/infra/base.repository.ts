@@ -9,8 +9,8 @@ import { RepositoryPort } from '../domain/base.repository.port';
 import { ConflictError, ConflictErrorDetail, NotFoundError } from '../error/common.domain-errors';
 
 import { ContextService } from '@/infra/context/context.service';
-import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
 import { DatabaseService } from '@/infra/database/database.service';
+import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
 
 export abstract class BaseRepository<
   Aggregate extends AggregateRoot<any>,
@@ -44,7 +44,7 @@ export abstract class BaseRepository<
 
     try {
       const result = await this.delegate.create({ data: record });
-      await this.publishEvents(entity);
+      this.publishEvents(entity);
       return ok(result ? this.mapper.toDomain(result) : null);
     } catch (error: any) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
@@ -66,7 +66,7 @@ export abstract class BaseRepository<
         where: { id: entity.id },
         data: record,
       });
-      await this.publishEvents(entity);
+      this.publishEvents(entity);
       return ok(this.mapper.toDomain(updatedRecord));
     } catch (error: any) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -102,7 +102,7 @@ export abstract class BaseRepository<
     }
   }
 
-  private async publishEvents(entity: Aggregate): Promise<void> {
+  private publishEvents(entity: Aggregate): void {
     const events = entity.pullEvents();
     this.eventDispatcher.addEvents(events);
   }
