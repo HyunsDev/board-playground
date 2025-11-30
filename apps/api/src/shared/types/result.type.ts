@@ -1,5 +1,5 @@
 import { Result as NeverthrowResult } from 'neverthrow';
 
-import { BaseError } from '../base/error/base.error';
+import { DomainError } from '../base/error/base.domain-error';
 
-export type Result<T, E extends BaseError = BaseError> = NeverthrowResult<T, E>;
+export type DomainResult<T, E extends DomainError = DomainError> = NeverthrowResult<T, E>;

@@ -1,4 +1,4 @@
-import { ExceptionRecord } from '@/common/interfaces/exception.interface';
+import { ExceptionRecord } from '@/common';
 
 export const COMMENT_EXCEPTION = {
   NOT_FOUND: {

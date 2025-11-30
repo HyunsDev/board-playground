@@ -6,7 +6,7 @@ import { contract, EXCEPTION } from '@workspace/contract';
 
 import { GetUserQuery } from './get-user.query';
 
-import { UserNotFoundException } from '@/domains/user/domain/user.exceptions';
+import { UserNotFoundError } from '@/domains/user/domain/user.errors';
 import { UserDtoMapper } from '@/domains/user/interface/user.dto-mapper';
 
 @Controller()
@@ -28,7 +28,7 @@ export class GetUserHttpController {
             body: { user: this.userDtoMapper.toDto(user) },
           }) as const,
         (error) => {
-          if (error instanceof UserNotFoundException) {
+          if (error instanceof UserNotFoundError) {
             return {
               status: 404,
               body: {

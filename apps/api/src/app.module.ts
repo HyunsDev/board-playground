@@ -1,11 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER } from '@nestjs/core';
-import { CqrsModule } from '@nestjs/cqrs';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 
-import { envSchema } from './core/config/env.validation';
-import { GlobalExceptionsFilter } from './core/filters/global-exception.filer';
+import { CoreModule } from './core/core.module';
 import { AuthModule } from './domains/auth/auth.module';
 import { DeviceModule } from './domains/device/device.module';
 import { HelloModule } from './domains/hello/hello.module';
@@ -14,28 +9,9 @@ import { ContextModule } from './infra/context/context.module';
 import { PrismaModule } from './infra/prisma/prisma.module';
 import { SecurityModule } from './infra/security/security.module';
 
-const filters = [
-  {
-    provide: APP_FILTER,
-    useClass: GlobalExceptionsFilter,
-  },
-];
-
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      validate: (env) => {
-        const parsed = envSchema.safeParse(env);
-        if (!parsed.success) {
-          console.error(parsed.error.format());
-          throw new Error('❌ Invalid environment variables');
-        }
-        return parsed.data;
-      },
-    }),
-    EventEmitterModule.forRoot(),
-    CqrsModule,
+    CoreModule,
     ContextModule,
     PrismaModule,
     SecurityModule,
@@ -45,6 +21,6 @@ const filters = [
     AuthModule,
   ],
   controllers: [],
-  providers: [...filters],
+  providers: [],
 })
 export class AppModule {}

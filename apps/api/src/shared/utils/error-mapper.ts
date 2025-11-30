@@ -1,13 +1,14 @@
 import {
-  AccessDeniedError,
+  AccessDeniedException,
+  BadRequestError,
   ConflictError,
-  BaseError,
+  DomainError,
   NotFoundError,
   UnauthorizedError,
   ValidationError,
 } from '../base';
 
-export function mapDomainErrorToResponse(error: BaseError) {
+export function mapDomainErrorToResponse(error: DomainError) {
   if (error instanceof NotFoundError) {
     return {
       status: 404,
@@ -44,7 +45,7 @@ export function mapDomainErrorToResponse(error: BaseError) {
     } as const;
   }
 
-  if (error instanceof AccessDeniedError) {
+  if (error instanceof AccessDeniedException) {
     return {
       status: 403,
       body: {
@@ -62,6 +63,30 @@ export function mapDomainErrorToResponse(error: BaseError) {
       body: {
         code: error.code,
         status: 400,
+        message: error.message,
+        details: error.details,
+      },
+    } as const;
+  }
+
+  if (error instanceof BadRequestError) {
+    return {
+      status: 400,
+      body: {
+        code: error.code,
+        status: 400,
+        message: error.message,
+        details: error.details,
+      },
+    } as const;
+  }
+
+  if (error instanceof DomainError) {
+    return {
+      status: 500,
+      body: {
+        code: error.code,
+        status: 500,
         message: error.message,
         details: error.details,
       },

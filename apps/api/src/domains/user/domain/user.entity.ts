@@ -3,7 +3,7 @@ import { v7 as uuidv7 } from 'uuid';
 import { USER_ROLE, USER_STATUS, UserRole, UserStatus } from '@workspace/contract';
 
 import { UserCreatedEvent } from './events/user-created.event';
-import { UserAdminCannotBeDeletedException } from './user.exceptions';
+import { UserAdminCannotBeDeletedError } from './user.errors';
 
 import { AggregateRoot, CommandMetadata } from '@/shared/base';
 
@@ -106,7 +106,7 @@ export class UserEntity extends AggregateRoot<UserProps> {
 
   public validateDelete(): void {
     if (this.props.role === USER_ROLE.ADMIN) {
-      throw new UserAdminCannotBeDeletedException();
+      throw new UserAdminCannotBeDeletedError();
     }
   }
 

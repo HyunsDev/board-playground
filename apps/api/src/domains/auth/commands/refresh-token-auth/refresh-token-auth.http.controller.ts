@@ -9,7 +9,7 @@ import { contract, EXCEPTION } from '@workspace/contract';
 import { RefreshTokenAuthCommand } from './refresh-token-auth.command';
 
 import { EnvSchema } from '@/core/config/env.validation';
-import { mapDomainErrorToResponse } from '@/shared/utils/map-error-to-response';
+import { mapDomainErrorToResponse } from '@/shared/utils/error-mapper';
 
 @Controller()
 export class RefreshTokenAuthHttpController {

@@ -1,9 +1,8 @@
 import { EXCEPTION } from '@workspace/contract';
 
-import { BaseException } from '@/shared/exceptions';
+import { BadRequestError } from '@/shared/base';
 
-export class InvalidCredentialsException extends BaseException {
-  code = EXCEPTION.AUTH.INVALID_CREDENTIALS.code;
+export class InvalidCredentialsError extends BadRequestError {
   constructor() {
     super(EXCEPTION.AUTH.INVALID_CREDENTIALS.message, EXCEPTION.AUTH.INVALID_CREDENTIALS.code);
   }

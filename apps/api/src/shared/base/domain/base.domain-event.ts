@@ -1,6 +1,6 @@
 import { v7 as uuidv7 } from 'uuid';
 
-import { ArgumentNotProvidedException } from '../../exceptions';
+import { ArgumentNotProvidedException } from '../exception/common.business-exceptions';
 
 export type DomainEventMetadata = {
   readonly timestamp: number;

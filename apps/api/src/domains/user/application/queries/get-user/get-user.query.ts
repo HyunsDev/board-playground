@@ -1,19 +1,20 @@
 import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { err, ok, Result } from 'neverthrow';
+import { err, ok } from 'neverthrow';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
-import { UserNotFoundException } from '@/domains/user/domain/user.exceptions';
+import { UserNotFoundError } from '@/domains/user/domain/user.errors';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constant';
 import { QueryBase } from '@/shared/base';
+import { DomainResult } from '@/shared/types/result.type';
 
 export class GetUserQuery extends QueryBase<GetUserQueryResult> {
   constructor(public readonly userId: string) {
     super();
   }
 }
-export type GetUserQueryResult = Result<UserEntity, UserNotFoundException>;
+export type GetUserQueryResult = DomainResult<UserEntity, UserNotFoundError>;
 
 @QueryHandler(GetUserQuery)
 export class GetUserQueryHandler implements IQueryHandler<GetUserQuery, GetUserQueryResult> {
@@ -24,7 +25,7 @@ export class GetUserQueryHandler implements IQueryHandler<GetUserQuery, GetUserQ
 
   async execute(query: GetUserQuery): Promise<GetUserQueryResult> {
     const user = await this.userRepo.findOneById(query.userId);
-    if (!user) return err(new UserNotFoundException());
+    if (!user) return err(new UserNotFoundError());
     return ok(user);
   }
 }

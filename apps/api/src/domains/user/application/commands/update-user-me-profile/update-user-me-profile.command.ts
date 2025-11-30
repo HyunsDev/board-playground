@@ -1,12 +1,13 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { err, ok, Result } from 'neverthrow';
+import { err, ok } from 'neverthrow';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
-import { UserNotFoundException } from '@/domains/user/domain/user.exceptions';
+import { UserNotFoundError } from '@/domains/user/domain/user.errors';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constant';
 import { CommandBase, CommandProps } from '@/shared/base';
+import { DomainResult } from '@/shared/types/result.type';
 
 export class UpdateUserMeProfileCommand extends CommandBase<UpdateUserMeProfileCommandResult> {
   public readonly userId: string;
@@ -20,7 +21,7 @@ export class UpdateUserMeProfileCommand extends CommandBase<UpdateUserMeProfileC
     this.bio = props.bio;
   }
 }
-export type UpdateUserMeProfileCommandResult = Result<UserEntity, UserNotFoundException>;
+export type UpdateUserMeProfileCommandResult = DomainResult<UserEntity, UserNotFoundError>;
 
 @CommandHandler(UpdateUserMeProfileCommand)
 export class UpdateUserMeProfileCommandHandler
@@ -33,7 +34,7 @@ export class UpdateUserMeProfileCommandHandler
 
   async execute(command: UpdateUserMeProfileCommand) {
     const user = await this.userRepo.findOneById(command.userId);
-    if (!user) return err(new UserNotFoundException());
+    if (!user) return err(new UserNotFoundError());
 
     user.updateProfile({
       nickname: command.nickname,

@@ -1,14 +1,15 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { err, ok, Result } from 'neverthrow';
+import { err, ok } from 'neverthrow';
 
 import { DeviceRepositoryPort } from '@/domains/device/database/device.repository.port';
 import { DEVICE_REPOSITORY } from '@/domains/device/device.di-tokens';
-import { InvalidTokenException } from '@/domains/device/domain/device.exceptions';
-import { UserNotFoundException } from '@/domains/user/domain/user.exceptions';
+import { InvalidTokenError } from '@/domains/device/domain/device.errors';
+import { UserNotFoundError } from '@/domains/user/domain/user.errors';
 import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TokenService } from '@/infra/security/services/token.service';
 import { CommandBase } from '@/shared/base';
+import { DomainResult } from '@/shared/types/result.type';
 
 export class RefreshTokenAuthCommand extends CommandBase<RefreshTokenCommandResult> {
   public readonly refreshToken: string;
@@ -19,12 +20,12 @@ export class RefreshTokenAuthCommand extends CommandBase<RefreshTokenCommandResu
   }
 }
 
-export type RefreshTokenCommandResult = Result<
+export type RefreshTokenCommandResult = DomainResult<
   {
     accessToken: string;
     refreshToken: string;
   },
-  Error
+  InvalidTokenError | UserNotFoundError
 >;
 
 @CommandHandler(RefreshTokenAuthCommand)
@@ -42,10 +43,10 @@ export class RefreshTokenAuthCommandHandler
     const hashedRefreshToken = this.tokenService.hashToken(command.refreshToken);
 
     const device = await this.deviceRepo.findByHashedRefreshToken(hashedRefreshToken);
-    if (!device) return err(new InvalidTokenException());
+    if (!device) return err(new InvalidTokenError());
 
     const user = await this.userFacade.findOneById(device.userId);
-    if (!user) return err(new UserNotFoundException());
+    if (!user) return err(new UserNotFoundError());
 
     const newAccessToken = this.tokenService.generateAccessToken({
       sub: user.id,

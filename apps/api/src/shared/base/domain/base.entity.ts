@@ -1,4 +1,4 @@
-import { ArgumentNotProvidedException } from '../../exceptions';
+import { ArgumentNotProvidedException } from '../exception/common.business-exceptions';
 
 export interface BaseEntityProps {
   id: string;
@@ -77,7 +77,7 @@ export abstract class Entity<EntityProps> {
 
   private validateProps(props: EntityProps): void {
     if (!props || (typeof props === 'object' && Object.keys(props).length === 0)) {
-      throw new ArgumentNotProvidedException('Entity props should not be empty');
+      throw new ArgumentNotProvidedException('Entity properties cannot be empty');
     }
   }
 }

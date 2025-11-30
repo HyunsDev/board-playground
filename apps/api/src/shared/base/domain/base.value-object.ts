@@ -1,4 +1,4 @@
-import { ArgumentNotProvidedException } from '../../exceptions';
+import { ArgumentNotProvidedException } from '../exception/common.business-exceptions';
 
 export type Primitives = string | number | boolean;
 
@@ -47,11 +47,11 @@ export abstract class ValueObject<T> {
 
   private checkIfEmpty(props: ValueObjectProps<T>): void {
     if (props === null || props === undefined) {
-      throw new ArgumentNotProvidedException('Property cannot be empty');
+      throw new ArgumentNotProvidedException('VO: Property cannot be empty');
     }
     if (this.isDomainPrimitive(props)) {
       if (props.value === null || props.value === undefined) {
-        throw new ArgumentNotProvidedException('Property cannot be empty');
+        throw new ArgumentNotProvidedException('VO: Property cannot be empty');
       }
     }
   }

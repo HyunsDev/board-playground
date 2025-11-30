@@ -1,9 +1,8 @@
 import { EXCEPTION } from '@workspace/contract';
 
-import { BaseException, NotFoundException } from '@/shared/exceptions';
+import { BadRequestError, ConflictError, NotFoundError } from '@/shared/base';
 
-export class UserAdminCannotBeDeletedException extends BaseException {
-  code = EXCEPTION.USER.ADMIN_CANNOT_BE_DELETED.code;
+export class UserAdminCannotBeDeletedError extends BadRequestError {
   constructor() {
     super(
       EXCEPTION.USER.ADMIN_CANNOT_BE_DELETED.message,
@@ -12,21 +11,21 @@ export class UserAdminCannotBeDeletedException extends BaseException {
   }
 }
 
-export class UserNotFoundException extends NotFoundException {
+export class UserNotFoundError extends NotFoundError {
   code = EXCEPTION.USER.NOT_FOUND.code;
   constructor() {
     super(EXCEPTION.USER.NOT_FOUND.message, EXCEPTION.USER.NOT_FOUND.code);
   }
 }
 
-export class UserEmailAlreadyExistsException extends BaseException {
+export class UserEmailAlreadyExistsError extends ConflictError {
   code = EXCEPTION.USER.EMAIL_ALREADY_EXISTS.code;
   constructor() {
     super(EXCEPTION.USER.EMAIL_ALREADY_EXISTS.message, EXCEPTION.USER.EMAIL_ALREADY_EXISTS.code);
   }
 }
 
-export class UserUsernameAlreadyExistsException extends BaseException {
+export class UserUsernameAlreadyExistsError extends ConflictError {
   code = EXCEPTION.USER.USERNAME_ALREADY_EXISTS.code;
   constructor() {
     super(

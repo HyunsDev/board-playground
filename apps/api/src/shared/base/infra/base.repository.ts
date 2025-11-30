@@ -3,10 +3,10 @@ import { err, ok } from 'neverthrow';
 
 import { Mapper } from './base.mapper';
 import { LoggerPort } from '../../logger/logger.port';
-import { Result } from '../../types/result.type';
+import { DomainResult } from '../../types/result.type';
 import { AggregateRoot } from '../domain/base.aggregate-root';
 import { RepositoryPort } from '../domain/base.repository.port';
-import { ConflictError, ConflictErrorDetail, NotFoundError } from '../error/base.error';
+import { ConflictError, ConflictErrorDetail, NotFoundError } from '../error/common.domain-errors';
 
 import { ContextService } from '@/infra/context/context.service';
 import { DomainEventDispatcher } from '@/infra/prisma/domain-event.dispatcher';
@@ -39,7 +39,7 @@ export abstract class BaseRepository<
     return record ? this.mapper.toDomain(record) : null;
   }
 
-  async insert(entity: Aggregate): Promise<Result<Aggregate, ConflictError>> {
+  async insert(entity: Aggregate): Promise<DomainResult<Aggregate, ConflictError>> {
     const record = this.mapper.toPersistence(entity);
 
     try {
@@ -53,13 +53,13 @@ export abstract class BaseRepository<
           field,
           value: (record as any)[field], // 입력된 값 추적
         }));
-        return err(new ConflictError(details));
+        return err(new ConflictError('Conflict detected', 'DB_CONFLICT', details));
       }
       throw error;
     }
   }
 
-  async update(entity: Aggregate): Promise<Result<Aggregate, NotFoundError | ConflictError>> {
+  async update(entity: Aggregate): Promise<DomainResult<Aggregate, NotFoundError | ConflictError>> {
     const record = this.mapper.toPersistence(entity);
     try {
       const updatedRecord = await this.delegate.update({
@@ -79,7 +79,7 @@ export abstract class BaseRepository<
             field,
             value: (record as any)[field],
           }));
-          return err(new ConflictError(details));
+          return err(new ConflictError('Conflict detected', 'DB_CONFLICT', details));
         }
       }
 
@@ -87,7 +87,7 @@ export abstract class BaseRepository<
     }
   }
 
-  async delete(entity: Aggregate): Promise<Result<void, NotFoundError>> {
+  async delete(entity: Aggregate): Promise<DomainResult<void, NotFoundError>> {
     try {
       await this.delegate.delete({
         where: { id: entity.id },

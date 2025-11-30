@@ -1,18 +1,19 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { err, ok, Result } from 'neverthrow';
+import { err, ok } from 'neverthrow';
 
 import { DEVICE_PLATFORM } from '@workspace/contract';
 
 import { CreateDeviceService } from '@/domains/device/services/create-device.service';
 import {
-  UserEmailAlreadyExistsException,
-  UserUsernameAlreadyExistsException,
-} from '@/domains/user/domain/user.exceptions';
+  UserEmailAlreadyExistsError,
+  UserUsernameAlreadyExistsError,
+} from '@/domains/user/domain/user.errors';
 import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { PasswordService } from '@/infra/security/services/password.service';
 import { TokenService } from '@/infra/security/services/token.service';
-import { CommandBase, CommandProps } from '@/shared/base';
+import { CommandBase, CommandProps, DomainError } from '@/shared/base';
+import { DomainResult } from '@/shared/types/result.type';
 
 export class RegisterAuthCommand extends CommandBase<RegisterAuthCommandResult> {
   public readonly email: string;
@@ -33,12 +34,12 @@ export class RegisterAuthCommand extends CommandBase<RegisterAuthCommandResult> 
   }
 }
 
-export type RegisterAuthCommandResult = Result<
+export type RegisterAuthCommandResult = DomainResult<
   {
     accessToken: string;
     refreshToken: string;
   },
-  UserEmailAlreadyExistsException | UserUsernameAlreadyExistsException | Error
+  UserEmailAlreadyExistsError | UserUsernameAlreadyExistsError | DomainError
 >;
 
 @CommandHandler(RegisterAuthCommand)

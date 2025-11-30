@@ -6,7 +6,7 @@ import { contract, EXCEPTION } from '@workspace/contract';
 
 import { GetDeviceQuery } from './get-device.query';
 import { DeviceDtoMapper } from '../../device.dto-mapper';
-import { DeviceNotFoundException } from '../../domain/device.exceptions';
+import { DeviceNotFoundError } from '../../domain/device.errors';
 
 @Controller()
 export class GetDeviceHttpController {
@@ -27,7 +27,7 @@ export class GetDeviceHttpController {
             body: { device: this.deviceDtoMapper.toDto(device) },
           }) as const,
         (error) => {
-          if (error instanceof DeviceNotFoundException) {
+          if (error instanceof DeviceNotFoundError) {
             return {
               status: 404,
               body: {

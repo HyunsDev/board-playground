@@ -1,14 +1,15 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { err, ok, Result } from 'neverthrow';
+import { err, ok } from 'neverthrow';
 
 import { DEVICE_PLATFORM } from '@workspace/contract';
 
 import { CreateDeviceService } from '@/domains/device/services/create-device.service';
 import { UserFacade } from '@/domains/user/interface/user.facade';
-import { InvalidCredentialsException } from '@/infra/security/domain/security.exceptions';
+import { InvalidCredentialsError } from '@/infra/security/domain/security.exceptions';
 import { PasswordService } from '@/infra/security/services/password.service';
 import { TokenService } from '@/infra/security/services/token.service';
 import { CommandBase, CommandProps } from '@/shared/base';
+import { DomainResult } from '@/shared/types/result.type';
 
 export class LoginAuthCommand extends CommandBase<LoginAuthCommandResult> {
   public readonly email: string;
@@ -25,12 +26,12 @@ export class LoginAuthCommand extends CommandBase<LoginAuthCommandResult> {
   }
 }
 
-export type LoginAuthCommandResult = Result<
+export type LoginAuthCommandResult = DomainResult<
   {
     accessToken: string;
     refreshToken: string;
   },
-  Error
+  InvalidCredentialsError
 >;
 
 @CommandHandler(LoginAuthCommand)
@@ -46,10 +47,10 @@ export class LoginAuthCommandHandler
 
   async execute(command: LoginAuthCommand) {
     const user = await this.userFacade.findOneByEmail(command.email);
-    if (!user) return err(new InvalidCredentialsException());
+    if (!user) return err(new InvalidCredentialsError());
 
     const isValid = await this.passwordService.comparePassword(command.password, user.password);
-    if (!isValid) return err(new InvalidCredentialsException());
+    if (!isValid) return err(new InvalidCredentialsError());
 
     const refreshTokens = this.tokenService.generateRefreshToken();
 
