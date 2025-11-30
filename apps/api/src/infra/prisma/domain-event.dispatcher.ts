@@ -2,7 +2,7 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
-import { DomainEvent } from '../../shared/ddd';
+import { DomainEvent } from '../../shared/base';
 
 @Injectable({ scope: Scope.REQUEST }) // [중요] 요청마다 별도의 버퍼 생성
 export class DomainEventDispatcher {

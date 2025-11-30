@@ -1,5 +1,5 @@
-import { ConflictError, NotFoundError } from './domain-errors';
-import { Result } from '../types/result.type';
+import { Result } from '../../types/result.type';
+import { ConflictError, NotFoundError } from '../error/base.error';
 
 export interface RepositoryPort<Entity> {
   insert(entity: Entity): Promise<Result<Entity, ConflictError>>;

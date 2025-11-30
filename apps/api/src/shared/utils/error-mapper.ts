@@ -1,13 +1,13 @@
 import {
   AccessDeniedError,
   ConflictError,
-  DomainError,
+  BaseError,
   NotFoundError,
   UnauthorizedError,
   ValidationError,
-} from '../ddd';
+} from '../base';
 
-export function mapDomainErrorToResponse(error: DomainError) {
+export function mapDomainErrorToResponse(error: BaseError) {
   if (error instanceof NotFoundError) {
     return {
       status: 404,

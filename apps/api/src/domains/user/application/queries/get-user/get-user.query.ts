@@ -6,7 +6,7 @@ import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserNotFoundException } from '@/domains/user/domain/user.exceptions';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constant';
-import { QueryBase } from '@/shared/ddd';
+import { QueryBase } from '@/shared/base';
 
 export class GetUserQuery extends QueryBase<GetUserQueryResult> {
   constructor(public readonly userId: string) {

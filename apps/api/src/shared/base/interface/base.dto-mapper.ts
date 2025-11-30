@@ -1,6 +1,6 @@
 import { Paginated, PaginationMeta } from '@workspace/contract';
 
-import { Entity } from './base.entity';
+import { Entity } from '../domain/base.entity';
 
 export interface DtoMapper<DomainEntity extends Entity<any>, Dto> {
   toDto(entity: DomainEntity): Dto;

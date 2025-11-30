@@ -9,7 +9,7 @@ import { UserRepositoryPort } from '../domain/user.repository.port';
 import { ContextService } from '@/infra/context/context.service';
 import { DomainEventDispatcher } from '@/infra/prisma/domain-event.dispatcher';
 import { PrismaService } from '@/infra/prisma/prisma.service';
-import { BaseRepository } from '@/shared/ddd/base.repository';
+import { BaseRepository } from '@/shared/base/infra/base.repository';
 
 @Injectable()
 export class UserRepository extends BaseRepository<UserEntity, User> implements UserRepositoryPort {

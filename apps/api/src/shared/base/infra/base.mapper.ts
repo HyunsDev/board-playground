@@ -1,4 +1,4 @@
-import { Entity } from './base.entity';
+import { Entity } from '../domain/base.entity';
 
 export interface Mapper<DomainEntity extends Entity<any>, DbRecord> {
   toPersistence(entity: DomainEntity): DbRecord;

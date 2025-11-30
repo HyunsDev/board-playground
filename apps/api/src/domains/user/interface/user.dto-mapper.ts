@@ -4,7 +4,7 @@ import { UserDto, UserForAdminDto, UserSummaryDto } from '@workspace/contract';
 
 import { UserEntity } from '../domain/user.entity';
 
-import { BaseDtoMapper } from '@/shared/ddd';
+import { BaseDtoMapper } from '@/shared/base';
 
 @Injectable()
 export class UserDtoMapper extends BaseDtoMapper<UserEntity, UserDto> {

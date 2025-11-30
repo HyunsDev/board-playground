@@ -4,7 +4,7 @@ import { Device } from '@workspace/db';
 
 import { DeviceEntity, DeviceProps } from './domain/device.entity';
 
-import { BaseMapper } from '@/shared/ddd';
+import { BaseMapper } from '@/shared/base';
 
 @Injectable()
 export class DeviceMapper extends BaseMapper<DeviceEntity, Device> {

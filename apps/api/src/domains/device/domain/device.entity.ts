@@ -6,7 +6,7 @@ import { DevicePlatform } from '@workspace/contract';
 import { DeviceCreatedEvent } from './events/device-created.event';
 import { DeviceDeletedEvent } from './events/device-deleted.event';
 
-import { AggregateRoot, CommandMetadata } from '@/shared/ddd';
+import { AggregateRoot, CommandMetadata } from '@/shared/base';
 
 export interface DeviceProps {
   userId: string;

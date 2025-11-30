@@ -5,7 +5,7 @@ import { USER_ROLE, USER_STATUS, UserRole, UserStatus } from '@workspace/contrac
 import { UserCreatedEvent } from './events/user-created.event';
 import { UserAdminCannotBeDeletedException } from './user.exceptions';
 
-import { AggregateRoot, CommandMetadata } from '@/shared/ddd';
+import { AggregateRoot, CommandMetadata } from '@/shared/base';
 
 export interface UserProps {
   username: string;

@@ -7,7 +7,7 @@ import { DEVICE_REPOSITORY } from '../../device.di-tokens';
 import { DeviceEntity } from '../../domain/device.entity';
 import { DeviceNotFoundException } from '../../domain/device.exceptions';
 
-import { QueryBase } from '@/shared/ddd';
+import { QueryBase } from '@/shared/base';
 
 export class GetDeviceQuery extends QueryBase<GetDeviceQueryResult> {
   constructor(public readonly deviceId: string) {

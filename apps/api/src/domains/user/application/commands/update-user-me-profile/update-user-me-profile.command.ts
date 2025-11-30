@@ -6,7 +6,7 @@ import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserNotFoundException } from '@/domains/user/domain/user.exceptions';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constant';
-import { CommandBase, CommandProps } from '@/shared/ddd';
+import { CommandBase, CommandProps } from '@/shared/base';
 
 export class UpdateUserMeProfileCommand extends CommandBase<UpdateUserMeProfileCommandResult> {
   public readonly userId: string;

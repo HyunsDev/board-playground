@@ -8,7 +8,7 @@ import { InvalidTokenException } from '@/domains/device/domain/device.exceptions
 import { UserNotFoundException } from '@/domains/user/domain/user.exceptions';
 import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TokenService } from '@/infra/security/services/token.service';
-import { CommandBase } from '@/shared/ddd';
+import { CommandBase } from '@/shared/base';
 
 export class RefreshTokenAuthCommand extends CommandBase<RefreshTokenCommandResult> {
   public readonly refreshToken: string;

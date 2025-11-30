@@ -1,12 +1,12 @@
 import { Prisma } from '@prisma/client';
 import { err, ok } from 'neverthrow';
 
-import { AggregateRoot } from './base.aggregate-root';
 import { Mapper } from './base.mapper';
-import { RepositoryPort } from './base.repository.port';
-import { ConflictError, ConflictErrorDetail, NotFoundError } from './domain-errors';
-import { LoggerPort } from '../logger/logger.port';
-import { Result } from '../types/result.type';
+import { LoggerPort } from '../../logger/logger.port';
+import { Result } from '../../types/result.type';
+import { AggregateRoot } from '../domain/base.aggregate-root';
+import { RepositoryPort } from '../domain/base.repository.port';
+import { ConflictError, ConflictErrorDetail, NotFoundError } from '../error/base.error';
 
 import { ContextService } from '@/infra/context/context.service';
 import { DomainEventDispatcher } from '@/infra/prisma/domain-event.dispatcher';

@@ -1,4 +1,4 @@
-import { ArgumentNotProvidedException } from '../exceptions';
+import { ArgumentNotProvidedException } from '../../exceptions';
 
 export type Primitives = string | number | boolean;
 

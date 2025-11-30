@@ -1,4 +1,4 @@
-import { DomainEvent, DomainEventProps } from '@/shared/ddd';
+import { DomainEvent, DomainEventProps } from '@/shared/base';
 
 export class UserCreatedEvent extends DomainEvent {
   public readonly email: string;
