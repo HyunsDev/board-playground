@@ -6,14 +6,14 @@ import { DeviceModule } from './domains/device/device.module';
 import { HelloModule } from './domains/hello/hello.module';
 import { UserModule } from './domains/user/user.module';
 import { ContextModule } from './infra/context/context.module';
-import { PrismaModule } from './infra/prisma/prisma.module';
+import { DatabaseModule } from './infra/database/database.module';
 import { SecurityModule } from './infra/security/security.module';
 
 @Module({
   imports: [
     CoreModule,
     ContextModule,
-    PrismaModule,
+    DatabaseModule,
     SecurityModule,
     HelloModule,
     UserModule,

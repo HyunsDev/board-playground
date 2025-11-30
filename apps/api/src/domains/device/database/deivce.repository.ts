@@ -7,8 +7,8 @@ import { DeviceMapper } from '../device.mapper';
 import { DeviceEntity } from '../domain/device.entity';
 
 import { ContextService } from '@/infra/context/context.service';
-import { DomainEventDispatcher } from '@/infra/prisma/domain-event.dispatcher';
-import { PrismaService } from '@/infra/prisma/prisma.service';
+import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
+import { DatabaseService } from '@/infra/database/database.service';
 import { BaseRepository } from '@/shared/base/infra/base.repository';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class DeviceRepository
   implements DeviceRepositoryPort
 {
   constructor(
-    protected readonly prisma: PrismaService,
+    protected readonly prisma: DatabaseService,
     protected readonly context: ContextService,
     protected readonly mapper: DeviceMapper,
     protected readonly eventDispatcher: DomainEventDispatcher,

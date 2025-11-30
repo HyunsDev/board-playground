@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
+import { DatabaseService } from './database.service';
 import { DomainEventDispatcher } from './domain-event.dispatcher';
-import { PrismaService } from './prisma.service';
 import { ContextService } from '../context/context.service';
 
 @Injectable()
 export class TransactionManager {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly prisma: DatabaseService,
     private readonly context: ContextService,
     private readonly eventDispatcher: DomainEventDispatcher,
   ) {}

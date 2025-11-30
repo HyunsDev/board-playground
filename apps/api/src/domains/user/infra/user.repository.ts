@@ -7,14 +7,14 @@ import { UserEntity } from '../domain/user.entity';
 import { UserRepositoryPort } from '../domain/user.repository.port';
 
 import { ContextService } from '@/infra/context/context.service';
-import { DomainEventDispatcher } from '@/infra/prisma/domain-event.dispatcher';
-import { PrismaService } from '@/infra/prisma/prisma.service';
+import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
+import { DatabaseService } from '@/infra/database/database.service';
 import { BaseRepository } from '@/shared/base/infra/base.repository';
 
 @Injectable()
 export class UserRepository extends BaseRepository<UserEntity, User> implements UserRepositoryPort {
   constructor(
-    protected readonly prisma: PrismaService,
+    protected readonly prisma: DatabaseService,
     protected readonly context: ContextService,
     protected readonly mapper: UserMapper,
     protected readonly eventDispatcher: DomainEventDispatcher,

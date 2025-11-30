@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
-import { PrismaService } from '@/infra/prisma/prisma.service';
+import { DatabaseService } from '@/infra/database/database.service';
 
 @Injectable()
 export class HelloService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: DatabaseService) {}
 
   async createHello(content: string) {
     const res = await this.prisma.hello.create({

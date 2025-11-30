@@ -3,11 +3,11 @@ import { UAParser } from 'ua-parser-js';
 
 import { DEVICE_PLATFORM } from '@workspace/contract';
 
-import { PrismaService } from '@/infra/prisma/prisma.service';
+import { DatabaseService } from '@/infra/database/database.service';
 
 @Injectable()
 export class DeviceService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: DatabaseService) {}
 
   async getDeviceById(deviceId: string) {
     return this.prisma.device.findUnique({

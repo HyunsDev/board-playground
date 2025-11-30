@@ -9,7 +9,7 @@ import {
   UserUsernameAlreadyExistsError,
 } from '@/domains/user/domain/user.errors';
 import { UserFacade } from '@/domains/user/interface/user.facade';
-import { TransactionManager } from '@/infra/prisma/transaction.manager';
+import { TransactionManager } from '@/infra/database/transaction.manager';
 import { PasswordService } from '@/infra/security/services/password.service';
 import { TokenService } from '@/infra/security/services/token.service';
 import { CommandBase, CommandProps, DomainError } from '@/shared/base';

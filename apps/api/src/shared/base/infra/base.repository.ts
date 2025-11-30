@@ -9,8 +9,8 @@ import { RepositoryPort } from '../domain/base.repository.port';
 import { ConflictError, ConflictErrorDetail, NotFoundError } from '../error/common.domain-errors';
 
 import { ContextService } from '@/infra/context/context.service';
-import { DomainEventDispatcher } from '@/infra/prisma/domain-event.dispatcher';
-import { PrismaService } from '@/infra/prisma/prisma.service';
+import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
+import { DatabaseService } from '@/infra/database/database.service';
 
 export abstract class BaseRepository<
   Aggregate extends AggregateRoot<any>,
@@ -20,14 +20,14 @@ export abstract class BaseRepository<
   protected abstract get delegate(): any;
 
   constructor(
-    protected readonly prisma: PrismaService,
+    protected readonly prisma: DatabaseService,
     protected readonly context: ContextService,
     protected readonly mapper: Mapper<Aggregate, DbModel>,
     protected readonly eventDispatcher: DomainEventDispatcher,
     protected readonly logger: LoggerPort,
   ) {}
 
-  protected get client(): Prisma.TransactionClient | PrismaService {
+  protected get client(): Prisma.TransactionClient | DatabaseService {
     const tx = this.context.getTx();
     return tx ?? this.prisma;
   }
