@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { CoreModule } from './core/core.module';
 import { AuthModule } from './domains/auth/auth.module';
+import { DevModule } from './domains/dev/dev.module';
 import { DeviceModule } from './domains/device/device.module';
 import { UserModule } from './domains/user/user.module';
 import { ContextModule } from './infra/context/context.module';
@@ -17,6 +18,7 @@ import { SecurityModule } from './infra/security/security.module';
     UserModule,
     DeviceModule,
     AuthModule,
+    DevModule,
   ],
   controllers: [],
   providers: [],
