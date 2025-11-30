@@ -52,7 +52,6 @@ export const ModelName = {
   Board: 'Board',
   Comment: 'Comment',
   Device: 'Device',
-  Hello: 'Hello',
   Manager: 'Manager',
   Post: 'Post',
   User: 'User'
@@ -119,16 +118,6 @@ export const DeviceScalarFieldEnum = {
 } as const
 
 export type DeviceScalarFieldEnum = (typeof DeviceScalarFieldEnum)[keyof typeof DeviceScalarFieldEnum]
-
-
-export const HelloScalarFieldEnum = {
-  id: 'id',
-  content: 'content',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type HelloScalarFieldEnum = (typeof HelloScalarFieldEnum)[keyof typeof HelloScalarFieldEnum]
 
 
 export const ManagerScalarFieldEnum = {

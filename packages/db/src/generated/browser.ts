@@ -33,11 +33,6 @@ export type Comment = Prisma.CommentModel
  */
 export type Device = Prisma.DeviceModel
 /**
- * Model Hello
- * 
- */
-export type Hello = Prisma.HelloModel
-/**
  * Model Manager
  * 
  */

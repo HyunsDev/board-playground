@@ -393,7 +393,6 @@ export const ModelName = {
   Board: 'Board',
   Comment: 'Comment',
   Device: 'Device',
-  Hello: 'Hello',
   Manager: 'Manager',
   Post: 'Post',
   User: 'User'
@@ -412,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "board" | "comment" | "device" | "hello" | "manager" | "post" | "user"
+    modelProps: "board" | "comment" | "device" | "manager" | "post" | "user"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -635,80 +634,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.DeviceCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DeviceCountAggregateOutputType> | number
-        }
-      }
-    }
-    Hello: {
-      payload: Prisma.$HelloPayload<ExtArgs>
-      fields: Prisma.HelloFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.HelloFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$HelloPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.HelloFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$HelloPayload>
-        }
-        findFirst: {
-          args: Prisma.HelloFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$HelloPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.HelloFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$HelloPayload>
-        }
-        findMany: {
-          args: Prisma.HelloFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$HelloPayload>[]
-        }
-        create: {
-          args: Prisma.HelloCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$HelloPayload>
-        }
-        createMany: {
-          args: Prisma.HelloCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.HelloCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$HelloPayload>[]
-        }
-        delete: {
-          args: Prisma.HelloDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$HelloPayload>
-        }
-        update: {
-          args: Prisma.HelloUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$HelloPayload>
-        }
-        deleteMany: {
-          args: Prisma.HelloDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.HelloUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.HelloUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$HelloPayload>[]
-        }
-        upsert: {
-          args: Prisma.HelloUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$HelloPayload>
-        }
-        aggregate: {
-          args: Prisma.HelloAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateHello>
-        }
-        groupBy: {
-          args: Prisma.HelloGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.HelloGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.HelloCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.HelloCountAggregateOutputType> | number
         }
       }
     }
@@ -1020,16 +945,6 @@ export const DeviceScalarFieldEnum = {
 export type DeviceScalarFieldEnum = (typeof DeviceScalarFieldEnum)[keyof typeof DeviceScalarFieldEnum]
 
 
-export const HelloScalarFieldEnum = {
-  id: 'id',
-  content: 'content',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type HelloScalarFieldEnum = (typeof HelloScalarFieldEnum)[keyof typeof HelloScalarFieldEnum]
-
-
 export const ManagerScalarFieldEnum = {
   id: 'id',
   boardId: 'boardId',
@@ -1310,7 +1225,6 @@ export type GlobalOmitConfig = {
   board?: Prisma.BoardOmit
   comment?: Prisma.CommentOmit
   device?: Prisma.DeviceOmit
-  hello?: Prisma.HelloOmit
   manager?: Prisma.ManagerOmit
   post?: Prisma.PostOmit
   user?: Prisma.UserOmit
