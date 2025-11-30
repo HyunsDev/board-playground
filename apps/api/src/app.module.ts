@@ -5,6 +5,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 import { envSchema } from './core/config/env.validation';
+import { GlobalExceptionsFilter } from './core/filters/global-exception.filer';
 import { AuthModule } from './domains/auth/auth.module';
 import { DeviceModule } from './domains/device/device.module';
 import { HelloModule } from './domains/hello/hello.module';
@@ -12,7 +13,6 @@ import { UserModule } from './domains/user/user.module';
 import { ContextModule } from './infra/context/context.module';
 import { PrismaModule } from './infra/prisma/prisma.module';
 import { SecurityModule } from './infra/security/security.module';
-import { GlobalExceptionsFilter } from './shared/application/filters/global-exception.filer';
 
 const filters = [
   {
