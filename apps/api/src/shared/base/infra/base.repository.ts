@@ -39,49 +39,23 @@ export abstract class BaseRepository<
     return record ? this.mapper.toDomain(record) : null;
   }
 
-  async insert(entity: Aggregate): Promise<DomainResult<Aggregate, ConflictError>> {
+  async save(entity: Aggregate): Promise<DomainResult<Aggregate, ConflictError | NotFoundError>> {
     const record = this.mapper.toPersistence(entity);
 
     try {
-      const result = await this.delegate.create({ data: record });
-      this.publishEvents(entity);
-      return ok(result ? this.mapper.toDomain(result) : null);
-    } catch (error: any) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-        const targets = (error.meta?.target as string[]) || [];
-        const details: ConflictErrorDetail[] = targets.map((field) => ({
-          field,
-          value: (record as any)[field], // 입력된 값 추적
-        }));
-        return err(new ConflictError('Conflict detected', 'DB_CONFLICT', details));
-      }
-      throw error;
-    }
-  }
-
-  async update(entity: Aggregate): Promise<DomainResult<Aggregate, NotFoundError | ConflictError>> {
-    const record = this.mapper.toPersistence(entity);
-    try {
-      const updatedRecord = await this.delegate.update({
+      // upsert를 사용하여 ID가 있으면 update, 없으면 create 수행
+      const result = await this.delegate.upsert({
         where: { id: entity.id },
-        data: record,
+        create: record,
+        update: record,
       });
+
       this.publishEvents(entity);
-      return ok(this.mapper.toDomain(updatedRecord));
+      return ok(this.mapper.toDomain(result));
     } catch (error: any) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          return err(new NotFoundError(`Record with id ${entity.id} not found`));
-        }
-        if (error.code === 'P2002') {
-          const targets = (error.meta?.target as string[]) || [];
-          const details: ConflictErrorDetail[] = targets.map((field) => ({
-            field,
-            value: (record as any)[field],
-          }));
-          return err(new ConflictError('Conflict detected', 'DB_CONFLICT', details));
-        }
-      }
+      // 비즈니스 에러만 잡아서 리턴, 기술적 에러는 throw
+      const businessError = this.handleKnownPrismaErrors(error, record);
+      if (businessError) return err(businessError);
 
       throw error;
     }
@@ -92,7 +66,7 @@ export abstract class BaseRepository<
       await this.delegate.delete({
         where: { id: entity.id },
       });
-      await this.publishEvents(entity);
+      this.publishEvents(entity);
       return ok(undefined);
     } catch (error: any) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
@@ -105,5 +79,28 @@ export abstract class BaseRepository<
   private publishEvents(entity: Aggregate): void {
     const events = entity.pullEvents();
     this.eventDispatcher.addEvents(events);
+  }
+
+  private handleKnownPrismaErrors(
+    error: any,
+    record: any, // 에러 발생 시 입력값 추적용
+  ): ConflictError | NotFoundError {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      // P2002: Unique constraint failed (중복 발생)
+      if (error.code === 'P2002') {
+        const targets = (error.meta?.target as string[]) || [];
+        const details: ConflictErrorDetail[] = targets.map((field) => ({
+          field,
+          value: record[field],
+        }));
+        return new ConflictError('Conflict detected', 'DB_CONFLICT', details);
+      }
+
+      // P2025: Record to update/delete not found
+      if (error.code === 'P2025') {
+        return new NotFoundError('Record not found');
+      }
+    }
+    throw error;
   }
 }

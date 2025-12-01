@@ -17,7 +17,7 @@ export class CreateDeviceService {
 
   async create(props: CreateDeviceProps): Promise<DomainResult<DeviceEntity, ConflictError>> {
     const device = DeviceEntity.create(props);
-    await this.deviceRepo.insert(device);
+    await this.deviceRepo.save(device);
     return ok(device);
   }
 }

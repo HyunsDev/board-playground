@@ -58,7 +58,7 @@ export class RefreshTokenAuthCommandHandler
     const refreshTokens = this.tokenService.generateRefreshToken();
 
     device.updateRefreshToken(refreshTokens.hashedRefreshToken);
-    await this.deviceRepo.update(device);
+    await this.deviceRepo.save(device);
 
     return ok({
       accessToken: newAccessToken,

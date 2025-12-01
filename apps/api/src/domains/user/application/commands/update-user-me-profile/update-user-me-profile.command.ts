@@ -41,7 +41,7 @@ export class UpdateUserMeProfileCommandHandler
       bio: command.bio,
     });
 
-    await this.userRepo.update(user);
+    await this.userRepo.save(user);
 
     return ok(user);
   }

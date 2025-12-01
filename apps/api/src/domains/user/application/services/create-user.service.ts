@@ -30,7 +30,7 @@ export class CreateUserService {
     if (!existingByUsername) return err(new UserUsernameAlreadyExistsError());
 
     const user = UserEntity.create(props);
-    await this.userRepo.insert(user);
+    await this.userRepo.save(user);
     return ok(user);
   }
 }
