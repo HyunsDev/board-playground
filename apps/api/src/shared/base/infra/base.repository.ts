@@ -76,7 +76,7 @@ export abstract class BaseRepository<
     }
   }
 
-  private publishEvents(entity: Aggregate): void {
+  protected publishEvents(entity: Aggregate): void {
     const events = entity.pullEvents();
     this.eventDispatcher.addEvents(events);
   }
