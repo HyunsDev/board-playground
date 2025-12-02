@@ -1,0 +1,16 @@
+model Post {
+    id        String   @id @default(uuid())
+    boardId   String
+    authorId  String
+    title     String
+    content   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    board    Board    @relation(fields: [boardId], references: [id])
+    author   User     @relation(fields: [authorId], references: [id])
+    comments Comment[]
+
+    @@index([boardId])
+    @@index([authorId])
+}

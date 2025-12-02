@@ -1,0 +1,28 @@
+{
+  "name": "my-turborepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "",
+  "author": "",
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "turbo run dev dev:check --parallel",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "clean": "pnpm -w dlx rimraf \"node_modules\" \"packages/**/node_modules\" \"packages/**/dist\""
+  },
+  "devDependencies": {
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "prettier": "^3.2.5",
+    "eslint": "^9.31.0",
+    "turbo": "^2.6.1"
+  },
+  "packageManager": "pnpm@8.15.5",
+  "engines": {
+    "node": ">=18"
+  }
+}

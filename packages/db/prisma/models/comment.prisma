@@ -1,0 +1,21 @@
+model Comment {
+    id              String   @id @default(uuid())
+    postId          String
+    authorId        String
+    parentCommentId String?
+    depth           Int
+    content         String
+    isEdited        Boolean  @default(false)
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+
+    post   Post @relation(fields: [postId], references: [id])
+    author User @relation(fields: [authorId], references: [id])
+
+    parent   Comment?  @relation("CommentToComment", fields: [parentCommentId], references: [id])
+    children Comment[] @relation("CommentToComment")
+
+    @@index([postId])
+    @@index([authorId])
+    @@index([parentCommentId])
+}

@@ -1,0 +1,18 @@
+model Manager {
+    id        String      @id @default(uuid())
+    boardId   String
+    userId    String
+    role      ManagerRole @default(SUB_MANAGER)
+    createdAt DateTime    @default(now())
+
+    board Board @relation(fields: [boardId], references: [id])
+    user  User  @relation(fields: [userId], references: [id])
+
+    @@unique([boardId, userId])
+    @@index([userId])
+}
+
+enum ManagerRole {
+    MAIN_MANAGER
+    SUB_MANAGER
+}

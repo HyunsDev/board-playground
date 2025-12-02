@@ -1,0 +1,45 @@
+{
+  "name": "@workspace/contract",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsc -b -v --watch & tsc-alias --watch",
+    "build": "tsc -b -v && tsc-alias",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\""
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist/**"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./*": {
+      "import": "./dist/*.js",
+      "require": "./dist/*.js",
+      "types": "./dist/*.d.ts"
+    }
+  },
+  "dependencies": {
+    "@nestjs/mapped-types": "*",
+    "@ts-rest/core": "^3.52.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "ts-loader": "^9.4.3",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
+    "typescript": "5.5.4"
+  }
+}
