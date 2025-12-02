@@ -25,6 +25,14 @@ export const DevicePlatform = {
 export type DevicePlatform = (typeof DevicePlatform)[keyof typeof DevicePlatform]
 
 
+export const SessionStatus = {
+  ACTIVE: 'ACTIVE',
+  REVOKED: 'REVOKED'
+} as const
+
+export type SessionStatus = (typeof SessionStatus)[keyof typeof SessionStatus]
+
+
 export const UserRole = {
   ADMIN: 'ADMIN',
   USER: 'USER'

@@ -1,6 +1,7 @@
 model Session {
     id         String         @id @default(uuid())
     name       String
+    status     SessionStatus  @default(ACTIVE)
     userAgent  String
     os         String         @default("OTHER")
     device     String         @default("OTHER")
@@ -20,4 +21,9 @@ model Session {
 enum DevicePlatform {
     WEB
     OTHER
+}
+
+enum SessionStatus {
+    ACTIVE
+    REVOKED
 }

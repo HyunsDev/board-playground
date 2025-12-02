@@ -27,6 +27,7 @@ export type AggregateSession = {
 export type SessionMinAggregateOutputType = {
   id: string | null
   name: string | null
+  status: $Enums.SessionStatus | null
   userAgent: string | null
   os: string | null
   device: string | null
@@ -42,6 +43,7 @@ export type SessionMinAggregateOutputType = {
 export type SessionMaxAggregateOutputType = {
   id: string | null
   name: string | null
+  status: $Enums.SessionStatus | null
   userAgent: string | null
   os: string | null
   device: string | null
@@ -57,6 +59,7 @@ export type SessionMaxAggregateOutputType = {
 export type SessionCountAggregateOutputType = {
   id: number
   name: number
+  status: number
   userAgent: number
   os: number
   device: number
@@ -74,6 +77,7 @@ export type SessionCountAggregateOutputType = {
 export type SessionMinAggregateInputType = {
   id?: true
   name?: true
+  status?: true
   userAgent?: true
   os?: true
   device?: true
@@ -89,6 +93,7 @@ export type SessionMinAggregateInputType = {
 export type SessionMaxAggregateInputType = {
   id?: true
   name?: true
+  status?: true
   userAgent?: true
   os?: true
   device?: true
@@ -104,6 +109,7 @@ export type SessionMaxAggregateInputType = {
 export type SessionCountAggregateInputType = {
   id?: true
   name?: true
+  status?: true
   userAgent?: true
   os?: true
   device?: true
@@ -192,6 +198,7 @@ export type SessionGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 export type SessionGroupByOutputType = {
   id: string
   name: string
+  status: $Enums.SessionStatus
   userAgent: string
   os: string
   device: string
@@ -228,6 +235,7 @@ export type SessionWhereInput = {
   NOT?: Prisma.SessionWhereInput | Prisma.SessionWhereInput[]
   id?: Prisma.StringFilter<"Session"> | string
   name?: Prisma.StringFilter<"Session"> | string
+  status?: Prisma.EnumSessionStatusFilter<"Session"> | $Enums.SessionStatus
   userAgent?: Prisma.StringFilter<"Session"> | string
   os?: Prisma.StringFilter<"Session"> | string
   device?: Prisma.StringFilter<"Session"> | string
@@ -245,6 +253,7 @@ export type SessionWhereInput = {
 export type SessionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   userAgent?: Prisma.SortOrder
   os?: Prisma.SortOrder
   device?: Prisma.SortOrder
@@ -265,6 +274,7 @@ export type SessionWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.SessionWhereInput[]
   NOT?: Prisma.SessionWhereInput | Prisma.SessionWhereInput[]
   name?: Prisma.StringFilter<"Session"> | string
+  status?: Prisma.EnumSessionStatusFilter<"Session"> | $Enums.SessionStatus
   userAgent?: Prisma.StringFilter<"Session"> | string
   os?: Prisma.StringFilter<"Session"> | string
   device?: Prisma.StringFilter<"Session"> | string
@@ -282,6 +292,7 @@ export type SessionWhereUniqueInput = Prisma.AtLeast<{
 export type SessionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   userAgent?: Prisma.SortOrder
   os?: Prisma.SortOrder
   device?: Prisma.SortOrder
@@ -303,6 +314,7 @@ export type SessionScalarWhereWithAggregatesInput = {
   NOT?: Prisma.SessionScalarWhereWithAggregatesInput | Prisma.SessionScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Session"> | string
   name?: Prisma.StringWithAggregatesFilter<"Session"> | string
+  status?: Prisma.EnumSessionStatusWithAggregatesFilter<"Session"> | $Enums.SessionStatus
   userAgent?: Prisma.StringWithAggregatesFilter<"Session"> | string
   os?: Prisma.StringWithAggregatesFilter<"Session"> | string
   device?: Prisma.StringWithAggregatesFilter<"Session"> | string
@@ -318,6 +330,7 @@ export type SessionScalarWhereWithAggregatesInput = {
 export type SessionCreateInput = {
   id?: string
   name: string
+  status?: $Enums.SessionStatus
   userAgent: string
   os?: string
   device?: string
@@ -334,6 +347,7 @@ export type SessionCreateInput = {
 export type SessionUncheckedCreateInput = {
   id?: string
   name: string
+  status?: $Enums.SessionStatus
   userAgent: string
   os?: string
   device?: string
@@ -350,6 +364,7 @@ export type SessionUncheckedCreateInput = {
 export type SessionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
   os?: Prisma.StringFieldUpdateOperationsInput | string
   device?: Prisma.StringFieldUpdateOperationsInput | string
@@ -366,6 +381,7 @@ export type SessionUpdateInput = {
 export type SessionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
   os?: Prisma.StringFieldUpdateOperationsInput | string
   device?: Prisma.StringFieldUpdateOperationsInput | string
@@ -382,6 +398,7 @@ export type SessionUncheckedUpdateInput = {
 export type SessionCreateManyInput = {
   id?: string
   name: string
+  status?: $Enums.SessionStatus
   userAgent: string
   os?: string
   device?: string
@@ -397,6 +414,7 @@ export type SessionCreateManyInput = {
 export type SessionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
   os?: Prisma.StringFieldUpdateOperationsInput | string
   device?: Prisma.StringFieldUpdateOperationsInput | string
@@ -411,6 +429,7 @@ export type SessionUpdateManyMutationInput = {
 export type SessionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
   os?: Prisma.StringFieldUpdateOperationsInput | string
   device?: Prisma.StringFieldUpdateOperationsInput | string
@@ -431,6 +450,7 @@ export type SessionScalarRelationFilter = {
 export type SessionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   userAgent?: Prisma.SortOrder
   os?: Prisma.SortOrder
   device?: Prisma.SortOrder
@@ -446,6 +466,7 @@ export type SessionCountOrderByAggregateInput = {
 export type SessionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   userAgent?: Prisma.SortOrder
   os?: Prisma.SortOrder
   device?: Prisma.SortOrder
@@ -461,6 +482,7 @@ export type SessionMaxOrderByAggregateInput = {
 export type SessionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   userAgent?: Prisma.SortOrder
   os?: Prisma.SortOrder
   device?: Prisma.SortOrder
@@ -495,6 +517,10 @@ export type SessionUpdateOneRequiredWithoutRefreshTokensNestedInput = {
   upsert?: Prisma.SessionUpsertWithoutRefreshTokensInput
   connect?: Prisma.SessionWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.SessionUpdateToOneWithWhereWithoutRefreshTokensInput, Prisma.SessionUpdateWithoutRefreshTokensInput>, Prisma.SessionUncheckedUpdateWithoutRefreshTokensInput>
+}
+
+export type EnumSessionStatusFieldUpdateOperationsInput = {
+  set?: $Enums.SessionStatus
 }
 
 export type EnumDevicePlatformFieldUpdateOperationsInput = {
@@ -546,6 +572,7 @@ export type SessionUncheckedUpdateManyWithoutUserNestedInput = {
 export type SessionCreateWithoutRefreshTokensInput = {
   id?: string
   name: string
+  status?: $Enums.SessionStatus
   userAgent: string
   os?: string
   device?: string
@@ -561,6 +588,7 @@ export type SessionCreateWithoutRefreshTokensInput = {
 export type SessionUncheckedCreateWithoutRefreshTokensInput = {
   id?: string
   name: string
+  status?: $Enums.SessionStatus
   userAgent: string
   os?: string
   device?: string
@@ -592,6 +620,7 @@ export type SessionUpdateToOneWithWhereWithoutRefreshTokensInput = {
 export type SessionUpdateWithoutRefreshTokensInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
   os?: Prisma.StringFieldUpdateOperationsInput | string
   device?: Prisma.StringFieldUpdateOperationsInput | string
@@ -607,6 +636,7 @@ export type SessionUpdateWithoutRefreshTokensInput = {
 export type SessionUncheckedUpdateWithoutRefreshTokensInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
   os?: Prisma.StringFieldUpdateOperationsInput | string
   device?: Prisma.StringFieldUpdateOperationsInput | string
@@ -622,6 +652,7 @@ export type SessionUncheckedUpdateWithoutRefreshTokensInput = {
 export type SessionCreateWithoutUserInput = {
   id?: string
   name: string
+  status?: $Enums.SessionStatus
   userAgent: string
   os?: string
   device?: string
@@ -637,6 +668,7 @@ export type SessionCreateWithoutUserInput = {
 export type SessionUncheckedCreateWithoutUserInput = {
   id?: string
   name: string
+  status?: $Enums.SessionStatus
   userAgent: string
   os?: string
   device?: string
@@ -681,6 +713,7 @@ export type SessionScalarWhereInput = {
   NOT?: Prisma.SessionScalarWhereInput | Prisma.SessionScalarWhereInput[]
   id?: Prisma.StringFilter<"Session"> | string
   name?: Prisma.StringFilter<"Session"> | string
+  status?: Prisma.EnumSessionStatusFilter<"Session"> | $Enums.SessionStatus
   userAgent?: Prisma.StringFilter<"Session"> | string
   os?: Prisma.StringFilter<"Session"> | string
   device?: Prisma.StringFilter<"Session"> | string
@@ -696,6 +729,7 @@ export type SessionScalarWhereInput = {
 export type SessionCreateManyUserInput = {
   id?: string
   name: string
+  status?: $Enums.SessionStatus
   userAgent: string
   os?: string
   device?: string
@@ -710,6 +744,7 @@ export type SessionCreateManyUserInput = {
 export type SessionUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
   os?: Prisma.StringFieldUpdateOperationsInput | string
   device?: Prisma.StringFieldUpdateOperationsInput | string
@@ -725,6 +760,7 @@ export type SessionUpdateWithoutUserInput = {
 export type SessionUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
   os?: Prisma.StringFieldUpdateOperationsInput | string
   device?: Prisma.StringFieldUpdateOperationsInput | string
@@ -740,6 +776,7 @@ export type SessionUncheckedUpdateWithoutUserInput = {
 export type SessionUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   userAgent?: Prisma.StringFieldUpdateOperationsInput | string
   os?: Prisma.StringFieldUpdateOperationsInput | string
   device?: Prisma.StringFieldUpdateOperationsInput | string
@@ -785,6 +822,7 @@ export type SessionCountOutputTypeCountRefreshTokensArgs<ExtArgs extends runtime
 export type SessionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  status?: boolean
   userAgent?: boolean
   os?: boolean
   device?: boolean
@@ -803,6 +841,7 @@ export type SessionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type SessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  status?: boolean
   userAgent?: boolean
   os?: boolean
   device?: boolean
@@ -819,6 +858,7 @@ export type SessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type SessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  status?: boolean
   userAgent?: boolean
   os?: boolean
   device?: boolean
@@ -835,6 +875,7 @@ export type SessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type SessionSelectScalar = {
   id?: boolean
   name?: boolean
+  status?: boolean
   userAgent?: boolean
   os?: boolean
   device?: boolean
@@ -847,7 +888,7 @@ export type SessionSelectScalar = {
   userId?: boolean
 }
 
-export type SessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "userAgent" | "os" | "device" | "browser" | "platform" | "ipAddress" | "lastUsedAt" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["session"]>
+export type SessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "status" | "userAgent" | "os" | "device" | "browser" | "platform" | "ipAddress" | "lastUsedAt" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["session"]>
 export type SessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   refreshTokens?: boolean | Prisma.Session$refreshTokensArgs<ExtArgs>
@@ -869,6 +910,7 @@ export type $SessionPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
+    status: $Enums.SessionStatus
     userAgent: string
     os: string
     device: string
@@ -1306,6 +1348,7 @@ export interface Prisma__SessionClient<T, Null = never, ExtArgs extends runtime.
 export interface SessionFieldRefs {
   readonly id: Prisma.FieldRef<"Session", 'String'>
   readonly name: Prisma.FieldRef<"Session", 'String'>
+  readonly status: Prisma.FieldRef<"Session", 'SessionStatus'>
   readonly userAgent: Prisma.FieldRef<"Session", 'String'>
   readonly os: Prisma.FieldRef<"Session", 'String'>
   readonly device: Prisma.FieldRef<"Session", 'String'>

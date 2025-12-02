@@ -1041,6 +1041,7 @@ export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[k
 export const SessionScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  status: 'status',
   userAgent: 'userAgent',
   os: 'os',
   device: 'device',
@@ -1164,6 +1165,20 @@ export type EnumManagerRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$Pris
  * Reference to a field of type 'ManagerRole[]'
  */
 export type ListEnumManagerRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ManagerRole[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SessionStatus'
+ */
+export type EnumSessionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SessionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'SessionStatus[]'
+ */
+export type ListEnumSessionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SessionStatus[]'>
     
 
 

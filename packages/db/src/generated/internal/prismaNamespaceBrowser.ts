@@ -142,6 +142,7 @@ export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[k
 export const SessionScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  status: 'status',
   userAgent: 'userAgent',
   os: 'os',
   device: 'device',
