@@ -22,6 +22,10 @@
     "exceptions": "error",
     "loggers": "log",
     "logger": "log",
-    "endpoints": "api"
+    "endpoints": "api",
+
+    "api-e2e": "test",
+    "jest-config": "test",
+    "typescript-config": "typescript"
   }
 }
