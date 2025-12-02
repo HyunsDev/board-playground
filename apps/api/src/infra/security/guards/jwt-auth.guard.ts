@@ -88,7 +88,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       id: validatedPayload.sub,
       email: validatedPayload.email,
       role: validatedPayload.role,
-      deviceId: validatedPayload.deviceId,
+      sessionId: validatedPayload.sessionId,
     });
 
     // 5. 요청 객체(req.user)에 할당될 값 반환

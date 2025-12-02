@@ -1,12 +1,17 @@
-import { Inject } from '@nestjs/common';
+import { UseInterceptors } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { Transactional } from '@nestjs-cls/transactional';
 import { err, ok } from 'neverthrow';
 
-import { DeviceRepositoryPort } from '@/domains/device/database/device.repository.port';
-import { DEVICE_REPOSITORY } from '@/domains/device/device.di-tokens';
-import { InvalidRefreshTokenError, InvalidTokenError } from '@/domains/device/domain/device.errors';
+import { RefreshTokenService } from '@/domains/session/application/services/refresh-token.service';
+import { SessionService } from '@/domains/session/application/services/session.service';
+import {
+  InvalidRefreshTokenError,
+  InvalidTokenError,
+} from '@/domains/session/domain/session.errors';
 import { UserNotFoundError } from '@/domains/user/domain/user.errors';
 import { UserFacade } from '@/domains/user/interface/user.facade';
+import { TransactionResultInterceptor } from '@/infra/database/interceptor/transaction-result.interceptor';
 import { TokenService } from '@/infra/security/services/token.service';
 import { CommandBase } from '@/shared/base';
 import { DomainResult } from '@/shared/types/result.type';
@@ -34,31 +39,43 @@ export class RefreshTokenAuthCommandHandler
 {
   constructor(
     private readonly userFacade: UserFacade,
-    @Inject(DEVICE_REPOSITORY)
-    private readonly deviceRepo: DeviceRepositoryPort,
+    private readonly refreshTokenService: RefreshTokenService,
+    private readonly sessionService: SessionService,
     private readonly tokenService: TokenService,
   ) {}
 
+  @Transactional()
+  @UseInterceptors(TransactionResultInterceptor)
   async execute(command: RefreshTokenAuthCommand) {
     const hashedRefreshToken = this.tokenService.hashToken(command.refreshToken);
 
-    const device = await this.deviceRepo.findByHashedRefreshToken(hashedRefreshToken);
-    if (!device) return err(new InvalidRefreshTokenError());
+    const tokenResult =
+      await this.refreshTokenService.getOneByHashedRefreshToken(hashedRefreshToken);
+    if (tokenResult.isErr()) return err(tokenResult.error);
+    const token = tokenResult.value;
 
-    const user = await this.userFacade.findOneById(device.userId);
-    if (!user) return err(new UserNotFoundError());
+    const sessionResult = await this.sessionService.getOneById(token.sessionId);
+    if (sessionResult.isErr()) return err(new InvalidRefreshTokenError());
+    const session = sessionResult.value;
+
+    const userResult = await this.userFacade.getOneById(session.userId);
+    if (userResult.isErr()) return err(userResult.error);
+    const user = userResult.value;
 
     const newAccessToken = this.tokenService.generateAccessToken({
       sub: user.id,
       role: user.role,
       email: user.email,
-      deviceId: device.id,
+      sessionId: session.id,
     });
 
     const refreshTokens = this.tokenService.generateRefreshToken();
 
-    device.updateRefreshToken(refreshTokens.hashedRefreshToken);
-    await this.deviceRepo.save(device);
+    const rotateResult = await this.refreshTokenService.rotate(
+      hashedRefreshToken,
+      refreshTokens.hashedRefreshToken,
+    );
+    if (rotateResult.isErr()) return err(rotateResult.error);
 
     return ok({
       accessToken: newAccessToken,

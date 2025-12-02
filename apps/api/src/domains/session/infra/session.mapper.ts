@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
 
-import { Device } from '@workspace/db';
+import { Session } from '@workspace/db';
 
-import { DeviceEntity, DeviceProps } from './domain/device.entity';
+import { SessionEntity, SessionProps } from '../domain/session.entity';
 
 import { BaseMapper } from '@/shared/base';
 
 @Injectable()
-export class DeviceMapper extends BaseMapper<DeviceEntity, Device> {
-  toDomain(record: Device): DeviceEntity {
-    const props: DeviceProps = {
+export class SessionMapper extends BaseMapper<SessionEntity, Session> {
+  toDomain(record: Session): SessionEntity {
+    const props: SessionProps = {
       userId: record.userId,
-      hashedRefreshToken: record.hashedRefreshToken,
       name: record.name,
       userAgent: record.userAgent,
       os: record.os,
@@ -19,19 +18,19 @@ export class DeviceMapper extends BaseMapper<DeviceEntity, Device> {
       browser: record.browser,
       platform: record.platform,
       ipAddress: record.ipAddress,
-      lastRefreshedAt: record.lastRefreshedAt,
+      lastUsedAt: record.lastUsedAt,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
+      status: record.status,
     };
-    return DeviceEntity.reconstruct(props, record.id);
+    return SessionEntity.reconstruct(props, record.id);
   }
 
-  toPersistence(entity: DeviceEntity): Device {
+  toPersistence(entity: SessionEntity): Session {
     const props = entity.getProps();
     return {
       id: props.id,
       userId: props.userId,
-      hashedRefreshToken: props.hashedRefreshToken,
       name: props.name,
       userAgent: props.userAgent,
       os: props.os,
@@ -39,7 +38,8 @@ export class DeviceMapper extends BaseMapper<DeviceEntity, Device> {
       browser: props.browser,
       platform: props.platform,
       ipAddress: props.ipAddress,
-      lastRefreshedAt: props.lastRefreshedAt,
+      lastUsedAt: props.lastUsedAt,
+      status: props.status,
       createdAt: props.createdAt,
       updatedAt: props.updatedAt,
     };

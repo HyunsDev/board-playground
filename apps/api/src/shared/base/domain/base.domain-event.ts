@@ -21,7 +21,7 @@ export abstract class DomainEvent {
 
   constructor(props: DomainEventProps) {
     if (!props.aggregateId) {
-      throw new ArgumentNotProvidedException('DomainEvent: aggregateId is required');
+      throw new ArgumentNotProvidedException();
     }
 
     this.id = uuidv7();

@@ -6,7 +6,7 @@ export const tokenPayloadSchema = z.object({
   sub: z.string().uuid(),
   role: UserRole,
   email: z.string().email(),
-  deviceId: z.string(),
+  sessionId: z.string(),
 });
 
 export type TokenPayload = z.infer<typeof tokenPayloadSchema>;

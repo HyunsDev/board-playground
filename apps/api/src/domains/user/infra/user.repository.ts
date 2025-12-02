@@ -26,11 +26,11 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     protected readonly mapper: UserMapper,
     protected readonly eventDispatcher: DomainEventDispatcher,
   ) {
-    super(prisma, context, mapper, eventDispatcher, new Logger(UserRepository.name));
+    super(prisma, mapper, eventDispatcher, new Logger(UserRepository.name));
   }
 
   protected get delegate(): PrismaClient['user'] {
-    return (this.client as PrismaClient).user;
+    return this.prisma.user;
   }
 
   async getById(id: string): Promise<DomainResult<UserEntity, UserNotFoundError>> {

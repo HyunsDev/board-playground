@@ -77,7 +77,7 @@ export abstract class Entity<EntityProps> {
 
   private validateProps(props: EntityProps): void {
     if (!props || (typeof props === 'object' && Object.keys(props).length === 0)) {
-      throw new ArgumentNotProvidedException('Entity properties cannot be empty');
+      throw new ArgumentNotProvidedException();
     }
   }
 }

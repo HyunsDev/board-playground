@@ -47,11 +47,11 @@ export abstract class ValueObject<T> {
 
   private checkIfEmpty(props: ValueObjectProps<T>): void {
     if (props === null || props === undefined) {
-      throw new ArgumentNotProvidedException('VO: Property cannot be empty');
+      throw new ArgumentNotProvidedException();
     }
     if (this.isDomainPrimitive(props)) {
       if (props.value === null || props.value === undefined) {
-        throw new ArgumentNotProvidedException('VO: Property cannot be empty');
+        throw new ArgumentNotProvidedException();
       }
     }
   }

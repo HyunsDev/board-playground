@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { CoreModule } from './core/core.module';
 import { AuthModule } from './domains/auth/auth.module';
 import { DevModule } from './domains/dev/dev.module';
-import { DeviceModule } from './domains/device/device.module';
+import { SessionModule } from './domains/session/session.module';
 import { UserModule } from './domains/user/user.module';
 import { ContextModule } from './infra/context/context.module';
 import { DatabaseModule } from './infra/database/database.module';
@@ -17,7 +17,7 @@ import { SecurityModule } from './infra/security/security.module';
     DatabaseModule,
     SecurityModule,
     UserModule,
-    DeviceModule,
+    SessionModule,
     AuthModule,
     DevModule,
     ...(process.env.NODE_ENV === 'development' ? [DevtoolsModule] : []),

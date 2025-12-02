@@ -14,10 +14,7 @@ export class DevtoolsController {
   @TsRestHandler(contract.devtools)
   async handler() {
     if (this.configService.get('NODE_ENV') !== 'development') {
-      throw new InternalServerErrorException(
-        'Devtools are only available in development environment',
-        'DEVTOOLS_ONLY_IN_DEVELOPMENT',
-      );
+      throw new InternalServerErrorException();
     }
 
     return tsRestHandler(contract.devtools, {

@@ -12,7 +12,7 @@ export interface TokenContext {
   id: string;
   role: UserRole;
   email: string;
-  deviceId: string;
+  sessionId: string;
 }
 
 export interface AppContext extends NestClsStore {

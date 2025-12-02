@@ -3,7 +3,8 @@ import { err, ok } from 'neverthrow';
 
 import { DEVICE_PLATFORM } from '@workspace/contract';
 
-import { CreateDeviceService } from '@/domains/device/services/create-device.service';
+import { RefreshTokenService } from '@/domains/session/application/services/refresh-token.service';
+import { SessionService } from '@/domains/session/application/services/session.service';
 import {
   UserEmailAlreadyExistsError,
   UserUsernameAlreadyExistsError,
@@ -48,16 +49,17 @@ export class RegisterAuthCommandHandler
 {
   constructor(
     private readonly userFacade: UserFacade,
-    private readonly createDeviceService: CreateDeviceService,
+    private readonly sessionService: SessionService,
+    private readonly refreshTokenService: RefreshTokenService,
     private readonly passwordService: PasswordService,
     private readonly tokenService: TokenService,
     private readonly txManager: TransactionManager,
   ) {}
 
   async execute(command: RegisterAuthCommand) {
-    const hashedPassword = await this.passwordService.hashPassword(command.password);
+    return await this.txManager.run(async () => {
+      const hashedPassword = await this.passwordService.hashPassword(command.password);
 
-    return this.txManager.run(async () => {
       const createUserResult = await this.userFacade.createUser({
         email: command.email,
         username: command.username,
@@ -66,22 +68,37 @@ export class RegisterAuthCommandHandler
       });
       if (createUserResult.isErr()) return err(createUserResult.error);
 
+      console.log(createUserResult.value.id);
+
+      const createTestUserResult = await this.userFacade.createUser({
+        email: command.email,
+        username: command.username,
+        nickname: command.nickname,
+        password: hashedPassword,
+      });
+      if (createTestUserResult.isErr()) return err(createTestUserResult.error);
+
       const refreshTokens = this.tokenService.generateRefreshToken();
 
-      const createDeviceResult = await this.createDeviceService.create({
+      const createSessionResult = await this.sessionService.create({
         userId: createUserResult.value.id,
         ipAddress: command.ipAddress,
         userAgent: command.userAgent,
-        hashedRefreshToken: refreshTokens.hashedRefreshToken,
         platform: DEVICE_PLATFORM.WEB,
       });
-      if (createDeviceResult.isErr()) return err(createDeviceResult.error);
+      if (createSessionResult.isErr()) return err(createSessionResult.error);
+
+      const createRefreshTokenResult = await this.refreshTokenService.createNew(
+        createSessionResult.value.id,
+        refreshTokens.hashedRefreshToken,
+      );
+      if (createRefreshTokenResult.isErr()) return err(createRefreshTokenResult.error);
 
       const accessToken = this.tokenService.generateAccessToken({
         sub: createUserResult.value.id,
         role: createUserResult.value.role,
         email: createUserResult.value.email,
-        deviceId: createDeviceResult.value.id,
+        sessionId: createSessionResult.value.id,
       });
 
       return ok({

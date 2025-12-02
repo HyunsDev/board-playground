@@ -4,7 +4,7 @@ export interface DomainErrorProps<T = unknown> {
   details?: T;
 }
 
-export class DomainError<T = unknown> {
+export abstract class DomainError<T = unknown> {
   public readonly message: string;
   public readonly code: string;
   public readonly details?: T;

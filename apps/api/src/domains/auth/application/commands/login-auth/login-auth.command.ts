@@ -1,10 +1,14 @@
+import { UseInterceptors } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { Transactional } from '@nestjs-cls/transactional';
 import { err, ok } from 'neverthrow';
 
 import { DEVICE_PLATFORM } from '@workspace/contract';
 
-import { CreateDeviceService } from '@/domains/device/services/create-device.service';
+import { RefreshTokenService } from '@/domains/session/application/services/refresh-token.service';
+import { SessionService } from '@/domains/session/application/services/session.service';
 import { UserFacade } from '@/domains/user/interface/user.facade';
+import { TransactionResultInterceptor } from '@/infra/database/interceptor/transaction-result.interceptor';
 import { InvalidCredentialsError } from '@/infra/security/domain/security.error';
 import { PasswordService } from '@/infra/security/services/password.service';
 import { TokenService } from '@/infra/security/services/token.service';
@@ -40,11 +44,14 @@ export class LoginAuthCommandHandler
 {
   constructor(
     private readonly userFacade: UserFacade,
-    private readonly createDeviceService: CreateDeviceService,
+    private readonly sessionService: SessionService,
+    private readonly refreshTokenService: RefreshTokenService,
     private readonly passwordService: PasswordService,
     private readonly tokenService: TokenService,
   ) {}
 
+  @Transactional()
+  @UseInterceptors(TransactionResultInterceptor)
   async execute(command: LoginAuthCommand) {
     const user = await this.userFacade.findOneByEmail(command.email);
     if (!user) return err(new InvalidCredentialsError());
@@ -54,20 +61,26 @@ export class LoginAuthCommandHandler
 
     const refreshTokens = this.tokenService.generateRefreshToken();
 
-    const createDeviceResult = await this.createDeviceService.create({
+    const createSessionResult = await this.sessionService.create({
       userId: user.id,
       ipAddress: command.ipAddress,
       userAgent: command.userAgent,
-      hashedRefreshToken: refreshTokens.hashedRefreshToken,
       platform: DEVICE_PLATFORM.WEB,
     });
-    if (createDeviceResult.isErr()) return err(createDeviceResult.error);
+    if (createSessionResult.isErr()) return err(createSessionResult.error);
+    const session = createSessionResult.value;
+
+    const createRefreshTokenResult = await this.refreshTokenService.createNew(
+      session.id,
+      refreshTokens.hashedRefreshToken,
+    );
+    if (createRefreshTokenResult.isErr()) return err(createRefreshTokenResult.error);
 
     const accessToken = this.tokenService.generateAccessToken({
       sub: user.id,
       role: user.role,
       email: user.email,
-      deviceId: createDeviceResult.value.id,
+      sessionId: session.id,
     });
 
     return ok({

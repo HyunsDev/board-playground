@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 
-import { DeviceDto } from '@workspace/contract';
+import { SessionDto } from '@workspace/contract';
 
-import { DeviceEntity } from './domain/device.entity';
+import { SessionEntity } from '../domain/session.entity';
 
 import { BaseDtoMapper } from '@/shared/base';
 
 @Injectable()
-export class DeviceDtoMapper extends BaseDtoMapper<DeviceEntity, DeviceDto> {
-  toDto(entity: DeviceEntity): DeviceDto {
+export class SessionDtoMapper extends BaseDtoMapper<SessionEntity, SessionDto> {
+  toDto(entity: SessionEntity): SessionDto {
     const props = entity.getProps();
     return {
       id: props.id,
@@ -18,7 +18,8 @@ export class DeviceDtoMapper extends BaseDtoMapper<DeviceEntity, DeviceDto> {
       device: props.device,
       browser: props.browser,
       platform: props.platform,
-      lastRefreshedAt: props.lastRefreshedAt.toISOString(),
+      status: props.status,
+      lastUsedAt: props.lastUsedAt.toISOString(),
       createdAt: props.createdAt.toISOString(),
     };
   }

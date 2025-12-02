@@ -1,11 +1,15 @@
 import { Global, Module, Provider } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ClsPluginTransactional } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Request } from 'express';
 import { ClsModule } from 'nestjs-cls';
 import { v7 as uuidv7 } from 'uuid';
 
 import { ContextService } from './context.service';
 import { RequestIdInterceptor } from './interceptors/request-id.interceptor';
+import { DatabaseModule } from '../database/database.module';
+import { DatabaseService } from '../database/database.service';
 
 const interceptors: Provider[] = [
   {
@@ -33,6 +37,14 @@ const interceptors: Provider[] = [
           cls.set('client', { ipAddress, userAgent });
         },
       },
+      plugins: [
+        new ClsPluginTransactional({
+          imports: [DatabaseModule],
+          adapter: new TransactionalAdapterPrisma({
+            prismaInjectionToken: DatabaseService,
+          }),
+        }),
+      ],
     }),
   ],
   providers: [ContextService, ...interceptors],

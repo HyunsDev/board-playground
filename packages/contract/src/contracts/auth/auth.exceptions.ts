@@ -36,4 +36,9 @@ export const AUTH_EXCEPTION = {
     code: 'USED_REFRESH_TOKEN',
     message: '이미 사용된 리프레시 토큰입니다',
   },
+  SESSION_IS_REVOKED: {
+    status: 403,
+    code: 'SESSION_IS_REVOKED',
+    message: '세션이 해지되었습니다',
+  },
 } as const satisfies ExceptionRecord;

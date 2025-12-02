@@ -1,16 +1,15 @@
 import { UAParser } from 'ua-parser-js';
 import { v7 as uuidv7 } from 'uuid';
 
-import { DevicePlatform } from '@workspace/contract';
+import { DevicePlatform, SESSION_STATUS, SessionStatus } from '@workspace/contract';
 
-import { DeviceCreatedEvent } from './events/device-created.event';
-import { DeviceDeletedEvent } from './events/device-deleted.event';
+import { SessionCreatedEvent } from './events/session-created.event';
+import { SessionDeletedEvent } from './events/session-deleted.event';
 
 import { AggregateRoot, CommandMetadata } from '@/shared/base';
 
-export interface DeviceProps {
+export interface SessionProps {
   userId: string;
-  hashedRefreshToken: string | null;
   name: string;
   userAgent: string;
   os: string;
@@ -18,34 +17,34 @@ export interface DeviceProps {
   browser: string;
   platform: DevicePlatform;
   ipAddress: string | null;
-  lastRefreshedAt: Date;
+  lastUsedAt: Date;
   createdAt: Date;
   updatedAt: Date;
+  status: SessionStatus;
 }
 
-export interface CreateDeviceProps {
+export interface CreateSessionProps {
   userId: string;
-  hashedRefreshToken: string;
   userAgent: string;
   platform: DevicePlatform;
   ipAddress: string;
 }
 
-export class DeviceEntity extends AggregateRoot<DeviceProps> {
-  private constructor(props: DeviceProps, id?: string) {
+export class SessionEntity extends AggregateRoot<SessionProps> {
+  private constructor(props: SessionProps, id?: string) {
     super({
       id: id || uuidv7(),
       props,
     });
   }
 
-  public static create(createProps: CreateDeviceProps, metadata?: CommandMetadata): DeviceEntity {
+  public static create(createProps: CreateSessionProps, metadata?: CommandMetadata): SessionEntity {
     const id = uuidv7();
     const userAgentResult = new UAParser(createProps.userAgent).getResult();
 
-    const props: DeviceProps = {
+    const props: SessionProps = {
+      status: SESSION_STATUS.ACTIVE,
       userId: createProps.userId,
-      hashedRefreshToken: createProps.hashedRefreshToken,
       name: `${userAgentResult.os.toString()} - ${userAgentResult.browser.toString()}`,
       userAgent: createProps.userAgent,
       os: userAgentResult.os.toString(),
@@ -53,19 +52,19 @@ export class DeviceEntity extends AggregateRoot<DeviceProps> {
       browser: userAgentResult.browser.toString(),
       platform: createProps.platform,
       ipAddress: createProps.ipAddress,
-      lastRefreshedAt: new Date(),
+      lastUsedAt: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    const device = new DeviceEntity(props, id);
+    const device = new SessionEntity(props, id);
 
     device.addEvent(
-      new DeviceCreatedEvent({
+      new SessionCreatedEvent({
         aggregateId: id,
         userId: props.userId,
-        deviceId: id,
-        deviceName: props.name,
+        sessionId: id,
+        sessionName: props.name,
         metadata,
       }),
     );
@@ -77,26 +76,32 @@ export class DeviceEntity extends AggregateRoot<DeviceProps> {
     return this.props.userId;
   }
 
-  public updateRefreshToken(hashedRefreshToken: string) {
-    this.props.hashedRefreshToken = hashedRefreshToken;
-    this.props.lastRefreshedAt = new Date();
-    this.props.updatedAt = new Date();
+  revoke(): void {
+    this.props.status = SESSION_STATUS.REVOKED;
   }
 
   public delete(): void {
     this.addEvent(
-      new DeviceDeletedEvent({
+      new SessionDeletedEvent({
         aggregateId: this.id,
         userId: this.props.userId,
-        deviceId: this.id,
-        deviceName: this.props.name,
+        sessionId: this.id,
+        sessionName: this.props.name,
       }),
     );
   }
 
-  static reconstruct(props: DeviceProps, id: string): DeviceEntity {
-    return new DeviceEntity(props, id);
+  static reconstruct(props: SessionProps, id: string): SessionEntity {
+    return new SessionEntity(props, id);
   }
 
-  public validate(): void {}
+  get isRevoked(): boolean {
+    return this.props.status === SESSION_STATUS.REVOKED;
+  }
+
+  public updateLastUsedAt(): void {
+    this.props.lastUsedAt = new Date();
+  }
+
+  public validate() {}
 }
