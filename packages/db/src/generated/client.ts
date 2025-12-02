@@ -53,11 +53,6 @@ export type Board = Prisma.BoardModel
  */
 export type Comment = Prisma.CommentModel
 /**
- * Model Device
- * 
- */
-export type Device = Prisma.DeviceModel
-/**
  * Model Manager
  * 
  */
@@ -67,6 +62,16 @@ export type Manager = Prisma.ManagerModel
  * 
  */
 export type Post = Prisma.PostModel
+/**
+ * Model RefreshToken
+ * 
+ */
+export type RefreshToken = Prisma.RefreshTokenModel
+/**
+ * Model Session
+ * 
+ */
+export type Session = Prisma.SessionModel
 /**
  * Model User
  * 
