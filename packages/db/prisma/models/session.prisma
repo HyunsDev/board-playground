@@ -1,0 +1,23 @@
+model Session {
+    id         String         @id @default(uuid())
+    name       String
+    userAgent  String
+    os         String         @default("OTHER")
+    device     String         @default("OTHER")
+    browser    String         @default("OTHER")
+    platform   DevicePlatform @default(OTHER)
+    ipAddress  String?
+    lastUsedAt DateTime       @default(now())
+    createdAt  DateTime       @default(now())
+    updatedAt  DateTime       @updatedAt
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    refreshTokens RefreshToken[]
+}
+
+enum DevicePlatform {
+    WEB
+    OTHER
+}
