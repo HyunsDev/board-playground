@@ -12,6 +12,7 @@ import { RefreshTokenAuthCommand } from '../application/commands/refresh-token-a
 import { RegisterAuthCommand } from '../application/commands/register-auth/register-auth.command';
 
 import { EnvSchema } from '@/core/config/env.validation';
+import { InvalidRefreshTokenError } from '@/domains/device/domain/device.errors';
 import { IpAddress } from '@/shared/decorators/ip-address.decorator';
 import { UserAgent } from '@/shared/decorators/user-agent.decorator';
 import { mapDomainErrorToResponse } from '@/shared/utils/error-mapper';
@@ -125,6 +126,14 @@ export class AuthHttpController {
           return { status: 200, body: { accessToken } };
         },
         (err) => {
+          if (err instanceof InvalidRefreshTokenError) {
+            res.clearCookie('refreshToken', this.getCookieOptions());
+            return {
+              status: 400,
+              body: EXCEPTION.AUTH.INVALID_REFRESH_TOKEN,
+            } as const;
+          }
+
           res.clearCookie('refreshToken', this.getCookieOptions());
           return mapDomainErrorToResponse(err);
         },

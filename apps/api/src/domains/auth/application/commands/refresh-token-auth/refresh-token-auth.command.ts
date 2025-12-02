@@ -4,7 +4,7 @@ import { err, ok } from 'neverthrow';
 
 import { DeviceRepositoryPort } from '@/domains/device/database/device.repository.port';
 import { DEVICE_REPOSITORY } from '@/domains/device/device.di-tokens';
-import { InvalidTokenError } from '@/domains/device/domain/device.errors';
+import { InvalidRefreshTokenError, InvalidTokenError } from '@/domains/device/domain/device.errors';
 import { UserNotFoundError } from '@/domains/user/domain/user.errors';
 import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TokenService } from '@/infra/security/services/token.service';
@@ -43,7 +43,7 @@ export class RefreshTokenAuthCommandHandler
     const hashedRefreshToken = this.tokenService.hashToken(command.refreshToken);
 
     const device = await this.deviceRepo.findByHashedRefreshToken(hashedRefreshToken);
-    if (!device) return err(new InvalidTokenError());
+    if (!device) return err(new InvalidRefreshTokenError());
 
     const user = await this.userFacade.findOneById(device.userId);
     if (!user) return err(new UserNotFoundError());

@@ -12,7 +12,7 @@ import { HttpAdapterHost } from '@nestjs/core';
 import { ApiErrorResponse, EXCEPTION } from '@workspace/contract';
 
 import { ContextService } from '@/infra/context/context.service';
-import { DomainError } from '@/shared/base';
+import { BusinessException, DomainError } from '@/shared/base';
 
 interface ErrorInfo {
   level?: LogLevel;
@@ -59,13 +59,25 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
    * 예외 타입에 따라 적절한 상태 코드와 메시지를 추출합니다.
    */
   private resolveError(exception: unknown): ErrorInfo {
-    if (exception instanceof HttpException) {
-      return this.handleHttpException(exception);
-    }
     if (exception instanceof DomainError) {
       return this.handleUnhandledDomainException(exception);
     }
+    if (exception instanceof BusinessException) {
+      return this.handleBusinessException(exception);
+    }
+    if (exception instanceof HttpException) {
+      return this.handleHttpException(exception);
+    }
     return this.handleUnknownError();
+  }
+
+  private handleBusinessException(exception: BusinessException): ErrorInfo {
+    return {
+      status: exception.getStatus(),
+      code: exception.code,
+      message: exception.message,
+      details: exception.details,
+    };
   }
 
   /**

@@ -101,8 +101,24 @@ export class TestClient {
     return this._cookies[name];
   }
 
+  setCookie(name: string, value: string) {
+    this._cookies[name] = value;
+  }
+
+  getRefreshToken() {
+    return this.getCookie('refreshToken');
+  }
+
+  setRefreshToken(token: string) {
+    this.setCookie('refreshToken', token);
+  }
+
   clearAuth() {
     this._accessToken = null;
     this._cookies = {};
+  }
+
+  clearAccessToken() {
+    this._accessToken = null;
   }
 }

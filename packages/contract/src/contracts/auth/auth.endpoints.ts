@@ -16,7 +16,10 @@ export const registerAuth = c.mutation({
     200: z.object({
       accessToken: z.string(),
     }),
-    400: toExceptionSchema(EXCEPTION.USER.EMAIL_ALREADY_EXISTS),
+    409: z.union([
+      toExceptionSchema(EXCEPTION.USER.EMAIL_ALREADY_EXISTS),
+      toExceptionSchema(EXCEPTION.USER.USERNAME_ALREADY_EXISTS),
+    ]),
   },
 });
 

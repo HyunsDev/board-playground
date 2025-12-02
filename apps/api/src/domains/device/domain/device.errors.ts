@@ -11,3 +11,9 @@ export class InvalidTokenError extends BadRequestError {
     super('Invalid token', 'INVALID_TOKEN');
   }
 }
+
+export class InvalidRefreshTokenError extends BadRequestError {
+  constructor() {
+    super('Invalid refresh token', 'INVALID_REFRESH_TOKEN');
+  }
+}
