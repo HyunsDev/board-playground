@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { DevicePlatform } from './session.enums';
+import { DevicePlatform, SessionStatus } from './session.enums';
 
 import { ID } from '@/common';
 
@@ -18,5 +18,6 @@ export const SessionDtoSchema = z.object({
   createdAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: 'Invalid date format',
   }),
+  status: SessionStatus,
 });
 export type SessionDto = z.infer<typeof SessionDtoSchema>;
