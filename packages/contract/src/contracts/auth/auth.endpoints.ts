@@ -58,6 +58,10 @@ export const refreshTokenAuth = c.mutation({
     200: z.object({
       accessToken: z.string(),
     }),
+    401: z.union([
+      toExceptionSchema(EXCEPTION.AUTH.INVALID_REFRESH_TOKEN),
+      toExceptionSchema(EXCEPTION.AUTH.USED_REFRESH_TOKEN),
+    ]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],

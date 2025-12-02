@@ -31,4 +31,9 @@ export const AUTH_EXCEPTION = {
     code: 'INVALID_REFRESH_TOKEN',
     message: '유효하지 않은 리프레시 토큰입니다',
   },
+  USED_REFRESH_TOKEN: {
+    status: 401,
+    code: 'USED_REFRESH_TOKEN',
+    message: '이미 사용된 리프레시 토큰입니다',
+  },
 } as const satisfies ExceptionRecord;
