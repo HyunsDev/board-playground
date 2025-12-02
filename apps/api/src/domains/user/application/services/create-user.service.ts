@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { err, ok } from 'neverthrow';
 
 import { CreateUserProps, UserEntity } from '../../domain/user.entity';
 import {

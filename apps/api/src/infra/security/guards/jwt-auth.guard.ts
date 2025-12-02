@@ -1,22 +1,23 @@
 // libs/common/src/guards/jwt-auth.guard.ts
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
-import { EXCEPTION } from '@workspace/contract';
-
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+import {
+  ExpiredTokenException,
+  InvalidTokenException,
+  MissingTokenException,
+} from '../domain/secruity.exceptions';
 
 import { ContextService } from '@/infra/context/context.service';
+import { UnauthorizedException } from '@/shared/base';
 import { TokenPayload, tokenPayloadSchema } from '@/shared/types/token-payload.type';
 
 const parseTokenPayload = (payload: unknown): TokenPayload => {
   const parsed = tokenPayloadSchema.safeParse(payload);
   if (!parsed.success) {
-    throw new UnauthorizedException({
-      code: EXCEPTION.AUTH.INVALID_TOKEN.code,
-      message: EXCEPTION.AUTH.INVALID_TOKEN.message,
-    });
+    throw new InvalidTokenException();
   }
   return parsed.data;
 };
@@ -48,24 +49,15 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (err || !token) {
       // 2. 구체적인 에러 원인 확인 (info)
       if (info?.name === 'TokenExpiredError') {
-        throw new UnauthorizedException({
-          code: EXCEPTION.AUTH.EXPIRED_TOKEN.code,
-          message: EXCEPTION.AUTH.EXPIRED_TOKEN.message,
-        });
+        throw new ExpiredTokenException();
       }
 
       if (info?.name === 'JsonWebTokenError') {
-        throw new UnauthorizedException({
-          code: EXCEPTION.AUTH.INVALID_TOKEN.code,
-          message: EXCEPTION.AUTH.INVALID_TOKEN.message,
-        });
+        throw new InvalidTokenException();
       }
 
       if (info?.message === 'No auth token') {
-        throw new UnauthorizedException({
-          code: EXCEPTION.AUTH.MISSING_TOKEN.code,
-          message: EXCEPTION.AUTH.MISSING_TOKEN.message,
-        });
+        throw new MissingTokenException();
       }
       // 그 외 알 수 없는 인증 에러
       throw err || new UnauthorizedException();

@@ -5,7 +5,7 @@ import { DEVICE_PLATFORM } from '@workspace/contract';
 
 import { CreateDeviceService } from '@/domains/device/services/create-device.service';
 import { UserFacade } from '@/domains/user/interface/user.facade';
-import { InvalidCredentialsError } from '@/infra/security/domain/security.exceptions';
+import { InvalidCredentialsError } from '@/infra/security/domain/security.error';
 import { PasswordService } from '@/infra/security/services/password.service';
 import { TokenService } from '@/infra/security/services/token.service';
 import { CommandBase, CommandProps } from '@/shared/base';

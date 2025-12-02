@@ -24,17 +24,25 @@ describe('My Profile Flow', () => {
   });
 
   it('로그인', async () => {
-    const res = await client.api.auth.login({
+    const loginRes = await client.api.auth.login({
       body: { email: user.email, password: user.password },
     });
 
-    if (res.status !== 200) {
-      throw new Error((res.body as any).code);
+    if (loginRes.status !== 200) {
+      throw new Error((loginRes.body as any).code);
     }
 
-    client.setAccessToken(res.body.accessToken);
+    client.setAccessToken(loginRes.body.accessToken);
+    expect(loginRes.status).toBe(200);
 
-    expect(res.status).toBe(200);
+    const meRes = await client.api.user.me.get();
+
+    if (meRes.status !== 200) {
+      throw new Error((meRes.body as any).code);
+    }
+
+    expect(meRes.status).toBe(200);
+    expect(meRes.body.user.username).toBe(user.username);
   });
 
   it('토큰 Refresh', async () => {

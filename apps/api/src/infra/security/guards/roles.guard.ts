@@ -22,7 +22,7 @@ export class RolesGuard implements CanActivate {
     ]);
 
     // Role 제한이 없으면 통과
-    if (!requiredRoles) {
+    if (!requiredRoles || requiredRoles.length === 0) {
       return true;
     }
 

@@ -9,7 +9,7 @@ import { EXCEPTION } from '@/contracts/exception';
 
 export const getUserMe = c.query({
   method: 'GET',
-  path: '/users/me',
+  path: '/me',
   responses: {
     200: z.object({
       user: UserDtoSchema,
@@ -22,7 +22,7 @@ export const getUserMe = c.query({
 
 export const updateUserMeProfile = c.mutation({
   method: 'PATCH',
-  path: '/users/me/profile',
+  path: '/me/profile',
   body: z.object({
     nickname: z.string().min(2).max(20).optional(),
     bio: z.string().max(160).nullable().optional(),
@@ -39,7 +39,7 @@ export const updateUserMeProfile = c.mutation({
 
 export const updateUserMeAvatar = c.mutation({
   method: 'PUT',
-  path: '/users/me/avatar',
+  path: '/me/avatar',
   body: c.type<{ files: File[] }>(),
   contentType: 'multipart/form-data',
   responses: {
@@ -55,7 +55,7 @@ export const updateUserMeAvatar = c.mutation({
 
 export const updateUserMeUsername = c.mutation({
   method: 'PUT',
-  path: '/users/me/username',
+  path: '/me/username',
   body: z.object({
     username: z.string().min(3).max(30),
   }),
@@ -71,7 +71,7 @@ export const updateUserMeUsername = c.mutation({
 
 export const deleteUserMe = c.mutation({
   method: 'DELETE',
-  path: '/users/me',
+  path: '/me',
   body: c.noBody(),
   responses: {
     204: c.noBody(),
