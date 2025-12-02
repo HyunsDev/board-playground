@@ -73,7 +73,6 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
           const targets = error.meta?.target as string[];
-
           if (targets.includes('email')) {
             return err(new UserEmailAlreadyExistsError());
           }

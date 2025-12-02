@@ -23,14 +23,8 @@ export class CreateUserService {
   ): Promise<
     DomainResult<UserEntity, UserEmailAlreadyExistsError | UserUsernameAlreadyExistsError>
   > {
-    const existingByEmail = await this.userRepo.findOneByEmail(props.email);
-    if (!existingByEmail) return err(new UserEmailAlreadyExistsError());
-
-    const existingByUsername = await this.userRepo.findOneByUsername(props.username);
-    if (!existingByUsername) return err(new UserUsernameAlreadyExistsError());
-
     const user = UserEntity.create(props);
-    await this.userRepo.save(user);
-    return ok(user);
+    const created = await this.userRepo.create(user);
+    return created;
   }
 }

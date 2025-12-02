@@ -35,7 +35,7 @@ export class LogoutAuthHttpController {
 
       if (!refreshToken) {
         return {
-          status: 200,
+          status: 204,
           body: null,
         } as const;
       }
@@ -50,7 +50,7 @@ export class LogoutAuthHttpController {
         () => {
           res.clearCookie('refreshToken', this.getCookieOptions());
           return {
-            status: 200,
+            status: 204,
             body: null,
           } as const;
         },

@@ -18,7 +18,7 @@ export interface DeviceProps {
   browser: string;
   platform: DevicePlatform;
   ipAddress: string | null;
-  lastRefreshedAt: Date | null;
+  lastRefreshedAt: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -53,7 +53,7 @@ export class DeviceEntity extends AggregateRoot<DeviceProps> {
       browser: userAgentResult.browser.toString(),
       platform: createProps.platform,
       ipAddress: createProps.ipAddress,
-      lastRefreshedAt: null,
+      lastRefreshedAt: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
     };

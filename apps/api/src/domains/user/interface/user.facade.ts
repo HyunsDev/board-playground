@@ -21,6 +21,10 @@ export class UserFacade {
     return await this.userRepo.findOneById(id);
   }
 
+  async getOneById(id: string) {
+    return await this.userRepo.getById(id);
+  }
+
   async findOneByEmail(email: string) {
     return await this.userRepo.findOneByEmail(email);
   }
