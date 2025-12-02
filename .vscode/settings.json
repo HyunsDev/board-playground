@@ -8,15 +8,20 @@
     "source.fixAll.eslint": "always",
     "source.fixAll.markdownlint": "always"
   },
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ],
-  "cSpell.words": [
-    "Neverthrow",
-    "Userbook"
-  ],
-  "prisma.pinToPrisma6": true
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "cSpell.words": ["Neverthrow", "Userbook"],
+  "prisma.pinToPrisma6": true,
+  "material-icon-theme.activeIconPack": "nest",
+  "material-icon-theme.folders.associations": {
+    "domains": "cluster",
+    "domain": "cluster",
+    "infra": "server",
+    "strategies": "functions",
+    "commands": "command",
+    "queries": "review",
+    "exceptions": "error",
+    "loggers": "log",
+    "logger": "log",
+    "endpoints": "api"
+  }
 }
