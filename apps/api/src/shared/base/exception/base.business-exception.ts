@@ -1,14 +1,18 @@
 import { HttpException } from '@nestjs/common';
 
-import { ApiErrorResponse } from '@workspace/contract';
+export type ExceptionBody = {
+  status: number;
+  code: string;
+  message: string;
+};
 
 export class BusinessException extends HttpException {
   public readonly code: string;
   public readonly details?: any;
 
-  constructor(error: ApiErrorResponse, details?: any) {
-    super(error.message, error.status);
-    this.code = error.code;
+  constructor(body: ExceptionBody, details?: any) {
+    super(body.message, body.status);
+    this.code = body.code;
     this.details = details;
   }
 }
