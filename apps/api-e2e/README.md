@@ -2,8 +2,8 @@
   <img src="../../assets/logo.png" alt="Board Playground Logo" width="120" />
 </p>
 
-<h1 align="center">api</h1>
+<h1 align="center">api-e2e</h1>
 
 <p align="center">
-    DDD 아키텍처를 적용한 NestJS 애플리케이션
+    Jest와 ts-rest를 이용한 api e2e 테스트
 </p>

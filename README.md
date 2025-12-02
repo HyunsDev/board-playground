@@ -1,124 +1,47 @@
-# Turborepo starter
+<p align="center">
+  <img src="assets/logo-title.png" height="64" alt="Board Playground Logo" />
+</p>
 
-This is a community-maintained example. If you experience a problem, please submit a pull request with a fix. GitHub Issues will be closed.
+<p align="center">다양한 기술스택을 사용하는 게시판 시스템</p>
 
-## Using this example
+## Working In Process
 
-Run the following command:
+현재 이 프로젝트는 개발 중인 상태입니다. 현재 단계에서는 사용할 수 없거나, 문제가 발생할 수 있습니다.
 
-```bash
-npx create-turbo@latest -e with-nestjs
-```
+## 구조
 
-## What's inside?
+### apps
 
-This Turborepo includes the following packages & apps:
+- `apps/api`: NestJS 기반 API 서버
+- `apps/api-e2e`: API e2e 테스트 모듈
+- `apps/web`: Next.js 프론트엔드
 
-### Apps and Packages
+### packages
 
-```shell
-.
-├── apps
-│   ├── api                       # NestJS app (https://nestjs.com).
-│   └── web                       # Next.js app (https://nextjs.org).
-└── packages
-    ├── @workspace/api                 # Shared `NestJS` resources.
-    ├── @workspace/eslint-config       # `eslint` configurations (includes `prettier`)
-    ├── @workspace/jest-config         # `jest` configurations
-    ├── @workspace/typescript-config   # `tsconfig.json`s used throughout the monorepo
-    └── @workspace/ui                  # Shareable stub React component library.
-```
+- `packages/contract`: ts-rest로 정의한 API 계약/스키마
+- `packages/db`: Prisma 스키마
+- `packages/ui`: 프론트엔드가 재사용하는 React UI 컴포넌트
+- `packages/eslint-config`, `packages/jest-config`, `packages/typescript-config`: 워크스페이스 공통 설정
 
-Each package and application are mostly written in [TypeScript](https://www.typescriptlang.org/).
+## 목표
 
-### Utilities
+### 개발
 
-This `Turborepo` has some additional tools already set for you:
+- 모노레포 사용
+- ts-rest를 사용한 **contract-first** API 개발
 
-- [TypeScript](https://www.typescriptlang.org/) for static type-safety
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-- [Jest](https://prettier.io) & [Playwright](https://playwright.dev/) for testing
+### 프론트엔드
 
-### Commands
+-
 
-This `Turborepo` already configured useful commands for all your apps and packages.
+### 백엔드
 
-#### Build
+- DDD(도메인 주도 개발)
+- CQRS
+- Prisma
+- PostgreSQL
+- Neverthrow
 
-```bash
-# Will build all the app & packages with the supported `build` script.
-pnpm run build
+## 라이센스
 
-# ℹ️ If you plan to only build apps individually,
-# Please make sure you've built the packages first.
-```
-
-#### Develop
-
-```bash
-# Will run the development server for all the app & packages with the supported `dev` script.
-pnpm run dev
-```
-
-#### test
-
-```bash
-# Will launch a test suites for all the app & packages with the supported `test` script.
-pnpm run test
-
-# You can launch e2e testes with `test:e2e`
-pnpm run test:e2e
-
-# See `@workspace/jest-config` to customize the behavior.
-```
-
-#### Lint
-
-```bash
-# Will lint all the app & packages with the supported `lint` script.
-# See `@workspace/eslint-config` to customize the behavior.
-pnpm run lint
-```
-
-#### Format
-
-```bash
-# Will format all the supported `.ts,.js,json,.tsx,.jsx` files.
-# See `@workspace/eslint-config/prettier-base.js` to customize the behavior.
-pnpm format
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```bash
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```bash
-npx turbo link
-```
-
-## Useful Links
-
-This example take some inspiration the [with-nextjs](https://github.com/vercel/turborepo/tree/main/examples/with-nextjs) `Turbo` example and [01-cats-app](https://github.com/nestjs/nest/tree/master/sample/01-cats-app) `NestJs` sample.
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+board-playground는 [GPLv3 라이센스](./LICENSE) 를 적용받습니다.

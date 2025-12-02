@@ -2,8 +2,8 @@
   <img src="../../assets/logo.png" alt="Board Playground Logo" width="120" />
 </p>
 
-<h1 align="center">api</h1>
+<h1 align="center">@workspace/typescript-config</h1>
 
 <p align="center">
-    DDD 아키텍처를 적용한 NestJS 애플리케이션
+  모노레포 전반에 적용되는 공통 TypeScript 설정 패키지.
 </p>

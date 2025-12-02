@@ -2,8 +2,8 @@
   <img src="../../assets/logo.png" alt="Board Playground Logo" width="120" />
 </p>
 
-<h1 align="center">api</h1>
+<h1 align="center">@workspace/ui</h1>
 
 <p align="center">
-    DDD 아키텍처를 적용한 NestJS 애플리케이션
+  Tailwind CSS와 Shadcn/ui 기반의 디자인 시스템 패키지.
 </p>
