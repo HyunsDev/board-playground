@@ -5,7 +5,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 import { envSchema } from './config/env.validation';
-import { GlobalExceptionsFilter } from './filters/global-exception.filer';
+import { GlobalExceptionsFilter } from './filters/global-exception.filter';
 import { RequestValidationFilter } from './filters/request-validation.filter';
 
 const filters = [
