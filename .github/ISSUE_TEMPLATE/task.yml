@@ -1,0 +1,43 @@
+name: Task
+description: 일반적인 작업을 생성하는 템플릿입니다.
+title: "[Task]: "
+labels:
+  - task
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: 작업 요약
+      description: 수행할 작업을 간단히 작성해주세요.
+      placeholder: 환경 변수 관리 개선
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 상세 설명
+      description: 작업의 목적과 필요한 내용을 작성해주세요.
+      placeholder: |
+        - dotenv 구조 개선
+        - 개발/운영 환경 분리
+    validations:
+      required: false
+
+  - type: textarea
+    id: checklist
+    attributes:
+      label: 체크리스트
+      description: 작업 단계를 체크박스로 작성해주세요.
+      placeholder: |
+        - [ ] env 파일 분리
+        - [ ] dotenv-safe 설정
+    validations:
+      required: false
+
+  - type: input
+    id: reference
+    attributes:
+      label: 참고 자료
+    validations:
+      required: false
