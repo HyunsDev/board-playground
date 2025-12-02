@@ -3,10 +3,10 @@ import z from 'zod';
 import { authContract } from './auth/auth.contract';
 import { boardContract } from './board/board.contracts';
 import { commentContract } from './comment/comment.contracts';
-import { deviceContract } from './device/device.contract';
 import { DevtoolsContract } from './devtools/devtools.contract';
 import { EXCEPTION } from './exception';
 import { postContracts } from './post/post.contracts';
+import { sessionContract } from './session/session.contract';
 import { userContract, userForAdminContract } from './user/user.contracts';
 
 import { c, toExceptionSchema } from '@/common';
@@ -17,7 +17,7 @@ export const contract = c.router(
       user: userForAdminContract,
     }),
     auth: authContract,
-    device: deviceContract,
+    session: sessionContract,
     user: userContract,
     board: boardContract,
     post: postContracts,

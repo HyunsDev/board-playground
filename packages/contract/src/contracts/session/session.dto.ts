@@ -1,10 +1,10 @@
 import z from 'zod';
 
-import { DevicePlatform } from './device.enums';
+import { DevicePlatform } from './session.enums';
 
 import { ID } from '@/common';
 
-export const DeviceDtoSchema = z.object({
+export const SessionDtoSchema = z.object({
   id: ID,
   userId: ID,
   name: z.string(),
@@ -12,11 +12,11 @@ export const DeviceDtoSchema = z.object({
   device: z.string(),
   browser: z.string(),
   platform: DevicePlatform,
-  lastRefreshedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+  lastUsedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: 'Invalid date format',
   }),
   createdAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: 'Invalid date format',
   }),
 });
-export type DeviceDto = z.infer<typeof DeviceDtoSchema>;
+export type SessionDto = z.infer<typeof SessionDtoSchema>;

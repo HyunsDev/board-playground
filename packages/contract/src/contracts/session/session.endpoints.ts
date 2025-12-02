@@ -1,36 +1,35 @@
 import z from 'zod';
 
-import { DeviceDtoSchema } from './device.dto';
+import { SessionDtoSchema } from './session.dto';
 
 import { c } from '@/common';
 import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
 import { EXCEPTION } from '@/contracts/exception';
 import { USER_ROLE } from '@/contracts/user';
 
-
-export const getDevice = c.query({
+export const getSession = c.query({
   method: 'GET',
-  path: '/devices/:deviceId',
+  path: '/sessions/:sessionId',
   pathParams: z.object({
-    deviceId: z.string().uuid(),
+    sessionId: z.string().uuid(),
   }),
   responses: {
     200: z.object({
-      device: DeviceDtoSchema,
+      session: SessionDtoSchema,
     }),
-    404: toExceptionSchema(EXCEPTION.DEVICE.NOT_FOUND),
+    404: toExceptionSchema(EXCEPTION.SESSION.NOT_FOUND),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
   },
 });
 
-export const listDevices = c.query({
+export const listSessions = c.query({
   method: 'GET',
-  path: '/devices',
+  path: '/sessions',
   responses: {
     200: z.object({
-      devices: z.array(DeviceDtoSchema),
+      sessions: z.array(SessionDtoSchema),
     }),
   },
   metadata: {
@@ -38,16 +37,16 @@ export const listDevices = c.query({
   },
 });
 
-export const deleteDevice = c.mutation({
+export const deleteSession = c.mutation({
   method: 'DELETE',
-  path: '/devices/:deviceId',
+  path: '/sessions/:sessionId',
   body: c.noBody(),
   pathParams: z.object({
-    deviceId: z.string().uuid(),
+    sessionId: z.string().uuid(),
   }),
   responses: {
     204: z.undefined(),
-    404: toExceptionSchema(EXCEPTION.DEVICE.NOT_FOUND),
+    404: toExceptionSchema(EXCEPTION.SESSION.NOT_FOUND),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
