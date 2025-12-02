@@ -6,10 +6,10 @@ import { Request, Response } from 'express';
 
 import { contract, EXCEPTION } from '@workspace/contract';
 
-import { LoginAuthCommand } from '../commands/login-auth/login-auth.command';
-import { LogoutAuthCommand } from '../commands/logout-auth/logout-auth.command';
-import { RefreshTokenAuthCommand } from '../commands/refresh-token-auth/refresh-token-auth.command';
-import { RegisterAuthCommand } from '../commands/register-auth/register-auth.command';
+import { LoginAuthCommand } from '../application/commands/login-auth/login-auth.command';
+import { LogoutAuthCommand } from '../application/commands/logout-auth/logout-auth.command';
+import { RefreshTokenAuthCommand } from '../application/commands/refresh-token-auth/refresh-token-auth.command';
+import { RegisterAuthCommand } from '../application/commands/register-auth/register-auth.command';
 
 import { EnvSchema } from '@/core/config/env.validation';
 import { IpAddress } from '@/shared/decorators/ip-address.decorator';

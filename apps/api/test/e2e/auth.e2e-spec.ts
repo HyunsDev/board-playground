@@ -13,12 +13,7 @@ describe('My Profile Flow', () => {
 
   it('회원 가입', async () => {
     const res = await client.api.auth.register({
-      body: {
-        email: user.email,
-        username: user.username,
-        nickname: user.nickname,
-        password: user.password,
-      },
+      body: { ...user },
     });
 
     if (res.status !== 200) {
