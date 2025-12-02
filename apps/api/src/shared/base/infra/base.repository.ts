@@ -1,5 +1,6 @@
-import { Prisma } from '@prisma/client';
 import { err, ok } from 'neverthrow';
+
+import { Prisma } from '@workspace/db';
 
 import { Mapper } from './base.mapper';
 import { LoggerPort } from '../../logger/logger.port';

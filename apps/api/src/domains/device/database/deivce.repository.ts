@@ -7,8 +7,8 @@ import { DeviceMapper } from '../device.mapper';
 import { DeviceEntity } from '../domain/device.entity';
 
 import { ContextService } from '@/infra/context/context.service';
-import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
 import { DatabaseService } from '@/infra/database/database.service';
+import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
 import { BaseRepository } from '@/shared/base/infra/base.repository';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class DeviceRepository
     super(prisma, context, mapper, eventDispatcher, new Logger(DeviceRepository.name));
   }
 
-  protected get delegate() {
+  protected get delegate(): PrismaClient['device'] {
     return (this.prisma as PrismaClient).device;
   }
 

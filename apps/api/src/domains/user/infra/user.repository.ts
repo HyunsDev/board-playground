@@ -29,7 +29,7 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     super(prisma, context, mapper, eventDispatcher, new Logger(UserRepository.name));
   }
 
-  protected get delegate() {
+  protected get delegate(): PrismaClient['user'] {
     return (this.client as PrismaClient).user;
   }
 
