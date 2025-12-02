@@ -21,14 +21,14 @@ export class DevtoolsController {
     }
 
     return tsRestHandler(contract.devtools, {
-      createUser: async ({ body }) => {
+      createUser: async () => {
         // Implementation for creating a user in devtools
         return {
           status: 200,
           body: {} as any,
         } as const;
       },
-      forceLogin: async ({ body }) => {
+      forceLogin: async () => {
         // Implementation for forcing login in devtools
         return {
           status: 200,
