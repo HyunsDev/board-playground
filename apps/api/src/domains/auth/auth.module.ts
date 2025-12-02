@@ -8,9 +8,9 @@ import { LoginAuthCommandHandler } from './commands/login-auth/login-auth.comman
 import { LogoutAuthCommandHandler } from './commands/logout-auth/logout-auth.command';
 import { RefreshTokenAuthCommandHandler } from './commands/refresh-token-auth/refresh-token-auth.command';
 import { RegisterAuthCommandHandler } from './commands/register-auth/register-auth.command';
-import { AuthHTTPController } from './interface/auth.http.controller';
+import { AuthHttpController } from './interface/auth.http.controller';
 
-const httpControllers = [AuthHTTPController];
+const httpControllers = [AuthHttpController];
 const commandHandlers: Provider[] = [
   RegisterAuthCommandHandler,
   LoginAuthCommandHandler,

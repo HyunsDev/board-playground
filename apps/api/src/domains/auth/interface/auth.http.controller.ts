@@ -17,7 +17,7 @@ import { UserAgent } from '@/shared/decorators/user-agent.decorator';
 import { mapDomainErrorToResponse } from '@/shared/utils/error-mapper';
 
 @Controller()
-export class AuthHTTPController {
+export class AuthHttpController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly configService: ConfigService<EnvSchema>,
