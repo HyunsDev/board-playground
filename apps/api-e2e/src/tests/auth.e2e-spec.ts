@@ -1,6 +1,7 @@
 import { describe, beforeAll, it, expect } from '@jest/globals';
-import { createMockUser, MockUser } from '@test/mocks/user.mock';
-import { TestClient } from '@test/utils/test-client';
+
+import { createMockUser, MockUser } from '@/mocks/user.mock';
+import { TestClient } from '@/utils/test-client';
 
 describe('My Profile Flow', () => {
   let user: MockUser;
