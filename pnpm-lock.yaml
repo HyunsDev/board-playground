@@ -52,7 +52,7 @@ importers:
         version: 11.1.8(@nestjs/common@11.1.8)(@nestjs/core@11.1.8)
       '@prisma/client':
         specifier: ^6.19.0
-        version: 6.19.0(typescript@5.5.4)
+        version: 6.19.0(prisma@6.19.0)(typescript@5.5.4)
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@22.19.0)(zod@3.25.76)
@@ -106,8 +106,8 @@ importers:
         version: 3.25.76
     devDependencies:
       '@faker-js/faker':
-        specifier: ^10.1.0
-        version: 10.1.0
+        specifier: ^9.9.0
+        version: 9.9.0
       '@jest/globals':
         specifier: ^29.7.0
         version: 29.7.0
@@ -874,9 +874,9 @@ packages:
       levn: 0.4.1
     dev: true
 
-  /@faker-js/faker@10.1.0:
-    resolution: {integrity: sha512-C3mrr3b5dRVlKPJdfrAXS8+dq+rq8Qm5SNRazca0JKgw1HQERFmrVb0towvMmw5uu8hHKNiQasMaR/tydf3Zsg==}
-    engines: {node: ^20.19.0 || ^22.13.0 || ^23.5.0 || >=24.0.0, npm: '>=10'}
+  /@faker-js/faker@9.9.0:
+    resolution: {integrity: sha512-OEl393iCOoo/z8bMezRlJu+GlRGlsKbUAN7jKB6LhnKoqKve5DXRpalbItIIcwnCjs1k/FOPjFzcA6Qn+H+YbA==}
+    engines: {node: '>=18.0.0', npm: '>=9.0.0'}
     dev: true
 
   /@humanfs/core@0.19.1:
@@ -2017,22 +2017,6 @@ packages:
         optional: true
     dependencies:
       prisma: 6.19.0(typescript@5.5.4)
-      typescript: 5.5.4
-    dev: false
-
-  /@prisma/client@6.19.0(typescript@5.5.4):
-    resolution: {integrity: sha512-QXFT+N/bva/QI2qoXmjBzL7D6aliPffIwP+81AdTGq0FXDoLxLkWivGMawG8iM5B9BKfxLIXxfWWAF6wbuJU6g==}
-    engines: {node: '>=18.18'}
-    requiresBuild: true
-    peerDependencies:
-      prisma: '*'
-      typescript: '>=5.1.0'
-    peerDependenciesMeta:
-      prisma:
-        optional: true
-      typescript:
-        optional: true
-    dependencies:
       typescript: 5.5.4
     dev: false
 
