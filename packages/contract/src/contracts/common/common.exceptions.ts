@@ -1,6 +1,11 @@
 import { ExceptionRecord } from '@/common';
 
 export const COMMON_EXCEPTION = {
+  BAD_REQUEST: {
+    status: 400,
+    code: 'BAD_REQUEST',
+    message: '잘못된 요청입니다',
+  },
   NOT_FOUND: {
     status: 404,
     code: 'NOT_FOUND',
@@ -16,9 +21,9 @@ export const COMMON_EXCEPTION = {
     code: 'INTERNAL_SERVER_ERROR',
     message: '서버 내부 오류가 발생했습니다',
   },
-  FORBIDDEN: {
+  ACCESS_DENIED: {
     status: 403,
-    code: 'FORBIDDEN',
+    code: 'ACCESS_DENIED',
     message: '접근이 금지되었습니다',
   },
   ARGUMENT_INVALID: {
@@ -35,5 +40,10 @@ export const COMMON_EXCEPTION = {
     status: 400,
     code: 'VALIDATION_ERROR',
     message: '유효성 검사에 실패했습니다',
+  },
+  UNAUTHORIZED: {
+    status: 401,
+    code: 'UNAUTHORIZED',
+    message: '인증이 필요합니다',
   },
 } as const satisfies ExceptionRecord;
