@@ -1,4 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
 import { Session, PrismaClient } from '@workspace/db';
@@ -21,15 +23,16 @@ export class SessionRepository
 {
   constructor(
     protected readonly prisma: DatabaseService,
+    protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly context: ContextService,
     protected readonly mapper: SessionMapper,
     protected readonly eventDispatcher: DomainEventDispatcher,
   ) {
-    super(prisma, mapper, eventDispatcher, new Logger(SessionRepository.name));
+    super(prisma, txHost, mapper, eventDispatcher, new Logger(SessionRepository.name));
   }
 
   protected get delegate(): PrismaClient['session'] {
-    return (this.prisma as PrismaClient).session;
+    return this.client.session;
   }
 
   async getOneById(id: string): Promise<DomainResult<SessionEntity, SessionNotFoundError>> {

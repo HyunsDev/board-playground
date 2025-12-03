@@ -68,8 +68,6 @@ export class RegisterAuthCommandHandler
       });
       if (createUserResult.isErr()) return err(createUserResult.error);
 
-      console.log(createUserResult.value.id);
-
       const refreshTokens = this.tokenService.generateRefreshToken();
 
       const createSessionResult = await this.sessionService.create({

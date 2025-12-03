@@ -1,4 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
 import { Prisma, PrismaClient, User } from '@workspace/db';
@@ -22,15 +24,16 @@ import { DomainResult } from '@/shared/types/result.type';
 export class UserRepository extends BaseRepository<UserEntity, User> implements UserRepositoryPort {
   constructor(
     protected readonly prisma: DatabaseService,
+    protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly context: ContextService,
     protected readonly mapper: UserMapper,
     protected readonly eventDispatcher: DomainEventDispatcher,
   ) {
-    super(prisma, mapper, eventDispatcher, new Logger(UserRepository.name));
+    super(prisma, txHost, mapper, eventDispatcher, new Logger(UserRepository.name));
   }
 
   protected get delegate(): PrismaClient['user'] {
-    return this.prisma.user;
+    return this.client.user;
   }
 
   async getById(id: string): Promise<DomainResult<UserEntity, UserNotFoundError>> {

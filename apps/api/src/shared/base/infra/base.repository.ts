@@ -1,3 +1,5 @@
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
 import { Prisma } from '@workspace/db'; // 또는 @prisma/client
@@ -9,8 +11,6 @@ import { AggregateRoot } from '../domain/base.aggregate-root';
 import { RepositoryPort } from '../domain/base.repository.port';
 import { ConflictError, ConflictErrorDetail, NotFoundError } from '../error/common.domain-errors';
 
-// ContextService 제거 (트랜잭션 관리가 자동화됨)
-// import { ContextService } from '@/infra/context/context.service';
 import { DatabaseService } from '@/infra/database/database.service';
 import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
 
@@ -19,26 +19,24 @@ export abstract class BaseRepository<
   DbModel extends { id: string },
 > implements RepositoryPort<Aggregate>
 {
-  // 구현체에서 this.prisma.user 등으로 구현
   protected abstract get delegate(): any;
 
   constructor(
     protected readonly prisma: DatabaseService,
-    // protected readonly context: ContextService, // 삭제
+    protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly mapper: Mapper<Aggregate, DbModel>,
     protected readonly eventDispatcher: DomainEventDispatcher,
     protected readonly logger: LoggerPort,
   ) {}
 
-  // 삭제됨: nestjs-cls가 this.prisma를 자동으로 스위칭하므로 불필요
-  /* protected get client(): Prisma.TransactionClient | DatabaseService {
-    const tx = this.context.getTx();
-    return tx ?? this.prisma;
+  protected get client(): Prisma.TransactionClient | DatabaseService {
+    if (this.txHost.isTransactionActive()) {
+      return this.txHost.tx; // 트랜잭션 클라이언트 사용
+    }
+    return this.prisma; // 평상시(Non-Tx) 클라이언트 사용
   }
-  */
 
   async findOneById(id: string): Promise<Aggregate | null> {
-    // this.delegate 내부에서 this.prisma를 쓰면, 트랜잭션 상태에 따라 자동 분기됨
     const record = await this.delegate.findUnique({
       where: { id },
     });

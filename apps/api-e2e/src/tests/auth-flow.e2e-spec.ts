@@ -129,6 +129,19 @@ describe('Auth Flow', () => {
     expect(res.status).toBe(200);
   });
 
+  it('토큰 갱신: 알 수 없는 리프레시 토큰 사용', async () => {
+    client.setRefreshToken('unknown-refresh-token');
+    const res = await client.api.auth.refreshToken();
+
+    if (res.status !== 400) {
+      throw throwWithCode(res);
+    }
+
+    expect(res.status).toBe(400);
+    expect(res.body.code).toBe(EXCEPTION.AUTH.INVALID_REFRESH_TOKEN.code);
+    client.setRefreshToken(newRefreshToken);
+  });
+
   it('토큰 갱신: 리프레시 토큰 재사용', async () => {
     client.setRefreshToken(usedRefreshToken);
     const res = await client.api.auth.refreshToken();
@@ -142,7 +155,17 @@ describe('Auth Flow', () => {
     client.setRefreshToken(newRefreshToken);
   });
 
-  it('로그아웃', async () => {
+  it('재 로그인 후 로그아웃', async () => {
+    const loginRes = await client.api.auth.login({
+      body: { email: user.email, password: user.password },
+    });
+
+    if (loginRes.status !== 200) {
+      throw throwWithCode(loginRes);
+    }
+
+    client.setAccessToken(loginRes.body.accessToken);
+
     const res = await client.api.auth.logout();
 
     if (res.status !== 204) {

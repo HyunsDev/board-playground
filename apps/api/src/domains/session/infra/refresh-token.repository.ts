@@ -1,4 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
 import { PrismaClient, RefreshToken } from '@workspace/db';
@@ -20,14 +22,15 @@ export class RefreshTokenRepository
 {
   constructor(
     protected readonly prisma: DatabaseService,
+    protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly mapper: RefreshTokenMapper,
     protected readonly eventDispatcher: DomainEventDispatcher,
   ) {
-    super(prisma, mapper, eventDispatcher, new Logger(RefreshTokenRepository.name));
+    super(prisma, txHost, mapper, eventDispatcher, new Logger(RefreshTokenRepository.name));
   }
 
   protected get delegate(): PrismaClient['refreshToken'] {
-    return this.prisma.refreshToken;
+    return this.client.refreshToken;
   }
 
   async getOneByHashedRefreshToken(
