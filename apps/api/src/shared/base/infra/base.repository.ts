@@ -70,9 +70,9 @@ export abstract class BaseRepository<
 
   async delete(entity: Aggregate): Promise<DomainResult<void, EntityNotFoundError>> {
     try {
-      await this.delegate.delete({
+      void (await this.delegate.delete({
         where: { id: entity.id },
-      });
+      }));
       this.publishEvents(entity);
       return ok(undefined);
     } catch (error: any) {

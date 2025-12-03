@@ -34,7 +34,7 @@ export class TransactionManager {
           throw error;
         }
       });
-      await this.eventDispatcher.dispatchAll();
+      void (await this.eventDispatcher.dispatchAll());
       return result;
     } catch (error) {
       if (error instanceof TransactionRollbackError) {

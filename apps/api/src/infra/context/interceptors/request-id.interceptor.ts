@@ -13,7 +13,7 @@ export class RequestIdInterceptor implements NestInterceptor {
     const requestId = this.cls.getId();
 
     if (requestId) {
-      res.setHeader('X-Request-Id', requestId);
+      void res.setHeader('X-Request-Id', requestId);
     }
 
     return next.handle();

@@ -54,7 +54,7 @@ export class AuthHttpController {
 
       return result.match(
         (data) => {
-          res.cookie('refreshToken', data.refreshToken, this.getCookieOptions());
+          void res.cookie('refreshToken', data.refreshToken, this.getCookieOptions());
           return {
             status: 200,
             body: {
@@ -87,7 +87,7 @@ export class AuthHttpController {
 
       return result.match(
         (data) => {
-          res.cookie('refreshToken', data.refreshToken, this.getCookieOptions());
+          void res.cookie('refreshToken', data.refreshToken, this.getCookieOptions());
           return {
             status: 200,
             body: {
@@ -122,19 +122,19 @@ export class AuthHttpController {
 
       return result.match(
         ({ accessToken, refreshToken: newRefreshToken }) => {
-          res.cookie('refreshToken', newRefreshToken, this.getCookieOptions());
+          void res.cookie('refreshToken', newRefreshToken, this.getCookieOptions());
           return { status: 200, body: { accessToken } };
         },
         (err) => {
           if (err instanceof InvalidRefreshTokenError) {
-            res.clearCookie('refreshToken', this.getCookieOptions());
+            void void res.clearCookie('refreshToken', this.getCookieOptions());
             return {
               status: 400,
               body: EXCEPTION.AUTH.INVALID_REFRESH_TOKEN,
             } as const;
           }
 
-          res.clearCookie('refreshToken', this.getCookieOptions());
+          void res.clearCookie('refreshToken', this.getCookieOptions());
           return mapDomainErrorToResponse(err);
         },
       );
@@ -161,7 +161,7 @@ export class AuthHttpController {
 
       return result.match(
         () => {
-          res.clearCookie('refreshToken', this.getCookieOptions());
+          void res.clearCookie('refreshToken', this.getCookieOptions());
           return {
             status: 204,
             body: null,

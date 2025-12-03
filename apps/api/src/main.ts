@@ -12,13 +12,13 @@ async function bootstrap() {
   const port = configService.get<number>('PORT', 4000);
   const cookieSecret = configService.get<string>('COOKIE_SECRET');
 
-  app.use(cookieParser(cookieSecret));
+  void app.use(cookieParser(cookieSecret));
 
   // 프록시 서버 뒤에 있을 때 클라이언트 IP 얻기 위해 설정
-  app.set('trust proxy', true);
+  void app.set('trust proxy', true);
 
-  app.enableCors();
-  await app.listen(port);
+  void app.enableCors();
+  void (await app.listen(port));
 }
 
 void bootstrap();

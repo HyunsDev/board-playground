@@ -1,3 +1,4 @@
+/* eslint-disable functional/no-expression-statements */
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 

@@ -23,6 +23,6 @@ export class RequestValidationFilter implements ExceptionFilter<RequestValidatio
       details,
     };
 
-    response.status(status).json(errorResponse);
+    void response.status(status).json(errorResponse);
   }
 }

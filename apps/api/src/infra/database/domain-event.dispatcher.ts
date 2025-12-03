@@ -12,7 +12,7 @@ export class DomainEventDispatcher {
 
   // 1. 이벤트를 바로 발행하지 않고 버퍼에 저장
   addEvents(events: DomainEvent[]): void {
-    this.events.push(...events);
+    this.events = [...this.events, ...events];
   }
 
   // 2. 버퍼 비우기 (롤백 시 사용)
@@ -22,7 +22,7 @@ export class DomainEventDispatcher {
 
   // 3. 모아둔 이벤트 실제 발행 (커밋 후 사용)
   async dispatchAll(): Promise<void> {
-    await Promise.all(
+    const _ = await Promise.all(
       this.events.map((event) => this.eventEmitter.emitAsync(event.constructor.name, event)),
     );
     this.clear();

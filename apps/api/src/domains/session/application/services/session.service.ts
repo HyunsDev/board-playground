@@ -26,13 +26,12 @@ export class SessionService {
   }
 
   async create(props: CreateSessionProps): Promise<DomainResult<SessionEntity, ConflictError>> {
-    let session = SessionEntity.create(props);
+    const session = SessionEntity.create(props);
     const res = await this.sessionRepo.save(session);
     if (res.isErr()) {
       return res;
     }
-    session = res.value;
-    return ok(session);
+    return ok(res.value);
   }
 
   async updateLastUsedAt(id: string): Promise<DomainResult<SessionEntity, ConflictError>> {

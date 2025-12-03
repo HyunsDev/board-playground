@@ -3,7 +3,7 @@ import { v7 } from 'uuid';
 
 import { UsedRefreshTokenError } from './session.errors';
 
-import { AggregateRoot, CommandMetadata } from '@/shared/base';
+import { AggregateRoot } from '@/shared/base';
 
 export interface RefreshTokenProps {
   id: string;
@@ -32,7 +32,7 @@ export class RefreshTokenEntity extends AggregateRoot<RefreshTokenProps> {
 
   public static create(
     createProps: CreateRefreshTokenProps,
-    metadata?: CommandMetadata,
+    // metadata?: CommandMetadata,
   ): RefreshTokenEntity {
     const id = v7();
 

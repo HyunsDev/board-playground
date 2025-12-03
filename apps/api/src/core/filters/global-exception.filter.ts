@@ -51,7 +51,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
     };
 
     // 4. 응답 전송
-    httpAdapter.reply(ctx.getResponse(), responseBody, errorInfo.status as number);
+    void httpAdapter.reply(ctx.getResponse(), responseBody, errorInfo.status as number);
   }
 
   /**

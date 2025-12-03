@@ -3,10 +3,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
-import { UserNotFoundError } from '@/domains/user/domain/user.errors';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constant';
 import { CommandBase, CommandProps } from '@/shared/base';
+import { InferErr } from '@/shared/types/infer-err.type';
 import { DomainResult } from '@/shared/types/result.type';
 
 export class UpdateUserMeProfileCommand extends CommandBase<UpdateUserMeProfileCommandResult> {
@@ -21,7 +21,10 @@ export class UpdateUserMeProfileCommand extends CommandBase<UpdateUserMeProfileC
     this.bio = props.bio;
   }
 }
-export type UpdateUserMeProfileCommandResult = DomainResult<UserEntity, UserNotFoundError>;
+export type UpdateUserMeProfileCommandResult = DomainResult<
+  UserEntity,
+  InferErr<UserRepositoryPort['getById']> | InferErr<UserRepositoryPort['update']>
+>;
 
 @CommandHandler(UpdateUserMeProfileCommand)
 export class UpdateUserMeProfileCommandHandler
@@ -33,15 +36,17 @@ export class UpdateUserMeProfileCommandHandler
   ) {}
 
   async execute(command: UpdateUserMeProfileCommand) {
-    const user = await this.userRepo.findOneById(command.userId);
-    if (!user) return err(new UserNotFoundError());
+    const userResult = await this.userRepo.getById(command.userId);
+    if (userResult.isErr()) return err(userResult.error);
+    const user = userResult.value;
 
     user.updateProfile({
       nickname: command.nickname,
       bio: command.bio,
     });
 
-    await this.userRepo.save(user);
+    const updateResult = await this.userRepo.update(user);
+    if (updateResult.isErr()) return err(updateResult.error);
 
     return ok(user);
   }

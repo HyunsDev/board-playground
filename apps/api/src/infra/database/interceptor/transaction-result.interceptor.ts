@@ -29,7 +29,7 @@ export class TransactionResultInterceptor implements NestInterceptor {
           }
         }
         // 2. 성공(Ok)이라면 이벤트 발행
-        await this.eventDispatcher.dispatchAll();
+        void (await this.eventDispatcher.dispatchAll());
       }),
       catchError((error) => {
         console.log('TransactionResultInterceptor caught error:', error);
