@@ -5,6 +5,7 @@ import { RefreshTokenService } from '@/domains/session/application/services/refr
 import { SessionService } from '@/domains/session/application/services/session.service';
 import { TokenService } from '@/infra/security/services/token.service';
 import { CommandBase } from '@/shared/base';
+import { InferErr } from '@/shared/types/infer-err.type';
 import { DomainResult } from '@/shared/types/result.type';
 
 export class LogoutAuthCommand extends CommandBase<LogoutAuthCommandResult> {
@@ -15,7 +16,10 @@ export class LogoutAuthCommand extends CommandBase<LogoutAuthCommandResult> {
     this.refreshToken = props.refreshToken;
   }
 }
-export type LogoutAuthCommandResult = DomainResult<null, never>;
+export type LogoutAuthCommandResult = DomainResult<
+  null,
+  InferErr<RefreshTokenService['getOneByHashedRefreshToken']> | InferErr<SessionService['revoke']>
+>;
 
 @CommandHandler(LogoutAuthCommand)
 export class LogoutAuthCommandHandler
@@ -37,7 +41,10 @@ export class LogoutAuthCommandHandler
     }
 
     const token = tokenResult.value;
-    await this.sessionService.revoke(token.sessionId);
+    const revokeRes = await this.sessionService.revoke(token.sessionId);
+    if (revokeRes.isErr()) {
+      return ok(null);
+    }
 
     return ok(null);
   }

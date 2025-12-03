@@ -5,15 +5,12 @@ import { err, ok } from 'neverthrow';
 
 import { RefreshTokenService } from '@/domains/session/application/services/refresh-token.service';
 import { SessionService } from '@/domains/session/application/services/session.service';
-import {
-  InvalidRefreshTokenError,
-  InvalidTokenError,
-} from '@/domains/session/domain/session.errors';
-import { UserNotFoundError } from '@/domains/user/domain/user.errors';
+import { InvalidRefreshTokenError } from '@/domains/session/domain/session.errors';
 import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TransactionResultInterceptor } from '@/infra/database/interceptor/transaction-result.interceptor';
 import { TokenService } from '@/infra/security/services/token.service';
 import { CommandBase } from '@/shared/base';
+import { InferErr } from '@/shared/types/infer-err.type';
 import { DomainResult } from '@/shared/types/result.type';
 
 export class RefreshTokenAuthCommand extends CommandBase<RefreshTokenCommandResult> {
@@ -30,7 +27,11 @@ export type RefreshTokenCommandResult = DomainResult<
     accessToken: string;
     refreshToken: string;
   },
-  InvalidTokenError | UserNotFoundError
+  | InferErr<RefreshTokenService['getOneByHashedRefreshToken']>
+  | InferErr<SessionService['getOneById']>
+  | InferErr<UserFacade['getOneById']>
+  | InferErr<RefreshTokenService['rotate']>
+  | InvalidRefreshTokenError
 >;
 
 @CommandHandler(RefreshTokenAuthCommand)

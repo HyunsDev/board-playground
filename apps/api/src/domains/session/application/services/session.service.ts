@@ -1,12 +1,17 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ok } from 'neverthrow';
+import { err, ok } from 'neverthrow';
 
 import { CreateSessionProps, SessionEntity } from '../../domain/session.entity';
 import { SessionNotFoundError } from '../../domain/session.errors';
 import { SessionRepositoryPort } from '../../domain/session.repository.port';
 import { SESSION_REPOSITORY } from '../../session.di-tokens';
 
-import { ConflictError } from '@/shared/base';
+import {
+  ConflictError,
+  EntityConflictError,
+  EntityNotFoundError,
+  UnexpectedDomainErrorException,
+} from '@/shared/base';
 import { DomainResult } from '@/shared/types/result.type';
 
 @Injectable()
@@ -49,6 +54,20 @@ export class SessionService {
     const session = sessionResult.value;
 
     session.revoke();
-    return this.sessionRepo.save(session);
+    const saveRes = await this.sessionRepo.save(session);
+
+    if (saveRes.isErr()) {
+      if (saveRes.error instanceof EntityConflictError) {
+        throw new UnexpectedDomainErrorException(saveRes.error);
+      }
+
+      if (saveRes.error instanceof EntityNotFoundError) {
+        return err(new SessionNotFoundError());
+      }
+
+      throw new UnexpectedDomainErrorException(saveRes.error);
+    }
+
+    return ok(saveRes.value);
   }
 }

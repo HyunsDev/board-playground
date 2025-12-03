@@ -46,4 +46,14 @@ export const COMMON_EXCEPTION = {
     code: 'UNAUTHORIZED',
     message: '인증이 필요합니다',
   },
+  UNEXPECTED_DOMAIN_ERROR: {
+    status: 500,
+    code: 'UNEXPECTED_DOMAIN_ERROR',
+    message: '예기치 못한 도메인 오류가 발생했습니다',
+  },
+  UNHANDLED_DOMAIN_ERROR: {
+    status: 500,
+    code: 'UNHANDLED_DOMAIN_ERROR',
+    message: '처리되지 않은 도메인 오류가 발생했습니다',
+  },
 } as const satisfies ExceptionRecord;

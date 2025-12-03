@@ -5,15 +5,12 @@ import { DEVICE_PLATFORM } from '@workspace/contract';
 
 import { RefreshTokenService } from '@/domains/session/application/services/refresh-token.service';
 import { SessionService } from '@/domains/session/application/services/session.service';
-import {
-  UserEmailAlreadyExistsError,
-  UserUsernameAlreadyExistsError,
-} from '@/domains/user/domain/user.errors';
 import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TransactionManager } from '@/infra/database/transaction.manager';
 import { PasswordService } from '@/infra/security/services/password.service';
 import { TokenService } from '@/infra/security/services/token.service';
-import { CommandBase, CommandProps, DomainError } from '@/shared/base';
+import { CommandBase, CommandProps } from '@/shared/base';
+import { InferErr } from '@/shared/types/infer-err.type';
 import { DomainResult } from '@/shared/types/result.type';
 
 export class RegisterAuthCommand extends CommandBase<RegisterAuthCommandResult> {
@@ -40,7 +37,9 @@ export type RegisterAuthCommandResult = DomainResult<
     accessToken: string;
     refreshToken: string;
   },
-  UserEmailAlreadyExistsError | UserUsernameAlreadyExistsError | DomainError
+  | InferErr<UserFacade['createUser']>
+  | InferErr<SessionService['create']>
+  | InferErr<RefreshTokenService['createNew']>
 >;
 
 @CommandHandler(RegisterAuthCommand)

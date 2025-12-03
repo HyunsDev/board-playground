@@ -3,7 +3,6 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
-  HttpStatus,
   Logger,
   LogLevel,
 } from '@nestjs/common';
@@ -103,9 +102,10 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
   private handleUnhandledDomainException(exception: DomainError): ErrorInfo {
     return {
       level: 'warn',
-      status: HttpStatus.BAD_REQUEST,
-      code: exception.code,
-      message: exception.message,
+      ...EXCEPTION.COMMON.UNHANDLED_DOMAIN_ERROR,
+      details: {
+        originalErrorName: exception.name,
+      },
     };
   }
 

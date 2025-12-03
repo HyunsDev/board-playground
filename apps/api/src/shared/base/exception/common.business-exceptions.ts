@@ -1,6 +1,7 @@
 import { EXCEPTION } from '@workspace/contract';
 
 import { BusinessException, ExceptionBody } from './base.business-exception';
+import { DomainError } from '../error/base.domain-error';
 
 export class NotFoundException extends BusinessException {
   constructor(body: ExceptionBody = EXCEPTION.COMMON.NOT_FOUND, details?: any) {
@@ -41,5 +42,13 @@ export class ArgumentNotProvidedException extends InternalServerErrorException {
 export class BadRequestException extends BusinessException {
   constructor(body: ExceptionBody = EXCEPTION.COMMON.BAD_REQUEST, details?: any) {
     super(body, details);
+  }
+}
+
+export class UnexpectedDomainErrorException extends InternalServerErrorException {
+  constructor(error: DomainError) {
+    super(EXCEPTION.COMMON.UNEXPECTED_DOMAIN_ERROR as ExceptionBody, {
+      originalErrorName: error.name,
+    });
   }
 }

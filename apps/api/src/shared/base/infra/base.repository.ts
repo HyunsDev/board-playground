@@ -9,7 +9,11 @@ import { LoggerPort } from '../../logger/logger.port';
 import { DomainResult } from '../../types/result.type';
 import { AggregateRoot } from '../domain/base.aggregate-root';
 import { RepositoryPort } from '../domain/base.repository.port';
-import { ConflictError, ConflictErrorDetail, NotFoundError } from '../error/common.domain-errors';
+import {
+  EntityConflictDetail,
+  EntityConflictError,
+  EntityNotFoundError,
+} from '../error/common.domain-errors';
 
 import { DatabaseService } from '@/infra/database/database.service';
 import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
@@ -43,7 +47,9 @@ export abstract class BaseRepository<
     return record ? this.mapper.toDomain(record) : null;
   }
 
-  async save(entity: Aggregate): Promise<DomainResult<Aggregate, ConflictError | NotFoundError>> {
+  async save(
+    entity: Aggregate,
+  ): Promise<DomainResult<Aggregate, EntityConflictError | EntityNotFoundError>> {
     const record = this.mapper.toPersistence(entity);
     try {
       const result = await this.delegate.upsert({
@@ -62,7 +68,7 @@ export abstract class BaseRepository<
     }
   }
 
-  async delete(entity: Aggregate): Promise<DomainResult<void, NotFoundError>> {
+  async delete(entity: Aggregate): Promise<DomainResult<void, EntityNotFoundError>> {
     try {
       await this.delegate.delete({
         where: { id: entity.id },
@@ -71,7 +77,9 @@ export abstract class BaseRepository<
       return ok(undefined);
     } catch (error: any) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-        return err(new NotFoundError(`Record with id ${entity.id} not found`));
+        return err(
+          new EntityNotFoundError({ entityName: entity.constructor.name, entityId: entity.id }),
+        );
       }
       throw error;
     }
@@ -82,18 +90,24 @@ export abstract class BaseRepository<
     this.eventDispatcher.addEvents(events);
   }
 
-  private handleKnownPrismaErrors(error: any, record: any): ConflictError | NotFoundError {
+  private handleKnownPrismaErrors(
+    error: any,
+    record: any,
+  ): EntityConflictError | EntityNotFoundError {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
         const targets = (error.meta?.target as string[]) || [];
-        const details: ConflictErrorDetail[] = targets.map((field) => ({
+        const details: EntityConflictDetail[] = targets.map((field) => ({
           field,
           value: record[field],
         }));
-        return new ConflictError('Conflict detected', 'DB_CONFLICT', details);
+        return new EntityConflictError({ entityName: record.constructor.name, conflicts: details });
       }
       if (error.code === 'P2025') {
-        return new NotFoundError('Record not found');
+        return new EntityNotFoundError({
+          entityName: record.constructor.name,
+          entityId: record.id,
+        });
       }
     }
     throw error;

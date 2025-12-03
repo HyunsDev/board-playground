@@ -13,7 +13,7 @@ export function mapDomainErrorToResponse(error: DomainError) {
     return {
       status: 404,
       body: {
-        code: error.code,
+        code: error.name,
         status: 404,
         message: error.message,
         details: error.details,
@@ -25,7 +25,7 @@ export function mapDomainErrorToResponse(error: DomainError) {
     return {
       status: 409,
       body: {
-        code: error.code,
+        code: error.name,
         status: 409,
         message: error.message,
         details: error.details,
@@ -37,7 +37,7 @@ export function mapDomainErrorToResponse(error: DomainError) {
     return {
       status: 401,
       body: {
-        code: error.code,
+        code: error.name,
         status: 401,
         message: error.message,
         details: error.details,
@@ -61,7 +61,7 @@ export function mapDomainErrorToResponse(error: DomainError) {
     return {
       status: 400,
       body: {
-        code: error.code,
+        code: error.name,
         status: 400,
         message: error.message,
         details: error.details,
@@ -73,7 +73,7 @@ export function mapDomainErrorToResponse(error: DomainError) {
     return {
       status: 400,
       body: {
-        code: error.code,
+        code: error.name,
         status: 400,
         message: error.message,
         details: error.details,
@@ -85,7 +85,7 @@ export function mapDomainErrorToResponse(error: DomainError) {
     return {
       status: 500,
       body: {
-        code: error.code,
+        code: error.name,
         status: 500,
         message: error.message,
         details: error.details,

@@ -13,6 +13,7 @@ import { InvalidCredentialsError } from '@/infra/security/domain/security.error'
 import { PasswordService } from '@/infra/security/services/password.service';
 import { TokenService } from '@/infra/security/services/token.service';
 import { CommandBase, CommandProps } from '@/shared/base';
+import { InferErr } from '@/shared/types/infer-err.type';
 import { DomainResult } from '@/shared/types/result.type';
 
 export class LoginAuthCommand extends CommandBase<LoginAuthCommandResult> {
@@ -35,7 +36,9 @@ export type LoginAuthCommandResult = DomainResult<
     accessToken: string;
     refreshToken: string;
   },
-  InvalidCredentialsError
+  | InvalidCredentialsError
+  | InferErr<SessionService['create']>
+  | InferErr<RefreshTokenService['createNew']>
 >;
 
 @CommandHandler(LoginAuthCommand)

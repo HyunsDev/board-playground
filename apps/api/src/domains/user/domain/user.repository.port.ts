@@ -5,7 +5,7 @@ import {
 } from './user.errors';
 import { UserEntity } from '../domain/user.entity';
 
-import { ConflictError, NotFoundError, RepositoryPort } from '@/shared/base';
+import { EntityConflictError, EntityNotFoundError, RepositoryPort } from '@/shared/base';
 import { DomainResult } from '@/shared/types/result.type';
 
 export interface UserRepositoryPort extends RepositoryPort<UserEntity> {
@@ -17,7 +17,9 @@ export interface UserRepositoryPort extends RepositoryPort<UserEntity> {
   /**
    * @deprecated Use {@link create} or {@link update} instead.
    */
-  save(entity: UserEntity): Promise<DomainResult<UserEntity, ConflictError | NotFoundError>>;
+  save(
+    entity: UserEntity,
+  ): Promise<DomainResult<UserEntity, EntityConflictError | EntityNotFoundError>>;
 
   create(
     user: UserEntity,
