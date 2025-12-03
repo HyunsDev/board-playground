@@ -70,14 +70,6 @@ export class RegisterAuthCommandHandler
 
       console.log(createUserResult.value.id);
 
-      const createTestUserResult = await this.userFacade.createUser({
-        email: command.email,
-        username: command.username,
-        nickname: command.nickname,
-        password: hashedPassword,
-      });
-      if (createTestUserResult.isErr()) return err(createTestUserResult.error);
-
       const refreshTokens = this.tokenService.generateRefreshToken();
 
       const createSessionResult = await this.sessionService.create({
