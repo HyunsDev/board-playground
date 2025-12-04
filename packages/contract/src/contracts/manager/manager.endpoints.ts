@@ -9,7 +9,6 @@ import { BoardSlug } from '@/contracts/board/board.schemas';
 import { EXCEPTION } from '@/contracts/exception';
 import { USER_ROLE } from '@/contracts/user';
 
-
 export const listManagersOfBoard = c.query({
   method: 'GET',
   path: '/boards/:boardSlug/managers',
@@ -27,9 +26,9 @@ export const listManagersOfBoard = c.query({
   },
 });
 
-export const listManagerOfUser = c.query({
+export const listManagerOfMe = c.query({
   method: 'GET',
-  path: '/users/:userId/managers',
+  path: '/me/managers',
   pathParams: z.object({
     userId: ID,
   }),
