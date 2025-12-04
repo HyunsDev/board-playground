@@ -23,7 +23,7 @@ export type UpdateUserMeProfileCommandResult = HandlerResult<UpdateUserMeProfile
 
 @CommandHandler(UpdateUserMeProfileCommand)
 export class UpdateUserMeProfileCommandHandler
-  implements ICommandHandler<UpdateUserMeProfileCommand, UpdateUserMeProfileCommandResult>
+  implements ICommandHandler<UpdateUserMeProfileCommand>
 {
   constructor(
     @Inject(USER_REPOSITORY)

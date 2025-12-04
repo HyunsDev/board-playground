@@ -9,6 +9,10 @@ import {
   UpdateUserMeProfileCommand,
   UpdateUserMeProfileCommandResult,
 } from '../application/commands/update-user-me-profile/update-user-me-profile.command';
+import {
+  UpdateUserMeUsernameCommand,
+  UpdateUserMeUsernameCommandResult,
+} from '../application/commands/update-user-me-username/update-user-me-username.command';
 import { GetUserMeQuery } from '../application/queries/get-user-me/get-user-me.query';
 
 import { Auth } from '@/infra/security/decorators/auth.decorator';
@@ -63,6 +67,31 @@ export class UserMeHttpController {
           matchPublicError(error, {
             UserNotFound: () => apiErr(EXCEPTION.USER.NOT_FOUND),
             UserEmailAlreadyExists: () => apiErr(EXCEPTION.USER.EMAIL_ALREADY_EXISTS),
+            UserUsernameAlreadyExists: () => apiErr(EXCEPTION.USER.USERNAME_ALREADY_EXISTS),
+          }),
+      );
+    });
+  }
+
+  @TsRestHandler(contract.user.me.updateUsername)
+  @Auth()
+  async updateUsername(@Token() token: TokenPayload) {
+    return tsRestHandler(contract.user.me.updateUsername, async ({ body }) => {
+      const result = await this.queryBus.execute<UpdateUserMeUsernameCommandResult>(
+        new UpdateUserMeUsernameCommand({
+          userId: token.sub,
+          newUsername: body.username,
+        }),
+      );
+
+      return result.match(
+        (user) =>
+          apiOk(200, {
+            user: this.dtoMapper.toDto(user),
+          }),
+        (error) =>
+          matchPublicError(error, {
+            UserNotFound: () => apiErr(EXCEPTION.USER.NOT_FOUND),
             UserUsernameAlreadyExists: () => apiErr(EXCEPTION.USER.USERNAME_ALREADY_EXISTS),
           }),
       );
