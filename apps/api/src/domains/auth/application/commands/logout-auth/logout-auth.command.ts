@@ -18,9 +18,7 @@ export class LogoutAuthCommand extends CommandBase {
 export type LogoutAuthCommandResult = HandlerResult<LogoutAuthCommandHandler>;
 
 @CommandHandler(LogoutAuthCommand)
-export class LogoutAuthCommandHandler
-  implements ICommandHandler<LogoutAuthCommand, LogoutAuthCommandResult>
-{
+export class LogoutAuthCommandHandler implements ICommandHandler<LogoutAuthCommand> {
   constructor(
     private readonly refreshTokenService: RefreshTokenService,
     private readonly sessionService: SessionService,
