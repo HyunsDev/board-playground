@@ -5,6 +5,7 @@ import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { contract, EXCEPTION } from '@workspace/contract';
 
 import { UserDtoMapper } from './user.dto-mapper';
+import { UpdateUserMeProfileCommand } from '../application/commands/update-user-me-profile/update-user-me-profile.command';
 import { GetUserMeQuery } from '../application/queries/get-user-me/get-user-me.query';
 import { UserNotFoundError } from '../domain/user.errors';
 
@@ -25,6 +26,41 @@ export class UserMeHttpController {
   async getMe(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.get, async () => {
       const result = await this.queryBus.execute(new GetUserMeQuery(token.sub));
+      return result.match(
+        (user) =>
+          ({
+            status: 200,
+            body: {
+              user: this.dtoMapper.toDto(user),
+            },
+          }) as const,
+        (error) => {
+          if (error instanceof UserNotFoundError) {
+            return {
+              status: 404,
+              body: {
+                ...EXCEPTION.USER.NOT_FOUND,
+              },
+            } as const;
+          }
+          return mapDomainErrorToResponse(error);
+        },
+      );
+    });
+  }
+
+  @TsRestHandler(contract.user.me.updateProfile)
+  @Auth()
+  async updateProfile(@Token() token: TokenPayload) {
+    return tsRestHandler(contract.user.me.updateProfile, async ({ body }) => {
+      const result = await this.queryBus.execute(
+        new UpdateUserMeProfileCommand({
+          userId: token.sub,
+          nickname: body.nickname,
+          bio: body.bio,
+        }),
+      );
+
       return result.match(
         (user) =>
           ({

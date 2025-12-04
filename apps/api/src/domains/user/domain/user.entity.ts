@@ -87,20 +87,18 @@ export class UserEntity extends AggregateRoot<UserProps> {
     return user;
   }
 
-  public updateProfile(data: {
-    nickname?: string;
-    bio?: string | null;
-    avatarUrl?: string | null;
-  }) {
+  public updateProfile(data: { nickname?: string; bio?: string | null }) {
     if (data.nickname !== undefined) {
       this.props.nickname = data.nickname;
     }
     if (data.bio !== undefined) {
       this.props.bio = data.bio;
     }
-    if (data.avatarUrl !== undefined) {
-      this.props.avatarUrl = data.avatarUrl;
-    }
+    this.props.updatedAt = new Date();
+  }
+
+  public updateUsername(username: string) {
+    this.props.username = username;
     this.props.updatedAt = new Date();
   }
 
