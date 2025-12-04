@@ -2,8 +2,8 @@ import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
-import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserNotFoundError } from '@/domains/user/domain/user.domain-errors';
+import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constant';
 import { QueryBase } from '@/shared/base';

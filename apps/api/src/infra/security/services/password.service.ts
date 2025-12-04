@@ -6,7 +6,6 @@ export class PasswordService {
   constructor() {}
 
   async hashPassword(password: string): Promise<string> {
-    // 필요시 Pepper 추가 가능
     const hashedPassword = await bcrypt.hash(password, 12);
     return hashedPassword;
   }

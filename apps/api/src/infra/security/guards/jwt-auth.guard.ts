@@ -12,7 +12,7 @@ import {
   InvalidTokenException,
   MissingTokenException,
 } from '@/shared/base/error/common.domain-exception';
-import { TokenPayload, tokenPayloadSchema } from '@/shared/types/token-payload.type';
+import { TokenPayload, tokenPayloadSchema } from '@/shared/schemas/token-payload.schema';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {

@@ -2,8 +2,8 @@ import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
-import { SessionEntity } from '../../../domain/session.entity';
 import { SessionNotFoundError } from '../../../domain/session.domain-errors';
+import { SessionEntity } from '../../../domain/session.entity';
 import { SessionRepositoryPort } from '../../../domain/session.repository.port';
 import { SESSION_REPOSITORY } from '../../../session.di-tokens';
 

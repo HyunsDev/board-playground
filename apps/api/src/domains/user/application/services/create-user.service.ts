@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { CreateUserProps, UserEntity } from '../../domain/user.entity';
 import {
   UserEmailAlreadyExistsError,
   UserUsernameAlreadyExistsError,
 } from '../../domain/user.domain-errors';
+import { CreateUserProps, UserEntity } from '../../domain/user.entity';
 import { UserRepositoryPort } from '../../domain/user.repository.port';
 import { USER_REPOSITORY } from '../../user.constant';
 

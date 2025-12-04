@@ -19,7 +19,7 @@ export abstract class QueryBase<TRes = any> extends Query<TRes> {
     this.id = props?.id || uuidv7();
 
     this.metadata = {
-      correlationId: props?.metadata?.correlationId || '',
+      correlationId: props?.metadata?.correlationId || this.id,
       causationId: props?.metadata?.causationId,
       userId: props?.metadata?.userId,
       timestamp: props?.metadata?.timestamp || Date.now(),
