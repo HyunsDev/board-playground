@@ -4,12 +4,12 @@ import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
 import { contract, EXCEPTION } from '@workspace/contract';
 
-import { GetSessionQuery } from './get-session.query';
-import { SessionNotFoundError } from '../../../domain/session.errors';
-import { SessionDtoMapper } from '../../../interface/session.dto-mapper';
+import { SessionDtoMapper } from './session.dto-mapper';
+import { GetSessionQuery } from '../application/queries/get-session/get-session.query';
+import { SessionNotFoundError } from '../domain/session.errors';
 
 @Controller()
-export class GetDeviceHttpController {
+export class SessionHttpController {
   constructor(
     private readonly queryBus: QueryBus,
     private readonly sessionDtoMapper: SessionDtoMapper,
