@@ -10,10 +10,9 @@ import { TransactionManager } from '@/infra/database/transaction.manager';
 import { PasswordService } from '@/infra/security/services/password.service';
 import { TokenService } from '@/infra/security/services/token.service';
 import { CommandBase, CommandProps } from '@/shared/base';
-import { InferErr } from '@/shared/types/infer-err.type';
-import { DomainResult } from '@/shared/types/result.type';
+import { HandlerResult } from '@/shared/types/handler-result';
 
-export class RegisterAuthCommand extends CommandBase<RegisterAuthCommandResult> {
+export class RegisterAuthCommand extends CommandBase {
   public readonly email: string;
   public readonly username: string;
   public readonly nickname: string;
@@ -21,7 +20,7 @@ export class RegisterAuthCommand extends CommandBase<RegisterAuthCommandResult> 
   public readonly ipAddress: string;
   public readonly userAgent: string;
 
-  constructor(props: CommandProps<RegisterAuthCommand, RegisterAuthCommandResult>) {
+  constructor(props: CommandProps<RegisterAuthCommand>) {
     super(props);
     this.email = props.email;
     this.username = props.username;
@@ -32,15 +31,7 @@ export class RegisterAuthCommand extends CommandBase<RegisterAuthCommandResult> 
   }
 }
 
-export type RegisterAuthCommandResult = DomainResult<
-  {
-    accessToken: string;
-    refreshToken: string;
-  },
-  | InferErr<UserFacade['createUser']>
-  | InferErr<SessionService['create']>
-  | InferErr<RefreshTokenService['createNew']>
->;
+export type RegisterAuthCommandResult = HandlerResult<RegisterAuthCommandHandler>;
 
 @CommandHandler(RegisterAuthCommand)
 export class RegisterAuthCommandHandler

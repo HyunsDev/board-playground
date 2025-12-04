@@ -13,16 +13,15 @@ import { InvalidCredentialsError } from '@/infra/security/domain/security.domain
 import { PasswordService } from '@/infra/security/services/password.service';
 import { TokenService } from '@/infra/security/services/token.service';
 import { CommandBase, CommandProps } from '@/shared/base';
-import { InferErr } from '@/shared/types/infer-err.type';
-import { DomainResult } from '@/shared/types/result.type';
+import { HandlerResult } from '@/shared/types/handler-result';
 
-export class LoginAuthCommand extends CommandBase<LoginAuthCommandResult> {
+export class LoginAuthCommand extends CommandBase {
   public readonly email: string;
   public readonly password: string;
   public readonly ipAddress: string;
   public readonly userAgent: string;
 
-  constructor(props: CommandProps<LoginAuthCommand, LoginAuthCommandResult>) {
+  constructor(props: CommandProps<LoginAuthCommand>) {
     super(props);
     this.email = props.email!;
     this.password = props.password!;
@@ -31,20 +30,8 @@ export class LoginAuthCommand extends CommandBase<LoginAuthCommandResult> {
   }
 }
 
-export type LoginAuthCommandResult = DomainResult<
-  {
-    accessToken: string;
-    refreshToken: string;
-  },
-  | InvalidCredentialsError
-  | InferErr<SessionService['create']>
-  | InferErr<RefreshTokenService['createNew']>
->;
-
 @CommandHandler(LoginAuthCommand)
-export class LoginAuthCommandHandler
-  implements ICommandHandler<LoginAuthCommand, LoginAuthCommandResult>
-{
+export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand> {
   constructor(
     private readonly userFacade: UserFacade,
     private readonly sessionService: SessionService,
@@ -92,3 +79,5 @@ export class LoginAuthCommandHandler
     });
   }
 }
+
+export type LoginAuthCommandResult = HandlerResult<LoginAuthCommandHandler>;

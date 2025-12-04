@@ -2,29 +2,24 @@ import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
-import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constant';
 import { CommandBase, CommandProps } from '@/shared/base';
-import { InferErr } from '@/shared/types/infer-err.type';
-import { DomainResult } from '@/shared/types/result.type';
+import { HandlerResult } from '@/shared/types/handler-result';
 
-export class UpdateUserMeProfileCommand extends CommandBase<UpdateUserMeProfileCommandResult> {
+export class UpdateUserMeProfileCommand extends CommandBase {
   public readonly userId: string;
   public readonly nickname?: string;
   public readonly bio?: string | null;
 
-  constructor(props: CommandProps<UpdateUserMeProfileCommand, UpdateUserMeProfileCommandResult>) {
+  constructor(props: CommandProps<UpdateUserMeProfileCommand>) {
     super(props);
     this.userId = props.userId!;
     this.nickname = props.nickname;
     this.bio = props.bio;
   }
 }
-export type UpdateUserMeProfileCommandResult = DomainResult<
-  UserEntity,
-  InferErr<UserRepositoryPort['getOneById']> | InferErr<UserRepositoryPort['update']>
->;
+export type UpdateUserMeProfileCommandResult = HandlerResult<UpdateUserMeProfileCommandHandler>;
 
 @CommandHandler(UpdateUserMeProfileCommand)
 export class UpdateUserMeProfileCommandHandler
