@@ -27,4 +27,6 @@ export interface UserRepositoryPort extends RepositoryPort<UserEntity> {
       UserNotFoundError | UserEmailAlreadyExistsError | UserUsernameAlreadyExistsError
     >
   >;
+
+  delete(user: UserEntity): Promise<DomainResult<void, UserNotFoundError>>;
 }

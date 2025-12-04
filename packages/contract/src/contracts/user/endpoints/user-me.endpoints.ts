@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { UserDtoSchema } from '../user.dto';
+import { UserForMeDtoSchema } from '../user.dto';
 import { USER_ROLE } from '../user.enums';
 
 import { c } from '@/common';
@@ -12,7 +12,7 @@ export const getUserMe = c.query({
   path: '/me',
   responses: {
     200: z.object({
-      user: UserDtoSchema,
+      me: UserForMeDtoSchema,
     }),
   },
   metadata: {
@@ -29,7 +29,7 @@ export const updateUserMeProfile = c.mutation({
   }),
   responses: {
     200: z.object({
-      user: UserDtoSchema,
+      me: UserForMeDtoSchema,
     }),
   },
   metadata: {
@@ -44,7 +44,7 @@ export const updateUserMeAvatar = c.mutation({
   contentType: 'multipart/form-data',
   responses: {
     200: z.object({
-      user: UserDtoSchema,
+      me: UserForMeDtoSchema,
     }),
     400: toExceptionSchema(EXCEPTION.USER.INVALID_PROFILE_IMAGE),
   },
@@ -61,7 +61,7 @@ export const updateUserMeUsername = c.mutation({
   }),
   responses: {
     200: z.object({
-      user: UserDtoSchema,
+      me: UserForMeDtoSchema,
     }),
   },
   metadata: {

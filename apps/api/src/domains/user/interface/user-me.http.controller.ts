@@ -6,6 +6,10 @@ import { contract, EXCEPTION } from '@workspace/contract';
 
 import { UserDtoMapper } from './user.dto-mapper';
 import {
+  DeleteUserMeCommand,
+  DeleteUserMeCommandResult,
+} from '../application/commands/delete-user-me/delete-user-me.command';
+import {
   UpdateUserMeProfileCommand,
   UpdateUserMeProfileCommandResult,
 } from '../application/commands/update-user-me-profile/update-user-me-profile.command';
@@ -36,7 +40,7 @@ export class UserMeHttpController {
       return result.match(
         (user) =>
           apiOk(200, {
-            user: this.dtoMapper.toDto(user),
+            me: this.dtoMapper.toUserForMeDto(user),
           }),
         (error) =>
           matchPublicError(error, {
@@ -61,7 +65,7 @@ export class UserMeHttpController {
       return result.match(
         (user) =>
           apiOk(200, {
-            user: this.dtoMapper.toDto(user),
+            me: this.dtoMapper.toUserForMeDto(user),
           }),
         (error) =>
           matchPublicError(error, {
@@ -87,12 +91,32 @@ export class UserMeHttpController {
       return result.match(
         (user) =>
           apiOk(200, {
-            user: this.dtoMapper.toDto(user),
+            me: this.dtoMapper.toUserForMeDto(user),
           }),
         (error) =>
           matchPublicError(error, {
             UserNotFound: () => apiErr(EXCEPTION.USER.NOT_FOUND),
             UserUsernameAlreadyExists: () => apiErr(EXCEPTION.USER.USERNAME_ALREADY_EXISTS),
+          }),
+      );
+    });
+  }
+
+  @TsRestHandler(contract.user.me.delete)
+  @Auth()
+  async deleteMe(@Token() token: TokenPayload) {
+    return tsRestHandler(contract.user.me.delete, async () => {
+      const result = await this.queryBus.execute<DeleteUserMeCommandResult>(
+        new DeleteUserMeCommand({
+          userId: token.sub,
+        }),
+      );
+
+      return result.match(
+        () => apiOk(200, {}),
+        (error) =>
+          matchPublicError(error, {
+            UserNotFound: () => apiErr(EXCEPTION.USER.NOT_FOUND),
           }),
       );
     });

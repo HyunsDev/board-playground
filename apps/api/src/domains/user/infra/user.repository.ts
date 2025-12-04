@@ -97,4 +97,14 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
         }),
     );
   }
+
+  async delete(user: UserEntity) {
+    return (await this.deleteEntity(user)).match(
+      () => ok(undefined),
+      (error) =>
+        matchError(error, {
+          EntityNotFound: () => err(new UserNotFoundError()),
+        }),
+    );
+  }
 }

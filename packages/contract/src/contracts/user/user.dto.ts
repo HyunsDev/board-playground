@@ -34,3 +34,8 @@ export const UserForAdminDtoSchema = UserDtoSchema.extend({
   memo: z.string().max(500).nullable(),
 });
 export type UserForAdminDto = z.infer<typeof UserForAdminDtoSchema>;
+
+export const UserForMeDtoSchema = UserDtoSchema.extend({
+  email: z.string().email(),
+});
+export type UserForMeDto = z.infer<typeof UserForMeDtoSchema>;
