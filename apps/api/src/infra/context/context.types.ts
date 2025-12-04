@@ -9,7 +9,7 @@ export interface ClientContext {
 }
 
 export interface TokenContext {
-  id: string;
+  sub: string;
   role: UserRole;
   email: string;
   sessionId: string;

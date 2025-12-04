@@ -24,7 +24,7 @@ export class ContextService {
   }
 
   getUserId(): string | undefined {
-    return this.getToken()?.id;
+    return this.getToken()?.sub;
   }
 
   getUserRole(): string | undefined {

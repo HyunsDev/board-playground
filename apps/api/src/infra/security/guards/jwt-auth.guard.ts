@@ -85,7 +85,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     // 4. ContextService에 토큰 정보 주입
     this.context.setToken({
-      id: validatedPayload.sub,
+      sub: validatedPayload.sub,
       email: validatedPayload.email,
       role: validatedPayload.role,
       sessionId: validatedPayload.sessionId,
