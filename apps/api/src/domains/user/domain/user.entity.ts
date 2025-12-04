@@ -3,7 +3,7 @@ import { v7 as uuidv7 } from 'uuid';
 import { USER_ROLE, USER_STATUS, UserRole, UserStatus } from '@workspace/contract';
 
 import { UserCreatedEvent } from './events/user-created.event';
-import { UserAdminCannotBeDeletedError } from './user.errors';
+import { UserAdminCannotBeDeletedError } from './user.domain-errors';
 
 import { AggregateRoot, CommandMetadata } from '@/shared/base';
 

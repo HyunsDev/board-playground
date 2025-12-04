@@ -1,7 +1,5 @@
 import { v7 as uuidv7 } from 'uuid';
 
-import { ArgumentNotProvidedException } from '../exception/common.business-exceptions';
-
 export type DomainEventMetadata = {
   readonly timestamp: number;
   readonly correlationId: string;
@@ -20,10 +18,6 @@ export abstract class DomainEvent {
   public readonly metadata: DomainEventMetadata;
 
   constructor(props: DomainEventProps) {
-    if (!props.aggregateId) {
-      throw new ArgumentNotProvidedException();
-    }
-
     this.id = uuidv7();
     this.aggregateId = props.aggregateId;
 

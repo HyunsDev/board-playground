@@ -1,6 +1,6 @@
 import { ZodIssue } from 'zod';
 
-export interface ApiErrorResponse<T = any> {
+export interface ApiErrorResponseBody<T = any> {
   status: number;
   code: string;
   message: string;
@@ -13,4 +13,4 @@ export type ValidationDetails = {
   pathParams: ZodIssue[] | null;
   headers: ZodIssue[] | null;
 };
-export type ApiValidationErrorResponse = ApiErrorResponse<ValidationDetails>;
+export type ApiValidationErrorResponseBody = ApiErrorResponseBody<ValidationDetails>;

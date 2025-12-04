@@ -4,14 +4,14 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+
+import { ContextService } from '@/infra/context/context.service';
+import { InternalServerErrorException } from '@/shared/base';
 import {
   ExpiredTokenException,
   InvalidTokenException,
   MissingTokenException,
-} from '../domain/security.exceptions';
-
-import { ContextService } from '@/infra/context/context.service';
-import { UnauthorizedException } from '@/shared/base';
+} from '@/shared/base/error/common.domain-exception';
 import { TokenPayload, tokenPayloadSchema } from '@/shared/types/token-payload.type';
 
 @Injectable()
@@ -69,7 +69,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
       // 그 외 알 수 없는 인증 에러는 로그를 남기고 Unauthorized 처리
       this.logger.warn(`Unknown Auth Error: ${JSON.stringify(info)}`);
-      throw new UnauthorizedException();
+      throw new InternalServerErrorException();
     }
 
     // 3. Payload 구조 검증 (Zod safeParse)

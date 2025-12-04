@@ -8,10 +8,10 @@ import {
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
-import { ApiErrorResponse, EXCEPTION } from '@workspace/contract';
+import { ApiErrorResponseBody, EXCEPTION } from '@workspace/contract';
 
 import { ContextService } from '@/infra/context/context.service';
-import { BusinessException, DomainError } from '@/shared/base';
+import { DomainError } from '@/shared/base';
 
 interface ErrorInfo {
   level?: LogLevel;
@@ -43,7 +43,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
     this.logError(errorInfo, exception, requestId);
 
     // 3. 최종 응답 객체 생성
-    const responseBody: ApiErrorResponse = {
+    const responseBody: ApiErrorResponseBody = {
       code: errorInfo.code,
       status: errorInfo.status,
       message: errorInfo.message,
@@ -59,26 +59,13 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
    */
   private resolveError(exception: unknown): ErrorInfo {
     if (exception instanceof DomainError) {
-      return this.handleUnhandledDomainException(exception);
-    }
-    if (exception instanceof BusinessException) {
-      return this.handleBusinessException(exception);
+      return this.handleUnhandledDomainException(exception as DomainError);
     }
     if (exception instanceof HttpException) {
       return this.handleHttpException(exception);
     }
     return this.handleUnknownError();
   }
-
-  private handleBusinessException(exception: BusinessException): ErrorInfo {
-    return {
-      status: exception.getStatus(),
-      code: exception.code,
-      message: exception.message,
-      details: exception.details,
-    };
-  }
-
   /**
    * NestJS 표준 HTTP 예외 처리
    */
@@ -104,7 +91,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
       level: 'warn',
       ...EXCEPTION.COMMON.UNHANDLED_DOMAIN_ERROR,
       details: {
-        originalErrorName: exception.name,
+        originalErrorName: exception.code,
       },
     };
   }

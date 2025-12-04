@@ -5,13 +5,18 @@ import { err, ok } from 'neverthrow';
 
 import { RefreshTokenService } from '@/domains/session/application/services/refresh-token.service';
 import { SessionService } from '@/domains/session/application/services/session.service';
-import { InvalidRefreshTokenError } from '@/domains/session/domain/session.errors';
+import {
+  InvalidRefreshTokenError,
+  SessionNotFoundError,
+} from '@/domains/session/domain/session.domain-errors';
 import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TransactionResultInterceptor } from '@/infra/database/interceptor/transaction-result.interceptor';
 import { TokenService } from '@/infra/security/services/token.service';
 import { CommandBase } from '@/shared/base';
+import { ExtractPublicDomainError } from '@/shared/base/interface/api-error.types';
 import { InferErr } from '@/shared/types/infer-err.type';
 import { DomainResult } from '@/shared/types/result.type';
+import { matchError } from '@/shared/utils/match-error.utils';
 
 export class RefreshTokenAuthCommand extends CommandBase<RefreshTokenCommandResult> {
   public readonly refreshToken: string;
@@ -27,11 +32,17 @@ export type RefreshTokenCommandResult = DomainResult<
     accessToken: string;
     refreshToken: string;
   },
-  | InferErr<RefreshTokenService['getOneByHashedRefreshToken']>
-  | InferErr<SessionService['getOneById']>
-  | InferErr<UserFacade['getOneById']>
-  | InferErr<RefreshTokenService['rotate']>
-  | InvalidRefreshTokenError
+  Exclude<
+    ExtractPublicDomainError<
+      | InferErr<RefreshTokenService['getOneByHashedRefreshToken']>
+      | InferErr<SessionService['getOneById']>
+      | InferErr<UserFacade['getOneById']>
+      | InferErr<RefreshTokenService['rotate']>
+      | InvalidRefreshTokenError
+      | SessionNotFoundError
+    >,
+    SessionNotFoundError
+  >
 >;
 
 @CommandHandler(RefreshTokenAuthCommand)
@@ -52,11 +63,19 @@ export class RefreshTokenAuthCommandHandler
 
     const tokenResult =
       await this.refreshTokenService.getOneByHashedRefreshToken(hashedRefreshToken);
-    if (tokenResult.isErr()) return err(tokenResult.error);
+    if (tokenResult.isErr()) {
+      return matchError(tokenResult.error, {
+        InvalidRefreshToken: () => err(new InvalidRefreshTokenError()),
+      });
+    }
     const token = tokenResult.value;
 
     const sessionResult = await this.sessionService.getOneById(token.sessionId);
-    if (sessionResult.isErr()) return err(new InvalidRefreshTokenError());
+    if (sessionResult.isErr()) {
+      return matchError(sessionResult.error, {
+        SessionNotFound: () => err(new InvalidRefreshTokenError()),
+      });
+    }
     const session = sessionResult.value;
 
     const userResult = await this.userFacade.getOneById(session.userId);

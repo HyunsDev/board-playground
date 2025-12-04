@@ -1,8 +1,8 @@
 import z from 'zod';
 
-import { ApiErrorResponse } from '../types';
+import { ApiErrorResponseBody } from '../types';
 
-export const toExceptionSchema = <const T extends ApiErrorResponse>(exception: T) => {
+export const toExceptionSchema = <const T extends ApiErrorResponseBody>(exception: T) => {
   return z.object({
     status: z.literal(exception.status),
     code: z.literal(exception.code),

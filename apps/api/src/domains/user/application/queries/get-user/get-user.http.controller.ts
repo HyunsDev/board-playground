@@ -6,7 +6,7 @@ import { contract, EXCEPTION } from '@workspace/contract';
 
 import { GetUserQuery } from './get-user.query';
 
-import { UserNotFoundError } from '@/domains/user/domain/user.errors';
+import { UserNotFoundError } from '@/domains/user/domain/user.domain-errors';
 import { UserDtoMapper } from '@/domains/user/interface/user.dto-mapper';
 
 @Controller()

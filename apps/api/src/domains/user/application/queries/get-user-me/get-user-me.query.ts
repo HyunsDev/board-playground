@@ -1,8 +1,8 @@
 import { Inject } from '@nestjs/common';
 import { QueryHandler } from '@nestjs/cqrs';
 
+import { UserNotFoundError } from '@/domains/user/domain/user.domain-errors';
 import { UserEntity } from '@/domains/user/domain/user.entity';
-import { UserNotFoundError } from '@/domains/user/domain/user.errors';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constant';
 import { QueryBase } from '@/shared/base';
@@ -24,7 +24,7 @@ export class GetUserMeQueryHandler {
   ) {}
 
   async execute(query: GetUserMeQuery): Promise<GetUserMeQueryResult> {
-    const result = await this.userRepo.getById(query.userId);
+    const result = await this.userRepo.getOneById(query.userId);
     return result;
   }
 }

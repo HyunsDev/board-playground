@@ -23,7 +23,7 @@ export class UpdateUserMeProfileCommand extends CommandBase<UpdateUserMeProfileC
 }
 export type UpdateUserMeProfileCommandResult = DomainResult<
   UserEntity,
-  InferErr<UserRepositoryPort['getById']> | InferErr<UserRepositoryPort['update']>
+  InferErr<UserRepositoryPort['getOneById']> | InferErr<UserRepositoryPort['update']>
 >;
 
 @CommandHandler(UpdateUserMeProfileCommand)
@@ -36,7 +36,7 @@ export class UpdateUserMeProfileCommandHandler
   ) {}
 
   async execute(command: UpdateUserMeProfileCommand) {
-    const userResult = await this.userRepo.getById(command.userId);
+    const userResult = await this.userRepo.getOneById(command.userId);
     if (userResult.isErr()) return err(userResult.error);
     const user = userResult.value;
 

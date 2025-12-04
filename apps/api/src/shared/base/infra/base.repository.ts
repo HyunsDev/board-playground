@@ -10,7 +10,7 @@ import { DomainResult } from '../../types/result.type';
 import { AggregateRoot } from '../domain/base.aggregate-root';
 import { RepositoryPort } from '../domain/base.repository.port';
 import {
-  EntityConflictDetail,
+  EntityConflictInfo,
   EntityConflictError,
   EntityNotFoundError,
 } from '../error/common.domain-errors';
@@ -47,28 +47,77 @@ export abstract class BaseRepository<
     return record ? this.mapper.toDomain(record) : null;
   }
 
-  async save(
+  protected async createEntity(
     entity: Aggregate,
-  ): Promise<DomainResult<Aggregate, EntityConflictError | EntityNotFoundError>> {
+  ): Promise<DomainResult<Aggregate, EntityConflictError>> {
     const record = this.mapper.toPersistence(entity);
     try {
-      const result = await this.delegate.upsert({
-        where: { id: entity.id },
-        create: record,
-        update: record,
+      const result = await this.delegate.create({
+        data: record,
       });
 
       this.publishEvents(entity);
       return ok(this.mapper.toDomain(result));
     } catch (error: any) {
-      const businessError = this.handleKnownPrismaErrors(error, record);
-      if (businessError) return err(businessError);
-
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          const targets = (error.meta?.target as string[]) || [];
+          const details: EntityConflictInfo[] = targets.map((field) => ({
+            field,
+            value: record[field],
+          }));
+          return err(
+            new EntityConflictError({
+              entityName: record.constructor.name,
+              conflicts: details,
+            }),
+          );
+        }
+      }
       throw error;
     }
   }
 
-  async delete(entity: Aggregate): Promise<DomainResult<void, EntityNotFoundError>> {
+  protected async updateEntity(
+    entity: Aggregate,
+  ): Promise<DomainResult<Aggregate, EntityNotFoundError | EntityConflictError>> {
+    const record = this.mapper.toPersistence(entity);
+    try {
+      const result = await this.delegate.update({
+        where: { id: entity.id },
+        data: record,
+      });
+
+      this.publishEvents(entity);
+      return ok(this.mapper.toDomain(result));
+    } catch (error: any) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          const targets = (error.meta?.target as string[]) || [];
+          const details: EntityConflictInfo[] = targets.map((field) => ({
+            field,
+            value: record[field],
+          }));
+          return err(
+            new EntityConflictError({ entityName: record.constructor.name, conflicts: details }),
+          );
+        }
+        if (error.code === 'P2025') {
+          return err(
+            new EntityNotFoundError({
+              entityName: record.constructor.name,
+              entityId: record.id,
+            }),
+          );
+        }
+      }
+      throw error;
+    }
+  }
+
+  protected async deleteEntity(
+    entity: Aggregate,
+  ): Promise<DomainResult<void, EntityNotFoundError>> {
     try {
       void (await this.delegate.delete({
         where: { id: entity.id },
@@ -88,28 +137,5 @@ export abstract class BaseRepository<
   protected publishEvents(entity: Aggregate): void {
     const events = entity.pullEvents();
     this.eventDispatcher.addEvents(events);
-  }
-
-  private handleKnownPrismaErrors(
-    error: any,
-    record: any,
-  ): EntityConflictError | EntityNotFoundError {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === 'P2002') {
-        const targets = (error.meta?.target as string[]) || [];
-        const details: EntityConflictDetail[] = targets.map((field) => ({
-          field,
-          value: record[field],
-        }));
-        return new EntityConflictError({ entityName: record.constructor.name, conflicts: details });
-      }
-      if (error.code === 'P2025') {
-        return new EntityNotFoundError({
-          entityName: record.constructor.name,
-          entityId: record.id,
-        });
-      }
-    }
-    throw error;
   }
 }

@@ -1,5 +1,3 @@
-import { ArgumentNotProvidedException } from '../exception/common.business-exceptions';
-
 export interface BaseEntityProps {
   id: string;
   createdAt: Date;
@@ -21,7 +19,6 @@ export abstract class Entity<EntityProps> {
 
   constructor({ id, props, createdAt, updatedAt }: CreateEntityProps<EntityProps>) {
     this.setId(id);
-    this.validateProps(props);
     const now = new Date();
     this._createdAt = createdAt || now;
     this._updatedAt = updatedAt || now;
@@ -74,10 +71,4 @@ export abstract class Entity<EntityProps> {
   }
 
   public abstract validate(): void;
-
-  private validateProps(props: EntityProps): void {
-    if (!props || (typeof props === 'object' && Object.keys(props).length === 0)) {
-      throw new ArgumentNotProvidedException();
-    }
-  }
 }

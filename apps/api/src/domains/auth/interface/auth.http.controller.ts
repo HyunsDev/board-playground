@@ -12,10 +12,10 @@ import { RefreshTokenAuthCommand } from '../application/commands/refresh-token-a
 import { RegisterAuthCommand } from '../application/commands/register-auth/register-auth.command';
 
 import { EnvSchema } from '@/core/config/env.validation';
-import { InvalidRefreshTokenError } from '@/domains/session/domain/session.errors';
+import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
 import { IpAddress } from '@/shared/decorators/ip-address.decorator';
 import { UserAgent } from '@/shared/decorators/user-agent.decorator';
-import { mapDomainErrorToResponse } from '@/shared/utils/error-mapper';
+import { matchError, matchPublicError } from '@/shared/utils/match-error.utils';
 
 @Controller()
 export class AuthHttpController {
@@ -55,16 +55,15 @@ export class AuthHttpController {
       return result.match(
         (data) => {
           void res.cookie('refreshToken', data.refreshToken, this.getCookieOptions());
-          return {
-            status: 200,
-            body: {
-              accessToken: data.accessToken,
-            },
-          } as const;
+          return apiOk(200, {
+            accessToken: data.accessToken,
+          });
         },
-        (err) => {
-          return mapDomainErrorToResponse(err);
-        },
+        (error) =>
+          matchPublicError(error, {
+            UserEmailAlreadyExists: () => apiErr(EXCEPTION.USER.EMAIL_ALREADY_EXISTS),
+            UserUsernameAlreadyExists: () => apiErr(EXCEPTION.USER.USERNAME_ALREADY_EXISTS),
+          }),
       );
     });
   }
@@ -88,16 +87,14 @@ export class AuthHttpController {
       return result.match(
         (data) => {
           void res.cookie('refreshToken', data.refreshToken, this.getCookieOptions());
-          return {
-            status: 200,
-            body: {
-              accessToken: data.accessToken,
-            },
-          } as const;
+          return apiOk(200, {
+            accessToken: data.accessToken,
+          });
         },
-        (err) => {
-          return mapDomainErrorToResponse(err);
-        },
+        (error) =>
+          matchPublicError(error, {
+            InvalidCredentials: () => apiErr(EXCEPTION.AUTH.INVALID_CREDENTIALS),
+          }),
       );
     });
   }
@@ -123,19 +120,16 @@ export class AuthHttpController {
       return result.match(
         ({ accessToken, refreshToken: newRefreshToken }) => {
           void res.cookie('refreshToken', newRefreshToken, this.getCookieOptions());
-          return { status: 200, body: { accessToken } };
+          return apiOk(200, { accessToken });
         },
-        (err) => {
-          if (err instanceof InvalidRefreshTokenError) {
-            void void res.clearCookie('refreshToken', this.getCookieOptions());
-            return {
-              status: 400,
-              body: EXCEPTION.AUTH.INVALID_REFRESH_TOKEN,
-            } as const;
-          }
-
+        (error) => {
           void res.clearCookie('refreshToken', this.getCookieOptions());
-          return mapDomainErrorToResponse(err);
+          return matchError(error, {
+            InvalidRefreshToken: () => apiErr(EXCEPTION.AUTH.INVALID_REFRESH_TOKEN),
+            SessionIsRevoked: () => apiErr(EXCEPTION.AUTH.SESSION_IS_REVOKED),
+            UsedRefreshToken: () => apiErr(EXCEPTION.AUTH.USED_REFRESH_TOKEN),
+            UserNotFound: () => apiErr(EXCEPTION.USER.NOT_FOUND),
+          });
         },
       );
     });
@@ -159,17 +153,20 @@ export class AuthHttpController {
         }),
       );
 
+      void res.clearCookie('refreshToken', this.getCookieOptions());
       return result.match(
         () => {
-          void res.clearCookie('refreshToken', this.getCookieOptions());
-          return {
-            status: 204,
-            body: null,
-          } as const;
+          return apiOk(204, null);
         },
-        (err) => {
-          return mapDomainErrorToResponse(err);
-        },
+        (err) =>
+          matchError(err, {
+            InvalidRefreshToken: () => {
+              return apiOk(204, null);
+            },
+            SessionNotFound: () => {
+              return apiOk(204, null);
+            },
+          }),
       );
     });
   }

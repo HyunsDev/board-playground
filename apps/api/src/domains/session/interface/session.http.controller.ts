@@ -6,7 +6,7 @@ import { contract, EXCEPTION } from '@workspace/contract';
 
 import { SessionDtoMapper } from './session.dto-mapper';
 import { GetSessionQuery } from '../application/queries/get-session/get-session.query';
-import { SessionNotFoundError } from '../domain/session.errors';
+import { SessionNotFoundError } from '../domain/session.domain-errors';
 
 @Controller()
 export class SessionHttpController {

@@ -1,5 +1,3 @@
-import { ArgumentNotProvidedException } from '../exception/common.business-exceptions';
-
 export type Primitives = string | number | boolean;
 
 export interface DomainPrimitive<T extends Primitives | Date> {
@@ -12,7 +10,6 @@ export abstract class ValueObject<T> {
   protected readonly props: ValueObjectProps<T>;
 
   constructor(props: ValueObjectProps<T>) {
-    this.checkIfEmpty(props);
     this.validate(props);
     this.props = props;
   }
@@ -43,17 +40,6 @@ export abstract class ValueObject<T> {
     }
     // 객체형 VO인 경우 복사본을 리턴하여 불변성 유지 (선택 사항)
     return { ...this.props } as unknown as T;
-  }
-
-  private checkIfEmpty(props: ValueObjectProps<T>): void {
-    if (props === null || props === undefined) {
-      throw new ArgumentNotProvidedException();
-    }
-    if (this.isDomainPrimitive(props)) {
-      if (props.value === null || props.value === undefined) {
-        throw new ArgumentNotProvidedException();
-      }
-    }
   }
 
   private isDomainPrimitive(obj: unknown): obj is DomainPrimitive<T & (Primitives | Date)> {

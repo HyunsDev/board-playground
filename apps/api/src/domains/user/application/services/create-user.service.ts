@@ -4,7 +4,7 @@ import { CreateUserProps, UserEntity } from '../../domain/user.entity';
 import {
   UserEmailAlreadyExistsError,
   UserUsernameAlreadyExistsError,
-} from '../../domain/user.errors';
+} from '../../domain/user.domain-errors';
 import { UserRepositoryPort } from '../../domain/user.repository.port';
 import { USER_REPOSITORY } from '../../user.constant';
 

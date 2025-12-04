@@ -133,11 +133,11 @@ describe('Auth Flow', () => {
     client.setRefreshToken('unknown-refresh-token');
     const res = await client.api.auth.refreshToken();
 
-    if (res.status !== 400) {
+    if (res.status !== EXCEPTION.AUTH.INVALID_REFRESH_TOKEN.status) {
       throw throwWithCode(res);
     }
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(EXCEPTION.AUTH.INVALID_REFRESH_TOKEN.status);
     expect(res.body.code).toBe(EXCEPTION.AUTH.INVALID_REFRESH_TOKEN.code);
     client.setRefreshToken(newRefreshToken);
   });
@@ -146,11 +146,11 @@ describe('Auth Flow', () => {
     client.setRefreshToken(usedRefreshToken);
     const res = await client.api.auth.refreshToken();
 
-    if (res.status !== 400) {
+    if (res.status !== EXCEPTION.AUTH.USED_REFRESH_TOKEN.status) {
       throw throwWithCode(res);
     }
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(EXCEPTION.AUTH.USED_REFRESH_TOKEN.status);
     expect(res.body.code).toBe(EXCEPTION.AUTH.USED_REFRESH_TOKEN.code);
     client.setRefreshToken(newRefreshToken);
   });

@@ -6,23 +6,31 @@ import { RefreshTokenRepositoryPort } from '../../domain/refresh-token.repositor
 import {
   InvalidRefreshTokenError,
   SessionIsRevokedError,
+  SessionNotFoundError,
   UsedRefreshTokenError,
-} from '../../domain/session.errors';
+} from '../../domain/session.domain-errors';
 import { SessionRepositoryPort } from '../../domain/session.repository.port';
 import { REFRESH_TOKEN_REPOSITORY, SESSION_REPOSITORY } from '../../session.di-tokens';
 
 import { TransactionManager } from '@/infra/database/transaction.manager';
+import { ExtractPublicDomainError } from '@/shared/base/interface/api-error.types';
 import { InferErr } from '@/shared/types/infer-err.type';
 import { DomainResult } from '@/shared/types/result.type';
+import { matchError } from '@/shared/utils/match-error.utils';
 
 export type RotateTokenResult = DomainResult<
   RefreshTokenEntity,
-  | InferErr<RefreshTokenRepositoryPort['getOneByHashedRefreshToken']>
-  | InferErr<SessionRepositoryPort['getOneById']>
-  | InferErr<RefreshTokenRepositoryPort['save']>
-  | InferErr<SessionRepositoryPort['save']>
-  | SessionIsRevokedError
-  | UsedRefreshTokenError
+  Exclude<
+    ExtractPublicDomainError<
+      | InferErr<RefreshTokenRepositoryPort['getOneByHashedRefreshToken']>
+      | InferErr<SessionRepositoryPort['getOneById']>
+      | InferErr<RefreshTokenRepositoryPort['update']>
+      | InferErr<SessionRepositoryPort['update']>
+      | SessionIsRevokedError
+      | UsedRefreshTokenError
+    >,
+    SessionNotFoundError
+  >
 >;
 
 @Injectable()
@@ -54,7 +62,11 @@ export class RefreshTokenService {
     }
 
     const sessionResult = await this.sessionRepo.getOneById(token.sessionId);
-    if (sessionResult.isErr()) return err(sessionResult.error);
+    if (sessionResult.isErr()) {
+      return matchError(sessionResult.error, {
+        SessionNotFound: () => err(new InvalidRefreshTokenError()),
+      });
+    }
     const session = sessionResult.value;
 
     if (session.isRevoked) {
@@ -63,9 +75,11 @@ export class RefreshTokenService {
 
     if (token.isUsed) {
       session.revoke();
-      const saveSessionRes = await this.sessionRepo.save(session);
+      const saveSessionRes = await this.sessionRepo.update(session);
       if (saveSessionRes.isErr()) {
-        return err(saveSessionRes.error);
+        return matchError(saveSessionRes.error, {
+          SessionNotFound: () => err(new InvalidRefreshTokenError()),
+        });
       }
       return err(new UsedRefreshTokenError());
     }
@@ -86,20 +100,24 @@ export class RefreshTokenService {
         sessionId: session.id,
       });
 
-      const saveOldTokenRes = await this.refreshTokenRepo.save(token);
+      const saveOldTokenRes = await this.refreshTokenRepo.update(token);
       if (saveOldTokenRes.isErr()) {
-        return err(saveOldTokenRes.error);
+        return matchError(saveOldTokenRes.error, {
+          RefreshTokenNotFound: () => err(new InvalidRefreshTokenError()),
+        });
       }
 
-      const saveNewTokenRes = await this.refreshTokenRepo.save(newToken);
+      const saveNewTokenRes = await this.refreshTokenRepo.create(newToken);
       if (saveNewTokenRes.isErr()) {
         return err(saveNewTokenRes.error);
       }
 
       session.updateLastUsedAt();
-      const saveSessionRes = await this.sessionRepo.save(session);
+      const saveSessionRes = await this.sessionRepo.update(session);
       if (saveSessionRes.isErr()) {
-        return err(saveSessionRes.error);
+        return matchError(saveSessionRes.error, {
+          SessionNotFound: () => err(new InvalidRefreshTokenError()),
+        });
       }
 
       return ok(newToken);
@@ -113,11 +131,9 @@ export class RefreshTokenService {
       sessionId: sessionId,
     });
 
-    const saveResult = await this.refreshTokenRepo.save(newToken);
-    if (saveResult.isErr()) {
-      return err(saveResult.error);
-    }
-
-    return ok(saveResult.value);
+    return (await this.refreshTokenRepo.create(newToken)).match(
+      (savedToken) => ok(savedToken),
+      (err) => matchError(err, {}),
+    );
   }
 }

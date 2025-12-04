@@ -9,7 +9,7 @@ import { RefreshTokenService } from '@/domains/session/application/services/refr
 import { SessionService } from '@/domains/session/application/services/session.service';
 import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TransactionResultInterceptor } from '@/infra/database/interceptor/transaction-result.interceptor';
-import { InvalidCredentialsError } from '@/infra/security/domain/security.error';
+import { InvalidCredentialsError } from '@/infra/security/domain/security.domain-errors';
 import { PasswordService } from '@/infra/security/services/password.service';
 import { TokenService } from '@/infra/security/services/token.service';
 import { CommandBase, CommandProps } from '@/shared/base';

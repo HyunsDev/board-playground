@@ -22,7 +22,7 @@ export class UserFacade {
   }
 
   async getOneById(id: string) {
-    return await this.userRepo.getById(id);
+    return await this.userRepo.getOneById(id);
   }
 
   async findOneByEmail(email: string) {

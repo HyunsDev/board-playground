@@ -3,15 +3,15 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
-import { Prisma, PrismaClient, User } from '@workspace/db';
+import { PrismaClient, User } from '@workspace/db';
 
 import { UserMapper } from './user.mapper';
-import { UserEntity } from '../domain/user.entity';
 import {
   UserEmailAlreadyExistsError,
   UserNotFoundError,
   UserUsernameAlreadyExistsError,
-} from '../domain/user.errors';
+} from '../domain/user.domain-errors';
+import { UserEntity } from '../domain/user.entity';
 import { UserRepositoryPort } from '../domain/user.repository.port';
 
 import { ContextService } from '@/infra/context/context.service';
@@ -19,6 +19,7 @@ import { DatabaseService } from '@/infra/database/database.service';
 import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
 import { BaseRepository } from '@/shared/base/infra/base.repository';
 import { DomainResult } from '@/shared/types/result.type';
+import { matchError } from '@/shared/utils/match-error.utils';
 
 @Injectable()
 export class UserRepository extends BaseRepository<UserEntity, User> implements UserRepositoryPort {
@@ -36,7 +37,7 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     return this.client.user;
   }
 
-  async getById(id: string): Promise<DomainResult<UserEntity, UserNotFoundError>> {
+  async getOneById(id: string): Promise<DomainResult<UserEntity, UserNotFoundError>> {
     const result = await this.findOneById(id);
     if (!result) {
       return err(new UserNotFoundError());
@@ -63,61 +64,37 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
   }
 
   async create(user: UserEntity) {
-    const record = this.mapper.toPersistence(user);
-
-    try {
-      const result = await this.delegate.create({
-        data: record,
-      });
-
-      this.publishEvents(user);
-      return ok(this.mapper.toDomain(result));
-    } catch (error: unknown) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          const targets = error.meta?.target as string[];
-          if (targets.includes('email')) {
-            return err(new UserEmailAlreadyExistsError());
-          }
-          if (targets.includes('username')) {
-            return err(new UserUsernameAlreadyExistsError());
-          }
-        }
-      }
-
-      throw error;
-    }
+    return (await this.createEntity(user)).match(
+      (user) => ok(user),
+      (error) =>
+        matchError(error, {
+          EntityConflict: ({ details: { conflicts } }) => {
+            if (conflicts.some((conflict) => conflict.field === 'email')) {
+              return err(new UserEmailAlreadyExistsError());
+            }
+            if (conflicts.some((conflict) => conflict.field === 'username')) {
+              return err(new UserUsernameAlreadyExistsError());
+            }
+          },
+        }),
+    );
   }
 
   async update(user: UserEntity) {
-    const record = this.mapper.toPersistence(user);
-
-    try {
-      const result = await this.delegate.update({
-        where: { id: user.id },
-        data: record,
-      });
-
-      this.publishEvents(user);
-      return ok(this.mapper.toDomain(result));
-    } catch (error: unknown) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          return err(new UserNotFoundError());
-        }
-        if (error.code === 'P2002') {
-          const targets = error.meta?.target as string[];
-
-          if (targets.includes('email')) {
-            return err(new UserEmailAlreadyExistsError());
-          }
-          if (targets.includes('username')) {
-            return err(new UserUsernameAlreadyExistsError());
-          }
-        }
-      }
-
-      throw error;
-    }
+    return (await this.updateEntity(user)).match(
+      (user) => ok(user),
+      (error) =>
+        matchError(error, {
+          EntityNotFound: () => err(new UserNotFoundError()),
+          EntityConflict: ({ details: { conflicts } }) => {
+            if (conflicts.some((conflict) => conflict.field === 'email')) {
+              return err(new UserEmailAlreadyExistsError());
+            }
+            if (conflicts.some((conflict) => conflict.field === 'username')) {
+              return err(new UserUsernameAlreadyExistsError());
+            }
+          },
+        }),
+    );
   }
 }
