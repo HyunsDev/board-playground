@@ -5,7 +5,7 @@ import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { contract, EXCEPTION } from '@workspace/contract';
 
 import { UserDtoMapper } from './user.dto-mapper';
-import { GetUserQuery, GetUserQueryResult } from '../application/queries/get-user/get-user.query';
+import { GetUserQuery, GetUserQueryResult } from '../application/queries/get-user.query';
 
 import { apiErr, apiOk } from '@/shared/base';
 import { matchPublicError } from '@/shared/utils/match-error.utils';

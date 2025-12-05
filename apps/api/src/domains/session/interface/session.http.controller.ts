@@ -8,15 +8,12 @@ import { SessionDtoMapper } from './session.dto-mapper';
 import {
   DeleteSessionCommand,
   DeleteSessionCommandResult,
-} from '../application/commands/delete-session/delete-session.command';
-import {
-  GetSessionQuery,
-  GetSessionQueryResult,
-} from '../application/queries/get-session/get-session.query';
+} from '../application/commands/delete-session.command';
+import { GetSessionQuery, GetSessionQueryResult } from '../application/queries/get-session.query';
 import {
   ListSessionsQuery,
   ListSessionsQueryResult,
-} from '../application/queries/list-sessions/list-sessions.query';
+} from '../application/queries/list-sessions.query';
 
 import { Auth } from '@/infra/security/decorators/auth.decorator';
 import { Token } from '@/infra/security/decorators/token.decorator';

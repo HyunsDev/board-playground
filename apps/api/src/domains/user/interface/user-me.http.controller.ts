@@ -8,16 +8,16 @@ import { UserDtoMapper } from './user.dto-mapper';
 import {
   DeleteUserMeCommand,
   DeleteUserMeCommandResult,
-} from '../application/commands/delete-user-me/delete-user-me.command';
+} from '../application/commands/delete-user-me.command';
 import {
   UpdateUserMeProfileCommand,
   UpdateUserMeProfileCommandResult,
-} from '../application/commands/update-user-me-profile/update-user-me-profile.command';
+} from '../application/commands/update-user-me-profile.command';
 import {
   UpdateUserMeUsernameCommand,
   UpdateUserMeUsernameCommandResult,
-} from '../application/commands/update-user-me-username/update-user-me-username.command';
-import { GetUserMeQuery } from '../application/queries/get-user-me/get-user-me.query';
+} from '../application/commands/update-user-me-username.command';
+import { GetUserMeQuery } from '../application/queries/get-user-me.query';
 
 import { Auth } from '@/infra/security/decorators/auth.decorator';
 import { Token } from '@/infra/security/decorators/token.decorator';

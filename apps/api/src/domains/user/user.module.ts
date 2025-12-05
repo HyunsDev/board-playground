@@ -1,8 +1,8 @@
 import { Logger, Module, Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { GetUserQueryHandler } from './application/queries/get-user/get-user.query';
-import { GetUserMeQueryHandler } from './application/queries/get-user-me/get-user-me.query';
+import { GetUserQueryHandler } from './application/queries/get-user.query';
+import { GetUserMeQueryHandler } from './application/queries/get-user-me.query';
 import { CreateUserService } from './application/services/create-user.service';
 import { UserMapper } from './infra/user.mapper';
 import { UserRepository } from './infra/user.repository';

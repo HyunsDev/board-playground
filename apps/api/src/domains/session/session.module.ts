@@ -1,9 +1,9 @@
 import { Logger, Module, Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { DeleteSessionCommandHandler } from './application/commands/delete-session/delete-session.command';
-import { GetSessionQueryHandler } from './application/queries/get-session/get-session.query';
-import { ListSessionsQueryHandler } from './application/queries/list-sessions/list-sessions.query';
+import { DeleteSessionCommandHandler } from './application/commands/delete-session.command';
+import { GetSessionQueryHandler } from './application/queries/get-session.query';
+import { ListSessionsQueryHandler } from './application/queries/list-sessions.query';
 import { RefreshTokenService } from './application/services/refresh-token.service';
 import { SessionService } from './application/services/session.service';
 import { RefreshTokenMapper } from './infra/refresh-token.mapper';

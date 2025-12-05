@@ -9,19 +9,19 @@ import { contract, EXCEPTION } from '@workspace/contract';
 import {
   LoginAuthCommand,
   LoginAuthCommandResult,
-} from '../application/commands/login-auth/login-auth.command';
+} from '../application/commands/login-auth.command';
 import {
   LogoutAuthCommand,
   LogoutAuthCommandResult,
-} from '../application/commands/logout-auth/logout-auth.command';
+} from '../application/commands/logout-auth.command';
 import {
   RefreshTokenAuthCommand,
   RefreshTokenCommandResult,
-} from '../application/commands/refresh-token-auth/refresh-token-auth.command';
+} from '../application/commands/refresh-token-auth.command';
 import {
   RegisterAuthCommand,
   RegisterAuthCommandResult,
-} from '../application/commands/register-auth/register-auth.command';
+} from '../application/commands/register-auth.command';
 
 import { EnvSchema } from '@/core/config/env.validation';
 import { apiErr, apiOk } from '@/shared/base/interface/response.utils';

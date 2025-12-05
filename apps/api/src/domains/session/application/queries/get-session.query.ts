@@ -2,8 +2,8 @@ import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
-import { SessionRepositoryPort } from '../../../domain/session.repository.port';
-import { SESSION_REPOSITORY } from '../../../session.di-tokens';
+import { SessionRepositoryPort } from '../../domain/session.repository.port';
+import { SESSION_REPOSITORY } from '../../session.di-tokens';
 
 import { QueryBase } from '@/shared/base';
 import { HandlerResult } from '@/shared/types/handler-result';
