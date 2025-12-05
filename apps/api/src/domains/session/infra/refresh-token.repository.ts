@@ -8,10 +8,7 @@ import { PrismaClient, RefreshToken } from '@workspace/db';
 import { RefreshTokenMapper } from './refresh-token.mapper';
 import { RefreshTokenEntity } from '../domain/refresh-token.entity';
 import { RefreshTokenRepositoryPort } from '../domain/refresh-token.repository.port';
-import {
-  InvalidRefreshTokenError,
-  RefreshTokenNotFoundError,
-} from '../domain/session.domain-errors';
+import { InvalidRefreshTokenError, RefreshTokenNotFoundError } from '../domain/token.domain-errors';
 
 import { DatabaseService } from '@/infra/database/database.service';
 import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';

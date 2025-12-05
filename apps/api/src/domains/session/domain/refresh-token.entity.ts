@@ -1,7 +1,7 @@
 import { err, ok, Result } from 'neverthrow';
 import { v7 } from 'uuid';
 
-import { UsedRefreshTokenError } from './session.domain-errors';
+import { UsedRefreshTokenError } from './token.domain-errors';
 
 import { AggregateRoot } from '@/shared/base';
 

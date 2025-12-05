@@ -5,7 +5,7 @@ import { err, ok } from 'neverthrow';
 
 import { RefreshTokenService } from '@/domains/session/application/services/refresh-token.service';
 import { SessionService } from '@/domains/session/application/services/session.service';
-import { InvalidRefreshTokenError } from '@/domains/session/domain/session.domain-errors';
+import { InvalidRefreshTokenError } from '@/domains/session/domain/token.domain-errors';
 import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TransactionResultInterceptor } from '@/infra/database/interceptor/transaction-result.interceptor';
 import { TokenService } from '@/infra/security/services/token.service';

@@ -1,5 +1,5 @@
 import { RefreshTokenEntity } from './refresh-token.entity';
-import { InvalidRefreshTokenError, RefreshTokenNotFoundError } from './session.domain-errors';
+import { InvalidRefreshTokenError, RefreshTokenNotFoundError } from './token.domain-errors';
 
 import { RepositoryPort } from '@/shared/base';
 import { DomainResult } from '@/shared/types/result.type';

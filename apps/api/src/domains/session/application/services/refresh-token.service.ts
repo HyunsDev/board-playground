@@ -3,13 +3,9 @@ import { err, ok } from 'neverthrow';
 
 import { RefreshTokenEntity } from '../../domain/refresh-token.entity';
 import { RefreshTokenRepositoryPort } from '../../domain/refresh-token.repository.port';
-import {
-  InvalidRefreshTokenError,
-  SessionIsRevokedError,
-  SessionNotFoundError,
-  UsedRefreshTokenError,
-} from '../../domain/session.domain-errors';
+import { SessionIsRevokedError, SessionNotFoundError } from '../../domain/session.domain-errors';
 import { SessionRepositoryPort } from '../../domain/session.repository.port';
+import { InvalidRefreshTokenError, UsedRefreshTokenError } from '../../domain/token.domain-errors';
 import { REFRESH_TOKEN_REPOSITORY, SESSION_REPOSITORY } from '../../session.di-tokens';
 
 import { TransactionManager } from '@/infra/database/transaction.manager';
