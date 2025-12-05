@@ -8,7 +8,6 @@ export interface RefreshTokenRepositoryPort extends RepositoryPort<RefreshTokenE
   getOneByHashedRefreshToken(
     hashedRefreshToken: string,
   ): Promise<DomainResult<RefreshTokenEntity, InvalidRefreshTokenError>>;
-
   create(refreshToken: RefreshTokenEntity): Promise<DomainResult<RefreshTokenEntity, never>>;
   update(
     refreshToken: RefreshTokenEntity,

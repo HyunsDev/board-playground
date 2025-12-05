@@ -24,3 +24,11 @@ export class SessionIsRevokedError extends BaseBadRequestError<'SessionIsRevoked
     super('Session is revoked');
   }
 }
+
+export class CurrentSessionCannotBeDeletedError extends BaseBadRequestError<'CurrentSessionCannotBeDeleted'> {
+  public readonly code = 'CurrentSessionCannotBeDeleted';
+  public readonly scope = 'public';
+  constructor() {
+    super('Current session cannot be deleted');
+  }
+}
