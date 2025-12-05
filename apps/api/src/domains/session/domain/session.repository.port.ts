@@ -6,7 +6,7 @@ import { DomainResult } from '@/shared/types/result.type';
 
 export interface SessionRepositoryPort extends RepositoryPort<SessionEntity> {
   getOneById(id: string): Promise<DomainResult<SessionEntity, SessionNotFoundError>>;
-  getOneByIdWithUserId(
+  getOneByIdAndUserId(
     id: string,
     userId: string,
   ): Promise<DomainResult<SessionEntity, SessionNotFoundError>>;

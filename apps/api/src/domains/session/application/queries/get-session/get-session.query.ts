@@ -26,7 +26,7 @@ export class GetSessionQueryHandler implements IQueryHandler<GetSessionQuery> {
   ) {}
 
   async execute(query: GetSessionQuery) {
-    return (await this.sessionRepo.getOneByIdWithUserId(query.sessionId, query.userId)).match(
+    return (await this.sessionRepo.getOneByIdAndUserId(query.sessionId, query.userId)).match(
       (session) => ok(session),
       (error) =>
         matchError(error, {

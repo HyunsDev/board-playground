@@ -45,7 +45,7 @@ export class SessionRepository
     return ok(result);
   }
 
-  async getOneByIdWithUserId(
+  async getOneByIdAndUserId(
     id: string,
     userId: string,
   ): Promise<DomainResult<SessionEntity, SessionNotFoundError>> {
