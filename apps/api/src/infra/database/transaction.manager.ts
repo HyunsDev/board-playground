@@ -17,7 +17,7 @@ export class TransactionManager {
     private readonly eventDispatcher: DomainEventDispatcher,
   ) {}
 
-  async run<T, E>(operation: () => Promise<Result<T, E>>): Promise<Result<T, E>> {
+  async run<Res extends Result<any, any>>(operation: () => Promise<Res>): Promise<Res> {
     try {
       const result = await this.txHost.withTransaction(async () => {
         try {
@@ -37,10 +37,10 @@ export class TransactionManager {
       void (await this.eventDispatcher.dispatchAll());
       return result;
     } catch (error) {
-      if (error instanceof TransactionRollbackError) {
-        return err(error.originalError);
-      }
       this.eventDispatcher.clear();
+      if (error instanceof TransactionRollbackError) {
+        return err(error.originalError) as Res;
+      }
       throw error;
     }
   }
