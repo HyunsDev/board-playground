@@ -5,18 +5,9 @@ import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { contract, EXCEPTION } from '@workspace/contract';
 
 import { UserDtoMapper } from './user.dto-mapper';
-import {
-  DeleteUserMeCommand,
-  DeleteUserMeCommandResult,
-} from '../application/commands/delete-user-me.command';
-import {
-  UpdateUserMeProfileCommand,
-  UpdateUserMeProfileCommandResult,
-} from '../application/commands/update-user-me-profile.command';
-import {
-  UpdateUserMeUsernameCommand,
-  UpdateUserMeUsernameCommandResult,
-} from '../application/commands/update-user-me-username.command';
+import { DeleteUserMeCommand } from '../application/commands/delete-user-me.command';
+import { UpdateUserMeProfileCommand } from '../application/commands/update-user-me-profile.command';
+import { UpdateUserMeUsernameCommand } from '../application/commands/update-user-me-username.command';
 import { GetUserMeQuery } from '../application/queries/get-user-me.query';
 
 import { Auth } from '@/infra/security/decorators/auth.decorator';
@@ -54,7 +45,7 @@ export class UserMeHttpController {
   @Auth()
   async updateProfile(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.updateProfile, async ({ body }) => {
-      const result = await this.queryBus.execute<UpdateUserMeProfileCommandResult>(
+      const result = await this.queryBus.execute(
         new UpdateUserMeProfileCommand({
           userId: token.sub,
           nickname: body.nickname,
@@ -81,7 +72,7 @@ export class UserMeHttpController {
   @Auth()
   async updateUsername(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.updateUsername, async ({ body }) => {
-      const result = await this.queryBus.execute<UpdateUserMeUsernameCommandResult>(
+      const result = await this.queryBus.execute(
         new UpdateUserMeUsernameCommand({
           userId: token.sub,
           newUsername: body.username,
@@ -106,7 +97,7 @@ export class UserMeHttpController {
   @Auth()
   async deleteMe(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.delete, async () => {
-      const result = await this.queryBus.execute<DeleteUserMeCommandResult>(
+      const result = await this.queryBus.execute(
         new DeleteUserMeCommand({
           userId: token.sub,
         }),

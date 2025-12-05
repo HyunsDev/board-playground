@@ -10,23 +10,24 @@ import { TransactionManager } from '@/infra/database/transaction.manager';
 import { InvalidCredentialsError } from '@/infra/security/domain/security.domain-errors';
 import { PasswordService } from '@/infra/security/services/password.service';
 import { TokenService } from '@/infra/security/services/token.service';
-import { CommandBase, CommandProps } from '@/shared/base';
+import { BaseCommand, CommandProps } from '@/shared/base';
 import { HandlerResult } from '@/shared/types/handler-result';
 
-export class LoginAuthCommand extends CommandBase {
-  public readonly email: string;
-  public readonly password: string;
-  public readonly ipAddress: string;
-  public readonly userAgent: string;
+type LoginAuthCommandProps = CommandProps<{
+  email: string;
+  password: string;
+  ipAddress: string;
+  userAgent: string;
+}>;
 
-  constructor(props: CommandProps<LoginAuthCommand>) {
-    super(props);
-    this.email = props.email!;
-    this.password = props.password!;
-    this.ipAddress = props.ipAddress!;
-    this.userAgent = props.userAgent!;
+export class LoginAuthCommand extends BaseCommand<
+  LoginAuthCommandProps,
+  HandlerResult<LoginAuthCommandHandler>,
+  {
+    accessToken: string;
+    refreshToken: string;
   }
-}
+> {}
 
 @CommandHandler(LoginAuthCommand)
 export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand> {
@@ -39,20 +40,20 @@ export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand
     private readonly txManager: TransactionManager,
   ) {}
 
-  async execute(command: LoginAuthCommand) {
+  async execute({ data }: LoginAuthCommandProps) {
     return await this.txManager.run(async () => {
-      const user = await this.userFacade.findOneByEmail(command.email);
+      const user = await this.userFacade.findOneByEmail(data.email);
       if (!user) return err(new InvalidCredentialsError());
 
-      const isValid = await this.passwordService.comparePassword(command.password, user.password);
+      const isValid = await this.passwordService.comparePassword(data.password, user.password);
       if (!isValid) return err(new InvalidCredentialsError());
 
       const refreshTokens = this.tokenService.generateRefreshToken();
 
       const createSessionResult = await this.sessionService.create({
         userId: user.id,
-        ipAddress: command.ipAddress,
-        userAgent: command.userAgent,
+        ipAddress: data.ipAddress,
+        userAgent: data.userAgent,
         platform: DEVICE_PLATFORM.WEB,
       });
       if (createSessionResult.isErr()) return err(createSessionResult.error);

@@ -4,6 +4,7 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
 import { err, Result } from 'neverthrow';
 
 import { DomainEventDispatcher } from './domain-event.dispatcher';
+
 class TransactionRollbackError<E> extends Error {
   constructor(public readonly originalError: E) {
     super('ROLLBACK');

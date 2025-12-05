@@ -7,20 +7,20 @@ import { InvalidRefreshTokenError } from '@/domains/session/domain/token.domain-
 import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TransactionManager } from '@/infra/database/transaction.manager';
 import { TokenService } from '@/infra/security/services/token.service';
-import { CommandBase, CommandProps } from '@/shared/base';
+import { BaseCommand, CommandProps } from '@/shared/base';
 import { HandlerResult } from '@/shared/types/handler-result';
 import { matchError } from '@/shared/utils/match-error.utils';
 
-class IRefreshTokenAuthCommand<T = any> extends CommandBase<T> {
-  public readonly refreshToken: string;
-  constructor(props: CommandProps<IRefreshTokenAuthCommand<T>>) {
-    super(props);
-    this.refreshToken = props.refreshToken;
+type RefreshTokenAuthCommandProps = CommandProps<{
+  refreshToken: string;
+}>;
+export class RefreshTokenAuthCommand extends BaseCommand<
+  RefreshTokenAuthCommandProps,
+  HandlerResult<RefreshTokenAuthCommandHandler>,
+  {
+    accessToken: string;
+    refreshToken: string;
   }
-}
-
-export class RefreshTokenAuthCommand extends IRefreshTokenAuthCommand<
-  HandlerResult<RefreshTokenAuthCommandHandler>
 > {}
 
 @CommandHandler(RefreshTokenAuthCommand)
@@ -33,9 +33,9 @@ export class RefreshTokenAuthCommandHandler implements ICommandHandler<RefreshTo
     private readonly txManager: TransactionManager,
   ) {}
 
-  async execute(command: IRefreshTokenAuthCommand) {
+  async execute({ data }: RefreshTokenAuthCommandProps) {
     return await this.txManager.run(async () => {
-      const hashedRefreshToken = this.tokenService.hashToken(command.refreshToken);
+      const hashedRefreshToken = this.tokenService.hashToken(data.refreshToken);
 
       const tokenResult =
         await this.refreshTokenService.getOneByHashedRefreshToken(hashedRefreshToken);

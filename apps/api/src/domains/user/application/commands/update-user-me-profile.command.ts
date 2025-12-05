@@ -2,24 +2,24 @@ import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
+import { UserEntity } from '../../domain/user.entity';
+
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constant';
-import { CommandBase, CommandProps } from '@/shared/base';
+import { BaseCommand, CommandProps } from '@/shared/base';
 import { HandlerResult } from '@/shared/types/handler-result';
 
-export class UpdateUserMeProfileCommand extends CommandBase {
-  public readonly userId: string;
-  public readonly nickname?: string;
-  public readonly bio?: string | null;
+type UpdateUserMeProfileCommandProps = CommandProps<{
+  userId: string;
+  nickname?: string;
+  bio?: string | null;
+}>;
 
-  constructor(props: CommandProps<UpdateUserMeProfileCommand>) {
-    super(props);
-    this.userId = props.userId!;
-    this.nickname = props.nickname;
-    this.bio = props.bio;
-  }
-}
-export type UpdateUserMeProfileCommandResult = HandlerResult<UpdateUserMeProfileCommandHandler>;
+export class UpdateUserMeProfileCommand extends BaseCommand<
+  UpdateUserMeProfileCommandProps,
+  HandlerResult<UpdateUserMeProfileCommandHandler>,
+  UserEntity
+> {}
 
 @CommandHandler(UpdateUserMeProfileCommand)
 export class UpdateUserMeProfileCommandHandler
@@ -30,14 +30,14 @@ export class UpdateUserMeProfileCommandHandler
     private readonly userRepo: UserRepositoryPort,
   ) {}
 
-  async execute(command: UpdateUserMeProfileCommand) {
-    const userResult = await this.userRepo.getOneById(command.userId);
+  async execute({ data }: UpdateUserMeProfileCommandProps) {
+    const userResult = await this.userRepo.getOneById(data.userId);
     if (userResult.isErr()) return err(userResult.error);
     const user = userResult.value;
 
     user.updateProfile({
-      nickname: command.nickname,
-      bio: command.bio,
+      nickname: data.nickname,
+      bio: data.bio,
     });
 
     const updateResult = await this.userRepo.update(user);

@@ -1,22 +1,22 @@
-import { ok } from 'assert';
-
 import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { err } from 'neverthrow';
+import { err, ok } from 'neverthrow';
 
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constant';
-import { CommandBase, CommandProps } from '@/shared/base';
+import { BaseCommand, CommandProps } from '@/shared/base';
 import { HandlerResult } from '@/shared/types/handler-result';
+import { matchError } from '@/shared/utils/match-error.utils';
 
-export class DeleteUserMeCommand extends CommandBase {
-  public readonly userId: string;
+type DeleteUserMeCommandProps = CommandProps<{
+  userId: string;
+}>;
 
-  constructor(props: CommandProps<DeleteUserMeCommand>) {
-    super(props);
-    this.userId = props.userId;
-  }
-}
+export class DeleteUserMeCommand extends BaseCommand<
+  DeleteUserMeCommandProps,
+  HandlerResult<DeleteUserMeCommandHandler>,
+  void
+> {}
 
 @CommandHandler(DeleteUserMeCommand)
 export class DeleteUserMeCommandHandler implements ICommandHandler<DeleteUserMeCommand> {
@@ -25,9 +25,13 @@ export class DeleteUserMeCommandHandler implements ICommandHandler<DeleteUserMeC
     private readonly userRepo: UserRepositoryPort,
   ) {}
 
-  async execute(command: DeleteUserMeCommand) {
-    const userResult = await this.userRepo.getOneById(command.userId);
-    if (userResult.isErr()) return userResult;
+  async execute({ data }: DeleteUserMeCommandProps) {
+    const userResult = await this.userRepo.getOneById(data.userId);
+    if (userResult.isErr()) {
+      return matchError(userResult.error, {
+        UserNotFound: (e) => err(e),
+      });
+    }
     const user = userResult.value;
 
     return (await this.userRepo.delete(user)).match(
@@ -36,5 +40,3 @@ export class DeleteUserMeCommandHandler implements ICommandHandler<DeleteUserMeC
     );
   }
 }
-
-export type DeleteUserMeCommandResult = HandlerResult<DeleteUserMeCommandHandler>;

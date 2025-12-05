@@ -9,33 +9,30 @@ import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TransactionManager } from '@/infra/database/transaction.manager';
 import { PasswordService } from '@/infra/security/services/password.service';
 import { TokenService } from '@/infra/security/services/token.service';
-import { CommandBase, CommandProps } from '@/shared/base';
+import { BaseCommand, CommandProps } from '@/shared/base';
 import { HandlerResult } from '@/shared/types/handler-result';
 
-export class RegisterAuthCommand extends CommandBase {
-  public readonly email: string;
-  public readonly username: string;
-  public readonly nickname: string;
-  public readonly password: string;
-  public readonly ipAddress: string;
-  public readonly userAgent: string;
+type RegisterAuthCommandProps = CommandProps<{
+  email: string;
+  username: string;
+  nickname: string;
+  password: string;
+  ipAddress: string;
+  userAgent: string;
+}>;
 
-  constructor(props: CommandProps<RegisterAuthCommand>) {
-    super(props);
-    this.email = props.email;
-    this.username = props.username;
-    this.nickname = props.nickname;
-    this.password = props.password;
-    this.ipAddress = props.ipAddress;
-    this.userAgent = props.userAgent;
+export class RegisterAuthCommand extends BaseCommand<
+  RegisterAuthCommandProps,
+  HandlerResult<RegisterAuthCommandHandler>,
+  {
+    accessToken: string;
+    refreshToken: string;
   }
-}
-
-export type RegisterAuthCommandResult = HandlerResult<RegisterAuthCommandHandler>;
+> {}
 
 @CommandHandler(RegisterAuthCommand)
 export class RegisterAuthCommandHandler
-  implements ICommandHandler<RegisterAuthCommand, RegisterAuthCommandResult>
+  implements ICommandHandler<RegisterAuthCommand, HandlerResult<RegisterAuthCommandHandler>>
 {
   constructor(
     private readonly userFacade: UserFacade,
@@ -46,14 +43,14 @@ export class RegisterAuthCommandHandler
     private readonly txManager: TransactionManager,
   ) {}
 
-  async execute(command: RegisterAuthCommand) {
+  async execute({ data }: RegisterAuthCommandProps) {
     return await this.txManager.run(async () => {
-      const hashedPassword = await this.passwordService.hashPassword(command.password);
+      const hashedPassword = await this.passwordService.hashPassword(data.password);
 
       const createUserResult = await this.userFacade.createUser({
-        email: command.email,
-        username: command.username,
-        nickname: command.nickname,
+        email: data.email,
+        username: data.username,
+        nickname: data.nickname,
         password: hashedPassword,
       });
       if (createUserResult.isErr()) return err(createUserResult.error);
@@ -62,8 +59,8 @@ export class RegisterAuthCommandHandler
 
       const createSessionResult = await this.sessionService.create({
         userId: createUserResult.value.id,
-        ipAddress: command.ipAddress,
-        userAgent: command.userAgent,
+        ipAddress: data.ipAddress,
+        userAgent: data.userAgent,
         platform: DEVICE_PLATFORM.WEB,
       });
       if (createSessionResult.isErr()) return err(createSessionResult.error);

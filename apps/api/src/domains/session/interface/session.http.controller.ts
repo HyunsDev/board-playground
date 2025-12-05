@@ -5,10 +5,7 @@ import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { contract, EXCEPTION } from '@workspace/contract';
 
 import { SessionDtoMapper } from './session.dto-mapper';
-import {
-  DeleteSessionCommand,
-  DeleteSessionCommandResult,
-} from '../application/commands/delete-session.command';
+import { DeleteSessionCommand } from '../application/commands/delete-session.command';
 import { GetSessionQuery, GetSessionQueryResult } from '../application/queries/get-session.query';
 import {
   ListSessionsQuery,
@@ -69,7 +66,7 @@ export class SessionHttpController {
   @Auth()
   async deleteSession(@Token() token: TokenPayload) {
     return tsRestHandler(contract.session.delete, async ({ params }) => {
-      const result = await this.commandBus.execute<DeleteSessionCommandResult>(
+      const result = await this.commandBus.execute(
         new DeleteSessionCommand({
           sessionId: params.sessionId,
           userId: token.sub,

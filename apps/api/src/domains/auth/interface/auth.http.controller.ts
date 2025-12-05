@@ -10,18 +10,9 @@ import {
   LoginAuthCommand,
   LoginAuthCommandResult,
 } from '../application/commands/login-auth.command';
-import {
-  LogoutAuthCommand,
-  LogoutAuthCommandResult,
-} from '../application/commands/logout-auth.command';
-import {
-  RefreshTokenAuthCommand,
-  RefreshTokenCommandResult,
-} from '../application/commands/refresh-token-auth.command';
-import {
-  RegisterAuthCommand,
-  RegisterAuthCommandResult,
-} from '../application/commands/register-auth.command';
+import { LogoutAuthCommand } from '../application/commands/logout-auth.command';
+import { RefreshTokenAuthCommand } from '../application/commands/refresh-token-auth.command';
+import { RegisterAuthCommand } from '../application/commands/register-auth.command';
 
 import { EnvSchema } from '@/core/config/env.validation';
 import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
@@ -53,7 +44,7 @@ export class AuthHttpController {
     @UserAgent() ua: string,
   ) {
     return tsRestHandler(contract.auth.register, async ({ body }) => {
-      const result = await this.commandBus.execute<RegisterAuthCommandResult>(
+      const result = await this.commandBus.execute(
         new RegisterAuthCommand({
           email: body.email,
           username: body.username,
@@ -123,7 +114,7 @@ export class AuthHttpController {
         } as const;
       }
 
-      const result = await this.commandBus.execute<RefreshTokenCommandResult>(
+      const result = await this.commandBus.execute(
         new RefreshTokenAuthCommand({
           refreshToken: refreshToken,
         }),
@@ -156,7 +147,7 @@ export class AuthHttpController {
         return apiOk(204, null);
       }
 
-      const result = await this.commandBus.execute<LogoutAuthCommandResult>(
+      const result = await this.commandBus.execute(
         new LogoutAuthCommand({
           refreshToken: refreshToken,
         }),
