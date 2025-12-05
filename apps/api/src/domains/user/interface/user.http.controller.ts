@@ -5,7 +5,7 @@ import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { contract, EXCEPTION } from '@workspace/contract';
 
 import { UserDtoMapper } from './user.dto-mapper';
-import { GetUserQuery, GetUserQueryResult } from '../application/queries/get-user.query';
+import { GetUserQuery } from '../application/queries/get-user.query';
 
 import { apiErr, apiOk } from '@/shared/base';
 import { matchPublicError } from '@/shared/utils/match-error.utils';
@@ -20,9 +20,7 @@ export class UserHttpController {
   @TsRestHandler(contract.user.get)
   async getUser() {
     return tsRestHandler(contract.user.get, async ({ params }) => {
-      const result = await this.queryBus.execute<GetUserQueryResult>(
-        new GetUserQuery(params.userId),
-      );
+      const result = await this.queryBus.execute(new GetUserQuery({ userId: params.userId }));
 
       return result.match(
         (user) => apiOk(200, { user: this.dtoMapper.toDto(user) }),

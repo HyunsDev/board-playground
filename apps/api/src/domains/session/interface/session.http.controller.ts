@@ -6,11 +6,8 @@ import { contract, EXCEPTION } from '@workspace/contract';
 
 import { SessionDtoMapper } from './session.dto-mapper';
 import { DeleteSessionCommand } from '../application/commands/delete-session.command';
-import { GetSessionQuery, GetSessionQueryResult } from '../application/queries/get-session.query';
-import {
-  ListSessionsQuery,
-  ListSessionsQueryResult,
-} from '../application/queries/list-sessions.query';
+import { GetSessionQuery } from '../application/queries/get-session.query';
+import { ListSessionsQuery } from '../application/queries/list-sessions.query';
 
 import { Auth } from '@/infra/security/decorators/auth.decorator';
 import { Token } from '@/infra/security/decorators/token.decorator';
@@ -30,8 +27,8 @@ export class SessionHttpController {
   @Auth()
   async getSession(@Token() token: TokenPayload) {
     return tsRestHandler(contract.session.get, async ({ params }) => {
-      const result = await this.queryBus.execute<GetSessionQueryResult>(
-        new GetSessionQuery(token.sub, params.sessionId),
+      const result = await this.queryBus.execute(
+        new GetSessionQuery({ userId: token.sub, sessionId: params.sessionId }),
       );
 
       return result.match(
@@ -48,9 +45,7 @@ export class SessionHttpController {
   @Auth()
   async listSessions(@Token() token: TokenPayload) {
     return tsRestHandler(contract.session.list, async () => {
-      const result = await this.queryBus.execute<ListSessionsQueryResult>(
-        new ListSessionsQuery(token.sub),
-      );
+      const result = await this.queryBus.execute(new ListSessionsQuery({ userId: token.sub }));
 
       return result.match(
         (sessions) =>

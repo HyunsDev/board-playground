@@ -2,16 +2,22 @@ import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
+import { SessionEntity } from '../../domain/session.entity';
+
 import { SessionRepositoryPort } from '@/domains/session/domain/session.repository.port';
 import { SESSION_REPOSITORY } from '@/domains/session/session.di-tokens';
-import { QueryBase } from '@/shared/base';
+import { BaseQuery, QueryProps } from '@/shared/base';
 import { HandlerResult } from '@/shared/types/handler-result';
 
-export class ListSessionsQuery extends QueryBase {
-  constructor(public readonly userId: string) {
-    super();
-  }
-}
+type ListSessionsQueryProps = QueryProps<{
+  userId: string;
+}>;
+
+export class ListSessionsQuery extends BaseQuery<
+  ListSessionsQueryProps,
+  HandlerResult<ListSessionsQueryHandler>,
+  SessionEntity[]
+> {}
 
 @QueryHandler(ListSessionsQuery)
 export class ListSessionsQueryHandler implements IQueryHandler<ListSessionsQuery> {
@@ -20,10 +26,8 @@ export class ListSessionsQueryHandler implements IQueryHandler<ListSessionsQuery
     private readonly sessionRepo: SessionRepositoryPort,
   ) {}
 
-  async execute(query: ListSessionsQuery) {
-    const sessions = await this.sessionRepo.listAllByUserId(query.userId);
+  async execute({ data }: ListSessionsQueryProps) {
+    const sessions = await this.sessionRepo.listAllByUserId(data.userId);
     return ok(sessions);
   }
 }
-
-export type ListSessionsQueryResult = HandlerResult<ListSessionsQueryHandler>;

@@ -6,25 +6,28 @@ import { UserNotFoundError } from '@/domains/user/domain/user.domain-errors';
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constant';
-import { QueryBase } from '@/shared/base';
-import { DomainResult } from '@/shared/types/result.type';
+import { BaseQuery, QueryProps } from '@/shared/base';
+import { HandlerResult } from '@/shared/types/handler-result';
 
-export class GetUserQuery extends QueryBase<GetUserQueryResult> {
-  constructor(public readonly userId: string) {
-    super();
-  }
-}
-export type GetUserQueryResult = DomainResult<UserEntity, UserNotFoundError>;
+type GetUserMeQueryProps = QueryProps<{
+  userId: string;
+}>;
+
+export class GetUserQuery extends BaseQuery<
+  GetUserMeQueryProps,
+  HandlerResult<GetUserQueryHandler>,
+  UserEntity
+> {}
 
 @QueryHandler(GetUserQuery)
-export class GetUserQueryHandler implements IQueryHandler<GetUserQuery, GetUserQueryResult> {
+export class GetUserQueryHandler implements IQueryHandler<GetUserQuery> {
   constructor(
     @Inject(USER_REPOSITORY)
     private readonly userRepo: UserRepositoryPort,
   ) {}
 
-  async execute(query: GetUserQuery): Promise<GetUserQueryResult> {
-    const user = await this.userRepo.findOneById(query.userId);
+  async execute({ data }: GetUserMeQueryProps) {
+    const user = await this.userRepo.findOneById(data.userId);
     if (!user) return err(new UserNotFoundError());
     return ok(user);
   }

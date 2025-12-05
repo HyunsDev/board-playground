@@ -1,20 +1,20 @@
 import { Inject } from '@nestjs/common';
 import { QueryHandler } from '@nestjs/cqrs';
 
-import { UserNotFoundError } from '@/domains/user/domain/user.domain-errors';
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constant';
-import { QueryBase } from '@/shared/base';
-import { DomainResult } from '@/shared/types/result.type';
+import { BaseQuery, QueryProps } from '@/shared/base';
+import { HandlerResult } from '@/shared/types/handler-result';
 
-export class GetUserMeQuery extends QueryBase<GetUserMeQueryResult> {
-  constructor(public readonly userId: string) {
-    super();
-  }
-}
-
-export type GetUserMeQueryResult = DomainResult<UserEntity, UserNotFoundError>;
+type GetUserMeQueryProps = QueryProps<{
+  userId: string;
+}>;
+export class GetUserMeQuery extends BaseQuery<
+  GetUserMeQueryProps,
+  HandlerResult<GetUserMeQueryHandler>,
+  UserEntity
+> {}
 
 @QueryHandler(GetUserMeQuery)
 export class GetUserMeQueryHandler {
@@ -23,8 +23,8 @@ export class GetUserMeQueryHandler {
     private readonly userRepo: UserRepositoryPort,
   ) {}
 
-  async execute(query: GetUserMeQuery): Promise<GetUserMeQueryResult> {
-    const result = await this.userRepo.getOneById(query.userId);
+  async execute({ data }: GetUserMeQueryProps) {
+    const result = await this.userRepo.getOneById(data.userId);
     return result;
   }
 }

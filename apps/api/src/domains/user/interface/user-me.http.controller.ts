@@ -27,7 +27,7 @@ export class UserMeHttpController {
   @Auth()
   async getMe(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.get, async () => {
-      const result = await this.queryBus.execute(new GetUserMeQuery(token.sub));
+      const result = await this.queryBus.execute(new GetUserMeQuery({ userId: token.sub }));
       return result.match(
         (user) =>
           apiOk(200, {
