@@ -1,7 +1,9 @@
 import { Logger, Module, Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
+import { DeleteSessionCommandHandler } from './application/commands/delete-session/delete-session.command';
 import { GetSessionQueryHandler } from './application/queries/get-session/get-session.query';
+import { ListSessionsQueryHandler } from './application/queries/list-sessions/list-sessions.query';
 import { RefreshTokenService } from './application/services/refresh-token.service';
 import { SessionService } from './application/services/session.service';
 import { RefreshTokenMapper } from './infra/refresh-token.mapper';
@@ -13,8 +15,8 @@ import { SessionHttpController } from './interface/session.http.controller';
 import { REFRESH_TOKEN_REPOSITORY, SESSION_REPOSITORY } from './session.di-tokens';
 
 const httpControllers = [SessionHttpController];
-const commandHandlers: Provider[] = [];
-const queryHandlers: Provider[] = [GetSessionQueryHandler];
+const commandHandlers: Provider[] = [DeleteSessionCommandHandler];
+const queryHandlers: Provider[] = [GetSessionQueryHandler, ListSessionsQueryHandler];
 const services: Provider[] = [SessionService, RefreshTokenService];
 const mappers: Provider[] = [SessionMapper, SessionDtoMapper, RefreshTokenMapper];
 const repositories: Provider[] = [
