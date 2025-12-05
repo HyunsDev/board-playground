@@ -18,6 +18,13 @@ export type QueryProps<T> = {
   readonly metadata?: Partial<QueryMetadata>;
 };
 
+export type PaginatedQueryProps<T> = QueryProps<
+  T & {
+    page: number;
+    take: number;
+  }
+>;
+
 /**
  * BaseQuery는 모든 쿼리의 공통 속성과 동작을 정의하는 추상 클래스입니다.
  * 각 쿼리는 이 클래스를 상속하여 고유한 데이터와 메타데이터를 가질 수 있습니다.
