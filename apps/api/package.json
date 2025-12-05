@@ -8,7 +8,7 @@
     "start": "nest start",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "dev:check": "nodemon --watch \"src/**/*.controller.ts\" --watch \"../../packages/contract/src\" --ext ts --exec \"pnpm run check:contracts\"",
+    "dev:check": "nodemon --watch \"src/**/*.controller.ts\" --watch \"../../packages/contract/src\" --watch \"devtools/check-contracts\" --ext ts --exec \"pnpm run check:contracts\"",
     "check:contracts": "ts-node -r tsconfig-paths/register devtools/check-contracts/index",
     "test": "jest",
     "test:watch": "jest --watch",
