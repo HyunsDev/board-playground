@@ -45,6 +45,26 @@ export class SessionRepository
     return ok(result);
   }
 
+  async getOneByIdWithUserId(
+    id: string,
+    userId: string,
+  ): Promise<DomainResult<SessionEntity, SessionNotFoundError>> {
+    const record = await this.delegate.findFirst({
+      where: { id, userId },
+    });
+    if (!record) {
+      return err(new SessionNotFoundError());
+    }
+    return ok(this.mapper.toDomain(record));
+  }
+
+  async listAllByUserId(userId: string): Promise<SessionEntity[]> {
+    const records = await this.delegate.findMany({
+      where: { userId },
+    });
+    return this.mapper.toDomainMany(records);
+  }
+
   async create(session: SessionEntity) {
     return (await this.createEntity(session)).match(
       (session) => ok(session),
