@@ -102,7 +102,7 @@ describe('Auth Flow', () => {
     }
 
     expect(meRes.status).toBe(200);
-    expect(meRes.body.user.username).toBe(user.username);
+    expect(meRes.body.me.username).toBe(user.username);
   });
 
   it('토큰 갱신: 정상 갱신', async () => {
