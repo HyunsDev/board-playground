@@ -18,6 +18,7 @@ import {
   ListSessionsQueryResult,
 } from '../application/queries/list-sessions/list-sessions.query';
 
+import { Auth } from '@/infra/security/decorators/auth.decorator';
 import { Token } from '@/infra/security/decorators/token.decorator';
 import { apiErr, apiOk } from '@/shared/base';
 import { TokenPayload } from '@/shared/schemas/token-payload.schema';
@@ -32,6 +33,7 @@ export class SessionHttpController {
   ) {}
 
   @TsRestHandler(contract.session.get)
+  @Auth()
   async getSession(@Token() token: TokenPayload) {
     return tsRestHandler(contract.session.get, async ({ params }) => {
       const result = await this.queryBus.execute<GetSessionQueryResult>(
@@ -49,6 +51,7 @@ export class SessionHttpController {
   }
 
   @TsRestHandler(contract.session.list)
+  @Auth()
   async listSessions(@Token() token: TokenPayload) {
     return tsRestHandler(contract.session.list, async () => {
       const result = await this.queryBus.execute<ListSessionsQueryResult>(
@@ -66,6 +69,7 @@ export class SessionHttpController {
   }
 
   @TsRestHandler(contract.session.delete)
+  @Auth()
   async deleteSession(@Token() token: TokenPayload) {
     return tsRestHandler(contract.session.delete, async ({ params }) => {
       const result = await this.commandBus.execute<DeleteSessionCommandResult>(
