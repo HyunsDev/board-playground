@@ -4,13 +4,13 @@ import { ok } from 'neverthrow';
 import { RefreshTokenService } from '@/domains/session/application/services/refresh-token.service';
 import { SessionService } from '@/domains/session/application/services/session.service';
 import { TokenService } from '@/infra/security/services/token.service';
-import { CommandBase } from '@/shared/base';
+import { CommandBase, CommandProps } from '@/shared/base';
 import { HandlerResult } from '@/shared/types/handler-result';
 
 export class LogoutAuthCommand extends CommandBase {
   public readonly refreshToken: string;
 
-  constructor(props: { refreshToken: string }) {
+  constructor(props: CommandProps<LogoutAuthCommand>) {
     super(props);
     this.refreshToken = props.refreshToken;
   }
