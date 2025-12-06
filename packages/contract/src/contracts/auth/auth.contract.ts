@@ -4,7 +4,7 @@ import { registerAuthReqDto } from './auth.dto';
 import { EXCEPTION } from '../exception';
 import { passwordSchema } from './auth.schemas';
 
-import { accessRole, c, errorSchemas } from '@/common';
+import { ACCESS, c, errorSchemas } from '@/common';
 
 export const authContract = c.router({
   register: {
@@ -22,7 +22,7 @@ export const authContract = c.router({
       ]),
     },
     metadata: {
-      access: accessRole.public(),
+      access: ACCESS.public,
     },
   },
 
@@ -40,7 +40,7 @@ export const authContract = c.router({
       ...errorSchemas([EXCEPTION.AUTH.INVALID_CREDENTIALS]),
     },
     metadata: {
-      access: accessRole.public(),
+      access: ACCESS.public,
     },
   },
 
@@ -52,7 +52,7 @@ export const authContract = c.router({
       204: c.noBody(),
     },
     metadata: {
-      access: accessRole.public(),
+      access: ACCESS.public,
     },
   },
 
@@ -74,7 +74,7 @@ export const authContract = c.router({
       ]),
     },
     metadata: {
-      access: accessRole.public(),
+      access: ACCESS.public,
     },
   },
 });

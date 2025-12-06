@@ -4,7 +4,7 @@ import { UserForAdminDtoSchema } from '../user.dto';
 import { UserRole, UserStatus } from '../user.enums';
 
 import { c, paginatedQueryOf, paginatedResponseOf } from '@/common';
-import { accessRole } from '@/common/utils/access.utils';
+import { ACCESS } from '@/common/utils/access.utils';
 import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
 import { EXCEPTION } from '@/contracts/exception';
 
@@ -19,7 +19,7 @@ export const getUserForAdmin = c.query({
     404: toExceptionSchema(EXCEPTION.USER.NOT_FOUND),
   },
   metadata: {
-    access: accessRole.admin(),
+    access: ACCESS.admin,
   },
 });
 
@@ -40,7 +40,7 @@ export const queryUsersForAdmin = c.query({
     200: paginatedResponseOf(UserForAdminDtoSchema),
   },
   metadata: {
-    access: accessRole.admin(),
+    access: ACCESS.admin,
   },
 });
 
@@ -62,7 +62,7 @@ export const updateUserForAdmin = c.mutation({
     }),
   },
   metadata: {
-    access: accessRole.admin(),
+    access: ACCESS.admin,
   },
 });
 
@@ -77,6 +77,6 @@ export const deleteUserForAdmin = c.mutation({
     204: c.noBody(),
   },
   metadata: {
-    access: accessRole.admin(),
+    access: ACCESS.admin,
   },
 });

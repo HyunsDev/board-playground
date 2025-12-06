@@ -3,7 +3,7 @@ import z from 'zod';
 import { UserDtoSchema } from '../user.dto';
 
 import { c, paginatedQueryOf, paginatedResponseOf } from '@/common';
-import { accessRole } from '@/common/utils/access.utils';
+import { ACCESS } from '@/common/utils/access.utils';
 import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
 import { EXCEPTION } from '@/contracts/exception';
 
@@ -20,7 +20,7 @@ export const getUser = c.query({
     404: toExceptionSchema(EXCEPTION.USER.NOT_FOUND),
   },
   metadata: {
-    access: accessRole.signedIn(),
+    access: ACCESS.signedIn,
   },
 });
 
@@ -36,6 +36,6 @@ export const searchUsers = c.query({
     200: paginatedResponseOf(UserDtoSchema),
   },
   metadata: {
-    access: accessRole.signedIn(),
+    access: ACCESS.signedIn,
   },
 });

@@ -3,7 +3,7 @@ import z from 'zod';
 import { EXCEPTION } from '../exception';
 
 import { c, toExceptionSchema } from '@/common';
-import { accessRole } from '@/common/utils/access.utils';
+import { ACCESS } from '@/common/utils/access.utils';
 
 export const forceRegisterForDev = c.mutation({
   method: 'POST',
@@ -24,7 +24,7 @@ export const forceRegisterForDev = c.mutation({
     ]),
   },
   metadata: {
-    access: accessRole.public(),
+    access: ACCESS.public,
   },
 });
 
@@ -41,7 +41,7 @@ export const forceLoginForDev = c.mutation({
     }),
   },
   metadata: {
-    access: accessRole.public(),
+    access: ACCESS.public,
   },
 });
 
@@ -53,6 +53,6 @@ export const resetDBForDev = c.mutation({
     200: z.void(),
   },
   metadata: {
-    access: accessRole.public(),
+    access: ACCESS.public,
   },
 });

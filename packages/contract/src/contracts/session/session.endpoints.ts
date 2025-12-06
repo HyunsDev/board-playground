@@ -3,7 +3,7 @@ import z from 'zod';
 import { SessionDtoSchema } from './session.dto';
 
 import { c } from '@/common';
-import { accessRole } from '@/common/utils/access.utils';
+import { ACCESS } from '@/common/utils/access.utils';
 import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
 import { EXCEPTION } from '@/contracts/exception';
 
@@ -20,7 +20,7 @@ export const getSession = c.query({
     404: toExceptionSchema(EXCEPTION.SESSION.NOT_FOUND),
   },
   metadata: {
-    access: accessRole.signedIn(),
+    access: ACCESS.signedIn,
   },
 });
 
@@ -33,7 +33,7 @@ export const listSessions = c.query({
     }),
   },
   metadata: {
-    access: accessRole.signedIn(),
+    access: ACCESS.signedIn,
   },
 });
 
@@ -49,6 +49,6 @@ export const deleteSession = c.mutation({
     404: toExceptionSchema(EXCEPTION.SESSION.NOT_FOUND),
   },
   metadata: {
-    access: accessRole.signedIn(),
+    access: ACCESS.signedIn,
   },
 });

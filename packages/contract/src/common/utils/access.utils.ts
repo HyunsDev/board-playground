@@ -5,9 +5,9 @@ export interface AccessMetadata {
   roles?: UserRole[];
 }
 
-export const accessRole = {
-  public: () => ({ isPublic: true }),
-  signedIn: () => ({ isPublic: false }),
-  admin: () => ({ isPublic: false, roles: [USER_ROLE.ADMIN] }),
+export const ACCESS = {
+  public: { isPublic: true },
+  signedIn: { isPublic: false },
+  admin: { isPublic: false, roles: [USER_ROLE.ADMIN] },
   roles: (roles: UserRole[]) => ({ isPublic: false, roles }),
 };

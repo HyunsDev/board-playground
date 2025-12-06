@@ -3,7 +3,7 @@ import z from 'zod';
 import { UserForMeDtoSchema } from '../user.dto';
 
 import { c } from '@/common';
-import { accessRole } from '@/common/utils/access.utils';
+import { ACCESS } from '@/common/utils/access.utils';
 import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
 import { EXCEPTION } from '@/contracts/exception';
 
@@ -16,7 +16,7 @@ export const getUserMe = c.query({
     }),
   },
   metadata: {
-    access: accessRole.signedIn(),
+    access: ACCESS.signedIn,
   },
 });
 
@@ -33,7 +33,7 @@ export const updateUserMeProfile = c.mutation({
     }),
   },
   metadata: {
-    access: accessRole.signedIn(),
+    access: ACCESS.signedIn,
   },
 });
 
@@ -49,7 +49,7 @@ export const updateUserMeAvatar = c.mutation({
     400: toExceptionSchema(EXCEPTION.USER.INVALID_PROFILE_IMAGE),
   },
   metadata: {
-    access: accessRole.signedIn(),
+    access: ACCESS.signedIn,
   },
 });
 
@@ -65,7 +65,7 @@ export const updateUserMeUsername = c.mutation({
     }),
   },
   metadata: {
-    access: accessRole.signedIn(),
+    access: ACCESS.signedIn,
   },
 });
 
@@ -78,6 +78,6 @@ export const deleteUserMe = c.mutation({
     400: toExceptionSchema(EXCEPTION.USER.ADMIN_CANNOT_BE_DELETED),
   },
   metadata: {
-    access: accessRole.signedIn(),
+    access: ACCESS.signedIn,
   },
 });
