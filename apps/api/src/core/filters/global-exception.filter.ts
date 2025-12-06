@@ -6,6 +6,7 @@ import {
   Logger,
   LogLevel,
 } from '@nestjs/common';
+import { ErrorHttpStatusCode } from '@nestjs/common/utils/http-error-by-code.util';
 import { HttpAdapterHost } from '@nestjs/core';
 
 import { ApiError, ApiErrors } from '@workspace/contract';
@@ -16,7 +17,7 @@ import { DomainError } from '@/shared/base';
 interface ErrorInfo {
   level?: LogLevel;
 
-  status: number;
+  status: ErrorHttpStatusCode;
   code: string;
   message: string;
   details?: any;

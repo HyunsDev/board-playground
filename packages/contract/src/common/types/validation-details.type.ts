@@ -1,3 +1,4 @@
+import { ErrorHttpStatusCode } from '@ts-rest/core';
 import { ZodIssue } from 'zod';
 
 import { ApiError } from './api-error.type';
@@ -8,4 +9,8 @@ export type ValidationDetails = {
   pathParams: ZodIssue[] | null;
   headers: ZodIssue[] | null;
 };
-export type ApiValidationError = ApiError<ValidationDetails>;
+export type ApiValidationError<S extends ErrorHttpStatusCode, C extends string> = ApiError<
+  S,
+  C,
+  ValidationDetails
+>;
