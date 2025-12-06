@@ -8,7 +8,7 @@ import {
   AccessDeniedError,
   ExpiredTokenError,
   InternalServerError,
-  InvalidTokenError,
+  InvalidAccessTokenError,
   MissingTokenError,
   UnexpectedDomainError,
 } from '@/shared/base';
@@ -21,7 +21,7 @@ export type GlobalDomainError = EnsurePublic<
   | AccessDeniedError
   | InternalServerError
   | UnexpectedDomainError
-  | InvalidTokenError
+  | InvalidAccessTokenError
   | ExpiredTokenError
   | MissingTokenError
 >;
@@ -43,9 +43,9 @@ export class DomainExceptionFilter implements ExceptionFilter<DomainException> {
     try {
       const response = matchPublicError(error, {
         AccessDenied: () => apiErr(EXCEPTION.COMMON.ACCESS_DENIED),
-        InvalidToken: () => apiErr(EXCEPTION.AUTH.INVALID_TOKEN),
-        ExpiredToken: () => apiErr(EXCEPTION.AUTH.EXPIRED_TOKEN),
-        MissingToken: () => apiErr(EXCEPTION.AUTH.MISSING_TOKEN),
+        InvalidAccessToken: () => apiErr(EXCEPTION.AUTH.INVALID_ACCESS_TOKEN),
+        ExpiredToken: () => apiErr(EXCEPTION.AUTH.EXPIRED_ACCESS_TOKEN),
+        MissingToken: () => apiErr(EXCEPTION.AUTH.MISSING_ACCESS_TOKEN),
         InternalServerError: (err) => {
           this.logger.error(
             `[${requestId}] Internal server error: ${err.details?.error?.code}`,

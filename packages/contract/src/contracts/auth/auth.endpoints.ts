@@ -3,7 +3,7 @@ import z from 'zod';
 import { registerAuthReqDto } from './auth.dto';
 import { passwordSchema } from './auth.schemas';
 
-import { c } from '@/common';
+import { c, errorSchemas } from '@/common';
 import { accessRole } from '@/common/utils/access.utils';
 import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
 import { EXCEPTION } from '@/contracts/exception';
@@ -64,10 +64,14 @@ export const refreshTokenAuth = c.mutation({
     200: z.object({
       accessToken: z.string(),
     }),
-    401: z.union([
-      toExceptionSchema(EXCEPTION.AUTH.INVALID_REFRESH_TOKEN),
-      toExceptionSchema(EXCEPTION.AUTH.TOKEN_REUSE_DETECTED),
-      toExceptionSchema(EXCEPTION.SESSION.CLOSED),
+    ...errorSchemas([
+      EXCEPTION.AUTH.INVALID_REFRESH_TOKEN,
+      EXCEPTION.AUTH.REFRESH_TOKEN_REUSE_DETECTED,
+      EXCEPTION.AUTH.SESSION_EXPIRED,
+      EXCEPTION.AUTH.SESSION_REVOKED,
+      EXCEPTION.AUTH.SESSION_CLOSED,
+      EXCEPTION.AUTH.REFRESH_TOKEN_MISSING,
+      EXCEPTION.AUTH.EXPIRED_ACCESS_TOKEN,
     ]),
   },
   metadata: {

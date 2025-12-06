@@ -9,7 +9,7 @@ import { ContextService } from '@/infra/context/context.service';
 import { InternalServerErrorException } from '@/shared/base';
 import {
   ExpiredTokenException,
-  InvalidTokenException,
+  InvalidAccessTokenException,
   MissingTokenException,
 } from '@/shared/base/error/common.domain-exception';
 import { TokenPayload, tokenPayloadSchema } from '@/shared/schemas/token-payload.schema';
@@ -60,7 +60,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       }
 
       if (errorName === 'JsonWebTokenError') {
-        throw new InvalidTokenException();
+        throw new InvalidAccessTokenException();
       }
 
       if (errorMessage === 'No auth token') {
@@ -78,7 +78,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     if (!parsedResult.success) {
       this.logger.error(`Invalid Token Payload: ${parsedResult.error}`);
-      throw new InvalidTokenException();
+      throw new InvalidAccessTokenException();
     }
 
     const validatedPayload: TokenPayload = parsedResult.data;

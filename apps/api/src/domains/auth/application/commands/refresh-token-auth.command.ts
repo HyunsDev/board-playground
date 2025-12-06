@@ -2,11 +2,14 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { SessionService } from '@/domains/session/application/services/session.service';
-import { TokenReuseDetectedError } from '@/domains/session/domain/token.domain-errors';
+import {
+  InvalidRefreshTokenError,
+  TokenReuseDetectedError,
+} from '@/domains/session/domain/token.domain-errors';
 import { UserService } from '@/domains/user/application/services/user.service';
 import { TransactionManager } from '@/infra/database/transaction.manager';
 import { TokenService } from '@/infra/security/services/token.service';
-import { BaseCommand, CommandProps, InvalidTokenError } from '@/shared/base';
+import { BaseCommand, CommandProps } from '@/shared/base';
 import { HandlerResult } from '@/shared/types/handler-result';
 import { AuthTokens } from '@/shared/types/tokens';
 import { matchError } from '@/shared/utils/match-error.utils';
@@ -42,7 +45,6 @@ export class RefreshTokenAuthCommandHandler implements ICommandHandler<RefreshTo
       if (sessionResult.isErr()) {
         return matchError(sessionResult.error, {
           InvalidRefreshToken: (e) => err(e),
-          InvalidToken: (e) => err(e),
           SessionClosed: (e) => err(e),
           SessionRevoked: (e) => err(e),
           ExpiredToken: (e) => err(e),
@@ -57,7 +59,7 @@ export class RefreshTokenAuthCommandHandler implements ICommandHandler<RefreshTo
       const user = await this.userService.getOneById(sessionOkResult.data.session.userId);
       if (user.isErr())
         return matchError(user.error, {
-          UserNotFound: () => err(new InvalidTokenError()),
+          UserNotFound: () => err(new InvalidRefreshTokenError()),
         });
 
       const accessToken = this.tokenService.generateAccessToken({

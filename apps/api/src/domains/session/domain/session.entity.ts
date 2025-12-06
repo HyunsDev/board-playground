@@ -8,8 +8,9 @@ import { SessionCreatedEvent } from './events/session-created.event';
 import { SessionDeletedEvent } from './events/session-deleted.event';
 import { RefreshTokenEntity } from './refresh-token.entity';
 import { SessionClosedError, SessionRevokedError } from './session.domain-errors';
+import { InvalidRefreshTokenError } from './token.domain-errors';
 
-import { AggregateRoot, CommandMetadata, InvalidTokenError } from '@/shared/base';
+import { AggregateRoot, CommandMetadata } from '@/shared/base';
 import { matchError } from '@/shared/utils/match-error.utils';
 
 export interface SessionProps {
@@ -109,7 +110,7 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
 
     const currentToken = this.props.refreshTokens.find((t) => t.token === currentTokenHash);
     if (!currentToken) {
-      return err(new InvalidTokenError());
+      return err(new InvalidRefreshTokenError());
     }
 
     const tokenUseResult = currentToken.use();

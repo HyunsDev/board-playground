@@ -3,7 +3,7 @@ import { DomainException } from './base.domain-exception';
 import {
   ExpiredTokenError,
   InternalServerError,
-  InvalidTokenError,
+  InvalidAccessTokenError,
   MissingTokenError,
   UnexpectedDomainError,
 } from './common.domain-errors';
@@ -20,9 +20,9 @@ export class UnexpectedDomainErrorException extends DomainException {
   }
 }
 
-export class InvalidTokenException extends DomainException {
+export class InvalidAccessTokenException extends DomainException {
   constructor() {
-    super(new InvalidTokenError());
+    super(new InvalidAccessTokenError());
   }
 }
 

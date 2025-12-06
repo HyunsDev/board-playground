@@ -85,11 +85,11 @@ export class UnexpectedDomainError extends BaseInternalServerError<
   }
 }
 
-export class InvalidTokenError extends BaseBadRequestError<'InvalidToken'> {
-  public readonly code = 'InvalidToken';
+export class InvalidAccessTokenError extends BaseBadRequestError<'InvalidAccessToken'> {
+  public readonly code = 'InvalidAccessToken';
   public readonly scope = 'public';
   constructor() {
-    super('Invalid token');
+    super('Invalid access token');
   }
 }
 

@@ -109,7 +109,7 @@ export class AuthHttpController {
       if (!refreshToken) {
         return {
           status: 401,
-          body: EXCEPTION.AUTH.MISSING_TOKEN,
+          body: EXCEPTION.AUTH.REFRESH_TOKEN_MISSING,
         } as const;
       }
 
@@ -122,18 +122,17 @@ export class AuthHttpController {
       if (result.isErr()) {
         void res.clearCookie('refreshToken', this.getCookieOptions());
         return matchError(result.error, {
-          ExpiredToken: () => apiErr(EXCEPTION.AUTH.EXPIRED_TOKEN),
+          ExpiredToken: () => apiErr(EXCEPTION.AUTH.EXPIRED_ACCESS_TOKEN),
           InvalidRefreshToken: () => apiErr(EXCEPTION.AUTH.INVALID_REFRESH_TOKEN),
-          SessionClosed: () => apiErr(EXCEPTION.SESSION.CLOSED),
-          SessionRevoked: () => apiErr(EXCEPTION.SESSION.REVOKED),
-          InvalidToken: () => apiErr(EXCEPTION.AUTH.INVALID_TOKEN),
+          SessionClosed: () => apiErr(EXCEPTION.AUTH.SESSION_CLOSED),
+          SessionRevoked: () => apiErr(EXCEPTION.AUTH.SESSION_REVOKED),
         });
       }
 
       if (result.value.status === 'failed') {
         if (result.value.error.code === 'TokenReuseDetected') {
           void res.clearCookie('refreshToken', this.getCookieOptions());
-          return apiErr(EXCEPTION.AUTH.TOKEN_REUSE_DETECTED);
+          return apiErr(EXCEPTION.AUTH.REFRESH_TOKEN_REUSE_DETECTED);
         }
         throw new UnexpectedDomainError(result.value.error);
       }

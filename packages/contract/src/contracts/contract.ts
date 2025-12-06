@@ -28,9 +28,9 @@ export const contract = c.router(
   {
     commonResponse: {
       401: z.union([
-        toExceptionSchema(EXCEPTION.AUTH.EXPIRED_TOKEN),
-        toExceptionSchema(EXCEPTION.AUTH.INVALID_TOKEN),
-        toExceptionSchema(EXCEPTION.AUTH.MISSING_TOKEN),
+        toExceptionSchema(EXCEPTION.AUTH.EXPIRED_ACCESS_TOKEN),
+        toExceptionSchema(EXCEPTION.AUTH.INVALID_ACCESS_TOKEN),
+        toExceptionSchema(EXCEPTION.AUTH.MISSING_ACCESS_TOKEN),
         toExceptionSchema(EXCEPTION.AUTH.UNAUTHORIZED),
       ]),
     },
