@@ -4,8 +4,9 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
+import { TokenPayload } from '@workspace/contract';
+
 import { EnvSchema } from '@/core/config/env.validation';
-import { TokenPayload } from '@/shared/schemas/token-payload.schema';
 
 @Injectable()
 export class TokenService {

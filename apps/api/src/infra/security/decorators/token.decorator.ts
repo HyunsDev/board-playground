@@ -1,6 +1,6 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
-import { TokenPayload } from '@/shared/schemas/token-payload.schema';
+import { TokenPayload } from '@workspace/contract';
 
 export const Token = createParamDecorator(
   (data: keyof TokenPayload | undefined, ctx: ExecutionContext) => {

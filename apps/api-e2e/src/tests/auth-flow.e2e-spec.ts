@@ -4,9 +4,8 @@ import { describe, beforeAll, it, expect } from '@jest/globals';
 import { ApiErrors } from '@workspace/contract';
 
 import { createMockUser, MockUser } from '@/mocks/user.mock';
-import { expectRes } from '@/utils/expect-res.utils';
+import { expectRes } from '@/utils/expect-res';
 import { TestClient } from '@/utils/test-client';
-// throwWithCode는 이제 필요 없습니다.
 
 describe('Auth Flow E2E', () => {
   let client: TestClient;

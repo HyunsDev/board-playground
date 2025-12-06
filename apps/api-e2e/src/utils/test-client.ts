@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { initClient, InitClientArgs, InitClientReturn } from '@ts-rest/core';
 import * as cookie from 'cookie';
 
@@ -15,7 +14,6 @@ export class TestClient {
   constructor(private readonly baseUrl: string = 'http://localhost:4000') {
     this.api = initClient(contract, {
       baseUrl: this.baseUrl,
-      // baseHeaders 대신 api 함수 내부에서 헤더를 병합합니다.
       api: async (args) => {
         // 1. 현재 상태의 인증 헤더 생성
         const dynamicHeaders = this.buildHeaders();
@@ -119,6 +117,17 @@ export class TestClient {
 
   setAccessToken(token: string) {
     this._accessToken = token;
+  }
+
+  getAccessToken() {
+    return this._accessToken;
+  }
+
+  getAccessTokenPayload() {
+    if (!this._accessToken) return null;
+    const payloadBase64 = this._accessToken.split('.')[1];
+    const payloadJson = Buffer.from(payloadBase64, 'base64').toString('utf-8');
+    return JSON.parse(payloadJson);
   }
 
   getCookie(name: string) {

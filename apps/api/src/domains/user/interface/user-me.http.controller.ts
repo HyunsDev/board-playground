@@ -3,6 +3,7 @@ import { QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
 import { contract, ApiErrors } from '@workspace/contract';
+import { TokenPayload } from '@workspace/contract';
 
 import { UserDtoMapper } from './user.dto-mapper';
 import { DeleteUserMeCommand } from '../application/commands/delete-user-me.command';
@@ -13,7 +14,6 @@ import { GetUserMeQuery } from '../application/queries/get-user-me.query';
 import { Auth } from '@/infra/security/decorators/auth.decorator';
 import { Token } from '@/infra/security/decorators/token.decorator';
 import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
-import { TokenPayload } from '@/shared/schemas/token-payload.schema';
 import { matchPublicError } from '@/shared/utils/match-error.utils';
 
 @Controller()

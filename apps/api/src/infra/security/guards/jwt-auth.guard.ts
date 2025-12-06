@@ -3,6 +3,8 @@ import { Injectable, ExecutionContext, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
+import { TokenPayload, tokenPayloadSchema } from '@workspace/contract';
+
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 import { ContextService } from '@/infra/context/context.service';
@@ -12,7 +14,6 @@ import {
   InvalidAccessTokenException,
   MissingTokenException,
 } from '@/shared/base/error/common.domain-exception';
-import { TokenPayload, tokenPayloadSchema } from '@/shared/schemas/token-payload.schema';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {

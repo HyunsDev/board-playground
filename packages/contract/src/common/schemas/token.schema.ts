@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { UserRole } from '@workspace/contract';
+import { UserRole } from '@/contracts/user/user.enums';
 
 export const tokenPayloadSchema = z.object({
   sub: z.string().uuid(),

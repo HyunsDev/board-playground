@@ -3,6 +3,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
 import { contract, ApiErrors } from '@workspace/contract';
+import { TokenPayload } from '@workspace/contract';
 
 import { SessionDtoMapper } from './session.dto-mapper';
 import { DeleteSessionCommand } from '../application/commands/delete-session.command';
@@ -12,7 +13,6 @@ import { ListSessionsQuery } from '../application/queries/list-sessions.query';
 import { Auth } from '@/infra/security/decorators/auth.decorator';
 import { Token } from '@/infra/security/decorators/token.decorator';
 import { apiErr, apiOk } from '@/shared/base';
-import { TokenPayload } from '@/shared/schemas/token-payload.schema';
 import { matchError } from '@/shared/utils/match-error.utils';
 
 @Controller()
