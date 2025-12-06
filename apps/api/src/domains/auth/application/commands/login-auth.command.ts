@@ -79,5 +79,3 @@ export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand
     });
   }
 }
-
-export type LoginAuthCommandResult = HandlerResult<LoginAuthCommandHandler>;
