@@ -9,7 +9,6 @@ import { USER_EXCEPTION } from './user/user.exceptions';
 
 export const EXCEPTION = {
   COMMON: COMMON_EXCEPTION,
-
   AUTH: AUTH_EXCEPTION,
   BOARD: BOARD_EXCEPTION,
   COMMENT: COMMENT_EXCEPTION,

@@ -43,9 +43,9 @@ export class DomainExceptionFilter implements ExceptionFilter<DomainException> {
     try {
       const response = matchPublicError(error, {
         AccessDenied: () => apiErr(EXCEPTION.COMMON.ACCESS_DENIED),
-        InvalidAccessToken: () => apiErr(EXCEPTION.AUTH.INVALID_ACCESS_TOKEN),
-        ExpiredToken: () => apiErr(EXCEPTION.AUTH.EXPIRED_ACCESS_TOKEN),
-        MissingToken: () => apiErr(EXCEPTION.AUTH.MISSING_ACCESS_TOKEN),
+        InvalidAccessToken: () => apiErr(EXCEPTION.AUTH.ACCESS_TOKEN_INVALID),
+        ExpiredToken: () => apiErr(EXCEPTION.AUTH.ACCESS_TOKEN_EXPIRED),
+        MissingToken: () => apiErr(EXCEPTION.AUTH.ACCESS_TOKEN_MISSING),
         InternalServerError: (err) => {
           this.logger.error(
             `[${requestId}] Internal server error: ${err.details?.error?.code}`,

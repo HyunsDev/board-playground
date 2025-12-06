@@ -122,8 +122,8 @@ export class AuthHttpController {
       if (result.isErr()) {
         void res.clearCookie('refreshToken', this.getCookieOptions());
         return matchError(result.error, {
-          ExpiredToken: () => apiErr(EXCEPTION.AUTH.EXPIRED_ACCESS_TOKEN),
-          InvalidRefreshToken: () => apiErr(EXCEPTION.AUTH.INVALID_REFRESH_TOKEN),
+          ExpiredToken: () => apiErr(EXCEPTION.AUTH.ACCESS_TOKEN_EXPIRED),
+          InvalidRefreshToken: () => apiErr(EXCEPTION.AUTH.REFRESH_TOKEN_INVALID),
           SessionClosed: () => apiErr(EXCEPTION.AUTH.SESSION_CLOSED),
           SessionRevoked: () => apiErr(EXCEPTION.AUTH.SESSION_REVOKED),
         });
