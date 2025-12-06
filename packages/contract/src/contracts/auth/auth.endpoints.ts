@@ -4,9 +4,9 @@ import { registerAuthReqDto } from './auth.dto';
 import { passwordSchema } from './auth.schemas';
 
 import { c } from '@/common';
+import { accessRole } from '@/common/utils/access.utils';
 import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
 import { EXCEPTION } from '@/contracts/exception';
-import { USER_ROLE } from '@/contracts/user';
 
 export const registerAuth = c.mutation({
   method: 'POST',
@@ -20,6 +20,9 @@ export const registerAuth = c.mutation({
       toExceptionSchema(EXCEPTION.USER.EMAIL_ALREADY_EXISTS),
       toExceptionSchema(EXCEPTION.USER.USERNAME_ALREADY_EXISTS),
     ]),
+  },
+  metadata: {
+    ...accessRole.public(),
   },
 });
 
@@ -36,6 +39,9 @@ export const loginAuth = c.mutation({
     }),
     400: toExceptionSchema(EXCEPTION.AUTH.INVALID_CREDENTIALS),
   },
+  metadata: {
+    ...accessRole.public(),
+  },
 });
 
 export const logoutAuth = c.mutation({
@@ -46,7 +52,7 @@ export const logoutAuth = c.mutation({
     204: c.noBody(),
   },
   metadata: {
-    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
+    ...accessRole.public(),
   },
 });
 
@@ -64,6 +70,6 @@ export const refreshTokenAuth = c.mutation({
     ]),
   },
   metadata: {
-    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
+    ...accessRole.public(),
   },
 });
