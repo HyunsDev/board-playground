@@ -1,26 +1,26 @@
 import z from 'zod';
 
-import { UserDtoSchema } from '../user';
+import { EXCEPTION } from '../exception';
 
-import { c } from '@/common';
+import { c, toExceptionSchema } from '@/common';
 
-export const createUserForDev = c.mutation({
+export const forceRegisterForDev = c.mutation({
   method: 'POST',
-  path: '/_devtools/create-user',
+  path: '/_devtools/force-register',
   body: z.object({
     email: z.string().email(),
-    password: z.string().min(6).max(100),
     username: z.string().min(3).max(30),
     nickname: z.string().min(2).max(20),
   }),
   responses: {
     200: z.object({
-      user: UserDtoSchema,
-      tokens: z.object({
-        accessToken: z.string(),
-        refreshToken: z.string(),
-      }),
+      refreshToken: z.string(),
+      accessToken: z.string(),
     }),
+    400: z.union([
+      toExceptionSchema(EXCEPTION.USER.EMAIL_ALREADY_EXISTS),
+      toExceptionSchema(EXCEPTION.USER.USERNAME_ALREADY_EXISTS),
+    ]),
   },
 });
 
