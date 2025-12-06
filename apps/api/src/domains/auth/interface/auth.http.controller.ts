@@ -16,7 +16,7 @@ import { UnexpectedDomainError } from '@/shared/base';
 import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
 import { IpAddress } from '@/shared/decorators/ip-address.decorator';
 import { UserAgent } from '@/shared/decorators/user-agent.decorator';
-import { matchError, matchPublicError } from '@/shared/utils/match-error.utils';
+import { matchPublicError } from '@/shared/utils/match-error.utils';
 
 @Controller()
 export class AuthHttpController {
@@ -107,10 +107,7 @@ export class AuthHttpController {
       const refreshToken = req.cookies?.['refreshToken'];
 
       if (!refreshToken) {
-        return {
-          status: 401,
-          body: EXCEPTION.AUTH.REFRESH_TOKEN_MISSING,
-        } as const;
+        return apiErr(EXCEPTION.AUTH.REFRESH_TOKEN_MISSING);
       }
 
       const result = await this.commandBus.execute(
@@ -119,28 +116,29 @@ export class AuthHttpController {
         }),
       );
 
-      if (result.isErr()) {
-        void res.clearCookie('refreshToken', this.getCookieOptions());
-        return matchError(result.error, {
-          ExpiredToken: () => apiErr(EXCEPTION.AUTH.ACCESS_TOKEN_EXPIRED),
-          InvalidRefreshToken: () => apiErr(EXCEPTION.AUTH.REFRESH_TOKEN_INVALID),
-          SessionClosed: () => apiErr(EXCEPTION.AUTH.SESSION_CLOSED),
-          SessionRevoked: () => apiErr(EXCEPTION.AUTH.SESSION_REVOKED),
-        });
-      }
+      return result.match(
+        (data) => {
+          if (data.status === 'failed') {
+            if (data.error.code === 'TokenReuseDetected') {
+              void res.clearCookie('refreshToken', this.getCookieOptions());
+              return apiErr(EXCEPTION.AUTH.REFRESH_TOKEN_REUSE_DETECTED);
+            }
+            throw new UnexpectedDomainError(data.error);
+          }
 
-      if (result.value.status === 'failed') {
-        if (result.value.error.code === 'TokenReuseDetected') {
-          void res.clearCookie('refreshToken', this.getCookieOptions());
-          return apiErr(EXCEPTION.AUTH.REFRESH_TOKEN_REUSE_DETECTED);
-        }
-        throw new UnexpectedDomainError(result.value.error);
-      }
-
-      void res.cookie('refreshToken', result.value.data.refreshToken, this.getCookieOptions());
-      return apiOk(200, {
-        accessToken: result.value.data.accessToken,
-      });
+          void res.cookie('refreshToken', data.data.refreshToken, this.getCookieOptions());
+          return apiOk(200, {
+            accessToken: data.data.accessToken,
+          });
+        },
+        (error) =>
+          matchPublicError(error, {
+            InvalidRefreshToken: () => apiErr(EXCEPTION.AUTH.REFRESH_TOKEN_INVALID),
+            SessionClosed: () => apiErr(EXCEPTION.AUTH.SESSION_CLOSED),
+            SessionRevoked: () => apiErr(EXCEPTION.AUTH.SESSION_REVOKED),
+            ExpiredToken: () => apiErr(EXCEPTION.AUTH.SESSION_EXPIRED),
+          }),
+      );
     });
   }
 
