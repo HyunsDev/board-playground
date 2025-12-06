@@ -1,4 +1,4 @@
-import { USER_ROLE, UserRole } from '@/contracts';
+import { USER_ROLE, UserRole } from '@/contracts/user/user.enums';
 
 export interface AccessMetadata {
   isPublic: boolean;

@@ -1,9 +1,10 @@
 import z from 'zod';
 
 import { UserForAdminDtoSchema } from '../user.dto';
-import { USER_ROLE, UserRole, UserStatus } from '../user.enums';
+import { UserRole, UserStatus } from '../user.enums';
 
 import { c, paginatedQueryOf, paginatedResponseOf } from '@/common';
+import { accessRole } from '@/common/utils/access.utils';
 import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
 import { EXCEPTION } from '@/contracts/exception';
 
@@ -18,7 +19,7 @@ export const getUserForAdmin = c.query({
     404: toExceptionSchema(EXCEPTION.USER.NOT_FOUND),
   },
   metadata: {
-    roles: [USER_ROLE.ADMIN],
+    ...accessRole.admin(),
   },
 });
 
@@ -39,7 +40,7 @@ export const queryUsersForAdmin = c.query({
     200: paginatedResponseOf(UserForAdminDtoSchema),
   },
   metadata: {
-    roles: [USER_ROLE.ADMIN],
+    ...accessRole.admin(),
   },
 });
 
@@ -61,7 +62,7 @@ export const updateUserForAdmin = c.mutation({
     }),
   },
   metadata: {
-    roles: [USER_ROLE.ADMIN],
+    ...accessRole.admin(),
   },
 });
 
@@ -76,6 +77,6 @@ export const deleteUserForAdmin = c.mutation({
     204: c.noBody(),
   },
   metadata: {
-    roles: [USER_ROLE.ADMIN],
+    ...accessRole.admin(),
   },
 });
