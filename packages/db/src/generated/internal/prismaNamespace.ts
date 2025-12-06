@@ -1048,7 +1048,8 @@ export const SessionScalarFieldEnum = {
   browser: 'browser',
   platform: 'platform',
   ipAddress: 'ipAddress',
-  lastUsedAt: 'lastUsedAt',
+  lastRefreshedAt: 'lastRefreshedAt',
+  expiresAt: 'expiresAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId'

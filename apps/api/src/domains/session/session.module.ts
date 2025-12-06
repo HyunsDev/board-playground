@@ -4,29 +4,23 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { DeleteSessionCommandHandler } from './application/commands/delete-session.command';
 import { GetSessionQueryHandler } from './application/queries/get-session.query';
 import { ListSessionsQueryHandler } from './application/queries/list-sessions.query';
-import { RefreshTokenService } from './application/services/refresh-token.service';
 import { SessionService } from './application/services/session.service';
 import { RefreshTokenMapper } from './infra/refresh-token.mapper';
-import { RefreshTokenRepository } from './infra/refresh-token.repository';
 import { SessionMapper } from './infra/session.mapper';
 import { SessionRepository } from './infra/session.repository';
 import { SessionDtoMapper } from './interface/session.dto-mapper';
 import { SessionHttpController } from './interface/session.http.controller';
-import { REFRESH_TOKEN_REPOSITORY, SESSION_REPOSITORY } from './session.di-tokens';
+import { SESSION_REPOSITORY } from './session.di-tokens';
 
 const httpControllers = [SessionHttpController];
 const commandHandlers: Provider[] = [DeleteSessionCommandHandler];
 const queryHandlers: Provider[] = [GetSessionQueryHandler, ListSessionsQueryHandler];
-const services: Provider[] = [SessionService, RefreshTokenService];
+const services: Provider[] = [SessionService];
 const mappers: Provider[] = [SessionMapper, SessionDtoMapper, RefreshTokenMapper];
 const repositories: Provider[] = [
   {
     provide: SESSION_REPOSITORY,
     useClass: SessionRepository,
-  },
-  {
-    provide: REFRESH_TOKEN_REPOSITORY,
-    useClass: RefreshTokenRepository,
   },
 ];
 
@@ -41,12 +35,6 @@ const repositories: Provider[] = [
     ...repositories,
   ],
   controllers: [...httpControllers],
-  exports: [
-    SessionMapper,
-    SessionDtoMapper,
-    RefreshTokenMapper,
-    SessionService,
-    RefreshTokenService,
-  ],
+  exports: [SessionMapper, SessionDtoMapper, RefreshTokenMapper, SessionService],
 })
 export class SessionModule {}

@@ -1,7 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ok } from 'neverthrow';
 
-import { RefreshTokenService } from '@/domains/session/application/services/refresh-token.service';
 import { SessionService } from '@/domains/session/application/services/session.service';
 import { TransactionManager } from '@/infra/database/transaction.manager';
 import { TokenService } from '@/infra/security/services/token.service';
@@ -20,7 +18,6 @@ export class LogoutAuthCommand extends BaseCommand<
 @CommandHandler(LogoutAuthCommand)
 export class LogoutAuthCommandHandler implements ICommandHandler<LogoutAuthCommand> {
   constructor(
-    private readonly refreshTokenService: RefreshTokenService,
     private readonly sessionService: SessionService,
     private readonly tokenService: TokenService,
     private readonly txManager: TransactionManager,
@@ -28,20 +25,7 @@ export class LogoutAuthCommandHandler implements ICommandHandler<LogoutAuthComma
 
   async execute({ data }: LogoutAuthCommandProps) {
     return await this.txManager.run(async () => {
-      const hashedRefreshToken = this.tokenService.hashToken(data.refreshToken);
-      const tokenResult =
-        await this.refreshTokenService.getOneByHashedRefreshToken(hashedRefreshToken);
-      if (tokenResult.isErr()) {
-        return ok(null);
-      }
-
-      const token = tokenResult.value;
-      const revokeRes = await this.sessionService.revoke(token.sessionId);
-      if (revokeRes.isErr()) {
-        return ok(null);
-      }
-
-      return ok(null);
+      return await this.sessionService.close(data.refreshToken);
     });
   }
 }

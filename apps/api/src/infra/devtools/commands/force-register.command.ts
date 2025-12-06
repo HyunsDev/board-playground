@@ -1,13 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
-import {
-  AuthTokens,
-  AuthTokenService,
-} from '@/domains/auth/application/services/auth-token.service';
-import { UserFacade } from '@/domains/user/interface/user.facade';
+import { SessionService } from '@/domains/session/application/services/session.service';
+import { UserService } from '@/domains/user/application/services/user.service';
+import { TokenService } from '@/infra/security/services/token.service';
 import { BaseCommand, CommandProps } from '@/shared/base';
 import { HandlerResult } from '@/shared/types/handler-result';
+import { AuthTokens } from '@/shared/types/tokens';
 
 type ForceRegisterCommandProps = CommandProps<{
   email: string;
@@ -24,31 +23,42 @@ export class ForceRegisterCommand extends BaseCommand<
 @CommandHandler(ForceRegisterCommand)
 export class ForceRegisterCommandHandler implements ICommandHandler<ForceRegisterCommand> {
   constructor(
-    private readonly authTokenService: AuthTokenService,
-    private readonly userFacade: UserFacade,
+    private readonly userService: UserService,
+    private readonly sessionService: SessionService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async execute({ data }: ForceRegisterCommandProps) {
-    const userResult = await this.userFacade.createUser({
+    const createUserResult = await this.userService.create({
       email: data.email,
       username: data.username,
       nickname: data.nickname,
       password: null,
     });
-    if (userResult.isErr()) return err(userResult.error);
-    const user = userResult.value;
+    if (createUserResult.isErr()) return err(createUserResult.error);
+    const user = createUserResult.value;
 
-    const tokensResult = await this.authTokenService.issue({
-      user,
-      device: {
-        ipAddress: '127.0.0.1',
-        userAgent: 'Devtools',
-        platform: 'WEB',
-      },
+    const sessionResult = await this.sessionService.create({
+      userId: user.id,
+      ipAddress: '127.0.0.1',
+      userAgent: 'Devtools',
+      platform: 'WEB',
     });
-    return tokensResult.match(
-      (data) => ok(data),
-      (error) => err(error),
-    );
+
+    if (sessionResult.isErr()) {
+      return err(sessionResult.error);
+    }
+    const { session, refreshToken } = sessionResult.value;
+    const accessToken = this.tokenService.generateAccessToken({
+      sub: user.id,
+      sessionId: session.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    return ok({
+      accessToken,
+      refreshToken,
+    });
   }
 }

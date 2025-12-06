@@ -8,7 +8,6 @@ import { LoginAuthCommandHandler } from './application/commands/login-auth.comma
 import { LogoutAuthCommandHandler } from './application/commands/logout-auth.command';
 import { RefreshTokenAuthCommandHandler } from './application/commands/refresh-token-auth.command';
 import { RegisterAuthCommandHandler } from './application/commands/register-auth.command';
-import { AuthTokenService } from './application/services/auth-token.service';
 import { AuthHttpController } from './interface/auth.http.controller';
 
 const httpControllers = [AuthHttpController];
@@ -19,7 +18,7 @@ const commandHandlers: Provider[] = [
   RefreshTokenAuthCommandHandler,
 ];
 const queryHandlers: Provider[] = [];
-const services: Provider[] = [AuthTokenService];
+const services: Provider[] = [];
 const mappers: Provider[] = [];
 const repositories: Provider[] = [];
 
@@ -34,6 +33,6 @@ const repositories: Provider[] = [];
     ...repositories,
   ],
   controllers: [...httpControllers],
-  exports: [AuthTokenService],
+  exports: [],
 })
 export class AuthModule {}

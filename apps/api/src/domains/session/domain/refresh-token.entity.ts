@@ -1,9 +1,9 @@
-import { err, ok, Result } from 'neverthrow';
+import { err, ok } from 'neverthrow';
 import { v7 } from 'uuid';
 
-import { UsedRefreshTokenError } from './token.domain-errors';
+import { TokenReuseDetectedError } from './token.domain-errors';
 
-import { AggregateRoot } from '@/shared/base';
+import { Entity, ExpiredTokenError } from '@/shared/base';
 
 export interface RefreshTokenProps {
   id: string;
@@ -22,7 +22,7 @@ export interface CreateRefreshTokenProps {
   sessionId: string;
 }
 
-export class RefreshTokenEntity extends AggregateRoot<RefreshTokenProps> {
+export class RefreshTokenEntity extends Entity<RefreshTokenProps> {
   private constructor(props: RefreshTokenProps, id?: string) {
     super({
       id: id || props.id,
@@ -30,12 +30,8 @@ export class RefreshTokenEntity extends AggregateRoot<RefreshTokenProps> {
     });
   }
 
-  public static create(
-    createProps: CreateRefreshTokenProps,
-    // metadata?: CommandMetadata,
-  ): RefreshTokenEntity {
+  public static create(createProps: CreateRefreshTokenProps): RefreshTokenEntity {
     const id = v7();
-
     const props: RefreshTokenProps = {
       id,
       token: createProps.token,
@@ -45,7 +41,6 @@ export class RefreshTokenEntity extends AggregateRoot<RefreshTokenProps> {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-
     const token = new RefreshTokenEntity(props, id);
     return token;
   }
@@ -54,24 +49,19 @@ export class RefreshTokenEntity extends AggregateRoot<RefreshTokenProps> {
     return this.props.token;
   }
 
-  get sessionId(): string {
-    return this.props.sessionId;
-  }
-
-  public use(): Result<void, UsedRefreshTokenError> {
+  public use() {
     if (this.props.isUsed) {
-      return err(new UsedRefreshTokenError());
+      return err(new TokenReuseDetectedError());
+    }
+    if (this.isExpired()) {
+      return err(new ExpiredTokenError());
     }
     this.props.isUsed = true;
     this.props.updatedAt = new Date();
     return ok(undefined);
   }
 
-  get isUsed(): boolean {
-    return this.props.isUsed;
-  }
-
-  isExpired(): boolean {
+  private isExpired(): boolean {
     return this.props.expiresAt <= new Date();
   }
 

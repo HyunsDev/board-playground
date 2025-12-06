@@ -9,6 +9,7 @@ export type DevicePlatform = z.infer<typeof DevicePlatform>;
 
 export const SESSION_STATUS = {
   ACTIVE: 'ACTIVE',
+  CLOSED: 'CLOSED',
   REVOKED: 'REVOKED',
 } as const;
 export const SessionStatus = z.nativeEnum(SESSION_STATUS);

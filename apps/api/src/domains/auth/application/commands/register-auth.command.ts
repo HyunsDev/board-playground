@@ -3,13 +3,14 @@ import { err, ok } from 'neverthrow';
 
 import { DEVICE_PLATFORM } from '@workspace/contract';
 
-import { AuthTokenService } from '../services/auth-token.service';
-
+import { SessionService } from '@/domains/session/application/services/session.service';
+import { UserService } from '@/domains/user/application/services/user.service';
 import { UserPasswordVO } from '@/domains/user/domain/user-password.vo';
-import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TransactionManager } from '@/infra/database/transaction.manager';
+import { TokenService } from '@/infra/security/services/token.service';
 import { BaseCommand, CommandProps } from '@/shared/base';
 import { HandlerResult } from '@/shared/types/handler-result';
+import { AuthTokens } from '@/shared/types/tokens';
 
 type RegisterAuthCommandProps = CommandProps<{
   email: string;
@@ -23,10 +24,7 @@ type RegisterAuthCommandProps = CommandProps<{
 export class RegisterAuthCommand extends BaseCommand<
   RegisterAuthCommandProps,
   HandlerResult<RegisterAuthCommandHandler>,
-  {
-    accessToken: string;
-    refreshToken: string;
-  }
+  AuthTokens
 > {}
 
 @CommandHandler(RegisterAuthCommand)
@@ -34,34 +32,49 @@ export class RegisterAuthCommandHandler
   implements ICommandHandler<RegisterAuthCommand, HandlerResult<RegisterAuthCommandHandler>>
 {
   constructor(
-    private readonly userFacade: UserFacade,
+    private readonly userService: UserService,
+    private readonly sessionService: SessionService,
+    private readonly tokenService: TokenService,
     private readonly txManager: TransactionManager,
-    private readonly authTokenService: AuthTokenService,
   ) {}
 
   async execute({ data }: RegisterAuthCommandProps) {
     return await this.txManager.run(async () => {
-      const createUserResult = await this.userFacade.createUser({
+      const hashedPasswordResult = await UserPasswordVO.create(data.password);
+      if (hashedPasswordResult.isErr()) {
+        return err(hashedPasswordResult.error);
+      }
+      const hashedPassword = hashedPasswordResult.value;
+
+      const createUserResult = await this.userService.create({
         email: data.email,
         username: data.username,
         nickname: data.nickname,
-        password: UserPasswordVO.fromHash(data.password),
+        password: hashedPassword,
       });
       if (createUserResult.isErr()) return err(createUserResult.error);
 
-      return (
-        await this.authTokenService.issue({
-          user: createUserResult.value,
-          device: {
-            ipAddress: data.ipAddress,
-            userAgent: data.userAgent,
-            platform: DEVICE_PLATFORM.WEB,
-          },
-        })
-      ).match(
-        (tokens) => ok(tokens),
-        (error) => err(error),
-      );
+      const sessionResult = await this.sessionService.create({
+        userId: createUserResult.value.id,
+        userAgent: data.userAgent,
+        ipAddress: data.ipAddress,
+        platform: DEVICE_PLATFORM.WEB,
+      });
+      if (sessionResult.isErr()) {
+        return err(sessionResult.error);
+      }
+      const { session, refreshToken } = sessionResult.value;
+
+      const accessToken = await this.tokenService.generateAccessToken({
+        sub: createUserResult.value.id,
+        sessionId: session.id,
+        email: createUserResult.value.email,
+        role: createUserResult.value.role,
+      });
+      return ok({
+        accessToken,
+        refreshToken,
+      });
     });
   }
 }

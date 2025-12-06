@@ -34,7 +34,8 @@ export type SessionMinAggregateOutputType = {
   browser: string | null
   platform: $Enums.DevicePlatform | null
   ipAddress: string | null
-  lastUsedAt: Date | null
+  lastRefreshedAt: Date | null
+  expiresAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: string | null
@@ -50,7 +51,8 @@ export type SessionMaxAggregateOutputType = {
   browser: string | null
   platform: $Enums.DevicePlatform | null
   ipAddress: string | null
-  lastUsedAt: Date | null
+  lastRefreshedAt: Date | null
+  expiresAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: string | null
@@ -66,7 +68,8 @@ export type SessionCountAggregateOutputType = {
   browser: number
   platform: number
   ipAddress: number
-  lastUsedAt: number
+  lastRefreshedAt: number
+  expiresAt: number
   createdAt: number
   updatedAt: number
   userId: number
@@ -84,7 +87,8 @@ export type SessionMinAggregateInputType = {
   browser?: true
   platform?: true
   ipAddress?: true
-  lastUsedAt?: true
+  lastRefreshedAt?: true
+  expiresAt?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -100,7 +104,8 @@ export type SessionMaxAggregateInputType = {
   browser?: true
   platform?: true
   ipAddress?: true
-  lastUsedAt?: true
+  lastRefreshedAt?: true
+  expiresAt?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -116,7 +121,8 @@ export type SessionCountAggregateInputType = {
   browser?: true
   platform?: true
   ipAddress?: true
-  lastUsedAt?: true
+  lastRefreshedAt?: true
+  expiresAt?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -205,7 +211,8 @@ export type SessionGroupByOutputType = {
   browser: string
   platform: $Enums.DevicePlatform
   ipAddress: string | null
-  lastUsedAt: Date
+  lastRefreshedAt: Date
+  expiresAt: Date
   createdAt: Date
   updatedAt: Date
   userId: string
@@ -242,7 +249,8 @@ export type SessionWhereInput = {
   browser?: Prisma.StringFilter<"Session"> | string
   platform?: Prisma.EnumDevicePlatformFilter<"Session"> | $Enums.DevicePlatform
   ipAddress?: Prisma.StringNullableFilter<"Session"> | string | null
-  lastUsedAt?: Prisma.DateTimeFilter<"Session"> | Date | string
+  lastRefreshedAt?: Prisma.DateTimeFilter<"Session"> | Date | string
+  expiresAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   userId?: Prisma.StringFilter<"Session"> | string
@@ -260,7 +268,8 @@ export type SessionOrderByWithRelationInput = {
   browser?: Prisma.SortOrder
   platform?: Prisma.SortOrder
   ipAddress?: Prisma.SortOrderInput | Prisma.SortOrder
-  lastUsedAt?: Prisma.SortOrder
+  lastRefreshedAt?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -281,7 +290,8 @@ export type SessionWhereUniqueInput = Prisma.AtLeast<{
   browser?: Prisma.StringFilter<"Session"> | string
   platform?: Prisma.EnumDevicePlatformFilter<"Session"> | $Enums.DevicePlatform
   ipAddress?: Prisma.StringNullableFilter<"Session"> | string | null
-  lastUsedAt?: Prisma.DateTimeFilter<"Session"> | Date | string
+  lastRefreshedAt?: Prisma.DateTimeFilter<"Session"> | Date | string
+  expiresAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   userId?: Prisma.StringFilter<"Session"> | string
@@ -299,7 +309,8 @@ export type SessionOrderByWithAggregationInput = {
   browser?: Prisma.SortOrder
   platform?: Prisma.SortOrder
   ipAddress?: Prisma.SortOrderInput | Prisma.SortOrder
-  lastUsedAt?: Prisma.SortOrder
+  lastRefreshedAt?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -321,7 +332,8 @@ export type SessionScalarWhereWithAggregatesInput = {
   browser?: Prisma.StringWithAggregatesFilter<"Session"> | string
   platform?: Prisma.EnumDevicePlatformWithAggregatesFilter<"Session"> | $Enums.DevicePlatform
   ipAddress?: Prisma.StringNullableWithAggregatesFilter<"Session"> | string | null
-  lastUsedAt?: Prisma.DateTimeWithAggregatesFilter<"Session"> | Date | string
+  lastRefreshedAt?: Prisma.DateTimeWithAggregatesFilter<"Session"> | Date | string
+  expiresAt?: Prisma.DateTimeWithAggregatesFilter<"Session"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Session"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Session"> | Date | string
   userId?: Prisma.StringWithAggregatesFilter<"Session"> | string
@@ -337,7 +349,8 @@ export type SessionCreateInput = {
   browser?: string
   platform?: $Enums.DevicePlatform
   ipAddress?: string | null
-  lastUsedAt?: Date | string
+  lastRefreshedAt?: Date | string
+  expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutSessionsInput
@@ -354,7 +367,8 @@ export type SessionUncheckedCreateInput = {
   browser?: string
   platform?: $Enums.DevicePlatform
   ipAddress?: string | null
-  lastUsedAt?: Date | string
+  lastRefreshedAt?: Date | string
+  expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -371,7 +385,8 @@ export type SessionUpdateInput = {
   browser?: Prisma.StringFieldUpdateOperationsInput | string
   platform?: Prisma.EnumDevicePlatformFieldUpdateOperationsInput | $Enums.DevicePlatform
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lastUsedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastRefreshedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutSessionsNestedInput
@@ -388,7 +403,8 @@ export type SessionUncheckedUpdateInput = {
   browser?: Prisma.StringFieldUpdateOperationsInput | string
   platform?: Prisma.EnumDevicePlatformFieldUpdateOperationsInput | $Enums.DevicePlatform
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lastUsedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastRefreshedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -405,7 +421,8 @@ export type SessionCreateManyInput = {
   browser?: string
   platform?: $Enums.DevicePlatform
   ipAddress?: string | null
-  lastUsedAt?: Date | string
+  lastRefreshedAt?: Date | string
+  expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -421,7 +438,8 @@ export type SessionUpdateManyMutationInput = {
   browser?: Prisma.StringFieldUpdateOperationsInput | string
   platform?: Prisma.EnumDevicePlatformFieldUpdateOperationsInput | $Enums.DevicePlatform
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lastUsedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastRefreshedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -436,7 +454,8 @@ export type SessionUncheckedUpdateManyInput = {
   browser?: Prisma.StringFieldUpdateOperationsInput | string
   platform?: Prisma.EnumDevicePlatformFieldUpdateOperationsInput | $Enums.DevicePlatform
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lastUsedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastRefreshedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -457,7 +476,8 @@ export type SessionCountOrderByAggregateInput = {
   browser?: Prisma.SortOrder
   platform?: Prisma.SortOrder
   ipAddress?: Prisma.SortOrder
-  lastUsedAt?: Prisma.SortOrder
+  lastRefreshedAt?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -473,7 +493,8 @@ export type SessionMaxOrderByAggregateInput = {
   browser?: Prisma.SortOrder
   platform?: Prisma.SortOrder
   ipAddress?: Prisma.SortOrder
-  lastUsedAt?: Prisma.SortOrder
+  lastRefreshedAt?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -489,7 +510,8 @@ export type SessionMinOrderByAggregateInput = {
   browser?: Prisma.SortOrder
   platform?: Prisma.SortOrder
   ipAddress?: Prisma.SortOrder
-  lastUsedAt?: Prisma.SortOrder
+  lastRefreshedAt?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -579,7 +601,8 @@ export type SessionCreateWithoutRefreshTokensInput = {
   browser?: string
   platform?: $Enums.DevicePlatform
   ipAddress?: string | null
-  lastUsedAt?: Date | string
+  lastRefreshedAt?: Date | string
+  expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutSessionsInput
@@ -595,7 +618,8 @@ export type SessionUncheckedCreateWithoutRefreshTokensInput = {
   browser?: string
   platform?: $Enums.DevicePlatform
   ipAddress?: string | null
-  lastUsedAt?: Date | string
+  lastRefreshedAt?: Date | string
+  expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -627,7 +651,8 @@ export type SessionUpdateWithoutRefreshTokensInput = {
   browser?: Prisma.StringFieldUpdateOperationsInput | string
   platform?: Prisma.EnumDevicePlatformFieldUpdateOperationsInput | $Enums.DevicePlatform
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lastUsedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastRefreshedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutSessionsNestedInput
@@ -643,7 +668,8 @@ export type SessionUncheckedUpdateWithoutRefreshTokensInput = {
   browser?: Prisma.StringFieldUpdateOperationsInput | string
   platform?: Prisma.EnumDevicePlatformFieldUpdateOperationsInput | $Enums.DevicePlatform
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lastUsedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastRefreshedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -659,7 +685,8 @@ export type SessionCreateWithoutUserInput = {
   browser?: string
   platform?: $Enums.DevicePlatform
   ipAddress?: string | null
-  lastUsedAt?: Date | string
+  lastRefreshedAt?: Date | string
+  expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutSessionInput
@@ -675,7 +702,8 @@ export type SessionUncheckedCreateWithoutUserInput = {
   browser?: string
   platform?: $Enums.DevicePlatform
   ipAddress?: string | null
-  lastUsedAt?: Date | string
+  lastRefreshedAt?: Date | string
+  expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutSessionInput
@@ -720,7 +748,8 @@ export type SessionScalarWhereInput = {
   browser?: Prisma.StringFilter<"Session"> | string
   platform?: Prisma.EnumDevicePlatformFilter<"Session"> | $Enums.DevicePlatform
   ipAddress?: Prisma.StringNullableFilter<"Session"> | string | null
-  lastUsedAt?: Prisma.DateTimeFilter<"Session"> | Date | string
+  lastRefreshedAt?: Prisma.DateTimeFilter<"Session"> | Date | string
+  expiresAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   userId?: Prisma.StringFilter<"Session"> | string
@@ -736,7 +765,8 @@ export type SessionCreateManyUserInput = {
   browser?: string
   platform?: $Enums.DevicePlatform
   ipAddress?: string | null
-  lastUsedAt?: Date | string
+  lastRefreshedAt?: Date | string
+  expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -751,7 +781,8 @@ export type SessionUpdateWithoutUserInput = {
   browser?: Prisma.StringFieldUpdateOperationsInput | string
   platform?: Prisma.EnumDevicePlatformFieldUpdateOperationsInput | $Enums.DevicePlatform
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lastUsedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastRefreshedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutSessionNestedInput
@@ -767,7 +798,8 @@ export type SessionUncheckedUpdateWithoutUserInput = {
   browser?: Prisma.StringFieldUpdateOperationsInput | string
   platform?: Prisma.EnumDevicePlatformFieldUpdateOperationsInput | $Enums.DevicePlatform
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lastUsedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastRefreshedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutSessionNestedInput
@@ -783,7 +815,8 @@ export type SessionUncheckedUpdateManyWithoutUserInput = {
   browser?: Prisma.StringFieldUpdateOperationsInput | string
   platform?: Prisma.EnumDevicePlatformFieldUpdateOperationsInput | $Enums.DevicePlatform
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  lastUsedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastRefreshedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -829,7 +862,8 @@ export type SessionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   browser?: boolean
   platform?: boolean
   ipAddress?: boolean
-  lastUsedAt?: boolean
+  lastRefreshedAt?: boolean
+  expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -848,7 +882,8 @@ export type SessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   browser?: boolean
   platform?: boolean
   ipAddress?: boolean
-  lastUsedAt?: boolean
+  lastRefreshedAt?: boolean
+  expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -865,7 +900,8 @@ export type SessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   browser?: boolean
   platform?: boolean
   ipAddress?: boolean
-  lastUsedAt?: boolean
+  lastRefreshedAt?: boolean
+  expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -882,13 +918,14 @@ export type SessionSelectScalar = {
   browser?: boolean
   platform?: boolean
   ipAddress?: boolean
-  lastUsedAt?: boolean
+  lastRefreshedAt?: boolean
+  expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
 }
 
-export type SessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "status" | "userAgent" | "os" | "device" | "browser" | "platform" | "ipAddress" | "lastUsedAt" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["session"]>
+export type SessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "status" | "userAgent" | "os" | "device" | "browser" | "platform" | "ipAddress" | "lastRefreshedAt" | "expiresAt" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["session"]>
 export type SessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   refreshTokens?: boolean | Prisma.Session$refreshTokensArgs<ExtArgs>
@@ -917,7 +954,8 @@ export type $SessionPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     browser: string
     platform: $Enums.DevicePlatform
     ipAddress: string | null
-    lastUsedAt: Date
+    lastRefreshedAt: Date
+    expiresAt: Date
     createdAt: Date
     updatedAt: Date
     userId: string
@@ -1355,7 +1393,8 @@ export interface SessionFieldRefs {
   readonly browser: Prisma.FieldRef<"Session", 'String'>
   readonly platform: Prisma.FieldRef<"Session", 'DevicePlatform'>
   readonly ipAddress: Prisma.FieldRef<"Session", 'String'>
-  readonly lastUsedAt: Prisma.FieldRef<"Session", 'DateTime'>
+  readonly lastRefreshedAt: Prisma.FieldRef<"Session", 'DateTime'>
+  readonly expiresAt: Prisma.FieldRef<"Session", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Session", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Session", 'DateTime'>
   readonly userId: Prisma.FieldRef<"Session", 'String'>

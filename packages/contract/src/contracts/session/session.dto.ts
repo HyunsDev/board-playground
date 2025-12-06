@@ -12,7 +12,10 @@ export const SessionDtoSchema = z.object({
   device: z.string(),
   browser: z.string(),
   platform: DevicePlatform,
-  lastUsedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+  lastRefreshedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: 'Invalid date format',
+  }),
+  expiresAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: 'Invalid date format',
   }),
   createdAt: z.string().refine((date) => !isNaN(Date.parse(date)), {

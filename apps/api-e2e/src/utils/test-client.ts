@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { initClient, InitClientArgs, InitClientReturn } from '@ts-rest/core';
 import * as cookie from 'cookie';
 
 import { contract } from '@workspace/contract';
+
+import { MockUser } from '@/mocks/user.mock';
 
 export class TestClient {
   private _accessToken: string | null = null;
@@ -41,6 +44,27 @@ export class TestClient {
         };
       },
     });
+  }
+
+  async registerAndLogin(user: MockUser) {
+    // 1. 회원가입
+    const result = await this.api.devtools.forceRegister({
+      body: { ...user },
+    });
+    if (result.status !== 200) {
+      throw new Error(`User registration failed with status ${result.status}`);
+    }
+    this.setAccessToken(result.body.accessToken);
+    this.setRefreshToken(result.body.refreshToken);
+  }
+
+  async loginAs(email: string) {
+    const res = await this.api.devtools.forceLogin({ body: { email } });
+    if (res.status !== 200) {
+      throw new Error(`Force login failed with status ${res.status}`);
+    }
+    this.setAccessToken(res.body.accessToken);
+    this.setRefreshToken(res.body.refreshToken);
   }
 
   /**

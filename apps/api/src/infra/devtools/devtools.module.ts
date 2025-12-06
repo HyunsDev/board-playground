@@ -7,6 +7,7 @@ import { ResetDbCommandHandler } from './commands/reset-db.command';
 import { DevtoolsController } from './devtools.controller';
 
 import { AuthModule } from '@/domains/auth/auth.module';
+import { SessionModule } from '@/domains/session/session.module';
 import { UserModule } from '@/domains/user/user.module';
 
 const commandHandlers: Provider[] = [
@@ -17,7 +18,7 @@ const commandHandlers: Provider[] = [
 const services: Provider[] = [];
 
 @Module({
-  imports: [CqrsModule, UserModule, AuthModule],
+  imports: [CqrsModule, UserModule, AuthModule, SessionModule],
   controllers: [DevtoolsController],
   providers: [Logger, ...commandHandlers, ...services],
 })

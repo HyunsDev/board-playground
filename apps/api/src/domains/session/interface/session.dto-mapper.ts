@@ -19,7 +19,8 @@ export class SessionDtoMapper extends BaseDtoMapper<SessionEntity, SessionDto> {
       browser: props.browser,
       platform: props.platform,
       status: props.status,
-      lastUsedAt: props.lastUsedAt.toISOString(),
+      lastRefreshedAt: props.lastRefreshedAt.toISOString(),
+      expiresAt: props.expiresAt.toISOString(),
       createdAt: props.createdAt.toISOString(),
     };
   }

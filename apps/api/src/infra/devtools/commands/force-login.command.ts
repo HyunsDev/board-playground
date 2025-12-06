@@ -1,13 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
-import {
-  AuthTokens,
-  AuthTokenService,
-} from '@/domains/auth/application/services/auth-token.service';
-import { UserFacade } from '@/domains/user/interface/user.facade';
+import { SessionService } from '@/domains/session/application/services/session.service';
+import { UserService } from '@/domains/user/application/services/user.service';
+import { TokenService } from '@/infra/security/services/token.service';
 import { BaseCommand, CommandProps } from '@/shared/base';
 import { HandlerResult } from '@/shared/types/handler-result';
+import { AuthTokens } from '@/shared/types/tokens';
 
 type ForceLoginCommandProps = CommandProps<{
   email: string;
@@ -22,29 +21,39 @@ export class ForceLoginCommand extends BaseCommand<
 @CommandHandler(ForceLoginCommand)
 export class ForceLoginCommandHandler implements ICommandHandler<ForceLoginCommand> {
   constructor(
-    private readonly authTokenService: AuthTokenService,
-    private readonly userFacade: UserFacade,
+    private readonly sessionService: SessionService,
+    private readonly tokenService: TokenService,
+    private readonly userService: UserService,
   ) {}
 
   async execute({ data }: ForceLoginCommandProps) {
-    const userResult = await this.userFacade.getOneByEmail(data.email);
+    const userResult = await this.userService.getOneByEmail(data.email);
     if (userResult.isErr()) {
       return err(userResult.error);
     }
     const user = userResult.value;
 
-    return (
-      await this.authTokenService.issue({
-        user,
-        device: {
-          ipAddress: '127.0.0.1',
-          userAgent: 'Devtools',
-          platform: 'WEB',
-        },
-      })
-    ).match(
-      (tokens) => ok(tokens),
-      (error) => err(error),
-    );
+    const sessionResult = await this.sessionService.create({
+      userId: user.id,
+      ipAddress: '127.0.0.1',
+      userAgent: 'Devtools',
+      platform: 'WEB',
+    });
+
+    if (sessionResult.isErr()) {
+      return err(sessionResult.error);
+    }
+    const { session, refreshToken } = sessionResult.value;
+    const accessToken = this.tokenService.generateAccessToken({
+      sub: user.id,
+      sessionId: session.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    return ok({
+      accessToken,
+      refreshToken,
+    });
   }
 }

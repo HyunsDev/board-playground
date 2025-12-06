@@ -11,4 +11,14 @@ export const SESSION_EXCEPTION = {
     code: 'CURRENT_SESSION_CANNOT_BE_DELETED',
     message: '현재 세션은 삭제할 수 없습니다',
   },
+  REVOKED: {
+    status: 403,
+    code: 'SESSION_REVOKED',
+    message: '세션이 해지되었습니다',
+  },
+  CLOSED: {
+    status: 403,
+    code: 'SESSION_CLOSED',
+    message: '세션이 종료되었습니다',
+  },
 } as const satisfies ExceptionRecord;

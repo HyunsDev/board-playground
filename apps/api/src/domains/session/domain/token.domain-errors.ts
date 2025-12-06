@@ -16,11 +16,11 @@ export class InvalidRefreshTokenError extends BaseBadRequestError<'InvalidRefres
   }
 }
 
-export class UsedRefreshTokenError extends BaseBadRequestError<'UsedRefreshToken'> {
-  public readonly code = 'UsedRefreshToken';
+export class TokenReuseDetectedError extends BaseBadRequestError<'TokenReuseDetected'> {
+  public readonly code = 'TokenReuseDetected';
   public readonly scope = 'public';
   constructor() {
-    super('Used refresh token');
+    super('Token reuse detected');
   }
 }
 

@@ -3,187 +3,134 @@ import { describe, beforeAll, it, expect } from '@jest/globals';
 import { EXCEPTION } from '@workspace/contract';
 
 import { createMockUser, MockUser } from '@/mocks/user.mock';
+import { expectRes } from '@/utils/expect-res.utils';
 import { TestClient } from '@/utils/test-client';
-import { throwWithCode } from '@/utils/throw-with-code';
+// throwWithCode는 이제 필요 없습니다.
 
-describe('Auth Flow', () => {
+describe('Auth Flow E2E', () => {
+  let client: TestClient;
   let user: MockUser;
   let subUser: MockUser;
-  let client: TestClient;
 
-  let usedRefreshToken: string;
-  let newRefreshToken: string;
-
+  // 전체 테스트 스위트에서 한 번만 실행
   beforeAll(async () => {
     client = new TestClient();
     user = createMockUser();
     subUser = createMockUser();
+    await client.api.devtools.resetDB();
   });
 
-  it('회원가입: 정상 회원가입', async () => {
-    const res = await client.api.auth.register({
-      body: { ...user },
+  describe('1. 회원가입 검증 (Validation)', () => {
+    // 성공 케이스가 먼저 있어야 중복 검사가 가능하므로 배치
+    it('정상 회원가입 성공 (200)', async () => {
+      const res = await client.api.auth.register({ body: { ...user } });
+      expectRes(res).toBeOk();
     });
 
-    if (res.status !== 200) {
-      throw throwWithCode(res);
-    }
+    it('이메일 중복 시 가입 실패 (409)', async () => {
+      const res = await client.api.auth.register({
+        body: { ...subUser, email: user.email }, // user의 이메일 재사용
+      });
 
-    expect(res.status).toBe(200);
-  });
-
-  it('회원가입: 중복 Email 확인', async () => {
-    const res = await client.api.auth.register({
-      body: { ...subUser, email: user.email },
+      expectRes(res).toBeErr(EXCEPTION.USER.EMAIL_ALREADY_EXISTS);
     });
 
-    if (res.status !== 409) {
-      throw throwWithCode(res);
-    }
+    it('Username 중복 시 가입 실패 (409)', async () => {
+      const res = await client.api.auth.register({
+        body: { ...subUser, username: user.username },
+      });
 
-    expect(res.status).toBe(409);
-    expect(res.body.code).toBe(EXCEPTION.USER.EMAIL_ALREADY_EXISTS.code);
+      expectRes(res).toBeErr(EXCEPTION.USER.USERNAME_ALREADY_EXISTS);
+    });
   });
 
-  it('회원가입: 중복 Username 확인', async () => {
-    const res = await client.api.auth.register({
-      body: { ...subUser, username: user.username },
+  describe('2. 로그인 검증', () => {
+    it('존재하지 않는 이메일로 로그인 시 실패 (400)', async () => {
+      const res = await client.api.auth.login({
+        body: { email: 'nonexistent@example.com', password: '1q2w3e4r!' },
+      });
+
+      expectRes(res).toBeErr(EXCEPTION.AUTH.INVALID_CREDENTIALS);
     });
 
-    if (res.status !== 409) {
-      throw throwWithCode(res);
-    }
+    it('잘못된 비밀번호로 로그인 시 실패 (400)', async () => {
+      const res = await client.api.auth.login({
+        body: { email: user.email, password: '1q2w3e4r@' },
+      });
 
-    expect(res.status).toBe(409);
-    expect(res.body.code).toBe(EXCEPTION.USER.USERNAME_ALREADY_EXISTS.code);
-  });
-
-  it('로그인: 존재하지 않는 이메일', async () => {
-    const res = await client.api.auth.login({
-      body: { email: 'nonexistent@example.com', password: '1q2w3e4r@' },
+      expectRes(res).toBeErr(EXCEPTION.AUTH.INVALID_CREDENTIALS);
     });
-    if (res.status !== 400) {
-      throw throwWithCode(res);
-    }
-
-    expect(res.status).toBe(400);
-    expect(res.body.code).toBe(EXCEPTION.AUTH.INVALID_CREDENTIALS.code);
   });
 
-  it('로그인: 잘못된 비밀번호', async () => {
-    const res = await client.api.auth.login({
-      body: { email: user.email, password: '1q2w3e4r@' },
+  describe('3. 인증 시나리오 (Login -> Refresh -> Logout)', () => {
+    it('정상 로그인 후 AccessToken 발급 (200)', async () => {
+      const res = await client.api.auth.login({
+        body: { email: user.email, password: user.password },
+      });
+
+      expectRes(res).toBeOk();
+
+      // 상태 저장 (다음 테스트를 위해)
+      client.setAccessToken(res.body.accessToken);
     });
 
-    if (res.status !== 400) {
-      throw throwWithCode(res);
-    }
+    it('내 정보 조회 확인 (200)', async () => {
+      const res = await client.api.user.me.get();
 
-    expect(res.status).toBe(400);
-    expect(res.body.code).toBe(EXCEPTION.AUTH.INVALID_CREDENTIALS.code);
-  });
-
-  it('로그인: 정상 로그인', async () => {
-    const loginRes = await client.api.auth.login({
-      body: { email: user.email, password: user.password },
+      expectRes(res).toBeOk({
+        me: {
+          id: expect.any(String),
+          email: user.email,
+          username: user.username,
+          nickname: user.nickname,
+          bio: null,
+          avatarUrl: null,
+          role: 'USER',
+          status: 'ACTIVE',
+          createdAt: expect.any(String),
+        },
+      });
     });
 
-    if (loginRes.status !== 200) {
-      throw throwWithCode(loginRes);
-    }
+    it('토큰 갱신: 정상 갱신 확인 (200)', async () => {
+      const currentRefreshToken = client.getRefreshToken();
+      const res = await client.api.auth.refreshToken();
 
-    client.setAccessToken(loginRes.body.accessToken);
-    expect(loginRes.status).toBe(200);
+      expectRes(res).toBeOk();
 
-    const meRes = await client.api.user.me.get();
-
-    if (meRes.status !== 200) {
-      throw throwWithCode(meRes);
-    }
-
-    expect(meRes.status).toBe(200);
-    expect(meRes.body.me.username).toBe(user.username);
-  });
-
-  it('토큰 갱신: 정상 갱신', async () => {
-    usedRefreshToken = client.getRefreshToken();
-    const res = await client.api.auth.refreshToken();
-
-    if (res.status !== 200) {
-      throw throwWithCode(res);
-    }
-
-    newRefreshToken = client.getRefreshToken();
-    expect(newRefreshToken).not.toBe(usedRefreshToken);
-    expect(res.status).toBe(200);
-  });
-
-  it('토큰 갱신: Access Token 미포함', async () => {
-    client.clearAccessToken();
-    const res = await client.api.auth.refreshToken();
-
-    if (res.status !== 200) {
-      throw throwWithCode(res);
-    }
-
-    expect(res.status).toBe(200);
-  });
-
-  it('토큰 갱신: 알 수 없는 리프레시 토큰 사용', async () => {
-    client.setRefreshToken('unknown-refresh-token');
-    const res = await client.api.auth.refreshToken();
-
-    if (res.status !== EXCEPTION.AUTH.INVALID_REFRESH_TOKEN.status) {
-      throw throwWithCode(res);
-    }
-
-    expect(res.status).toBe(EXCEPTION.AUTH.INVALID_REFRESH_TOKEN.status);
-    expect(res.body.code).toBe(EXCEPTION.AUTH.INVALID_REFRESH_TOKEN.code);
-    client.setRefreshToken(newRefreshToken);
-  });
-
-  it('토큰 갱신: 리프레시 토큰 재사용', async () => {
-    client.setRefreshToken(usedRefreshToken);
-    const res = await client.api.auth.refreshToken();
-
-    if (res.status !== EXCEPTION.AUTH.USED_REFRESH_TOKEN.status) {
-      throw throwWithCode(res);
-    }
-
-    expect(res.status).toBe(EXCEPTION.AUTH.USED_REFRESH_TOKEN.status);
-    expect(res.body.code).toBe(EXCEPTION.AUTH.USED_REFRESH_TOKEN.code);
-    client.setRefreshToken(newRefreshToken);
-  });
-
-  it('재 로그인 후 로그아웃', async () => {
-    const loginRes = await client.api.auth.login({
-      body: { email: user.email, password: user.password },
+      const newRefreshToken = client.getRefreshToken();
+      expect(newRefreshToken).not.toBe(currentRefreshToken);
     });
 
-    if (loginRes.status !== 200) {
-      throw throwWithCode(loginRes);
-    }
+    it('토큰 갱신: 이미 사용된 Refresh Token 사용 시 감지 (Reuse Detection)', async () => {
+      const currentRefreshToken = client.getRefreshToken();
 
-    client.setAccessToken(loginRes.body.accessToken);
+      const res1 = await client.api.auth.refreshToken();
+      expectRes(res1).toBeOk();
+      const newRefreshToken = client.getRefreshToken();
 
-    const res = await client.api.auth.logout();
+      // 이전 토큰 재사용 시도
+      client.setRefreshToken(currentRefreshToken);
+      const res2 = await client.api.auth.refreshToken();
+      expectRes(res2).toBeErr(EXCEPTION.AUTH.TOKEN_REUSE_DETECTED);
 
-    if (res.status !== 204) {
-      throw throwWithCode(res);
-    }
+      // 세션 만료 완료
+      client.setRefreshToken(newRefreshToken);
+      const res3 = await client.api.auth.refreshToken();
+      expectRes(res3).toBeErr(EXCEPTION.SESSION.REVOKED);
+    });
 
-    client.clearAuth();
-    expect(res.status).toBe(204);
-  });
+    it('로그아웃 수행 (204)', async () => {
+      const res = await client.api.auth.logout();
+      expectRes(res).toBeOk();
 
-  it('로그아웃 후 토큰 사용 불가 확인', async () => {
-    const meRes = await client.api.user.me.get();
+      client.clearAuth();
+    });
 
-    if (meRes.status !== 401) {
-      throw throwWithCode(meRes);
-    }
+    it('로그아웃 후 내 정보 조회 시 차단 확인 (401)', async () => {
+      const res = await client.api.user.me.get();
 
-    expect(meRes.status).toBe(401);
-    expect(meRes.body.code).toBe(EXCEPTION.AUTH.MISSING_TOKEN.code);
+      expectRes(res).toBeErr(EXCEPTION.AUTH.MISSING_TOKEN);
+    });
   });
 });

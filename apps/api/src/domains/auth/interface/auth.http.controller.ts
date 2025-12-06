@@ -12,6 +12,7 @@ import { RefreshTokenAuthCommand } from '../application/commands/refresh-token-a
 import { RegisterAuthCommand } from '../application/commands/register-auth.command';
 
 import { EnvSchema } from '@/core/config/env.validation';
+import { UnexpectedDomainError } from '@/shared/base';
 import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
 import { IpAddress } from '@/shared/decorators/ip-address.decorator';
 import { UserAgent } from '@/shared/decorators/user-agent.decorator';
@@ -63,6 +64,7 @@ export class AuthHttpController {
           matchPublicError(error, {
             UserEmailAlreadyExists: () => apiErr(EXCEPTION.USER.EMAIL_ALREADY_EXISTS),
             UserUsernameAlreadyExists: () => apiErr(EXCEPTION.USER.USERNAME_ALREADY_EXISTS),
+            ValidationError: () => apiErr(EXCEPTION.COMMON.VALIDATION_ERROR),
           }),
       );
     });
@@ -113,24 +115,33 @@ export class AuthHttpController {
 
       const result = await this.commandBus.execute(
         new RefreshTokenAuthCommand({
-          refreshToken: refreshToken,
+          refreshToken,
         }),
       );
 
-      return result.match(
-        ({ accessToken, refreshToken: newRefreshToken }) => {
-          void res.cookie('refreshToken', newRefreshToken, this.getCookieOptions());
-          return apiOk(200, { accessToken });
-        },
-        (error) => {
+      if (result.isErr()) {
+        void res.clearCookie('refreshToken', this.getCookieOptions());
+        return matchError(result.error, {
+          ExpiredToken: () => apiErr(EXCEPTION.AUTH.EXPIRED_TOKEN),
+          InvalidRefreshToken: () => apiErr(EXCEPTION.AUTH.INVALID_REFRESH_TOKEN),
+          SessionClosed: () => apiErr(EXCEPTION.SESSION.CLOSED),
+          SessionRevoked: () => apiErr(EXCEPTION.SESSION.REVOKED),
+          InvalidToken: () => apiErr(EXCEPTION.AUTH.INVALID_TOKEN),
+        });
+      }
+
+      if (result.value.status === 'failed') {
+        if (result.value.error.code === 'TokenReuseDetected') {
           void res.clearCookie('refreshToken', this.getCookieOptions());
-          return matchError(error, {
-            InvalidRefreshToken: () => apiErr(EXCEPTION.AUTH.INVALID_REFRESH_TOKEN),
-            SessionIsRevoked: () => apiErr(EXCEPTION.AUTH.SESSION_IS_REVOKED),
-            UsedRefreshToken: () => apiErr(EXCEPTION.AUTH.USED_REFRESH_TOKEN),
-          });
-        },
-      );
+          return apiErr(EXCEPTION.AUTH.TOKEN_REUSE_DETECTED);
+        }
+        throw new UnexpectedDomainError(result.value.error);
+      }
+
+      void res.cookie('refreshToken', result.value.data.refreshToken, this.getCookieOptions());
+      return apiOk(200, {
+        accessToken: result.value.data.accessToken,
+      });
     });
   }
 
@@ -151,10 +162,8 @@ export class AuthHttpController {
 
       void res.clearCookie('refreshToken', this.getCookieOptions());
       return result.match(
-        () => {
-          return apiOk(204, null);
-        },
-        (err) => matchError(err, {}),
+        () => apiOk(204, null),
+        () => apiOk(204, null),
       );
     });
   }

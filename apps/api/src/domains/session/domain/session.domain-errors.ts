@@ -16,12 +16,21 @@ export class SessionNotFoundError extends BaseNotFoundError<'SessionNotFound'> {
   }
 }
 
-export class SessionIsRevokedError extends BaseBadRequestError<'SessionIsRevoked'> {
-  public readonly code = 'SessionIsRevoked';
+export class SessionRevokedError extends BaseBadRequestError<'SessionRevoked'> {
+  public readonly code = 'SessionRevoked';
   public readonly scope = 'public';
-  readonly name = 'SessionIsRevokedError';
+  readonly name = 'SessionRevokedError';
   constructor() {
     super('Session is revoked');
+  }
+}
+
+export class SessionClosedError extends BaseBadRequestError<'SessionClosed'> {
+  public readonly code = 'SessionClosed';
+  public readonly scope = 'public';
+  readonly name = 'SessionClosedError';
+  constructor() {
+    super('Session is closed');
   }
 }
 

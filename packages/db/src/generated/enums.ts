@@ -27,6 +27,7 @@ export type DevicePlatform = (typeof DevicePlatform)[keyof typeof DevicePlatform
 
 export const SessionStatus = {
   ACTIVE: 'ACTIVE',
+  CLOSED: 'CLOSED',
   REVOKED: 'REVOKED'
 } as const
 
