@@ -6,6 +6,5 @@
       "@/*": ["src/*"]
     },
     "outDir": "./dist"
-  },
-  "include": ["src/**/*", "src/**/*.d.ts"]
+  }
 }
