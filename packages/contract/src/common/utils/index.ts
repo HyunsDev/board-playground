@@ -1,2 +1,2 @@
 export * from './error-schemas';
-export * from './access';
+export * from '../access';

@@ -3,8 +3,8 @@ import z from 'zod';
 import { UserForAdminDtoSchema } from '../user.dto';
 import { UserRole, UserStatus } from '../user.enums';
 
-import { c, paginatedQueryOf, paginatedResponseOf, toExceptionSchemas } from '@/common';
-import { ACCESS } from '@/common/utils/access';
+import { c, paginatedQueryOf, paginatedResponseOf, toApiErrorResponses } from '@/common';
+import { ACCESS } from '@/common/access';
 import { EXCEPTION } from '@/contracts/exception';
 
 export const getUserForAdmin = c.query({
@@ -15,7 +15,7 @@ export const getUserForAdmin = c.query({
     200: z.object({
       user: UserForAdminDtoSchema,
     }),
-    ...toExceptionSchemas([EXCEPTION.USER.NOT_FOUND]),
+    ...toApiErrorResponses([EXCEPTION.USER.NOT_FOUND]),
   },
   metadata: {
     access: ACCESS.admin,
@@ -61,7 +61,7 @@ export const updateUserForAdmin = c.mutation({
     200: z.object({
       user: UserForAdminDtoSchema,
     }),
-    ...toExceptionSchemas([EXCEPTION.USER.NOT_FOUND]),
+    ...toApiErrorResponses([EXCEPTION.USER.NOT_FOUND]),
   },
   metadata: {
     access: ACCESS.admin,
@@ -77,7 +77,7 @@ export const deleteUserForAdmin = c.mutation({
   body: c.noBody(),
   responses: {
     204: c.noBody(),
-    ...toExceptionSchemas([EXCEPTION.USER.NOT_FOUND]),
+    ...toApiErrorResponses([EXCEPTION.USER.NOT_FOUND]),
   },
   metadata: {
     access: ACCESS.admin,

@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { CreatePostDtoSchema, PostDtoSchema, UpdatePostDtoSchema } from '../post.dto';
 
-import { c, ID, paginatedQueryOf, paginatedResponseOf, toExceptionSchemas } from '@/common';
+import { c, ID, paginatedQueryOf, paginatedResponseOf, toApiErrorResponses } from '@/common';
 import { EXCEPTION } from '@/contracts/exception';
 
 export const getPost = c.query({
@@ -15,7 +15,7 @@ export const getPost = c.query({
     200: z.object({
       post: PostDtoSchema,
     }),
-    ...toExceptionSchemas([EXCEPTION.POST.NOT_FOUND]),
+    ...toApiErrorResponses([EXCEPTION.POST.NOT_FOUND]),
   },
   metadata: {
     roles: ['USER', 'ADMIN'],
@@ -34,7 +34,7 @@ export const queryPosts = c.query({
   ),
   responses: {
     200: paginatedResponseOf(PostDtoSchema),
-    ...toExceptionSchemas([EXCEPTION.BOARD.NOT_FOUND]),
+    ...toApiErrorResponses([EXCEPTION.BOARD.NOT_FOUND]),
   },
   metadata: {
     roles: ['USER', 'ADMIN'],
@@ -49,7 +49,7 @@ export const createPost = c.mutation({
     200: z.object({
       post: PostDtoSchema,
     }),
-    ...toExceptionSchemas([EXCEPTION.BOARD.NOT_FOUND]),
+    ...toApiErrorResponses([EXCEPTION.BOARD.NOT_FOUND]),
   },
   metadata: {
     roles: ['USER', 'ADMIN'],
@@ -67,7 +67,7 @@ export const updatePost = c.mutation({
     200: z.object({
       post: PostDtoSchema,
     }),
-    ...toExceptionSchemas([
+    ...toApiErrorResponses([
       EXCEPTION.POST.PERMISSION_DENIED,
       EXCEPTION.POST.NOT_FOUND,
       EXCEPTION.BOARD.NOT_FOUND,
@@ -89,7 +89,7 @@ export const deletePost = c.mutation({
     200: z.object({
       success: z.boolean(),
     }),
-    ...toExceptionSchemas([EXCEPTION.POST.PERMISSION_DENIED, EXCEPTION.POST.NOT_FOUND]),
+    ...toApiErrorResponses([EXCEPTION.POST.PERMISSION_DENIED, EXCEPTION.POST.NOT_FOUND]),
   },
   metadata: {
     roles: ['USER', 'ADMIN'],

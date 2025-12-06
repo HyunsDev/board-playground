@@ -2,8 +2,8 @@ import z from 'zod';
 
 import { SessionDtoSchema } from './session.dto';
 
-import { c, toExceptionSchemas } from '@/common';
-import { ACCESS } from '@/common/utils/access';
+import { c, toApiErrorResponses } from '@/common';
+import { ACCESS } from '@/common/access';
 import { EXCEPTION } from '@/contracts/exception';
 
 export const getSession = c.query({
@@ -16,7 +16,7 @@ export const getSession = c.query({
     200: z.object({
       session: SessionDtoSchema,
     }),
-    ...toExceptionSchemas([EXCEPTION.SESSION.NOT_FOUND]),
+    ...toApiErrorResponses([EXCEPTION.SESSION.NOT_FOUND]),
   },
   metadata: {
     access: ACCESS.signedIn,
@@ -45,7 +45,7 @@ export const deleteSession = c.mutation({
   }),
   responses: {
     204: z.undefined(),
-    ...toExceptionSchemas([EXCEPTION.SESSION.NOT_FOUND]),
+    ...toApiErrorResponses([EXCEPTION.SESSION.NOT_FOUND]),
   },
   metadata: {
     access: ACCESS.signedIn,

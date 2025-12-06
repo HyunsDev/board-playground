@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { BoardDtoSchema, CreateBoardDtoSchema, UpdateBoardDtoSchema } from '../board.dto';
 
-import { c, paginatedQueryOf, paginatedResponseOf, toExceptionSchemas } from '@/common';
+import { c, paginatedQueryOf, paginatedResponseOf, toApiErrorResponses } from '@/common';
 import { EXCEPTION } from '@/contracts/exception';
 import { USER_ROLE } from '@/contracts/user/user.enums';
 
@@ -16,7 +16,7 @@ export const getBoard = c.query({
     200: z.object({
       board: BoardDtoSchema,
     }),
-    ...toExceptionSchemas([EXCEPTION.BOARD.NOT_FOUND]),
+    ...toApiErrorResponses([EXCEPTION.BOARD.NOT_FOUND]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -47,7 +47,7 @@ export const createBoard = c.mutation({
     200: z.object({
       board: BoardDtoSchema,
     }),
-    ...toExceptionSchemas([EXCEPTION.BOARD.SLUG_ALREADY_EXISTS, EXCEPTION.BOARD.NOT_FOUND]),
+    ...toApiErrorResponses([EXCEPTION.BOARD.SLUG_ALREADY_EXISTS, EXCEPTION.BOARD.NOT_FOUND]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -65,7 +65,7 @@ export const updateBoard = c.mutation({
     200: z.object({
       board: BoardDtoSchema,
     }),
-    ...toExceptionSchemas([EXCEPTION.BOARD.PERMISSION_DENIED, EXCEPTION.BOARD.NOT_FOUND]),
+    ...toApiErrorResponses([EXCEPTION.BOARD.PERMISSION_DENIED, EXCEPTION.BOARD.NOT_FOUND]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -83,7 +83,7 @@ export const deleteBoard = c.mutation({
     200: z.object({
       board: BoardDtoSchema,
     }),
-    ...toExceptionSchemas([EXCEPTION.BOARD.PERMISSION_DENIED, EXCEPTION.BOARD.NOT_FOUND]),
+    ...toApiErrorResponses([EXCEPTION.BOARD.PERMISSION_DENIED, EXCEPTION.BOARD.NOT_FOUND]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],

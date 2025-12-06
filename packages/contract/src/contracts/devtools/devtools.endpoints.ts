@@ -2,8 +2,8 @@ import z from 'zod';
 
 import { EXCEPTION } from '../exception';
 
-import { c, toExceptionSchemas } from '@/common';
-import { ACCESS } from '@/common/utils/access';
+import { c, toApiErrorResponses } from '@/common';
+import { ACCESS } from '@/common/access';
 
 export const forceRegisterForDev = c.mutation({
   method: 'POST',
@@ -18,7 +18,7 @@ export const forceRegisterForDev = c.mutation({
       refreshToken: z.string(),
       accessToken: z.string(),
     }),
-    ...toExceptionSchemas([
+    ...toApiErrorResponses([
       EXCEPTION.USER.EMAIL_ALREADY_EXISTS,
       EXCEPTION.USER.USERNAME_ALREADY_EXISTS,
     ]),

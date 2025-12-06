@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
-import { ApiErrorResponseBody, EXCEPTION } from '@workspace/contract';
+import { ApiError, EXCEPTION } from '@workspace/contract';
 
 import { ContextService } from '@/infra/context/context.service';
 import { DomainError } from '@/shared/base';
@@ -43,7 +43,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
     this.logError(errorInfo, exception, requestId);
 
     // 3. 최종 응답 객체 생성
-    const responseBody: ApiErrorResponseBody = {
+    const responseBody: ApiError = {
       code: errorInfo.code,
       status: errorInfo.status,
       message: errorInfo.message,

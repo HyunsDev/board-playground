@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-import { ApiErrorResponseBody } from '../types';
+import { ApiError } from '../types';
 
-type ErrorResponseMap<T extends ApiErrorResponseBody> = {
+type ErrorResponseMap<T extends ApiError> = {
   [K in T['status']]: z.ZodType<{
     status: K;
     code: Extract<T, { status: K }>['code'];
@@ -11,7 +11,7 @@ type ErrorResponseMap<T extends ApiErrorResponseBody> = {
   }>;
 };
 
-export const toExceptionSchema = <const T extends ApiErrorResponseBody>(exception: T) => {
+const toExceptionSchema = <const T extends ApiError>(exception: T) => {
   return z.object({
     status: z.literal(exception.status),
     code: z.literal(exception.code),
@@ -20,9 +20,7 @@ export const toExceptionSchema = <const T extends ApiErrorResponseBody>(exceptio
   });
 };
 
-export const toExceptionSchemas = <const T extends readonly ApiErrorResponseBody[]>(
-  exceptions: T,
-) => {
+export const toApiErrorResponses = <const T extends readonly ApiError[]>(exceptions: T) => {
   const grouped = exceptions.reduce(
     (acc, ex) => {
       const { status } = ex;

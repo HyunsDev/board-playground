@@ -1,3 +1,3 @@
-import { ApiErrorResponseBody } from './api-error-response.type';
+import { ApiError } from './api-error.type';
 
-export type ExceptionRecord = Record<string, ApiErrorResponseBody>;
+export type ExceptionRecord = Record<string, ApiError>;

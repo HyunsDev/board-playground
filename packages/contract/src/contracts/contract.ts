@@ -9,7 +9,7 @@ import { postContracts } from './post/post.contracts';
 import { sessionContract } from './session/session.contract';
 import { userContract, userForAdminContract } from './user/user.contracts';
 
-import { c, toExceptionSchemas } from '@/common';
+import { c, toApiErrorResponses } from '@/common';
 
 export const contract = c.router(
   {
@@ -27,7 +27,7 @@ export const contract = c.router(
   },
   {
     commonResponse: {
-      ...toExceptionSchemas([
+      ...toApiErrorResponses([
         EXCEPTION.AUTH.ACCESS_TOKEN_EXPIRED,
         EXCEPTION.AUTH.ACCESS_TOKEN_INVALID,
         EXCEPTION.AUTH.ACCESS_TOKEN_MISSING,

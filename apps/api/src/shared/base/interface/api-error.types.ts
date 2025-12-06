@@ -1,10 +1,10 @@
-import { ApiErrorResponseBody } from '@workspace/contract';
+import { ApiError } from '@workspace/contract';
 
 import { DomainError } from '../error/base.domain-errors';
 
 export interface TsRestErrorResponse {
   status: number;
-  body: ApiErrorResponseBody;
+  body: ApiError;
 }
 
 export type PublicDomainError = DomainError & { scope: 'public' };
