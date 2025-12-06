@@ -28,12 +28,21 @@ export const forceLoginForDev = c.mutation({
   method: 'POST',
   path: '/_devtools/force-login',
   body: z.object({
-    userId: z.string().uuid(),
+    email: z.string().email(),
   }),
   responses: {
     200: z.object({
       refreshToken: z.string(),
       accessToken: z.string(),
     }),
+  },
+});
+
+export const resetDBForDev = c.mutation({
+  method: 'POST',
+  path: '/_devtools/reset-db',
+  body: c.noBody(),
+  responses: {
+    200: z.void(),
   },
 });

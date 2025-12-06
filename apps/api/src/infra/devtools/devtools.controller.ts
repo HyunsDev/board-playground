@@ -7,6 +7,7 @@ import { contract, EXCEPTION } from '@workspace/contract';
 
 import { ForceLoginCommand } from './commands/force-login.command';
 import { ForceRegisterCommand } from './commands/force-register.command';
+import { ResetDbCommand } from './commands/reset-db.command';
 
 import { EnvSchema } from '@/core/config/env.validation';
 import { apiErr, apiOk, InternalServerError } from '@/shared/base';
@@ -49,7 +50,7 @@ export class DevtoolsController {
       forceLogin: async ({ body }) => {
         const result = await this.commandBus.execute(
           new ForceLoginCommand({
-            userId: body.userId,
+            email: body.email,
           }),
         );
         return result.match(
@@ -58,6 +59,13 @@ export class DevtoolsController {
             matchPublicError(error, {
               UserNotFound: () => apiErr(EXCEPTION.USER.NOT_FOUND),
             }),
+        );
+      },
+      resetDB: async () => {
+        const result = await this.commandBus.execute(new ResetDbCommand());
+        return result.match(
+          () => apiOk(200, undefined),
+          () => null,
         );
       },
     });

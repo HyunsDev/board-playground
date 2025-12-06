@@ -10,7 +10,7 @@ import { BaseCommand, CommandProps } from '@/shared/base';
 import { HandlerResult } from '@/shared/types/handler-result';
 
 type ForceLoginCommandProps = CommandProps<{
-  userId: string;
+  email: string;
 }>;
 
 export class ForceLoginCommand extends BaseCommand<
@@ -27,7 +27,7 @@ export class ForceLoginCommandHandler implements ICommandHandler<ForceLoginComma
   ) {}
 
   async execute({ data }: ForceLoginCommandProps) {
-    const userResult = await this.userFacade.getOneById(data.userId);
+    const userResult = await this.userFacade.getOneByEmail(data.email);
     if (userResult.isErr()) {
       return err(userResult.error);
     }
