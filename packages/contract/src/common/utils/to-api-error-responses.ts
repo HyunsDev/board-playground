@@ -11,7 +11,7 @@ type ErrorResponseMap<T extends ApiError> = {
   }>;
 };
 
-const toExceptionSchema = <const T extends ApiError>(exception: T) => {
+const toApiErrorResponse = <const T extends ApiError>(exception: T) => {
   return z.object({
     status: z.literal(exception.status),
     code: z.literal(exception.code),
@@ -27,7 +27,7 @@ export const toApiErrorResponses = <const T extends readonly ApiError[]>(excepti
       if (!acc[status]) {
         acc[status] = [];
       }
-      acc[status].push(toExceptionSchema(ex));
+      acc[status].push(toApiErrorResponse(ex));
       return acc;
     },
     {} as Record<number, z.ZodTypeAny[]>,

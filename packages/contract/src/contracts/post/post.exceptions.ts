@@ -1,4 +1,4 @@
-import { ExceptionRecord } from '@/common';
+import { ApiErrorRecord } from '@/common';
 
 export const PostApiErrors = {
   NotFound: {
@@ -11,4 +11,4 @@ export const PostApiErrors = {
     code: 'POST_PERMISSION_DENIED',
     message: '게시글에 대한 권한이 없습니다',
   },
-} as const satisfies ExceptionRecord;
+} as const satisfies ApiErrorRecord;

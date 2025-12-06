@@ -1,4 +1,4 @@
-import { ExceptionRecord } from '@/common';
+import { ApiErrorRecord } from '@/common';
 
 export const SessionApiErrors = {
   NotFound: {
@@ -11,4 +11,4 @@ export const SessionApiErrors = {
     code: 'CURRENT_SESSION_CANNOT_BE_DELETED',
     message: '현재 세션은 삭제할 수 없습니다',
   },
-} as const satisfies ExceptionRecord;
+} as const satisfies ApiErrorRecord;

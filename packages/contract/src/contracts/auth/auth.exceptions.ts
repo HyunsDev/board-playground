@@ -1,4 +1,4 @@
-import { ExceptionRecord } from '@/common';
+import { ApiErrorRecord } from '@/common';
 
 export const AuthApiErrors = {
   InvalidCredentials: {
@@ -51,4 +51,4 @@ export const AuthApiErrors = {
     code: 'SESSION_EXPIRED',
     message: '세션이 만료되었습니다',
   },
-} as const satisfies ExceptionRecord;
+} as const satisfies ApiErrorRecord;

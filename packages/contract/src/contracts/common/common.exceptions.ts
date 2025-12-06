@@ -1,4 +1,4 @@
-import { ExceptionRecord } from '@/common';
+import { ApiErrorRecord } from '@/common';
 
 export const CommonApiErrors = {
   accessDenied: {
@@ -31,4 +31,4 @@ export const CommonApiErrors = {
     code: 'UNHANDLED_DOMAIN_ERROR',
     message: '처리되지 않은 도메인 오류가 발생했습니다',
   },
-} as const satisfies ExceptionRecord;
+} as const satisfies ApiErrorRecord;

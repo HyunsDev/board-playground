@@ -1,4 +1,4 @@
-import { ExceptionRecord } from '@/common';
+import { ApiErrorRecord } from '@/common';
 
 export const ManagerApiErrors = {
   NotFound: {
@@ -11,4 +11,4 @@ export const ManagerApiErrors = {
     code: 'MANAGER_FORBIDDEN',
     message: '매니저에 대한 권한이 없습니다',
   },
-} as const satisfies ExceptionRecord;
+} as const satisfies ApiErrorRecord;

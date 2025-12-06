@@ -1,2 +1,2 @@
 export * from './board.dto';
-export * from './endpoints';
+export * from './board.endpoints';

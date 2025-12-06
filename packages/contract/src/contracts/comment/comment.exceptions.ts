@@ -1,4 +1,4 @@
-import { ExceptionRecord } from '@/common';
+import { ApiErrorRecord } from '@/common';
 
 export const CommentApiErrors = {
   NotFound: {
@@ -16,4 +16,4 @@ export const CommentApiErrors = {
     code: 'COMMENT_DEPTH_EXCEEDED',
     message: '댓글의 최대 깊이를 초과했습니다',
   },
-} as const satisfies ExceptionRecord;
+} as const satisfies ApiErrorRecord;

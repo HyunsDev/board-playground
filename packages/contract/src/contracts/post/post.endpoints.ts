@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { CreatePostDtoSchema, PostDtoSchema, UpdatePostDtoSchema } from '../post.dto';
+import { CreatePostDtoSchema, PostDtoSchema, UpdatePostDtoSchema } from './post.dto';
 
 import { c, ID, paginatedQueryOf, paginatedResponseOf, toApiErrorResponses } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';

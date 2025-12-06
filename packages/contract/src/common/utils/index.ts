@@ -1,2 +1,2 @@
-export * from './error-schemas';
+export * from './to-api-error-responses';
 export * from '../access';

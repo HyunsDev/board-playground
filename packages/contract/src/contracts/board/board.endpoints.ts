@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { BoardDtoSchema, CreateBoardDtoSchema, UpdateBoardDtoSchema } from '../board.dto';
+import { BoardDtoSchema, CreateBoardDtoSchema, UpdateBoardDtoSchema } from './board.dto';
 
 import { c, paginatedQueryOf, paginatedResponseOf, toApiErrorResponses } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';

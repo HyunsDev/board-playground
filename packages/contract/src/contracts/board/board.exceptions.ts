@@ -1,4 +1,4 @@
-import { ExceptionRecord } from '@/common';
+import { ApiErrorRecord } from '@/common';
 
 export const BoardApiErrors = {
   NotFound: {
@@ -16,4 +16,4 @@ export const BoardApiErrors = {
     code: 'BOARD_PERMISSION_DENIED',
     message: '보드에 대한 권한이 없습니다',
   },
-} as const satisfies ExceptionRecord;
+} as const satisfies ApiErrorRecord;

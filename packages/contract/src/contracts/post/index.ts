@@ -1,2 +1,2 @@
-export * from './endpoints';
+export * from './post.endpoints';
 export * from './post.dto';

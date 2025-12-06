@@ -1,4 +1,4 @@
-import { ExceptionRecord } from '@/common';
+import { ApiErrorRecord } from '@/common';
 
 export const UserApiErrors = {
   NotFound: {
@@ -26,4 +26,4 @@ export const UserApiErrors = {
     code: 'ADMIN_CANNOT_BE_DELETED',
     message: '관리자 계정은 삭제할 수 없습니다',
   },
-} as const satisfies ExceptionRecord;
+} as const satisfies ApiErrorRecord;

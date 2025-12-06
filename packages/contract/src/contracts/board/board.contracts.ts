@@ -1,10 +1,4 @@
-import {
-  createBoard,
-  deleteBoard,
-  getBoard,
-  searchBoards,
-  updateBoard,
-} from './endpoints/board.endpoints';
+import { createBoard, deleteBoard, getBoard, searchBoards, updateBoard } from './board.endpoints';
 
 import { c } from '@/common';
 import {
@@ -13,7 +7,6 @@ import {
   dismissManagerFromBoard,
   listManagersOfBoard,
 } from '@/contracts/manager';
-
 
 export const boardContract = c.router({
   get: getBoard,
