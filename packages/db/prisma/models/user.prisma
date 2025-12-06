@@ -1,14 +1,14 @@
 model User {
-    id        String     @id @default(uuid())
-    username  String     @unique
-    nickname  String
-    email     String     @unique
-    bio       String?
-    avatarUrl String?
-    role      UserRole   @default(USER)
-    status    UserStatus @default(ACTIVE)
-    memo      String?
-    password  String
+    id             String     @id @default(uuid())
+    username       String     @unique
+    nickname       String
+    email          String     @unique
+    bio            String?
+    avatarUrl      String?
+    role           UserRole   @default(USER)
+    status         UserStatus @default(ACTIVE)
+    memo           String?
+    hashedPassword String?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

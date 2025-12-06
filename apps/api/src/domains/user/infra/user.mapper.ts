@@ -19,7 +19,7 @@ export class UserMapper extends BaseMapper<UserEntity, User> {
       role: record.role,
       status: record.status,
       memo: record.memo,
-      password: record.password ? UserPasswordVO.fromHash(record.password) : null,
+      password: record.hashedPassword ? UserPasswordVO.fromHash(record.hashedPassword) : null,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
     };
@@ -38,7 +38,7 @@ export class UserMapper extends BaseMapper<UserEntity, User> {
       role: props.role as UserRole,
       status: props.status as UserStatus,
       memo: props.memo,
-      password: props.password ? props.password.unpack() : null,
+      hashedPassword: props.password ? props.password.unpack() : null,
       createdAt: props.createdAt,
       updatedAt: props.updatedAt,
     };
