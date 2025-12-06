@@ -7,4 +7,4 @@ export * from './post';
 export * from './user';
 
 export * from './contract';
-export * from './exception';
+export * from './api-errors';

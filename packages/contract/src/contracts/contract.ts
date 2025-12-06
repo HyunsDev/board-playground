@@ -4,7 +4,7 @@ import { authContract } from './auth/auth.contract';
 import { boardContract } from './board/board.contracts';
 import { commentContract } from './comment/comment.contracts';
 import { DevtoolsContract } from './devtools/devtools.contract';
-import { EXCEPTION } from './exception';
+import { ApiErrors } from './api-errors';
 import { postContracts } from './post/post.contracts';
 import { sessionContract } from './session/session.contract';
 import { userContract, userForAdminContract } from './user/user.contracts';
@@ -28,9 +28,9 @@ export const contract = c.router(
   {
     commonResponse: {
       ...toApiErrorResponses([
-        EXCEPTION.AUTH.ACCESS_TOKEN_EXPIRED,
-        EXCEPTION.AUTH.ACCESS_TOKEN_INVALID,
-        EXCEPTION.AUTH.ACCESS_TOKEN_MISSING,
+        ApiErrors.Auth.AccessTokenExpired,
+        ApiErrors.Auth.AccessTokenInvalid,
+        ApiErrors.Auth.AccessTokenMissing,
       ]),
     },
     baseHeaders: z.object({

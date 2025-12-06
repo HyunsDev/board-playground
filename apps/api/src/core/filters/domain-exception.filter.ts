@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
-import { EXCEPTION } from '@workspace/contract';
+import { ApiErrors } from '@workspace/contract';
 
 import { ContextService } from '@/infra/context/context.service';
 import {
@@ -42,17 +42,17 @@ export class DomainExceptionFilter implements ExceptionFilter<DomainException> {
     const error = exception?.error;
     try {
       const response = matchPublicError(error, {
-        AccessDenied: () => apiErr(EXCEPTION.COMMON.ACCESS_DENIED),
-        InvalidAccessToken: () => apiErr(EXCEPTION.AUTH.ACCESS_TOKEN_INVALID),
-        ExpiredToken: () => apiErr(EXCEPTION.AUTH.ACCESS_TOKEN_EXPIRED),
-        MissingToken: () => apiErr(EXCEPTION.AUTH.ACCESS_TOKEN_MISSING),
+        AccessDenied: () => apiErr(ApiErrors.Common.AccessDenied),
+        InvalidAccessToken: () => apiErr(ApiErrors.Auth.AccessTokenInvalid),
+        ExpiredToken: () => apiErr(ApiErrors.Auth.AccessTokenExpired),
+        MissingToken: () => apiErr(ApiErrors.Auth.AccessTokenMissing),
         InternalServerError: (err) => {
           this.logger.error(
             `[${requestId}] Internal server error: ${err.details?.error?.code}`,
             exception?.stack,
             JSON.stringify(err.details?.error),
           );
-          return apiErr(EXCEPTION.COMMON.INTERNAL_SERVER_ERROR, err.details);
+          return apiErr(ApiErrors.Common.InternalServerError, err.details);
         },
         UnexpectedDomainError: (err) => {
           this.logger.error(
@@ -60,7 +60,7 @@ export class DomainExceptionFilter implements ExceptionFilter<DomainException> {
             exception?.stack,
             JSON.stringify(err.details?.error),
           );
-          return apiErr(EXCEPTION.COMMON.UNEXPECTED_DOMAIN_ERROR, {
+          return apiErr(ApiErrors.Common.UnexpectedDomainError, {
             originalErrorName: err.details?.error?.code,
           });
         },
@@ -74,7 +74,7 @@ export class DomainExceptionFilter implements ExceptionFilter<DomainException> {
         exception?.stack,
         JSON.stringify(error.details?.error),
       );
-      const response = apiErr(EXCEPTION.COMMON.UNHANDLED_DOMAIN_ERROR, {});
+      const response = apiErr(ApiErrors.Common.UnhandledDomainError, {});
       void httpAdapter.reply(ctx.getResponse(), response.body, response.status);
     }
   }

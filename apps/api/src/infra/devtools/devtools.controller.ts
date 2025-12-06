@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { CommandBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { contract, EXCEPTION } from '@workspace/contract';
+import { contract, ApiErrors } from '@workspace/contract';
 
 import { ForceLoginCommand } from './commands/force-login.command';
 import { ForceRegisterCommand } from './commands/force-register.command';
@@ -42,8 +42,8 @@ export class DevtoolsController {
           (tokens) => apiOk(200, tokens),
           (error) =>
             matchPublicError(error, {
-              UserEmailAlreadyExists: () => apiErr(EXCEPTION.USER.EMAIL_ALREADY_EXISTS),
-              UserUsernameAlreadyExists: () => apiErr(EXCEPTION.USER.USERNAME_ALREADY_EXISTS),
+              UserEmailAlreadyExists: () => apiErr(ApiErrors.User.EmailAlreadyExists),
+              UserUsernameAlreadyExists: () => apiErr(ApiErrors.User.UsernameAlreadyExists),
             }),
         );
       },
@@ -57,7 +57,7 @@ export class DevtoolsController {
           (tokens) => apiOk(200, tokens),
           (error) =>
             matchPublicError(error, {
-              UserNotFound: () => apiErr(EXCEPTION.USER.NOT_FOUND),
+              UserNotFound: () => apiErr(ApiErrors.User.NotFound),
             }),
         );
       },

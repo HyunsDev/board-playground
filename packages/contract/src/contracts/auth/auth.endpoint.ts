@@ -1,7 +1,7 @@
 import z from 'zod';
 
 import { registerAuthReqDto } from './auth.dto';
-import { EXCEPTION } from '../exception';
+import { ApiErrors } from '../api-errors';
 import { passwordSchema } from './auth.schemas';
 
 import { ACCESS, c, toApiErrorResponses } from '@/common';
@@ -15,9 +15,9 @@ export const registerAuth = c.mutation({
       accessToken: z.string(),
     }),
     ...toApiErrorResponses([
-      EXCEPTION.USER.EMAIL_ALREADY_EXISTS,
-      EXCEPTION.USER.USERNAME_ALREADY_EXISTS,
-      EXCEPTION.COMMON.VALIDATION_ERROR,
+      ApiErrors.User.EmailAlreadyExists,
+      ApiErrors.User.UsernameAlreadyExists,
+      ApiErrors.Common.ValidationError,
     ]),
   },
   metadata: {
@@ -36,7 +36,7 @@ export const loginAuth = c.mutation({
     200: z.object({
       accessToken: z.string(),
     }),
-    ...toApiErrorResponses([EXCEPTION.AUTH.INVALID_CREDENTIALS]),
+    ...toApiErrorResponses([ApiErrors.Auth.InvalidCredentials]),
   },
   metadata: {
     access: ACCESS.public,
@@ -64,12 +64,12 @@ export const refreshToken = c.mutation({
       accessToken: z.string(),
     }),
     ...toApiErrorResponses([
-      EXCEPTION.AUTH.REFRESH_TOKEN_INVALID,
-      EXCEPTION.AUTH.SESSION_EXPIRED,
-      EXCEPTION.AUTH.SESSION_REVOKED,
-      EXCEPTION.AUTH.SESSION_CLOSED,
-      EXCEPTION.AUTH.REFRESH_TOKEN_MISSING,
-      EXCEPTION.AUTH.REFRESH_TOKEN_REUSE_DETECTED,
+      ApiErrors.Auth.RefreshTokenInvalid,
+      ApiErrors.Auth.SessionExpired,
+      ApiErrors.Auth.SessionRevoked,
+      ApiErrors.Auth.SessionClosed,
+      ApiErrors.Auth.RefreshTokenMissing,
+      ApiErrors.Auth.RefreshTokenReuseDetected,
     ]),
   },
   metadata: {

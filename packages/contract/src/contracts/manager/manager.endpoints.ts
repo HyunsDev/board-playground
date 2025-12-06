@@ -5,7 +5,7 @@ import { ManagerRole } from './manager.enums';
 
 import { c, ID, toApiErrorResponses } from '@/common';
 import { BoardSlug } from '@/contracts/board/board.schemas';
-import { EXCEPTION } from '@/contracts/exception';
+import { ApiErrors } from '@/contracts/api-errors';
 import { USER_ROLE } from '@/contracts/user';
 
 export const listManagersOfBoard = c.query({
@@ -18,7 +18,7 @@ export const listManagersOfBoard = c.query({
     200: z.object({
       managers: z.array(ManagerWithUserDtoSchema),
     }),
-    ...toApiErrorResponses([EXCEPTION.BOARD.NOT_FOUND]),
+    ...toApiErrorResponses([ApiErrors.Board.NotFound]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -35,7 +35,7 @@ export const listManagerOfMe = c.query({
     200: z.object({
       managers: z.array(ManagerWithBoardDtoSchema),
     }),
-    ...toApiErrorResponses([EXCEPTION.USER.NOT_FOUND]),
+    ...toApiErrorResponses([ApiErrors.User.NotFound]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -55,8 +55,8 @@ export const appointManagerToBoard = c.mutation({
     200: z.object({
       manager: ManagerWithUserDtoSchema,
     }),
-    ...toApiErrorResponses([EXCEPTION.MANAGER.FORBIDDEN]),
-    ...toApiErrorResponses([EXCEPTION.BOARD.NOT_FOUND, EXCEPTION.USER.NOT_FOUND]),
+    ...toApiErrorResponses([ApiErrors.Manager.Forbidden]),
+    ...toApiErrorResponses([ApiErrors.Board.NotFound, ApiErrors.User.NotFound]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -74,10 +74,10 @@ export const dismissManagerFromBoard = c.mutation({
   responses: {
     204: c.noBody(),
     ...toApiErrorResponses([
-      EXCEPTION.MANAGER.FORBIDDEN,
-      EXCEPTION.BOARD.NOT_FOUND,
-      EXCEPTION.USER.NOT_FOUND,
-      EXCEPTION.MANAGER.NOT_FOUND,
+      ApiErrors.Manager.Forbidden,
+      ApiErrors.Board.NotFound,
+      ApiErrors.User.NotFound,
+      ApiErrors.Manager.NotFound,
     ]),
   },
   metadata: {
@@ -100,10 +100,10 @@ export const changeManagerRole = c.mutation({
       manager: ManagerWithUserDtoSchema,
     }),
     ...toApiErrorResponses([
-      EXCEPTION.MANAGER.FORBIDDEN,
-      EXCEPTION.BOARD.NOT_FOUND,
-      EXCEPTION.USER.NOT_FOUND,
-      EXCEPTION.MANAGER.NOT_FOUND,
+      ApiErrors.Manager.Forbidden,
+      ApiErrors.Board.NotFound,
+      ApiErrors.User.NotFound,
+      ApiErrors.Manager.NotFound,
     ]),
   },
   metadata: {

@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { contract, EXCEPTION } from '@workspace/contract';
+import { contract, ApiErrors } from '@workspace/contract';
 
 import { SessionDtoMapper } from './session.dto-mapper';
 import { DeleteSessionCommand } from '../application/commands/delete-session.command';
@@ -35,7 +35,7 @@ export class SessionHttpController {
         (session) => apiOk(200, { session: this.sessionDtoMapper.toDto(session) }),
         (error) =>
           matchError(error, {
-            SessionNotFound: () => apiErr(EXCEPTION.SESSION.NOT_FOUND),
+            SessionNotFound: () => apiErr(ApiErrors.Session.NotFound),
           }),
       );
     });
@@ -74,8 +74,8 @@ export class SessionHttpController {
         (error) =>
           matchError(error, {
             CurrentSessionCannotBeDeleted: () =>
-              apiErr(EXCEPTION.SESSION.CURRENT_SESSION_CANNOT_BE_DELETED),
-            SessionNotFound: () => apiErr(EXCEPTION.SESSION.NOT_FOUND),
+              apiErr(ApiErrors.Session.CurrentSessionCannotBeDeleted),
+            SessionNotFound: () => apiErr(ApiErrors.Session.NotFound),
           }),
       );
     });

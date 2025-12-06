@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { contract, EXCEPTION, PaginationMeta } from '@workspace/contract';
+import { contract, ApiErrors, PaginationMeta } from '@workspace/contract';
 
 import { UserDtoMapper } from './user.dto-mapper';
 import { GetUserQuery } from '../application/queries/get-user.query';
@@ -30,7 +30,7 @@ export class UserHttpController {
         (user) => apiOk(200, { user: this.dtoMapper.toDto(user) }),
         (error) =>
           matchPublicError(error, {
-            UserNotFound: () => apiErr(EXCEPTION.USER.NOT_FOUND),
+            UserNotFound: () => apiErr(ApiErrors.User.NotFound),
           }),
       );
     });

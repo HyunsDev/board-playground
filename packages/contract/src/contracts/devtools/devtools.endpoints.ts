@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { EXCEPTION } from '../exception';
+import { ApiErrors } from '../api-errors';
 
 import { c, toApiErrorResponses } from '@/common';
 import { ACCESS } from '@/common/access';
@@ -19,8 +19,8 @@ export const forceRegisterForDev = c.mutation({
       accessToken: z.string(),
     }),
     ...toApiErrorResponses([
-      EXCEPTION.USER.EMAIL_ALREADY_EXISTS,
-      EXCEPTION.USER.USERNAME_ALREADY_EXISTS,
+      ApiErrors.User.EmailAlreadyExists,
+      ApiErrors.User.UsernameAlreadyExists,
     ]),
   },
   metadata: {

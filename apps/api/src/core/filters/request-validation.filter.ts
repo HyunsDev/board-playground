@@ -2,7 +2,7 @@ import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { RequestValidationError } from '@ts-rest/nest';
 import { Response } from 'express';
 
-import { EXCEPTION, ValidationDetails } from '@workspace/contract';
+import { ApiErrors, ValidationDetails } from '@workspace/contract';
 
 import { apiErr } from '@/shared/base/interface/response.utils';
 
@@ -19,7 +19,7 @@ export class RequestValidationFilter implements ExceptionFilter<RequestValidatio
       headers: exception.headers?.issues || null,
     };
 
-    const res = apiErr(EXCEPTION.COMMON.VALIDATION_ERROR, details);
+    const res = apiErr(ApiErrors.Common.ValidationError, details);
     void response.status(res.status).json(res.body);
   }
 }

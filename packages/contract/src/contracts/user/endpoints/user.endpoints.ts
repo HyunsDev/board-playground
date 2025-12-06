@@ -4,7 +4,7 @@ import { UserDtoSchema } from '../user.dto';
 
 import { c, paginatedQueryOf, paginatedResponseOf, toApiErrorResponses } from '@/common';
 import { ACCESS } from '@/common/access';
-import { EXCEPTION } from '@/contracts/exception';
+import { ApiErrors } from '@/contracts/api-errors';
 
 export const getUser = c.query({
   method: 'GET',
@@ -16,7 +16,7 @@ export const getUser = c.query({
     200: z.object({
       user: UserDtoSchema,
     }),
-    ...toApiErrorResponses([EXCEPTION.USER.NOT_FOUND]),
+    ...toApiErrorResponses([ApiErrors.User.NotFound]),
   },
   metadata: {
     access: ACCESS.signedIn,

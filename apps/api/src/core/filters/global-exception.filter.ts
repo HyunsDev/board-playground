@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
-import { ApiError, EXCEPTION } from '@workspace/contract';
+import { ApiError, ApiErrors } from '@workspace/contract';
 
 import { ContextService } from '@/infra/context/context.service';
 import { DomainError } from '@/shared/base';
@@ -89,7 +89,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
   private handleUnhandledDomainException(exception: DomainError): ErrorInfo {
     return {
       level: 'warn',
-      ...EXCEPTION.COMMON.UNHANDLED_DOMAIN_ERROR,
+      ...ApiErrors.Common.UnhandledDomainError,
       details: {
         originalErrorName: exception.code,
       },
@@ -102,9 +102,9 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
   private handleUnknownError(): ErrorInfo {
     return {
       level: 'error',
-      status: EXCEPTION.COMMON.INTERNAL_SERVER_ERROR.status,
-      code: EXCEPTION.COMMON.INTERNAL_SERVER_ERROR.code,
-      message: EXCEPTION.COMMON.INTERNAL_SERVER_ERROR.message,
+      status: ApiErrors.Common.InternalServerError.status,
+      code: ApiErrors.Common.InternalServerError.code,
+      message: ApiErrors.Common.InternalServerError.message,
       details: undefined, // 보안을 위해 상세 내용 숨김
     };
   }

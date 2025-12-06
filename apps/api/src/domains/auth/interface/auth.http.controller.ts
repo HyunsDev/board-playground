@@ -4,7 +4,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { Request, Response } from 'express';
 
-import { contract, EXCEPTION } from '@workspace/contract';
+import { contract, ApiErrors } from '@workspace/contract';
 
 import { LoginAuthCommand } from '../application/commands/login-auth.command';
 import { LogoutAuthCommand } from '../application/commands/logout-auth.command';
@@ -62,9 +62,9 @@ export class AuthHttpController {
         },
         (error) =>
           matchPublicError(error, {
-            UserEmailAlreadyExists: () => apiErr(EXCEPTION.USER.EMAIL_ALREADY_EXISTS),
-            UserUsernameAlreadyExists: () => apiErr(EXCEPTION.USER.USERNAME_ALREADY_EXISTS),
-            ValidationError: () => apiErr(EXCEPTION.COMMON.VALIDATION_ERROR),
+            UserEmailAlreadyExists: () => apiErr(ApiErrors.User.EmailAlreadyExists),
+            UserUsernameAlreadyExists: () => apiErr(ApiErrors.User.UsernameAlreadyExists),
+            ValidationError: () => apiErr(ApiErrors.Common.ValidationError),
           }),
       );
     });
@@ -95,7 +95,7 @@ export class AuthHttpController {
         },
         (error) =>
           matchPublicError(error, {
-            InvalidCredentials: () => apiErr(EXCEPTION.AUTH.INVALID_CREDENTIALS),
+            InvalidCredentials: () => apiErr(ApiErrors.Auth.InvalidCredentials),
           }),
       );
     });
@@ -107,7 +107,7 @@ export class AuthHttpController {
       const refreshToken = req.cookies?.['refreshToken'];
 
       if (!refreshToken) {
-        return apiErr(EXCEPTION.AUTH.REFRESH_TOKEN_MISSING);
+        return apiErr(ApiErrors.Auth.RefreshTokenMissing);
       }
 
       const result = await this.commandBus.execute(
@@ -121,7 +121,7 @@ export class AuthHttpController {
           if (data.status === 'failed') {
             if (data.error.code === 'TokenReuseDetected') {
               void res.clearCookie('refreshToken', this.getCookieOptions());
-              return apiErr(EXCEPTION.AUTH.REFRESH_TOKEN_REUSE_DETECTED);
+              return apiErr(ApiErrors.Auth.RefreshTokenReuseDetected);
             }
             throw new UnexpectedDomainError(data.error);
           }
@@ -133,10 +133,10 @@ export class AuthHttpController {
         },
         (error) =>
           matchPublicError(error, {
-            InvalidRefreshToken: () => apiErr(EXCEPTION.AUTH.REFRESH_TOKEN_INVALID),
-            SessionClosed: () => apiErr(EXCEPTION.AUTH.SESSION_CLOSED),
-            SessionRevoked: () => apiErr(EXCEPTION.AUTH.SESSION_REVOKED),
-            ExpiredToken: () => apiErr(EXCEPTION.AUTH.SESSION_EXPIRED),
+            InvalidRefreshToken: () => apiErr(ApiErrors.Auth.RefreshTokenInvalid),
+            SessionClosed: () => apiErr(ApiErrors.Auth.SessionClosed),
+            SessionRevoked: () => apiErr(ApiErrors.Auth.SessionRevoked),
+            ExpiredToken: () => apiErr(ApiErrors.Auth.SessionExpired),
           }),
       );
     });

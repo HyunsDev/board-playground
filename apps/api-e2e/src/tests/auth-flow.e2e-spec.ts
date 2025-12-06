@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { describe, beforeAll, it, expect } from '@jest/globals';
 
-import { EXCEPTION } from '@workspace/contract';
+import { ApiErrors } from '@workspace/contract';
 
 import { createMockUser, MockUser } from '@/mocks/user.mock';
 import { expectRes } from '@/utils/expect-res.utils';
@@ -32,7 +33,7 @@ describe('Auth Flow E2E', () => {
         body: { ...subUser, email: user.email }, // user의 이메일 재사용
       });
 
-      expectRes(res).toBeErr(EXCEPTION.USER.EMAIL_ALREADY_EXISTS);
+      expectRes(res).toBeErr(ApiErrors.User.EmailAlreadyExists);
     });
 
     it('Username 중복 시 가입 실패 (409)', async () => {
@@ -40,7 +41,7 @@ describe('Auth Flow E2E', () => {
         body: { ...subUser, username: user.username },
       });
 
-      expectRes(res).toBeErr(EXCEPTION.USER.USERNAME_ALREADY_EXISTS);
+      expectRes(res).toBeErr(ApiErrors.User.UsernameAlreadyExists);
     });
   });
 
@@ -50,7 +51,7 @@ describe('Auth Flow E2E', () => {
         body: { email: 'nonexistent@example.com', password: '1q2w3e4r!' },
       });
 
-      expectRes(res).toBeErr(EXCEPTION.AUTH.INVALID_CREDENTIALS);
+      expectRes(res).toBeErr(ApiErrors.Auth.InvalidCredentials);
     });
 
     it('잘못된 비밀번호로 로그인 시 실패 (400)', async () => {
@@ -58,7 +59,7 @@ describe('Auth Flow E2E', () => {
         body: { email: user.email, password: '1q2w3e4r@' },
       });
 
-      expectRes(res).toBeErr(EXCEPTION.AUTH.INVALID_CREDENTIALS);
+      expectRes(res).toBeErr(ApiErrors.Auth.InvalidCredentials);
     });
   });
 
@@ -71,7 +72,7 @@ describe('Auth Flow E2E', () => {
       expectRes(res).toBeOk();
 
       // 상태 저장 (다음 테스트를 위해)
-      client.setAccessToken(res.body.accessToken);
+      client.setAccessToken((res.body as any).accessToken);
     });
 
     it('내 정보 조회 확인 (200)', async () => {
@@ -112,12 +113,12 @@ describe('Auth Flow E2E', () => {
       // 이전 토큰 재사용 시도
       client.setRefreshToken(currentRefreshToken);
       const res2 = await client.api.auth.refreshToken();
-      expectRes(res2).toBeErr(EXCEPTION.AUTH.TOKEN_REUSE_DETECTED);
+      expectRes(res2).toBeErr(ApiErrors.Auth.RefreshTokenReuseDetected);
 
-      // 세션 만료 완료
+      // 세션 Revoke 확인
       client.setRefreshToken(newRefreshToken);
       const res3 = await client.api.auth.refreshToken();
-      expectRes(res3).toBeErr(EXCEPTION.SESSION.REVOKED);
+      expectRes(res3).toBeErr(ApiErrors.Auth.SessionRevoked);
     });
 
     it('로그아웃 수행 (204)', async () => {
@@ -125,12 +126,14 @@ describe('Auth Flow E2E', () => {
       expectRes(res).toBeOk();
 
       client.clearAuth();
+      const currentRefreshToken = client.getRefreshToken();
+      expect(currentRefreshToken).toBeUndefined();
     });
 
     it('로그아웃 후 내 정보 조회 시 차단 확인 (401)', async () => {
       const res = await client.api.user.me.get();
 
-      expectRes(res).toBeErr(EXCEPTION.AUTH.MISSING_TOKEN);
+      expectRes(res).toBeErr(ApiErrors.Auth.AccessTokenMissing);
     });
   });
 });

@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { contract, EXCEPTION, USER_ROLE } from '@workspace/contract';
+import { contract, ApiErrors, USER_ROLE } from '@workspace/contract';
 
 import { UserDtoMapper } from './user.dto-mapper';
 import { GetUserForAdminQuery } from '../application/queries/get-user-for-admin.query';
@@ -30,7 +30,7 @@ export class UserAdminHttpController {
         (user) => apiOk(200, { user: this.dtoMapper.toDto(user) }),
         (error) =>
           matchError(error, {
-            UserNotFound: () => apiErr(EXCEPTION.USER.NOT_FOUND),
+            UserNotFound: () => apiErr(ApiErrors.User.NotFound),
           }),
       );
     });

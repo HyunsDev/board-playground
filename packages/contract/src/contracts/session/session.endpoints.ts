@@ -4,7 +4,7 @@ import { SessionDtoSchema } from './session.dto';
 
 import { c, toApiErrorResponses } from '@/common';
 import { ACCESS } from '@/common/access';
-import { EXCEPTION } from '@/contracts/exception';
+import { ApiErrors } from '@/contracts/api-errors';
 
 export const getSession = c.query({
   method: 'GET',
@@ -16,7 +16,7 @@ export const getSession = c.query({
     200: z.object({
       session: SessionDtoSchema,
     }),
-    ...toApiErrorResponses([EXCEPTION.SESSION.NOT_FOUND]),
+    ...toApiErrorResponses([ApiErrors.Session.NotFound]),
   },
   metadata: {
     access: ACCESS.signedIn,
@@ -45,7 +45,7 @@ export const deleteSession = c.mutation({
   }),
   responses: {
     204: z.undefined(),
-    ...toApiErrorResponses([EXCEPTION.SESSION.NOT_FOUND]),
+    ...toApiErrorResponses([ApiErrors.Session.NotFound]),
   },
   metadata: {
     access: ACCESS.signedIn,

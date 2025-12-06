@@ -5,7 +5,7 @@ import { UserRole, UserStatus } from '../user.enums';
 
 import { c, paginatedQueryOf, paginatedResponseOf, toApiErrorResponses } from '@/common';
 import { ACCESS } from '@/common/access';
-import { EXCEPTION } from '@/contracts/exception';
+import { ApiErrors } from '@/contracts/api-errors';
 
 export const getUserForAdmin = c.query({
   method: 'GET',
@@ -15,7 +15,7 @@ export const getUserForAdmin = c.query({
     200: z.object({
       user: UserForAdminDtoSchema,
     }),
-    ...toApiErrorResponses([EXCEPTION.USER.NOT_FOUND]),
+    ...toApiErrorResponses([ApiErrors.User.NotFound]),
   },
   metadata: {
     access: ACCESS.admin,
@@ -61,7 +61,7 @@ export const updateUserForAdmin = c.mutation({
     200: z.object({
       user: UserForAdminDtoSchema,
     }),
-    ...toApiErrorResponses([EXCEPTION.USER.NOT_FOUND]),
+    ...toApiErrorResponses([ApiErrors.User.NotFound]),
   },
   metadata: {
     access: ACCESS.admin,
@@ -77,7 +77,7 @@ export const deleteUserForAdmin = c.mutation({
   body: c.noBody(),
   responses: {
     204: c.noBody(),
-    ...toApiErrorResponses([EXCEPTION.USER.NOT_FOUND]),
+    ...toApiErrorResponses([ApiErrors.User.NotFound]),
   },
   metadata: {
     access: ACCESS.admin,

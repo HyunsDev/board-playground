@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { contract, EXCEPTION } from '@workspace/contract';
+import { contract, ApiErrors } from '@workspace/contract';
 
 import { UserDtoMapper } from './user.dto-mapper';
 import { DeleteUserMeCommand } from '../application/commands/delete-user-me.command';
@@ -35,7 +35,7 @@ export class UserMeHttpController {
           }),
         (error) =>
           matchPublicError(error, {
-            UserNotFound: () => apiErr(EXCEPTION.USER.NOT_FOUND),
+            UserNotFound: () => apiErr(ApiErrors.User.NotFound),
           }),
       );
     });
@@ -60,9 +60,9 @@ export class UserMeHttpController {
           }),
         (error) =>
           matchPublicError(error, {
-            UserNotFound: () => apiErr(EXCEPTION.USER.NOT_FOUND),
-            UserEmailAlreadyExists: () => apiErr(EXCEPTION.USER.EMAIL_ALREADY_EXISTS),
-            UserUsernameAlreadyExists: () => apiErr(EXCEPTION.USER.USERNAME_ALREADY_EXISTS),
+            UserNotFound: () => apiErr(ApiErrors.User.NotFound),
+            UserEmailAlreadyExists: () => apiErr(ApiErrors.User.EmailAlreadyExists),
+            UserUsernameAlreadyExists: () => apiErr(ApiErrors.User.UsernameAlreadyExists),
           }),
       );
     });
@@ -86,8 +86,8 @@ export class UserMeHttpController {
           }),
         (error) =>
           matchPublicError(error, {
-            UserNotFound: () => apiErr(EXCEPTION.USER.NOT_FOUND),
-            UserUsernameAlreadyExists: () => apiErr(EXCEPTION.USER.USERNAME_ALREADY_EXISTS),
+            UserNotFound: () => apiErr(ApiErrors.User.NotFound),
+            UserUsernameAlreadyExists: () => apiErr(ApiErrors.User.UsernameAlreadyExists),
           }),
       );
     });
@@ -107,7 +107,7 @@ export class UserMeHttpController {
         () => apiOk(200, {}),
         (error) =>
           matchPublicError(error, {
-            UserNotFound: () => apiErr(EXCEPTION.USER.NOT_FOUND),
+            UserNotFound: () => apiErr(ApiErrors.User.NotFound),
           }),
       );
     });
