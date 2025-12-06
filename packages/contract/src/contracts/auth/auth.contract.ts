@@ -1,10 +1,80 @@
-import { loginAuth, logoutAuth, refreshTokenAuth, registerAuth } from './auth.endpoints';
+import z from 'zod';
 
-import { c } from '@/common';
+import { registerAuthReqDto } from './auth.dto';
+import { EXCEPTION } from '../exception';
+import { passwordSchema } from './auth.schemas';
+
+import { accessRole, c, errorSchemas } from '@/common';
 
 export const authContract = c.router({
-  register: registerAuth,
-  login: loginAuth,
-  logout: logoutAuth,
-  refreshToken: refreshTokenAuth,
+  register: {
+    method: 'POST',
+    path: '/auth/register',
+    body: registerAuthReqDto,
+    responses: {
+      200: z.object({
+        accessToken: z.string(),
+      }),
+      ...errorSchemas([
+        EXCEPTION.USER.EMAIL_ALREADY_EXISTS,
+        EXCEPTION.USER.USERNAME_ALREADY_EXISTS,
+        EXCEPTION.COMMON.VALIDATION_ERROR,
+      ]),
+    },
+    metadata: {
+      access: accessRole.public(),
+    },
+  },
+
+  login: {
+    method: 'POST',
+    path: '/auth/login',
+    body: z.object({
+      email: z.string().email(),
+      password: passwordSchema,
+    }),
+    responses: {
+      200: z.object({
+        accessToken: z.string(),
+      }),
+      ...errorSchemas([EXCEPTION.AUTH.INVALID_CREDENTIALS]),
+    },
+    metadata: {
+      access: accessRole.public(),
+    },
+  },
+
+  logout: {
+    method: 'POST',
+    path: '/auth/logout',
+    body: c.noBody(),
+    responses: {
+      204: c.noBody(),
+    },
+    metadata: {
+      access: accessRole.public(),
+    },
+  },
+
+  refreshToken: {
+    method: 'POST',
+    path: '/auth/refresh-token',
+    body: c.noBody(),
+    responses: {
+      200: z.object({
+        accessToken: z.string(),
+      }),
+      ...errorSchemas([
+        EXCEPTION.AUTH.REFRESH_TOKEN_INVALID,
+        EXCEPTION.AUTH.SESSION_EXPIRED,
+        EXCEPTION.AUTH.SESSION_REVOKED,
+        EXCEPTION.AUTH.SESSION_CLOSED,
+        EXCEPTION.AUTH.REFRESH_TOKEN_MISSING,
+        EXCEPTION.AUTH.REFRESH_TOKEN_REUSE_DETECTED,
+      ]),
+    },
+    metadata: {
+      access: accessRole.public(),
+    },
+  },
 });

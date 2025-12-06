@@ -198,17 +198,17 @@ class ContractAnalyzer {
   private getContractAccess(node: any): string {
     const meta = node.metadata || {};
 
-    if (meta.isPublic === true) {
+    if (meta.access?.isPublic === true) {
       return 'Public';
     }
 
-    if (Array.isArray(meta.roles) && meta.roles.length > 0) {
+    if (Array.isArray(meta.access?.roles) && meta.access.roles.length > 0) {
       // [수정] 공백 없이 콤마로만 연결
-      return meta.roles.sort().join(',');
+      return meta.access.roles.sort().join(',');
     }
 
     // isPublic이 undefined인 경우(실수)
-    if (meta.isPublic === undefined) {
+    if (meta?.access?.isPublic === undefined) {
       return 'undefined';
     }
 
