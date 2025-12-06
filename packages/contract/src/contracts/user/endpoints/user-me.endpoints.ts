@@ -16,7 +16,7 @@ export const getUserMe = c.query({
     }),
   },
   metadata: {
-    ...accessRole.signedIn(),
+    access: accessRole.signedIn(),
   },
 });
 
@@ -33,7 +33,7 @@ export const updateUserMeProfile = c.mutation({
     }),
   },
   metadata: {
-    ...accessRole.signedIn(),
+    access: accessRole.signedIn(),
   },
 });
 
@@ -49,7 +49,7 @@ export const updateUserMeAvatar = c.mutation({
     400: toExceptionSchema(EXCEPTION.USER.INVALID_PROFILE_IMAGE),
   },
   metadata: {
-    ...accessRole.signedIn(),
+    access: accessRole.signedIn(),
   },
 });
 
@@ -65,7 +65,7 @@ export const updateUserMeUsername = c.mutation({
     }),
   },
   metadata: {
-    ...accessRole.signedIn(),
+    access: accessRole.signedIn(),
   },
 });
 
@@ -78,6 +78,6 @@ export const deleteUserMe = c.mutation({
     400: toExceptionSchema(EXCEPTION.USER.ADMIN_CANNOT_BE_DELETED),
   },
   metadata: {
-    ...accessRole.signedIn(),
+    access: accessRole.signedIn(),
   },
 });

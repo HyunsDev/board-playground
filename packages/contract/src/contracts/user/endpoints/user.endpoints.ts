@@ -20,7 +20,7 @@ export const getUser = c.query({
     404: toExceptionSchema(EXCEPTION.USER.NOT_FOUND),
   },
   metadata: {
-    ...accessRole.signedIn(),
+    access: accessRole.signedIn(),
   },
 });
 
@@ -36,6 +36,6 @@ export const searchUsers = c.query({
     200: paginatedResponseOf(UserDtoSchema),
   },
   metadata: {
-    ...accessRole.signedIn(),
+    access: accessRole.signedIn(),
   },
 });

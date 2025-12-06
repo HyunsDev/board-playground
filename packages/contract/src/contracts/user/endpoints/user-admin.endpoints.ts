@@ -19,7 +19,7 @@ export const getUserForAdmin = c.query({
     404: toExceptionSchema(EXCEPTION.USER.NOT_FOUND),
   },
   metadata: {
-    ...accessRole.admin(),
+    access: accessRole.admin(),
   },
 });
 
@@ -40,7 +40,7 @@ export const queryUsersForAdmin = c.query({
     200: paginatedResponseOf(UserForAdminDtoSchema),
   },
   metadata: {
-    ...accessRole.admin(),
+    access: accessRole.admin(),
   },
 });
 
@@ -62,7 +62,7 @@ export const updateUserForAdmin = c.mutation({
     }),
   },
   metadata: {
-    ...accessRole.admin(),
+    access: accessRole.admin(),
   },
 });
 
@@ -77,6 +77,6 @@ export const deleteUserForAdmin = c.mutation({
     204: c.noBody(),
   },
   metadata: {
-    ...accessRole.admin(),
+    access: accessRole.admin(),
   },
 });

@@ -20,7 +20,7 @@ export const getSession = c.query({
     404: toExceptionSchema(EXCEPTION.SESSION.NOT_FOUND),
   },
   metadata: {
-    ...accessRole.signedIn(),
+    access: accessRole.signedIn(),
   },
 });
 
@@ -33,7 +33,7 @@ export const listSessions = c.query({
     }),
   },
   metadata: {
-    ...accessRole.signedIn(),
+    access: accessRole.signedIn(),
   },
 });
 
@@ -49,6 +49,6 @@ export const deleteSession = c.mutation({
     404: toExceptionSchema(EXCEPTION.SESSION.NOT_FOUND),
   },
   metadata: {
-    ...accessRole.signedIn(),
+    access: accessRole.signedIn(),
   },
 });

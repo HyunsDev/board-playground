@@ -24,7 +24,7 @@ export const forceRegisterForDev = c.mutation({
     ]),
   },
   metadata: {
-    ...accessRole.public(),
+    access: accessRole.public(),
   },
 });
 
@@ -41,7 +41,7 @@ export const forceLoginForDev = c.mutation({
     }),
   },
   metadata: {
-    ...accessRole.public(),
+    access: accessRole.public(),
   },
 });
 
@@ -53,6 +53,6 @@ export const resetDBForDev = c.mutation({
     200: z.void(),
   },
   metadata: {
-    ...accessRole.public(),
+    access: accessRole.public(),
   },
 });
