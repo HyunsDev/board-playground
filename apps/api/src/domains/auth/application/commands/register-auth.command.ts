@@ -3,12 +3,11 @@ import { err, ok } from 'neverthrow';
 
 import { DEVICE_PLATFORM } from '@workspace/contract';
 
-import { RefreshTokenService } from '@/domains/session/application/services/refresh-token.service';
-import { SessionService } from '@/domains/session/application/services/session.service';
+import { AuthTokenService } from '../services/auth-token.service';
+
 import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TransactionManager } from '@/infra/database/transaction.manager';
 import { PasswordService } from '@/infra/security/services/password.service';
-import { TokenService } from '@/infra/security/services/token.service';
 import { BaseCommand, CommandProps } from '@/shared/base';
 import { HandlerResult } from '@/shared/types/handler-result';
 
@@ -36,11 +35,9 @@ export class RegisterAuthCommandHandler
 {
   constructor(
     private readonly userFacade: UserFacade,
-    private readonly sessionService: SessionService,
-    private readonly refreshTokenService: RefreshTokenService,
     private readonly passwordService: PasswordService,
-    private readonly tokenService: TokenService,
     private readonly txManager: TransactionManager,
+    private readonly authTokenService: AuthTokenService,
   ) {}
 
   async execute({ data }: RegisterAuthCommandProps) {
@@ -55,33 +52,19 @@ export class RegisterAuthCommandHandler
       });
       if (createUserResult.isErr()) return err(createUserResult.error);
 
-      const refreshTokens = this.tokenService.generateRefreshToken();
-
-      const createSessionResult = await this.sessionService.create({
-        userId: createUserResult.value.id,
-        ipAddress: data.ipAddress,
-        userAgent: data.userAgent,
-        platform: DEVICE_PLATFORM.WEB,
-      });
-      if (createSessionResult.isErr()) return err(createSessionResult.error);
-
-      const createRefreshTokenResult = await this.refreshTokenService.createNew(
-        createSessionResult.value.id,
-        refreshTokens.hashedRefreshToken,
+      return (
+        await this.authTokenService.issue({
+          user: createUserResult.value,
+          device: {
+            ipAddress: data.ipAddress,
+            userAgent: data.userAgent,
+            platform: DEVICE_PLATFORM.WEB,
+          },
+        })
+      ).match(
+        (tokens) => ok(tokens),
+        (error) => err(error),
       );
-      if (createRefreshTokenResult.isErr()) return err(createRefreshTokenResult.error);
-
-      const accessToken = this.tokenService.generateAccessToken({
-        sub: createUserResult.value.id,
-        role: createUserResult.value.role,
-        email: createUserResult.value.email,
-        sessionId: createSessionResult.value.id,
-      });
-
-      return ok({
-        accessToken,
-        refreshToken: refreshTokens.refreshToken,
-      });
     });
   }
 }

@@ -6,10 +6,7 @@ import { Request, Response } from 'express';
 
 import { contract, EXCEPTION } from '@workspace/contract';
 
-import {
-  LoginAuthCommand,
-  LoginAuthCommandResult,
-} from '../application/commands/login-auth.command';
+import { LoginAuthCommand } from '../application/commands/login-auth.command';
 import { LogoutAuthCommand } from '../application/commands/logout-auth.command';
 import { RefreshTokenAuthCommand } from '../application/commands/refresh-token-auth.command';
 import { RegisterAuthCommand } from '../application/commands/register-auth.command';
@@ -78,7 +75,7 @@ export class AuthHttpController {
     @UserAgent() ua: string,
   ) {
     return tsRestHandler(contract.auth.login, async ({ body }) => {
-      const result = await this.commandBus.execute<LoginAuthCommandResult>(
+      const result = await this.commandBus.execute(
         new LoginAuthCommand({
           email: body.email,
           password: body.password,
