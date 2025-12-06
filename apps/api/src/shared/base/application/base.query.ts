@@ -1,10 +1,11 @@
 import { Query } from '@nestjs/cqrs';
 import { v7 as uuidv7 } from 'uuid';
 
+import { PaginationMeta } from '@workspace/contract';
+
 import { DomainError } from '../error';
 
 import { DomainResult } from '@/shared/types/result.type';
-import { PaginationMeta } from '@workspace/contract';
 
 export type QueryMetadata = {
   readonly queryId: string;
