@@ -3,9 +3,8 @@ import z from 'zod';
 import { UserForAdminDtoSchema } from '../user.dto';
 import { UserRole, UserStatus } from '../user.enums';
 
-import { c, paginatedQueryOf, paginatedResponseOf } from '@/common';
-import { ACCESS } from '@/common/utils/access.utils';
-import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
+import { c, paginatedQueryOf, paginatedResponseOf, toExceptionSchemas } from '@/common';
+import { ACCESS } from '@/common/utils/access';
 import { EXCEPTION } from '@/contracts/exception';
 
 export const getUserForAdmin = c.query({
@@ -16,7 +15,7 @@ export const getUserForAdmin = c.query({
     200: z.object({
       user: UserForAdminDtoSchema,
     }),
-    404: toExceptionSchema(EXCEPTION.USER.NOT_FOUND),
+    ...toExceptionSchemas([EXCEPTION.USER.NOT_FOUND]),
   },
   metadata: {
     access: ACCESS.admin,
@@ -47,7 +46,9 @@ export const queryUsersForAdmin = c.query({
 export const updateUserForAdmin = c.mutation({
   method: 'PATCH',
   path: '/admin/users/:userId',
-  pathParams: c.type<{ userId: string }>(),
+  pathParams: z.object({
+    userId: z.string().uuid(),
+  }),
   body: z.object({
     nickname: z.string().min(2).max(20).optional(),
     username: z.string().min(3).max(30).optional(),
@@ -60,6 +61,7 @@ export const updateUserForAdmin = c.mutation({
     200: z.object({
       user: UserForAdminDtoSchema,
     }),
+    ...toExceptionSchemas([EXCEPTION.USER.NOT_FOUND]),
   },
   metadata: {
     access: ACCESS.admin,
@@ -70,11 +72,12 @@ export const deleteUserForAdmin = c.mutation({
   method: 'DELETE',
   path: '/admin/users/:userId',
   pathParams: z.object({
-    userId: z.string(),
+    userId: z.string().uuid(),
   }),
   body: c.noBody(),
   responses: {
     204: c.noBody(),
+    ...toExceptionSchemas([EXCEPTION.USER.NOT_FOUND]),
   },
   metadata: {
     access: ACCESS.admin,

@@ -2,9 +2,8 @@ import z from 'zod';
 
 import { UserForMeDtoSchema } from '../user.dto';
 
-import { c } from '@/common';
-import { ACCESS } from '@/common/utils/access.utils';
-import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
+import { c, toExceptionSchemas } from '@/common';
+import { ACCESS } from '@/common/utils/access';
 import { EXCEPTION } from '@/contracts/exception';
 
 export const getUserMe = c.query({
@@ -46,7 +45,7 @@ export const updateUserMeAvatar = c.mutation({
     200: z.object({
       me: UserForMeDtoSchema,
     }),
-    400: toExceptionSchema(EXCEPTION.USER.INVALID_PROFILE_IMAGE),
+    ...toExceptionSchemas([EXCEPTION.USER.INVALID_PROFILE_IMAGE]),
   },
   metadata: {
     access: ACCESS.signedIn,
@@ -75,7 +74,8 @@ export const deleteUserMe = c.mutation({
   body: c.noBody(),
   responses: {
     204: c.noBody(),
-    400: toExceptionSchema(EXCEPTION.USER.ADMIN_CANNOT_BE_DELETED),
+    ...toExceptionSchemas([EXCEPTION.USER.NOT_FOUND]),
+    ...toExceptionSchemas([EXCEPTION.USER.ADMIN_CANNOT_BE_DELETED]),
   },
   metadata: {
     access: ACCESS.signedIn,

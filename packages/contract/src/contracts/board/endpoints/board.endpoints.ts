@@ -1,10 +1,8 @@
 import z from 'zod';
 
 import { BoardDtoSchema, CreateBoardDtoSchema, UpdateBoardDtoSchema } from '../board.dto';
-import { BOARD_EXCEPTION } from '../board.exceptions';
 
-import { c, paginatedQueryOf, paginatedResponseOf } from '@/common';
-import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
+import { c, paginatedQueryOf, paginatedResponseOf, toExceptionSchemas } from '@/common';
 import { EXCEPTION } from '@/contracts/exception';
 import { USER_ROLE } from '@/contracts/user/user.enums';
 
@@ -18,7 +16,7 @@ export const getBoard = c.query({
     200: z.object({
       board: BoardDtoSchema,
     }),
-    404: toExceptionSchema(BOARD_EXCEPTION.NOT_FOUND),
+    ...toExceptionSchemas([EXCEPTION.BOARD.NOT_FOUND]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -49,8 +47,7 @@ export const createBoard = c.mutation({
     200: z.object({
       board: BoardDtoSchema,
     }),
-    400: toExceptionSchema(EXCEPTION.BOARD.SLUG_ALREADY_EXISTS),
-    404: toExceptionSchema(EXCEPTION.BOARD.NOT_FOUND),
+    ...toExceptionSchemas([EXCEPTION.BOARD.SLUG_ALREADY_EXISTS, EXCEPTION.BOARD.NOT_FOUND]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -68,8 +65,7 @@ export const updateBoard = c.mutation({
     200: z.object({
       board: BoardDtoSchema,
     }),
-    403: toExceptionSchema(EXCEPTION.BOARD.PERMISSION_DENIED),
-    404: toExceptionSchema(EXCEPTION.BOARD.NOT_FOUND),
+    ...toExceptionSchemas([EXCEPTION.BOARD.PERMISSION_DENIED, EXCEPTION.BOARD.NOT_FOUND]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -87,8 +83,7 @@ export const deleteBoard = c.mutation({
     200: z.object({
       board: BoardDtoSchema,
     }),
-    403: toExceptionSchema(EXCEPTION.BOARD.PERMISSION_DENIED),
-    404: toExceptionSchema(EXCEPTION.BOARD.NOT_FOUND),
+    ...toExceptionSchemas([EXCEPTION.BOARD.PERMISSION_DENIED, EXCEPTION.BOARD.NOT_FOUND]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],

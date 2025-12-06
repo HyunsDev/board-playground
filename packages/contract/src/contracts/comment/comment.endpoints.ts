@@ -2,11 +2,9 @@ import z from 'zod';
 
 import { CommandDtoSchema, CreateCommentDtoSchema, UpdateCommentDtoSchema } from './comment.dto';
 
-import { c, ID, paginatedQueryOf, paginatedResponseOf } from '@/common';
-import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
+import { c, ID, paginatedQueryOf, paginatedResponseOf, toExceptionSchemas } from '@/common';
 import { EXCEPTION } from '@/contracts/exception';
 import { USER_ROLE } from '@/contracts/user';
-
 
 export const getComment = c.query({
   method: 'GET',
@@ -18,7 +16,7 @@ export const getComment = c.query({
     200: z.object({
       comment: CommandDtoSchema,
     }),
-    404: toExceptionSchema(EXCEPTION.COMMENT.NOT_FOUND),
+    ...toExceptionSchemas([EXCEPTION.COMMENT.NOT_FOUND]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -35,7 +33,7 @@ export const listComments = c.query({
   ),
   responses: {
     200: paginatedResponseOf(CommandDtoSchema),
-    404: toExceptionSchema(EXCEPTION.POST.NOT_FOUND),
+    ...toExceptionSchemas([EXCEPTION.POST.NOT_FOUND]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -50,8 +48,7 @@ export const createComment = c.mutation({
     200: z.object({
       comment: CommandDtoSchema,
     }),
-    400: toExceptionSchema(EXCEPTION.COMMENT.DEPTH_EXCEEDED),
-    404: toExceptionSchema(EXCEPTION.POST.NOT_FOUND),
+    ...toExceptionSchemas([EXCEPTION.COMMENT.DEPTH_EXCEEDED, EXCEPTION.POST.NOT_FOUND]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -69,8 +66,7 @@ export const updateComment = c.mutation({
     200: z.object({
       comment: CommandDtoSchema,
     }),
-    404: toExceptionSchema(EXCEPTION.COMMENT.NOT_FOUND),
-    403: toExceptionSchema(EXCEPTION.COMMENT.PERMISSION_DENIED),
+    ...toExceptionSchemas([EXCEPTION.COMMENT.NOT_FOUND, EXCEPTION.COMMENT.PERMISSION_DENIED]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
@@ -86,8 +82,7 @@ export const deleteComment = c.mutation({
   body: c.noBody(),
   responses: {
     204: c.noBody(),
-    404: toExceptionSchema(EXCEPTION.COMMENT.NOT_FOUND),
-    403: toExceptionSchema(EXCEPTION.COMMENT.PERMISSION_DENIED),
+    ...toExceptionSchemas([EXCEPTION.COMMENT.NOT_FOUND, EXCEPTION.COMMENT.PERMISSION_DENIED]),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],

@@ -2,8 +2,8 @@ import z from 'zod';
 
 import { EXCEPTION } from '../exception';
 
-import { c, toExceptionSchema } from '@/common';
-import { ACCESS } from '@/common/utils/access.utils';
+import { c, toExceptionSchemas } from '@/common';
+import { ACCESS } from '@/common/utils/access';
 
 export const forceRegisterForDev = c.mutation({
   method: 'POST',
@@ -18,9 +18,9 @@ export const forceRegisterForDev = c.mutation({
       refreshToken: z.string(),
       accessToken: z.string(),
     }),
-    400: z.union([
-      toExceptionSchema(EXCEPTION.USER.EMAIL_ALREADY_EXISTS),
-      toExceptionSchema(EXCEPTION.USER.USERNAME_ALREADY_EXISTS),
+    ...toExceptionSchemas([
+      EXCEPTION.USER.EMAIL_ALREADY_EXISTS,
+      EXCEPTION.USER.USERNAME_ALREADY_EXISTS,
     ]),
   },
   metadata: {

@@ -2,9 +2,8 @@ import z from 'zod';
 
 import { UserDtoSchema } from '../user.dto';
 
-import { c, paginatedQueryOf, paginatedResponseOf } from '@/common';
-import { ACCESS } from '@/common/utils/access.utils';
-import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
+import { c, paginatedQueryOf, paginatedResponseOf, toExceptionSchemas } from '@/common';
+import { ACCESS } from '@/common/utils/access';
 import { EXCEPTION } from '@/contracts/exception';
 
 export const getUser = c.query({
@@ -17,7 +16,7 @@ export const getUser = c.query({
     200: z.object({
       user: UserDtoSchema,
     }),
-    404: toExceptionSchema(EXCEPTION.USER.NOT_FOUND),
+    ...toExceptionSchemas([EXCEPTION.USER.NOT_FOUND]),
   },
   metadata: {
     access: ACCESS.signedIn,

@@ -2,10 +2,8 @@ import z from 'zod';
 
 import { CreatePostDtoSchema, PostDtoSchema, UpdatePostDtoSchema } from '../post.dto';
 
-import { c, ID, paginatedQueryOf, paginatedResponseOf } from '@/common';
-import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
+import { c, ID, paginatedQueryOf, paginatedResponseOf, toExceptionSchemas } from '@/common';
 import { EXCEPTION } from '@/contracts/exception';
-
 
 export const getPost = c.query({
   method: 'GET',
@@ -17,7 +15,7 @@ export const getPost = c.query({
     200: z.object({
       post: PostDtoSchema,
     }),
-    404: toExceptionSchema(EXCEPTION.POST.NOT_FOUND),
+    ...toExceptionSchemas([EXCEPTION.POST.NOT_FOUND]),
   },
   metadata: {
     roles: ['USER', 'ADMIN'],
@@ -36,7 +34,7 @@ export const queryPosts = c.query({
   ),
   responses: {
     200: paginatedResponseOf(PostDtoSchema),
-    404: toExceptionSchema(EXCEPTION.BOARD.NOT_FOUND),
+    ...toExceptionSchemas([EXCEPTION.BOARD.NOT_FOUND]),
   },
   metadata: {
     roles: ['USER', 'ADMIN'],
@@ -51,7 +49,7 @@ export const createPost = c.mutation({
     200: z.object({
       post: PostDtoSchema,
     }),
-    404: toExceptionSchema(EXCEPTION.BOARD.NOT_FOUND),
+    ...toExceptionSchemas([EXCEPTION.BOARD.NOT_FOUND]),
   },
   metadata: {
     roles: ['USER', 'ADMIN'],
@@ -69,10 +67,10 @@ export const updatePost = c.mutation({
     200: z.object({
       post: PostDtoSchema,
     }),
-    403: toExceptionSchema(EXCEPTION.POST.PERMISSION_DENIED),
-    404: z.union([
-      toExceptionSchema(EXCEPTION.POST.NOT_FOUND),
-      toExceptionSchema(EXCEPTION.BOARD.NOT_FOUND),
+    ...toExceptionSchemas([
+      EXCEPTION.POST.PERMISSION_DENIED,
+      EXCEPTION.POST.NOT_FOUND,
+      EXCEPTION.BOARD.NOT_FOUND,
     ]),
   },
   metadata: {
@@ -91,8 +89,7 @@ export const deletePost = c.mutation({
     200: z.object({
       success: z.boolean(),
     }),
-    403: toExceptionSchema(EXCEPTION.POST.PERMISSION_DENIED),
-    404: toExceptionSchema(EXCEPTION.POST.NOT_FOUND),
+    ...toExceptionSchemas([EXCEPTION.POST.PERMISSION_DENIED, EXCEPTION.POST.NOT_FOUND]),
   },
   metadata: {
     roles: ['USER', 'ADMIN'],

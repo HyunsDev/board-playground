@@ -10,4 +10,4 @@ export const ACCESS = {
   signedIn: { isPublic: false },
   admin: { isPublic: false, roles: [USER_ROLE.ADMIN] },
   roles: (roles: UserRole[]) => ({ isPublic: false, roles }),
-};
+} as const;

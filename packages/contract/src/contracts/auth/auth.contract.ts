@@ -4,7 +4,7 @@ import { registerAuthReqDto } from './auth.dto';
 import { EXCEPTION } from '../exception';
 import { passwordSchema } from './auth.schemas';
 
-import { ACCESS, c, errorSchemas } from '@/common';
+import { ACCESS, c, toExceptionSchemas } from '@/common';
 
 export const authContract = c.router({
   register: {
@@ -15,7 +15,7 @@ export const authContract = c.router({
       200: z.object({
         accessToken: z.string(),
       }),
-      ...errorSchemas([
+      ...toExceptionSchemas([
         EXCEPTION.USER.EMAIL_ALREADY_EXISTS,
         EXCEPTION.USER.USERNAME_ALREADY_EXISTS,
         EXCEPTION.COMMON.VALIDATION_ERROR,
@@ -37,7 +37,7 @@ export const authContract = c.router({
       200: z.object({
         accessToken: z.string(),
       }),
-      ...errorSchemas([EXCEPTION.AUTH.INVALID_CREDENTIALS]),
+      ...toExceptionSchemas([EXCEPTION.AUTH.INVALID_CREDENTIALS]),
     },
     metadata: {
       access: ACCESS.public,
@@ -64,7 +64,7 @@ export const authContract = c.router({
       200: z.object({
         accessToken: z.string(),
       }),
-      ...errorSchemas([
+      ...toExceptionSchemas([
         EXCEPTION.AUTH.REFRESH_TOKEN_INVALID,
         EXCEPTION.AUTH.SESSION_EXPIRED,
         EXCEPTION.AUTH.SESSION_REVOKED,

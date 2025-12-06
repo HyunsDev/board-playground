@@ -9,7 +9,7 @@ import { postContracts } from './post/post.contracts';
 import { sessionContract } from './session/session.contract';
 import { userContract, userForAdminContract } from './user/user.contracts';
 
-import { c, toExceptionSchema } from '@/common';
+import { c, toExceptionSchemas } from '@/common';
 
 export const contract = c.router(
   {
@@ -27,10 +27,10 @@ export const contract = c.router(
   },
   {
     commonResponse: {
-      401: z.union([
-        toExceptionSchema(EXCEPTION.AUTH.ACCESS_TOKEN_EXPIRED),
-        toExceptionSchema(EXCEPTION.AUTH.ACCESS_TOKEN_INVALID),
-        toExceptionSchema(EXCEPTION.AUTH.ACCESS_TOKEN_MISSING),
+      ...toExceptionSchemas([
+        EXCEPTION.AUTH.ACCESS_TOKEN_EXPIRED,
+        EXCEPTION.AUTH.ACCESS_TOKEN_INVALID,
+        EXCEPTION.AUTH.ACCESS_TOKEN_MISSING,
       ]),
     },
     baseHeaders: z.object({

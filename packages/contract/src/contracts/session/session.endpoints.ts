@@ -2,9 +2,8 @@ import z from 'zod';
 
 import { SessionDtoSchema } from './session.dto';
 
-import { c } from '@/common';
-import { ACCESS } from '@/common/utils/access.utils';
-import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
+import { c, toExceptionSchemas } from '@/common';
+import { ACCESS } from '@/common/utils/access';
 import { EXCEPTION } from '@/contracts/exception';
 
 export const getSession = c.query({
@@ -17,7 +16,7 @@ export const getSession = c.query({
     200: z.object({
       session: SessionDtoSchema,
     }),
-    404: toExceptionSchema(EXCEPTION.SESSION.NOT_FOUND),
+    ...toExceptionSchemas([EXCEPTION.SESSION.NOT_FOUND]),
   },
   metadata: {
     access: ACCESS.signedIn,
@@ -46,7 +45,7 @@ export const deleteSession = c.mutation({
   }),
   responses: {
     204: z.undefined(),
-    404: toExceptionSchema(EXCEPTION.SESSION.NOT_FOUND),
+    ...toExceptionSchemas([EXCEPTION.SESSION.NOT_FOUND]),
   },
   metadata: {
     access: ACCESS.signedIn,
