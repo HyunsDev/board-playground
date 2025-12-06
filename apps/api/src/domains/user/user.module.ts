@@ -1,8 +1,9 @@
 import { Logger, Module, Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { GetUserQueryHandler } from './application/queries/get-user.query';
 import { GetUserMeQueryHandler } from './application/queries/get-user-me.query';
+import { GetUserQueryHandler } from './application/queries/get-user.query';
+import { SearchUserQueryHandler } from './application/queries/search-user.query';
 import { CreateUserService } from './application/services/create-user.service';
 import { UserMapper } from './infra/user.mapper';
 import { UserRepository } from './infra/user.repository';
@@ -14,7 +15,11 @@ import { USER_REPOSITORY } from './user.constant';
 
 const httpControllers = [UserHttpController, UserMeHttpController];
 const commandHandlers: Provider[] = [];
-const queryHandlers: Provider[] = [GetUserQueryHandler, GetUserMeQueryHandler];
+const queryHandlers: Provider[] = [
+  GetUserQueryHandler,
+  GetUserMeQueryHandler,
+  SearchUserQueryHandler,
+];
 const services: Provider[] = [CreateUserService];
 const mappers: Provider[] = [UserMapper, UserDtoMapper];
 const repositories: Provider[] = [

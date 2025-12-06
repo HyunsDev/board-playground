@@ -17,6 +17,7 @@ import { UserRepositoryPort } from '../domain/user.repository.port';
 import { ContextService } from '@/infra/context/context.service';
 import { DatabaseService } from '@/infra/database/database.service';
 import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
+import { PaginatedResult } from '@/shared/base';
 import { BaseRepository } from '@/shared/base/infra/base.repository';
 import { DomainResult } from '@/shared/types/result.type';
 import { matchError } from '@/shared/utils/match-error.utils';
@@ -57,6 +58,39 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
       where: { username },
     });
     return record ? this.mapper.toDomain(record) : null;
+  }
+
+  async searchUsers(params: {
+    nickname?: string;
+    page: number;
+    take: number;
+  }): Promise<PaginatedResult<UserEntity>> {
+    const whereClause = params.nickname
+      ? {
+          nickname: {
+            contains: params.nickname,
+            mode: 'insensitive' as const,
+          },
+        }
+      : {};
+
+    const users = await this.delegate.findMany({
+      where: whereClause,
+      skip: (params.page - 1) * params.take,
+      take: params.take,
+      orderBy: { createdAt: 'desc' },
+    });
+    const total = await this.delegate.count({ where: whereClause });
+
+    return {
+      items: this.mapper.toDomainMany(users),
+      meta: {
+        total,
+        page: params.page,
+        take: params.take,
+        totalPages: Math.ceil(total / params.take),
+      },
+    };
   }
 
   async count(): Promise<number> {

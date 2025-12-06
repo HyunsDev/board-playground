@@ -4,6 +4,7 @@ import { v7 as uuidv7 } from 'uuid';
 import { DomainError } from '../error';
 
 import { DomainResult } from '@/shared/types/result.type';
+import { PaginationMeta } from '@workspace/contract';
 
 export type QueryMetadata = {
   readonly queryId: string;
@@ -24,6 +25,11 @@ export type PaginatedQueryProps<T> = QueryProps<
     take: number;
   }
 >;
+
+export type PaginatedResult<T> = {
+  items: T[];
+  meta: Required<PaginationMeta>;
+};
 
 /**
  * BaseQuery는 모든 쿼리의 공통 속성과 동작을 정의하는 추상 클래스입니다.
