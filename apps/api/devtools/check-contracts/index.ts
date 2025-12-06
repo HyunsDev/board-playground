@@ -14,25 +14,34 @@ import { contract } from '@workspace/contract';
 
 import { AppModule } from '../../src/app.module';
 
+// --- Constants ---
+const ROLES_KEY = 'roles';
+const IS_PUBLIC_KEY = 'isPublic';
+
 // --- Types ---
 type RouteInfo = {
   method: string;
   path: string;
   controllerName: string;
   moduleName: string;
+  accessInfo: string; // Implementation Access
 };
 
 type CheckResult = {
-  implemented: number;
-  missing: number;
-  maxContentWidth: number; // 가로선 길이를 계산하기 위한 최대 너비
+  contractImplemented: number;
+  contractMissing: number;
+  accessImplemented: number;
+  accessMissing: number;
+  maxContentWidth: number;
   results: Array<
     | {
         type: 'row';
         status: 'pass' | 'fail';
+        accessStatus: 'match' | 'mismatch';
         key: string;
         routeStr: string;
         controller: string;
+        accessDisplay: string;
         indent: string;
       }
     | { type: 'group'; name: string; indent: string }
@@ -42,11 +51,9 @@ type CheckResult = {
 
 // --- Utilities ---
 
-/**
- * 터미널 화면을 깨끗하게 지웁니다.
- */
 function clearConsole() {
-  console.clear();
+  const isWindows = process.platform === 'win32';
+  process.stdout.write(isWindows ? '\x1B[2J\x1B[0f' : '\x1B[2J\x1B[3J\x1B[H');
 }
 
 function normalizePath(path: string): string {
@@ -55,17 +62,11 @@ function normalizePath(path: string): string {
   return p.startsWith('/') ? p : `/${p}`;
 }
 
-/**
- * ANSI 색상 코드를 제거하여 순수 문자열 길이를 계산하기 위함
- */
 function stripAnsi(str: string): string {
   // eslint-disable-next-line no-control-regex
   return str.replace(/\u001b\[\d+m/g, '');
 }
 
-/**
- * NestJS 초기화 로그를 완전히 숨기기 위한 더미 로거
- */
 class SilentLogger implements LoggerService {
   log() {}
   error() {}
@@ -116,6 +117,7 @@ class NestRouteExtractor {
       if (methodMetadata !== undefined) {
         const httpMethod = this.getHttpMethodName(methodMetadata);
         const methodPaths = this.getPaths(reflector, methodRef);
+        const accessInfo = this.getAccessStatus(reflector, methodRef, controller.metatype);
 
         controllerPaths.forEach((cPath) => {
           methodPaths.forEach((mPath) => {
@@ -125,11 +127,34 @@ class NestRouteExtractor {
               path: fullPath,
               controllerName,
               moduleName: module.metatype?.name || String(token),
+              accessInfo,
             });
           });
         });
       }
     }
+  }
+
+  private getAccessStatus(
+    reflector: Reflector,
+    method: Function,
+    controllerClass: Type<any>,
+  ): string {
+    // 1. @Public 확인
+    const isPublic = reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [method, controllerClass]);
+    if (isPublic) return 'Public';
+
+    // 2. @Roles / @Auth 확인
+    const roles = reflector.getAllAndOverride<string[]>(ROLES_KEY, [method, controllerClass]);
+
+    // roles가 undefined이면(데코레이터 없음) Public
+    if (roles === undefined) return 'Public';
+
+    // roles가 빈 배열이면(@Auth()만 사용) SignedIn
+    if (roles.length === 0) return 'SignedIn';
+
+    // [수정] 공백 없이 콤마로만 연결
+    return roles.sort().join(',');
   }
 
   private getPaths(reflector: Reflector, target: Type<any> | Function): string[] {
@@ -149,19 +174,45 @@ class ContractAnalyzer {
 
   public analyze(contractNode: any): { result: CheckResult; matchedIndices: Set<number> } {
     const matchedIndices = new Set<number>();
-    const result: CheckResult = { implemented: 0, missing: 0, maxContentWidth: 0, results: [] };
+    const result: CheckResult = {
+      contractImplemented: 0,
+      contractMissing: 0,
+      accessImplemented: 0,
+      accessMissing: 0,
+      maxContentWidth: 0,
+      results: [],
+    };
 
     this.traverse(contractNode, matchedIndices, result);
 
     return { result, matchedIndices };
   }
 
-  private updateMaxWidth(result: CheckResult, str1: string, str2: string) {
-    // indent 등을 고려한 대략적인 여유값(Padding) + 10
-    const len = stripAnsi(str1).length + stripAnsi(str2).length + 15;
+  private updateMaxWidth(result: CheckResult, str1: string, str2: string, str3: string) {
+    const len = stripAnsi(str1).length + stripAnsi(str2).length + stripAnsi(str3).length + 20;
     if (len > result.maxContentWidth) {
       result.maxContentWidth = len;
     }
+  }
+
+  private getContractAccess(node: any): string {
+    const meta = node.metadata || {};
+
+    if (meta.isPublic === true) {
+      return 'Public';
+    }
+
+    if (Array.isArray(meta.roles) && meta.roles.length > 0) {
+      // [수정] 공백 없이 콤마로만 연결
+      return meta.roles.sort().join(',');
+    }
+
+    // isPublic이 undefined인 경우(실수)
+    if (meta.isPublic === undefined) {
+      return 'undefined';
+    }
+
+    return 'SignedIn';
   }
 
   private traverse(
@@ -186,33 +237,63 @@ class ContractAnalyzer {
           !matchedIndices.has(idx) && nr.method === currentMethod && nr.path === currentPath,
       );
 
+      const contractAccess = this.getContractAccess(node);
+
       if (matchIndex !== -1) {
         matchedIndices.add(matchIndex);
-        result.implemented++;
-        const rowKey = `${indent}✔ ${currentKey} ${routeStr}`;
-        const controller = this.nestRoutes[matchIndex].controllerName;
+        result.contractImplemented++;
 
-        this.updateMaxWidth(result, rowKey, controller);
+        const routeInfo = this.nestRoutes[matchIndex];
+        const implAccess = routeInfo.accessInfo;
+
+        const rowKey = `${indent}✔ ${currentKey} ${routeStr}`;
+        const controller = routeInfo.controllerName;
+
+        const isAccessMatch = contractAccess === implAccess;
+
+        let accessDisplay = '';
+
+        // [수정] contractAccess가 'undefined'인 경우 빨간색 'undefined'만 표시
+        if (contractAccess === 'undefined') {
+          result.accessMissing++;
+          accessDisplay = chalk.red('undefined');
+        } else if (isAccessMatch) {
+          result.accessImplemented++;
+          accessDisplay = chalk.gray(implAccess);
+        } else {
+          result.accessMissing++;
+          // [수정] 불일치 시 색상 변경 (Contract: 회색, Controller: 노란색)
+          const expectedStr = chalk.gray(contractAccess);
+          const receivedStr = chalk.yellow(implAccess);
+
+          accessDisplay = `${expectedStr}/${receivedStr}`;
+        }
+
+        this.updateMaxWidth(result, rowKey, controller, accessDisplay);
 
         result.results.push({
           type: 'row',
           status: 'pass',
+          accessStatus: isAccessMatch ? 'match' : 'mismatch',
           key: currentKey,
           routeStr: chalk.gray(routeStr),
           controller: chalk.gray(controller),
+          accessDisplay,
           indent,
         });
       } else {
-        result.missing++;
+        result.contractMissing++;
         const rowKey = `${indent}✘ ${currentKey} ${routeStr}`;
-        this.updateMaxWidth(result, rowKey, '');
+        this.updateMaxWidth(result, rowKey, '', '');
 
         result.results.push({
           type: 'row',
           status: 'fail',
+          accessStatus: 'mismatch',
           key: currentKey,
           routeStr: chalk.gray(routeStr),
           controller: '',
+          accessDisplay: '',
           indent,
         });
       }
@@ -244,7 +325,6 @@ class ContractAnalyzer {
 async function bootstrapTestApp() {
   const moduleBuilder = Test.createTestingModule({ imports: [AppModule] });
 
-  // Mocking
   moduleBuilder.useMocker(() => ({
     onModuleInit: () => {},
     onApplicationBootstrap: () => {},
@@ -252,13 +332,11 @@ async function bootstrapTestApp() {
     connect: () => {},
   }));
 
-  // [수정] SilentLogger를 사용하여 초기화 로그 완전 차단
   moduleBuilder.setLogger(new SilentLogger());
 
   const moduleRef = await moduleBuilder.compile();
   const app = moduleRef.createNestApplication();
 
-  // App 초기화 시에도 로그가 나올 수 있으므로 여기서도 Logger 설정
   app.useLogger(new SilentLogger());
 
   await app.init();
@@ -268,70 +346,73 @@ async function bootstrapTestApp() {
 async function run() {
   const startTime = performance.now();
 
-  // 1. 콘솔 클리어
   clearConsole();
 
-  // 2. 앱 실행 및 라우트 추출
   const app = await bootstrapTestApp();
   const extractor = new NestRouteExtractor(app);
   const nestRoutes = extractor.getRoutes();
   await app.close();
 
-  // 3. 계약 분석
   const analyzer = new ContractAnalyzer(nestRoutes);
   const { result, matchedIndices } = analyzer.analyze(contract);
 
-  // 4. 테이블 생성
+  // [수정] 컬럼 순서 변경: Contract / Route | Access | Controller
   const table = new Table({
-    head: [chalk.white.bold('Contract / Route'), chalk.white.bold('Controller')],
+    head: [
+      chalk.white.bold('Contract / Route'),
+      chalk.white.bold('Access'),
+      chalk.white.bold('Controller'),
+    ],
     wordWrap: true,
     style: {
       head: [],
       border: [],
       compact: true,
-      // [수정] 오른쪽 Padding 추가하여 텍스트 여유 확보
       'padding-right': 2,
       'padding-left': 1,
     },
   });
 
-  // [수정] 계산된 최대 너비를 이용하여 적응형 가로선 생성
   const separatorLine = chalk.gray('─'.repeat(Math.max(result.maxContentWidth, 60)));
 
-  // 분석 결과 테이블에 추가
   result.results.forEach((item) => {
     if (item.type === 'separator') {
-      // [수정] 적응형 가로선 삽입
-      table.push([{ colSpan: 2, content: separatorLine }]);
+      table.push([{ colSpan: 3, content: separatorLine }]);
     } else if (item.type === 'group') {
-      table.push([`${item.indent}${chalk.white.bold(item.name)}`, '']);
+      table.push([`${item.indent}${chalk.white.bold(item.name)}`, '', '']);
     } else if (item.type === 'row') {
       const mark = item.status === 'pass' ? chalk.green('✔') : chalk.red('✘');
       const keyColor = item.status === 'pass' ? chalk.green(item.key) : chalk.red(item.key);
-      table.push([`${item.indent}${mark} ${keyColor} ${item.routeStr}`, item.controller]);
+      // [수정] 데이터 삽입 순서 변경
+      table.push([
+        `${item.indent}${mark} ${keyColor} ${item.routeStr}`,
+        item.accessDisplay,
+        item.controller,
+      ]);
     }
   });
 
-  // Extra Routes 확인
   const extraRoutes = nestRoutes.filter((_, idx) => !matchedIndices.has(idx));
   if (extraRoutes.length > 0) {
-    // Extra Routes 전에도 적응형 가로선
-    table.push([{ colSpan: 2, content: separatorLine }]);
-    table.push([chalk.yellow.bold('Extra Routes (In NestJS only)'), '']);
+    table.push([{ colSpan: 3, content: separatorLine }]);
+    table.push([chalk.yellow.bold('Extra Routes (In NestJS only)'), '', '']);
     extraRoutes.forEach((r) => {
+      // [수정] 데이터 삽입 순서 변경
       table.push([
         `  ${chalk.yellow('?')} ${chalk.gray(`${r.method} ${r.path}`)}`,
+        chalk.cyan(r.accessInfo),
         chalk.gray(r.controllerName),
       ]);
     });
   }
 
-  // 5. 결과 출력
   console.log(table.toString());
   console.log('');
 
-  const total = result.implemented + result.missing;
-  const isFail = result.missing > 0 || extraRoutes.length > 0;
+  const contractTotal = result.contractImplemented + result.contractMissing;
+  const accessTotal = result.accessImplemented + result.accessMissing;
+
+  const isFail = result.contractMissing > 0 || result.accessMissing > 0 || extraRoutes.length > 0;
 
   if (isFail) {
     console.log(
@@ -345,19 +426,29 @@ async function run() {
 
   console.log();
 
-  // [수정] 텍스트 Bold 처리 및 색상 변경
-  const missingText = result.missing > 0 ? chalk.bold.red(`${result.missing} missing`) : '';
-  const passedText = chalk.bold.green(`${result.implemented} passed`);
+  const contractMissingText =
+    result.contractMissing > 0 ? chalk.bold.red(`${result.contractMissing} missing`) : '';
+  const contractPassedText = chalk.bold.green(`${result.contractImplemented} passed`);
   const extraText = extraRoutes.length > 0 ? chalk.bold.yellow(`${extraRoutes.length} extra`) : '';
+  const contractSummaryParts = [contractMissingText, contractPassedText, extraText].filter(Boolean);
 
-  const summaryParts = [missingText, passedText, extraText].filter(Boolean);
+  console.log(
+    `${chalk.bold('Contracts:')}   ${contractSummaryParts.join(', ')}, ${contractTotal} total`,
+  );
 
-  console.log(`${chalk.bold('Tests:')}       ${summaryParts.join(', ')}, ${total} total`);
+  if (contractTotal > 0) {
+    const accessMissingText =
+      result.accessMissing > 0 ? chalk.bold.red(`${result.accessMissing} failed`) : '';
+    const accessPassedText = chalk.bold.green(`${result.accessImplemented} passed`);
+    const accessSummaryParts = [accessMissingText, accessPassedText].filter(Boolean);
 
-  // Time Summary
+    console.log(
+      `${chalk.bold('Access:')}      ${accessSummaryParts.join(', ')}, ${accessTotal} checked`,
+    );
+  }
+
   const endTime = performance.now();
   const duration = ((endTime - startTime) / 1000).toFixed(3);
-  // [수정] 시간 값 굵은 흰색으로 변경
   console.log(`${chalk.bold('Time:')}        ${chalk.bold.white(duration + ' s')}`);
   console.log();
 
