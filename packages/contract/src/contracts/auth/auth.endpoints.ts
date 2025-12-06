@@ -67,6 +67,7 @@ export const refreshTokenAuth = c.mutation({
     401: z.union([
       toExceptionSchema(EXCEPTION.AUTH.INVALID_REFRESH_TOKEN),
       toExceptionSchema(EXCEPTION.AUTH.USED_REFRESH_TOKEN),
+      toExceptionSchema(EXCEPTION.AUTH.SESSION_IS_REVOKED),
     ]),
   },
   metadata: {

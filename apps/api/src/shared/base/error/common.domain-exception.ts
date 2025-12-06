@@ -9,8 +9,8 @@ import {
 } from './common.domain-errors';
 
 export class InternalServerErrorException extends DomainException {
-  constructor() {
-    super(new InternalServerError());
+  constructor(message?: string, details?: any) {
+    super(new InternalServerError(message, details));
   }
 }
 

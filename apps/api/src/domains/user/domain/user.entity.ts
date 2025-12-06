@@ -3,6 +3,7 @@ import { v7 as uuidv7 } from 'uuid';
 import { USER_ROLE, USER_STATUS, UserRole, UserStatus } from '@workspace/contract';
 
 import { UserCreatedEvent } from './events/user-created.event';
+import { UserPasswordVO } from './user-password.vo';
 import { UserAdminCannotBeDeletedError } from './user.domain-errors';
 
 import { AggregateRoot, CommandMetadata } from '@/shared/base';
@@ -16,7 +17,7 @@ export interface UserProps {
   role: UserRole;
   status: UserStatus;
   memo: string | null;
-  password: string;
+  password: UserPasswordVO | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,10 +26,11 @@ export interface CreateUserProps {
   username: string;
   nickname: string;
   email: string;
-  password: string;
+  password: UserPasswordVO | null;
 }
 
 export class UserEntity extends AggregateRoot<UserProps> {
+  private _password: UserPasswordVO;
   private constructor(props: UserProps, id?: string) {
     super({
       id: id || uuidv7(),
@@ -52,7 +54,7 @@ export class UserEntity extends AggregateRoot<UserProps> {
     return this.props.role;
   }
 
-  get password(): string {
+  get password(): UserPasswordVO {
     return this.props.password;
   }
 

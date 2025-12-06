@@ -57,7 +57,7 @@ export class RefreshTokenAuthCommandHandler implements ICommandHandler<RefreshTo
       const userResult = await this.userFacade.getOneById(session.userId);
       if (userResult.isErr()) {
         return matchError(userResult.error, {
-          UserNotFound: (e) => err(e),
+          UserNotFound: () => err(new InvalidRefreshTokenError()),
         });
       }
       const user = userResult.value;

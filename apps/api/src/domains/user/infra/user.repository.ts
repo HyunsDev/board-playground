@@ -46,6 +46,14 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     return ok(result);
   }
 
+  async getOneByEmail(email: string): Promise<DomainResult<UserEntity, UserNotFoundError>> {
+    const result = await this.findOneByEmail(email);
+    if (!result) {
+      return err(new UserNotFoundError());
+    }
+    return ok(result);
+  }
+
   async findOneByEmail(email: string): Promise<UserEntity | null> {
     const record = await this.delegate.findUnique({
       where: { email },

@@ -8,9 +8,9 @@ import { AuthTokens, AuthTokenService } from '../services/auth-token.service';
 import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TransactionManager } from '@/infra/database/transaction.manager';
 import { InvalidCredentialsError } from '@/infra/security/domain/security.domain-errors';
-import { PasswordService } from '@/infra/security/services/password.service';
 import { BaseCommand, CommandProps } from '@/shared/base';
 import { HandlerResult } from '@/shared/types/handler-result';
+import { matchError } from '@/shared/utils/match-error.utils';
 
 type LoginAuthCommandProps = CommandProps<{
   email: string;
@@ -29,18 +29,26 @@ export class LoginAuthCommand extends BaseCommand<
 export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand> {
   constructor(
     private readonly userFacade: UserFacade,
-    private readonly passwordService: PasswordService,
     private readonly authTokenService: AuthTokenService,
     private readonly txManager: TransactionManager,
   ) {}
 
   async execute({ data }: LoginAuthCommandProps) {
     return await this.txManager.run(async () => {
-      const user = await this.userFacade.findOneByEmail(data.email);
-      if (!user) return err(new InvalidCredentialsError());
+      const userResult = await this.userFacade.getOneByEmail(data.email);
+      if (userResult.isErr()) {
+        return matchError(userResult.error, {
+          UserNotFound: () => err(new InvalidCredentialsError()),
+        });
+      }
+      const user = userResult.value;
 
-      const isValid = await this.passwordService.comparePassword(data.password, user.password);
-      if (!isValid) return err(new InvalidCredentialsError());
+      const isValid = await user.password.compare(data.password);
+      if (isValid.isErr()) {
+        return matchError(isValid.error, {
+          InvalidCredentials: (e) => err(e),
+        });
+      }
 
       const tokensResult = await this.authTokenService.issue({
         user,

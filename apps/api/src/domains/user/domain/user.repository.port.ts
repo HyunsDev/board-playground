@@ -10,6 +10,7 @@ import { DomainResult } from '@/shared/types/result.type';
 
 export interface UserRepositoryPort extends RepositoryPort<UserEntity> {
   getOneById(id: string): Promise<DomainResult<UserEntity, UserNotFoundError>>;
+  getOneByEmail(email: string): Promise<DomainResult<UserEntity, UserNotFoundError>>;
   findOneByEmail(email: string): Promise<UserEntity | null>;
   findOneByUsername(username: string): Promise<UserEntity | null>;
   searchUsers(params: {

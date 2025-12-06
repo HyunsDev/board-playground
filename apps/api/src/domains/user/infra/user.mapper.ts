@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { User, UserRole, UserStatus } from '@workspace/db';
 
+import { UserPasswordVO } from '../domain/user-password.vo';
 import { UserEntity, UserProps } from '../domain/user.entity';
 
 import { BaseMapper } from '@/shared/base';
@@ -18,7 +19,7 @@ export class UserMapper extends BaseMapper<UserEntity, User> {
       role: record.role,
       status: record.status,
       memo: record.memo,
-      password: record.password,
+      password: record.password ? UserPasswordVO.fromHash(record.password) : null,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
     };
@@ -37,7 +38,7 @@ export class UserMapper extends BaseMapper<UserEntity, User> {
       role: props.role as UserRole,
       status: props.status as UserStatus,
       memo: props.memo,
-      password: props.password,
+      password: props.password ? props.password.unpack() : null,
       createdAt: props.createdAt,
       updatedAt: props.updatedAt,
     };

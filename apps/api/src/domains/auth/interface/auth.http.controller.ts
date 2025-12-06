@@ -128,7 +128,6 @@ export class AuthHttpController {
             InvalidRefreshToken: () => apiErr(EXCEPTION.AUTH.INVALID_REFRESH_TOKEN),
             SessionIsRevoked: () => apiErr(EXCEPTION.AUTH.SESSION_IS_REVOKED),
             UsedRefreshToken: () => apiErr(EXCEPTION.AUTH.USED_REFRESH_TOKEN),
-            UserNotFound: () => apiErr(EXCEPTION.USER.NOT_FOUND),
           });
         },
       );

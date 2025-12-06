@@ -67,8 +67,8 @@ export class AccessDeniedError extends BaseAccessDeniedError<'AccessDenied'> {
 export class InternalServerError extends BaseInternalServerError<'InternalServerError', any> {
   public readonly code = 'InternalServerError';
   public readonly scope = 'public';
-  constructor(details?: any) {
-    super('An internal server error occurred', details);
+  constructor(message?: string, details?: any) {
+    super(message ?? 'An internal server error occurred', details);
   }
 }
 

@@ -25,7 +25,7 @@ export class UserFacade {
     return await this.userRepo.getOneById(id);
   }
 
-  async findOneByEmail(email: string) {
-    return await this.userRepo.findOneByEmail(email);
+  async getOneByEmail(email: string) {
+    return await this.userRepo.getOneByEmail(email);
   }
 }

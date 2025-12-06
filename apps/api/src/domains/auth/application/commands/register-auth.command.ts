@@ -5,9 +5,9 @@ import { DEVICE_PLATFORM } from '@workspace/contract';
 
 import { AuthTokenService } from '../services/auth-token.service';
 
+import { UserPasswordVO } from '@/domains/user/domain/user-password.vo';
 import { UserFacade } from '@/domains/user/interface/user.facade';
 import { TransactionManager } from '@/infra/database/transaction.manager';
-import { PasswordService } from '@/infra/security/services/password.service';
 import { BaseCommand, CommandProps } from '@/shared/base';
 import { HandlerResult } from '@/shared/types/handler-result';
 
@@ -35,20 +35,17 @@ export class RegisterAuthCommandHandler
 {
   constructor(
     private readonly userFacade: UserFacade,
-    private readonly passwordService: PasswordService,
     private readonly txManager: TransactionManager,
     private readonly authTokenService: AuthTokenService,
   ) {}
 
   async execute({ data }: RegisterAuthCommandProps) {
     return await this.txManager.run(async () => {
-      const hashedPassword = await this.passwordService.hashPassword(data.password);
-
       const createUserResult = await this.userFacade.createUser({
         email: data.email,
         username: data.username,
         nickname: data.nickname,
-        password: hashedPassword,
+        password: UserPasswordVO.fromHash(data.password),
       });
       if (createUserResult.isErr()) return err(createUserResult.error);
 
