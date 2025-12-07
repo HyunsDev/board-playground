@@ -34,12 +34,24 @@ describe('Auth Flow E2E', () => {
   });
 
   describe('1. 회원가입 검증 (Validation)', () => {
-    it('정상 회원가입 성공 (200)', async () => {
+    it('정상 회원가입 성공', async () => {
       const res = await client.api.auth.register({ body: { ...user } });
       expectRes(res).toBeApiOk();
     });
 
-    it('이메일 중복 시 가입 실패 (409)', async () => {
+    it('Username 중복 확인 - 사용 가능', async () => {
+      const res = await client.api.auth.checkUsername({
+        query: { username: faker.internet.username() },
+      });
+      expectRes(res).toBeApiOk({ available: true });
+    });
+
+    it('Username 중복 확인 - 사용 불가', async () => {
+      const res = await client.api.auth.checkUsername({ query: { username: user.username } });
+      expectRes(res).toBeApiOk({ available: false });
+    });
+
+    it('이메일 중복 시 가입 실패', async () => {
       const res = await client.api.auth.register({
         body: { ...subUser, email: user.email },
       });
@@ -47,7 +59,7 @@ describe('Auth Flow E2E', () => {
       expectRes(res).toBeApiErr(ApiErrors.User.EmailAlreadyExists);
     });
 
-    it('Username 중복 시 가입 실패 (409)', async () => {
+    it('Username 중복 시 가입 실패', async () => {
       const res = await client.api.auth.register({
         body: { ...subUser, username: user.username },
       });
@@ -80,11 +92,8 @@ describe('Auth Flow E2E', () => {
         body: { email: user.email, password: user.password },
       });
 
-      // [개선] toBeApiOk가 body를 반환하므로 as any 없이 사용 가능
-      // 응답 타입을 명시(<AuthResponse>)하면 더 안전함
       const body = expectRes(res).toBeApiOk();
 
-      // 상태 저장
       client.setAccessToken(body.accessToken);
     });
 
