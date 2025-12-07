@@ -1,34 +1,36 @@
+import { faker } from '@faker-js/faker';
 import { describe, beforeAll, it, expect } from '@jest/globals';
 
 import { ApiErrors } from '@workspace/contract';
 
-import { createMockUser, MockUser } from '@/mocks/user.mock';
 import { expectRes } from '@/utils/expect-res';
 import { TestClient } from '@/utils/test-client';
 
+type MockUser = {
+  email: string;
+  username: string;
+  nickname: string;
+  password: string;
+};
+
+const createMockUser = (): MockUser => {
+  return {
+    email: faker.internet.email(),
+    username: faker.internet.username(),
+    nickname: faker.person.firstName(),
+    password: '1q2w3e4r!',
+  };
+};
+
 describe('Auth Flow E2E', () => {
   let client: TestClient;
-
-  // 비밀번호가 포함된 유저 타입 정의
-  type UserWithPassword = MockUser & { password: string };
-  let user: UserWithPassword;
-  let subUser: UserWithPassword;
+  let user: MockUser;
+  let subUser: MockUser;
 
   beforeAll(async () => {
     client = new TestClient();
-
-    user = {
-      ...createMockUser(),
-      password: '1q2w3e4r!',
-    };
-
-    subUser = {
-      ...createMockUser(),
-      password: '1q2w3e4r@',
-    };
-
-    // DB 초기화
-    await client.api.devtools.resetDB();
+    user = createMockUser();
+    subUser = createMockUser();
   });
 
   describe('1. 회원가입 검증 (Validation)', () => {

@@ -1,23 +1,51 @@
-import { beforeAll, describe, expect, it } from '@jest/globals';
+import { faker } from '@faker-js/faker/.';
+import { beforeAll, describe, it } from '@jest/globals';
 
-import { createMockUser, MockUser } from '@/mocks/user.mock';
+import { TestUser } from '@/mocks/user.mock';
+import { expectRes } from '@/utils/expect-res';
 import { TestClient } from '@/utils/test-client';
 
 describe('Me E2E', () => {
   let client: TestClient;
-  let user: MockUser;
+  let user: TestUser;
 
   beforeAll(async () => {
+    user = new TestUser({});
     client = new TestClient();
-    user = createMockUser();
-    await client.api.devtools.resetDB();
-    const res = await client.api.devtools.forceRegister({ body: { ...user } });
-    if (res.status !== 200) throw new Error('Failed to register user in beforeAll');
-    if (res.body.accessToken) client.setAccessToken(res.body.accessToken);
-    if (res.body.refreshToken) client.setRefreshToken(res.body.refreshToken);
+    await client.registerAs(user);
   });
 
-  it('test', async () => {
-    expect(1 + 1).toBe(2);
+  it('내 정보 조회 (200)', async () => {
+    const res = await client.api.user.me.get();
+    expectRes(res).toBeApiOk({
+      me: user.toMeExpectObject(),
+    });
+  });
+
+  it('Profile 변경', async () => {
+    const newNickname = faker.person.firstName();
+    const newBio = faker.lorem.sentence();
+    const res = await client.api.user.me.updateProfile({
+      body: {
+        nickname: newNickname,
+        bio: newBio,
+      },
+    });
+
+    expectRes(res).toBeApiOk({
+      me: user.toMeExpectObject({
+        bio: newBio,
+        nickname: newNickname,
+      }),
+    });
+    await client.syncUser(user);
+
+    const meRes = await client.api.user.me.get();
+    expectRes(meRes).toBeApiOk({
+      me: user.toMeExpectObject({
+        bio: newBio,
+        nickname: newNickname,
+      }),
+    });
   });
 });
