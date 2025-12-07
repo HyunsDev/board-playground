@@ -108,7 +108,9 @@ describe('Auth Flow E2E', () => {
       const currentRefreshToken = client.getRefreshToken();
 
       const res = await client.api.auth.refreshToken();
-      expectRes(res).toBeApiOk();
+      expectRes(res).toBeApiOk({
+        accessToken: expect.any(String),
+      });
 
       const newRefreshToken = client.getRefreshToken();
       expect(newRefreshToken).not.toBe(currentRefreshToken);
@@ -120,7 +122,9 @@ describe('Auth Flow E2E', () => {
       const oldRefreshToken = client.getRefreshToken();
 
       const res1 = await client.api.auth.refreshToken();
-      expectRes(res1).toBeApiOk();
+      expectRes(res1).toBeApiOk({
+        accessToken: expect.any(String),
+      });
 
       const validRefreshToken = client.getRefreshToken();
 
