@@ -2,6 +2,21 @@ import { expect } from '@jest/globals';
 
 import { ApiError, ApiResponse } from '@workspace/contract';
 
+type SuccessBody<T> = T extends { status: number; body: infer B }
+  ? `${T['status']}` extends `2${string}` // status를 문자열로 바꿔 "2"로 시작하는지 확인
+    ? B
+    : never
+  : never;
+
+interface JestMatcher {
+  asymmetricMatch(other: unknown): boolean;
+  [key: string]: any;
+}
+
+type Matchable<T> = {
+  [K in keyof T]: T[K] extends object ? Matchable<T[K]> | JestMatcher : T[K] | JestMatcher;
+};
+
 export function expectRes<T extends ApiResponse<any>>(res: T) {
   // 에러 메시지 포맷팅 헬퍼
   const formatMsg = (msg: string) => {
@@ -13,8 +28,8 @@ export function expectRes<T extends ApiResponse<any>>(res: T) {
    * 2xx 성공 응답을 검증합니다.
    * 검증에 성공하면 res.body를 반환하여 체이닝을 돕습니다.
    */
-  const toBeApiOk = <BodyType = any>(expectedBody?: BodyType): BodyType => {
-    // 1. Status Check (2xx 범위)
+  const toBeApiOk = (expectedBody?: Matchable<SuccessBody<T>>): SuccessBody<T> => {
+    // 1. Status Check
     if (res.status < 200 || res.status >= 300) {
       const error = new Error(
         formatMsg(
@@ -27,12 +42,14 @@ export function expectRes<T extends ApiResponse<any>>(res: T) {
       throw error;
     }
 
-    // 2. Body Check (값이 있을 경우에만)
+    // 2. Body Check
     if (expectedBody) {
+      // ✅ Matcher가 섞여있어도 Jest의 toEqual은 내부적으로 잘 처리합니다.
       expect(res.body).toEqual(expectedBody);
     }
 
-    return res.body as BodyType;
+    // 반환은 다음 체이닝을 위해 원래의 엄격한 타입으로 반환
+    return res.body as SuccessBody<T>;
   };
 
   /**
