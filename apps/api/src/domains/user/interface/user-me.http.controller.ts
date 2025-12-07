@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { QueryBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
 import { contract, ApiErrors } from '@workspace/contract';
@@ -19,6 +19,7 @@ import { matchPublicError } from '@/shared/utils/match-error.utils';
 @Controller()
 export class UserMeHttpController {
   constructor(
+    private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
     private readonly dtoMapper: UserDtoMapper,
   ) {}
@@ -45,7 +46,7 @@ export class UserMeHttpController {
   @Auth()
   async updateProfile(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.updateProfile, async ({ body }) => {
-      const result = await this.queryBus.execute(
+      const result = await this.commandBus.execute(
         new UpdateUserMeProfileCommand({
           userId: token.sub,
           nickname: body.nickname,
@@ -72,7 +73,7 @@ export class UserMeHttpController {
   @Auth()
   async updateUsername(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.updateUsername, async ({ body }) => {
-      const result = await this.queryBus.execute(
+      const result = await this.commandBus.execute(
         new UpdateUserMeUsernameCommand({
           userId: token.sub,
           newUsername: body.username,
@@ -97,7 +98,7 @@ export class UserMeHttpController {
   @Auth()
   async deleteMe(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.delete, async () => {
-      const result = await this.queryBus.execute(
+      const result = await this.commandBus.execute(
         new DeleteUserMeCommand({
           userId: token.sub,
         }),

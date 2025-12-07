@@ -1,6 +1,9 @@
 import { Logger, Module, Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
+import { DeleteUserMeCommandHandler } from './application/commands/delete-user-me.command';
+import { UpdateUserMeProfileCommandHandler } from './application/commands/update-user-me-profile.command';
+import { UpdateUserMeUsernameCommandHandler } from './application/commands/update-user-me-username.command';
 import { GetUserForAdminQueryHandler } from './application/queries/get-user-for-admin.query';
 import { GetUserMeQueryHandler } from './application/queries/get-user-me.query';
 import { GetUserQueryHandler } from './application/queries/get-user.query';
@@ -21,6 +24,9 @@ const queryHandlers: Provider[] = [
   GetUserMeQueryHandler,
   SearchUserQueryHandler,
   GetUserForAdminQueryHandler,
+  UpdateUserMeProfileCommandHandler,
+  UpdateUserMeUsernameCommandHandler,
+  DeleteUserMeCommandHandler,
 ];
 const services: Provider[] = [UserService];
 const mappers: Provider[] = [UserMapper, UserDtoMapper];
