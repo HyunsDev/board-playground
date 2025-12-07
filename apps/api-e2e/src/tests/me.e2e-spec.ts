@@ -48,4 +48,27 @@ describe('Me E2E', () => {
       }),
     });
   });
+
+  it('사용자 이름 변경', async () => {
+    const newUsername = faker.internet.username();
+    const res = await client.api.user.me.updateUsername({
+      body: {
+        username: newUsername,
+      },
+    });
+
+    expectRes(res).toBeApiOk({
+      me: user.toMeExpectObject({
+        username: newUsername,
+      }),
+    });
+    await client.syncUser(user);
+
+    const meRes = await client.api.user.me.get();
+    expectRes(meRes).toBeApiOk({
+      me: user.toMeExpectObject({
+        username: newUsername,
+      }),
+    });
+  });
 });
