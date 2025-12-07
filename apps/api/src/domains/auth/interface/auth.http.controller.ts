@@ -1,6 +1,6 @@
 import { Controller, Req, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { Request, Response } from 'express';
 
@@ -22,6 +22,7 @@ import { matchPublicError } from '@/shared/utils/match-error.utils';
 @Controller()
 export class AuthHttpController {
   constructor(
+    private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
     private readonly configService: ConfigService<EnvSchema>,
   ) {}
@@ -169,7 +170,7 @@ export class AuthHttpController {
   @TsRestHandler(contract.auth.checkUsername)
   async checkUsername() {
     return tsRestHandler(contract.auth.checkUsername, async ({ query }) => {
-      const result = await this.commandBus.execute(
+      const result = await this.queryBus.execute(
         new CheckUsernameAvailableQuery({
           username: query.username,
         }),
