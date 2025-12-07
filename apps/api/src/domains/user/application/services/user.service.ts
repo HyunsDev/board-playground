@@ -28,4 +28,8 @@ export class UserService {
   async getOneByEmail(email: string) {
     return await this.userRepo.getOneByEmail(email);
   }
+
+  async usernameExists(username: string) {
+    return await this.userRepo.usernameExists(username);
+  }
 }

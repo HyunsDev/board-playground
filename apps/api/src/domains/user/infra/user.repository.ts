@@ -68,6 +68,13 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     return record ? this.mapper.toDomain(record) : null;
   }
 
+  async usernameExists(username: string): Promise<boolean> {
+    const count = await this.delegate.count({
+      where: { username },
+    });
+    return count > 0;
+  }
+
   async searchUsers(params: {
     nickname?: string;
     page: number;

@@ -13,6 +13,7 @@ export interface UserRepositoryPort extends RepositoryPort<UserEntity> {
   getOneByEmail(email: string): Promise<DomainResult<UserEntity, UserNotFoundError>>;
   findOneByEmail(email: string): Promise<UserEntity | null>;
   findOneByUsername(username: string): Promise<UserEntity | null>;
+  usernameExists(username: string): Promise<boolean>;
   searchUsers(params: {
     nickname?: string;
     page: number;

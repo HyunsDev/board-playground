@@ -6,6 +6,22 @@ import { passwordSchema } from './auth.schemas';
 
 import { ACCESS, c, toApiErrorResponses } from '@/common';
 
+export const checkUsername = c.query({
+  method: 'GET',
+  path: '/auth/check-username',
+  query: z.object({
+    username: z.string(),
+  }),
+  responses: {
+    200: z.object({
+      available: z.boolean(),
+    }),
+  },
+  metadata: {
+    access: ACCESS.public,
+  },
+});
+
 export const registerAuth = c.mutation({
   method: 'POST',
   path: '/auth/register',

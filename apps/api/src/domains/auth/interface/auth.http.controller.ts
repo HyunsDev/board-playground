@@ -10,6 +10,7 @@ import { LoginAuthCommand } from '../application/commands/login-auth.command';
 import { LogoutAuthCommand } from '../application/commands/logout-auth.command';
 import { RefreshTokenAuthCommand } from '../application/commands/refresh-token-auth.command';
 import { RegisterAuthCommand } from '../application/commands/register-auth.command';
+import { CheckUsernameAvailableQuery } from '../application/queries/check-username-avilable.query';
 
 import { EnvSchema } from '@/core/config/env.validation';
 import { UnexpectedDomainError } from '@/shared/base';
@@ -161,6 +162,31 @@ export class AuthHttpController {
       return result.match(
         () => apiOk(204, null),
         () => apiOk(204, null),
+      );
+    });
+  }
+
+  @TsRestHandler(contract.auth.checkUsername)
+  async checkUsername() {
+    return tsRestHandler(contract.auth.checkUsername, async ({ query }) => {
+      const result = await this.commandBus.execute(
+        new CheckUsernameAvailableQuery({
+          username: query.username,
+        }),
+      );
+
+      return result.match(
+        () =>
+          apiOk(200, {
+            available: true,
+          }),
+        (error) =>
+          matchPublicError(error, {
+            UserUsernameAlreadyExists: () =>
+              apiOk(200, {
+                available: false,
+              }),
+          }),
       );
     });
   }
