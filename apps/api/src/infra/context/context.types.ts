@@ -20,4 +20,5 @@ export interface AppContext extends NestClsStore {
   client?: ClientContext;
   token?: TokenContext;
   transaction?: Prisma.TransactionClient;
+  errorCode?: string;
 }

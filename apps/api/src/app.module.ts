@@ -7,6 +7,7 @@ import { UserModule } from './domains/user/user.module';
 import { ContextModule } from './infra/context/context.module';
 import { DatabaseModule } from './infra/database/database.module';
 import { DevtoolsModule } from './infra/devtools/devtools.module';
+import { CoreLoggerModule } from './infra/logger/core-logger.module';
 import { SecurityModule } from './infra/security/security.module';
 
 @Module({
@@ -15,6 +16,7 @@ import { SecurityModule } from './infra/security/security.module';
     ContextModule,
     DatabaseModule,
     SecurityModule,
+    CoreLoggerModule,
     UserModule,
     SessionModule,
     AuthModule,

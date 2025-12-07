@@ -54,6 +54,15 @@ export class ContextService {
     this.cls.set('transaction', undefined);
   }
 
+  // --- error code ---
+  setErrorCode(code: string) {
+    this.cls.set('errorCode', code);
+  }
+
+  getErrorCode(): string | undefined {
+    return this.cls.get('errorCode');
+  }
+
   // --- Run in Context ---
   async runInContext<T>(fn: () => Promise<T>): Promise<T> {
     return this.cls.runWith(this.cls.get(), fn);

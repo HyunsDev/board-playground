@@ -10,11 +10,16 @@ import { ContextService } from './context.service';
 import { RequestIdInterceptor } from './interceptors/request-id.interceptor';
 import { DatabaseModule } from '../database/database.module';
 import { DatabaseService } from '../database/database.service';
+import { ErrorLoggingInterceptor } from './interceptors/error-logging.interceptor';
 
 const interceptors: Provider[] = [
   {
     provide: APP_INTERCEPTOR,
     useClass: RequestIdInterceptor,
+  },
+  {
+    provide: APP_INTERCEPTOR,
+    useClass: ErrorLoggingInterceptor,
   },
 ];
 
