@@ -1,16 +1,19 @@
-import { DomainEvent, DomainEventProps } from '@/shared/base';
+import { BaseDomainEvent, IDomainEvent } from '@/shared/base';
+import { DomainEventCodes } from '@/shared/codes/domain-event.codes';
+import { DomainCodes } from '@/shared/codes/domain.codes';
+import { ResourceTypes } from '@/shared/codes/resource-type.codes';
 
-export class SessionCreatedEvent extends DomainEvent {
-  public readonly userId: string;
-  public readonly sessionId: string;
-  public readonly sessionName: string;
+export type ISessionCreatedEvent = IDomainEvent<{
+  userId: string;
+  sessionId: string;
+  sessionName: string;
+}>;
+export class SessionCreatedEvent extends BaseDomainEvent<ISessionCreatedEvent> {
+  public readonly domain = DomainCodes.Session;
+  public readonly code = DomainEventCodes.Session.Created;
+  public readonly resourceType = ResourceTypes.Session;
 
-  constructor(
-    props: DomainEventProps & { userId: string; sessionId: string; sessionName: string },
-  ) {
-    super(props);
-    this.userId = props.userId;
-    this.sessionId = props.sessionId;
-    this.sessionName = props.sessionName;
+  constructor(data: ISessionCreatedEvent['data'], metadata?: ISessionCreatedEvent['metadata']) {
+    super(data.sessionId, data, metadata);
   }
 }

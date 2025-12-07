@@ -10,7 +10,7 @@ import { SessionMapper } from './infra/session.mapper';
 import { SessionRepository } from './infra/session.repository';
 import { SessionDtoMapper } from './interface/session.dto-mapper';
 import { SessionHttpController } from './interface/session.http.controller';
-import { SESSION_REPOSITORY } from './session.di-tokens';
+import { SESSION_REPOSITORY } from './session.constants';
 
 const httpControllers = [SessionHttpController];
 const commandHandlers: Provider[] = [DeleteSessionCommandHandler];

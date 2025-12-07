@@ -1,31 +1,64 @@
 import { v7 as uuidv7 } from 'uuid';
 
-export type DomainEventMetadata = {
-  readonly timestamp: number;
-  readonly correlationId: string;
-  readonly causationId?: string;
-  readonly userId?: string;
+import { CreateMessageMetadata, MessageMetadata } from '../interface/message-metadata.type';
+
+import { AggregateCode } from '@/shared/codes/aggregate.codes';
+import { DomainEventCode } from '@/shared/codes/domain-event.codes';
+import { DomainCode } from '@/shared/codes/domain.codes';
+
+export type IDomainEvent<Data> = {
+  readonly data: Data;
+  readonly metadata: CreateMessageMetadata;
+  deriveMetadata(
+    this: IDomainEvent<Data>,
+    overrides?: Partial<CreateMessageMetadata>,
+  ): CreateMessageMetadata;
 };
 
-export interface DomainEventProps {
-  aggregateId: string;
-  metadata?: Partial<DomainEventMetadata>;
-}
+export abstract class BaseDomainEvent<D extends IDomainEvent<unknown> = IDomainEvent<unknown>> {
+  public abstract readonly domain: DomainCode;
+  public abstract readonly code: DomainEventCode;
+  public abstract readonly resourceType: AggregateCode;
 
-export abstract class DomainEvent {
   public readonly id: string;
-  public readonly aggregateId: string;
-  public readonly metadata: DomainEventMetadata;
+  public readonly resourceId: string | null;
+  public readonly data: D['data'];
+  public metadata: MessageMetadata;
 
-  constructor(props: DomainEventProps) {
+  constructor(resourceId: string | null, data: D['data'], metadata?: CreateMessageMetadata) {
     this.id = uuidv7();
-    this.aggregateId = props.aggregateId;
+    this.data = data;
+    this.resourceId = resourceId;
 
     this.metadata = {
-      correlationId: props.metadata?.correlationId || uuidv7(),
-      causationId: props.metadata?.causationId,
-      userId: props.metadata?.userId,
-      timestamp: props.metadata?.timestamp || Date.now(),
+      correlationId: metadata?.correlationId || '',
+      causationId: metadata?.causationId,
+      causationType: metadata?.causationType,
+      userId: metadata?.userId,
+      timestamp: Date.now(),
     };
+  }
+
+  public setMetadata(metadata: CreateMessageMetadata): void {
+    this.metadata = {
+      ...this.metadata,
+      ...metadata,
+      correlationId: metadata.correlationId || this.metadata.correlationId,
+    };
+  }
+
+  public deriveMetadata(overrides?: Partial<CreateMessageMetadata>): CreateMessageMetadata {
+    return {
+      correlationId: this.metadata.correlationId, // 뿌리 유지
+      causationId: this.id,
+      causationType: this.code,
+      userId: overrides?.userId ?? this.metadata.userId, // 행위자 유지 (필요 시 변경 가능)
+      ...overrides,
+    };
+  }
+
+  /** Stream Key: "resourceType:resourceId" (예: "user:19a764ab-22db-42f4-a64f-3a9dc992a4d4") */
+  public get streamId(): string {
+    return `${this.resourceType}:${this.resourceId}`;
   }
 }

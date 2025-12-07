@@ -4,19 +4,30 @@ import { err, ok } from 'neverthrow';
 import { SessionService } from '@/domains/session/application/services/session.service';
 import { UserService } from '@/domains/user/application/services/user.service';
 import { TokenService } from '@/infra/security/services/token.service';
-import { BaseCommand, CommandProps } from '@/shared/base';
+import { BaseCommand, ICommand } from '@/shared/base';
+import { CommandCodes } from '@/shared/codes/command.codes';
+import { DomainCodes } from '@/shared/codes/domain.codes';
+import { ResourceTypes } from '@/shared/codes/resource-type.codes';
 import { HandlerResult } from '@/shared/types/handler-result';
 import { AuthTokens } from '@/shared/types/tokens';
 
-type ForceLoginCommandProps = CommandProps<{
+type IForceLoginCommand = ICommand<{
   email: string;
 }>;
 
 export class ForceLoginCommand extends BaseCommand<
-  ForceLoginCommandProps,
+  IForceLoginCommand,
   HandlerResult<ForceLoginCommandHandler>,
   AuthTokens
-> {}
+> {
+  readonly domain = DomainCodes.Devtools;
+  readonly code = CommandCodes.Devtools.ForceLogin;
+  readonly resourceType = ResourceTypes.User;
+
+  constructor(data: IForceLoginCommand['data'], metadata: IForceLoginCommand['metadata']) {
+    super(null, data, metadata);
+  }
+}
 
 @CommandHandler(ForceLoginCommand)
 export class ForceLoginCommandHandler implements ICommandHandler<ForceLoginCommand> {
@@ -26,7 +37,7 @@ export class ForceLoginCommandHandler implements ICommandHandler<ForceLoginComma
     private readonly userService: UserService,
   ) {}
 
-  async execute({ data }: ForceLoginCommandProps) {
+  async execute({ data }: IForceLoginCommand) {
     const userResult = await this.userService.getOneByEmail(data.email);
     if (userResult.isErr()) {
       return err(userResult.error);

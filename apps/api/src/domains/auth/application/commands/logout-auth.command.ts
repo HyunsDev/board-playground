@@ -2,30 +2,39 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { SessionService } from '@/domains/session/application/services/session.service';
 import { TransactionManager } from '@/infra/database/transaction.manager';
-import { TokenService } from '@/infra/security/services/token.service';
-import { BaseCommand, CommandProps } from '@/shared/base';
+import { BaseCommand, ICommand } from '@/shared/base';
+import { CommandCodes } from '@/shared/codes/command.codes';
+import { DomainCodes } from '@/shared/codes/domain.codes';
+import { ResourceTypes } from '@/shared/codes/resource-type.codes';
 import { HandlerResult } from '@/shared/types/handler-result';
 
-type LogoutAuthCommandProps = CommandProps<{
+type ILogoutAuthCommand = ICommand<{
   refreshToken: string;
 }>;
 export class LogoutAuthCommand extends BaseCommand<
-  LogoutAuthCommandProps,
+  ILogoutAuthCommand,
   HandlerResult<LogoutAuthCommandHandler>,
   void
-> {}
+> {
+  readonly domain = DomainCodes.Auth;
+  readonly code = CommandCodes.Auth.Logout;
+  readonly resourceType = ResourceTypes.User;
+
+  constructor(data: ILogoutAuthCommand['data'], metadata: ILogoutAuthCommand['metadata']) {
+    super(null, data, metadata);
+  }
+}
 
 @CommandHandler(LogoutAuthCommand)
 export class LogoutAuthCommandHandler implements ICommandHandler<LogoutAuthCommand> {
   constructor(
     private readonly sessionService: SessionService,
-    private readonly tokenService: TokenService,
     private readonly txManager: TransactionManager,
   ) {}
 
-  async execute({ data }: LogoutAuthCommandProps) {
+  async execute(command: ILogoutAuthCommand) {
     return await this.txManager.run(async () => {
-      return await this.sessionService.close(data.refreshToken);
+      return await this.sessionService.close(command.data.refreshToken);
     });
   }
 }

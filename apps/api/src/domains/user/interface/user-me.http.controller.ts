@@ -11,6 +11,7 @@ import { UpdateUserMeProfileCommand } from '../application/commands/update-user-
 import { UpdateUserMeUsernameCommand } from '../application/commands/update-user-me-username.command';
 import { GetUserMeQuery } from '../application/queries/get-user-me.query';
 
+import { ContextService } from '@/infra/context/context.service';
 import { Auth } from '@/infra/security/decorators/auth.decorator';
 import { Token } from '@/infra/security/decorators/token.decorator';
 import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
@@ -22,13 +23,16 @@ export class UserMeHttpController {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
     private readonly dtoMapper: UserDtoMapper,
+    private readonly contextService: ContextService,
   ) {}
 
   @TsRestHandler(contract.user.me.get)
   @Auth()
   async getMe(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.get, async () => {
-      const result = await this.queryBus.execute(new GetUserMeQuery({ userId: token.sub }));
+      const result = await this.queryBus.execute(
+        new GetUserMeQuery({ userId: token.sub }, this.contextService.getMessageMetadata()),
+      );
       return result.match(
         (user) =>
           apiOk(200, {
@@ -47,11 +51,14 @@ export class UserMeHttpController {
   async updateProfile(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.updateProfile, async ({ body }) => {
       const result = await this.commandBus.execute(
-        new UpdateUserMeProfileCommand({
-          userId: token.sub,
-          nickname: body.nickname,
-          bio: body.bio,
-        }),
+        new UpdateUserMeProfileCommand(
+          {
+            userId: token.sub,
+            nickname: body.nickname,
+            bio: body.bio,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
       );
 
       return result.match(
@@ -74,10 +81,13 @@ export class UserMeHttpController {
   async updateUsername(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.updateUsername, async ({ body }) => {
       const result = await this.commandBus.execute(
-        new UpdateUserMeUsernameCommand({
-          userId: token.sub,
-          newUsername: body.username,
-        }),
+        new UpdateUserMeUsernameCommand(
+          {
+            userId: token.sub,
+            newUsername: body.username,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
       );
 
       return result.match(
@@ -99,9 +109,12 @@ export class UserMeHttpController {
   async deleteMe(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.delete, async () => {
       const result = await this.commandBus.execute(
-        new DeleteUserMeCommand({
-          userId: token.sub,
-        }),
+        new DeleteUserMeCommand(
+          {
+            userId: token.sub,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
       );
 
       return result.match(

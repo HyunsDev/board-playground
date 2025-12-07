@@ -2,13 +2,16 @@ import { IncomingMessage, ServerResponse } from 'http';
 
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CqrsModule } from '@nestjs/cqrs';
 import { LoggerModule } from 'nestjs-pino';
 
+import { CqrsLoggerService } from './cqrs-logger.service';
 import { ContextModule } from '../context/context.module';
 import { ContextService } from '../context/context.service';
 
 @Module({
   imports: [
+    CqrsModule,
     LoggerModule.forRootAsync({
       imports: [ConfigModule, ContextModule],
       inject: [ConfigService, ContextService],
@@ -137,5 +140,6 @@ import { ContextService } from '../context/context.service';
       },
     }),
   ],
+  providers: [CqrsLoggerService],
 })
 export class CoreLoggerModule {}

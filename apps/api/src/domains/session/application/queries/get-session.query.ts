@@ -4,22 +4,33 @@ import { err, ok } from 'neverthrow';
 
 import { SessionEntity } from '../../domain/session.entity';
 import { SessionRepositoryPort } from '../../domain/session.repository.port';
-import { SESSION_REPOSITORY } from '../../session.di-tokens';
+import { SESSION_REPOSITORY } from '../../session.constants';
 
-import { BaseQuery, QueryProps } from '@/shared/base';
+import { BaseQuery, IQuery } from '@/shared/base';
+import { DomainCodes } from '@/shared/codes/domain.codes';
+import { QueryCodes } from '@/shared/codes/query.codes';
+import { QueryResourceTypes } from '@/shared/codes/resource-type.codes';
 import { HandlerResult } from '@/shared/types/handler-result';
 import { matchError } from '@/shared/utils/match-error.utils';
 
-type GetSessionQueryProps = QueryProps<{
+type ISessionQuery = IQuery<{
   userId: string;
   sessionId: string;
 }>;
 
 export class GetSessionQuery extends BaseQuery<
-  GetSessionQueryProps,
+  ISessionQuery,
   HandlerResult<GetSessionQueryHandler>,
   SessionEntity
-> {}
+> {
+  readonly domain = DomainCodes.Session;
+  readonly code = QueryCodes.Session.Get;
+  readonly resourceType = QueryResourceTypes.Session;
+
+  constructor(data: ISessionQuery['data'], metadata: ISessionQuery['metadata']) {
+    super(data.sessionId, data, metadata);
+  }
+}
 
 @QueryHandler(GetSessionQuery)
 export class GetSessionQueryHandler implements IQueryHandler<GetSessionQuery> {
@@ -28,7 +39,7 @@ export class GetSessionQueryHandler implements IQueryHandler<GetSessionQuery> {
     private readonly sessionRepo: SessionRepositoryPort,
   ) {}
 
-  async execute({ data }: GetSessionQueryProps) {
+  async execute({ data }: ISessionQuery) {
     return (await this.sessionRepo.getOneByIdAndUserId(data.sessionId, data.userId)).match(
       (session) => ok(session),
       (error) =>

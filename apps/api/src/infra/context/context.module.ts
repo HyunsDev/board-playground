@@ -11,6 +11,9 @@ import { RequestIdInterceptor } from './interceptors/request-id.interceptor';
 import { DatabaseModule } from '../database/database.module';
 import { DatabaseService } from '../database/database.service';
 import { ErrorLoggingInterceptor } from './interceptors/error-logging.interceptor';
+import { MessageCausationInterceptor } from './interceptors/message-causation.interceptor';
+
+import { TriggerCodes } from '@/shared/codes/trigger.codes';
 
 const interceptors: Provider[] = [
   {
@@ -20,6 +23,10 @@ const interceptors: Provider[] = [
   {
     provide: APP_INTERCEPTOR,
     useClass: ErrorLoggingInterceptor,
+  },
+  {
+    provide: APP_INTERCEPTOR,
+    useClass: MessageCausationInterceptor,
   },
 ];
 
@@ -40,6 +47,9 @@ const interceptors: Provider[] = [
             '0.0.0.0';
           const userAgent = req.get('user-agent') || 'unknown';
           cls.set('client', { ipAddress, userAgent });
+
+          const requestType = TriggerCodes.Infra.HttpRequest;
+          cls.set('triggerType', requestType);
         },
       },
       plugins: [

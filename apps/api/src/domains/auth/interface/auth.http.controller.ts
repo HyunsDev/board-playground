@@ -10,9 +10,10 @@ import { LoginAuthCommand } from '../application/commands/login-auth.command';
 import { LogoutAuthCommand } from '../application/commands/logout-auth.command';
 import { RefreshTokenAuthCommand } from '../application/commands/refresh-token-auth.command';
 import { RegisterAuthCommand } from '../application/commands/register-auth.command';
-import { CheckUsernameAvailableQuery } from '../application/queries/check-username-avilable.query';
+import { CheckUsernameAvailableQuery } from '../application/queries/check-username-available.query';
 
 import { EnvSchema } from '@/core/config/env.validation';
+import { ContextService } from '@/infra/context/context.service';
 import { UnexpectedDomainError } from '@/shared/base';
 import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
 import { IpAddress } from '@/shared/decorators/ip-address.decorator';
@@ -25,6 +26,7 @@ export class AuthHttpController {
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
     private readonly configService: ConfigService<EnvSchema>,
+    private readonly contextService: ContextService,
   ) {}
 
   private getCookieOptions() {
@@ -45,14 +47,17 @@ export class AuthHttpController {
   ) {
     return tsRestHandler(contract.auth.register, async ({ body }) => {
       const result = await this.commandBus.execute(
-        new RegisterAuthCommand({
-          email: body.email,
-          username: body.username,
-          nickname: body.nickname,
-          password: body.password,
-          ipAddress: ipAddress,
-          userAgent: ua,
-        }),
+        new RegisterAuthCommand(
+          {
+            email: body.email,
+            username: body.username,
+            nickname: body.nickname,
+            password: body.password,
+            ipAddress: ipAddress,
+            userAgent: ua,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
       );
 
       return result.match(
@@ -80,12 +85,15 @@ export class AuthHttpController {
   ) {
     return tsRestHandler(contract.auth.login, async ({ body }) => {
       const result = await this.commandBus.execute(
-        new LoginAuthCommand({
-          email: body.email,
-          password: body.password,
-          ipAddress: ipAddress,
-          userAgent: ua,
-        }),
+        new LoginAuthCommand(
+          {
+            email: body.email,
+            password: body.password,
+            ipAddress: ipAddress,
+            userAgent: ua,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
       );
 
       return result.match(
@@ -113,9 +121,12 @@ export class AuthHttpController {
       }
 
       const result = await this.commandBus.execute(
-        new RefreshTokenAuthCommand({
-          refreshToken,
-        }),
+        new RefreshTokenAuthCommand(
+          {
+            refreshToken,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
       );
 
       return result.match(
@@ -154,9 +165,12 @@ export class AuthHttpController {
       }
 
       const result = await this.commandBus.execute(
-        new LogoutAuthCommand({
-          refreshToken: refreshToken,
-        }),
+        new LogoutAuthCommand(
+          {
+            refreshToken: refreshToken,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
       );
 
       void res.clearCookie('refreshToken', this.getCookieOptions());
@@ -171,9 +185,12 @@ export class AuthHttpController {
   async checkUsername() {
     return tsRestHandler(contract.auth.checkUsername, async ({ query }) => {
       const result = await this.queryBus.execute(
-        new CheckUsernameAvailableQuery({
-          username: query.username,
-        }),
+        new CheckUsernameAvailableQuery(
+          {
+            username: query.username,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
       );
 
       return result.match(

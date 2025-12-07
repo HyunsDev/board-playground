@@ -10,7 +10,7 @@ import { RefreshTokenEntity } from './refresh-token.entity';
 import { SessionClosedError, SessionRevokedError } from './session.domain-errors';
 import { InvalidRefreshTokenError } from './token.domain-errors';
 
-import { AggregateRoot, CommandMetadata } from '@/shared/base';
+import { AggregateRoot } from '@/shared/base';
 import { matchError } from '@/shared/utils/match-error.utils';
 
 export interface SessionProps {
@@ -47,7 +47,7 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
     });
   }
 
-  public static create(createProps: CreateSessionProps, metadata?: CommandMetadata): SessionEntity {
+  public static create(createProps: CreateSessionProps): SessionEntity {
     const id = uuidv7();
     const userAgentResult = new UAParser(createProps.userAgent).getResult();
     const props: SessionProps = {
@@ -76,11 +76,9 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
 
     session.addEvent(
       new SessionCreatedEvent({
-        aggregateId: id,
-        userId: props.userId,
         sessionId: id,
+        userId: props.userId,
         sessionName: props.name,
-        metadata,
       }),
     );
 
@@ -159,7 +157,6 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
   public delete(): void {
     this.addEvent(
       new SessionDeletedEvent({
-        aggregateId: this.id,
         userId: this.props.userId,
         sessionId: this.id,
         sessionName: this.props.name,

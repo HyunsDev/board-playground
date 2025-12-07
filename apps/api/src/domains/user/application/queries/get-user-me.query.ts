@@ -4,17 +4,27 @@ import { QueryHandler } from '@nestjs/cqrs';
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constant';
-import { BaseQuery, QueryProps } from '@/shared/base';
+import { BaseQuery, IQuery } from '@/shared/base';
+import { DomainCodes } from '@/shared/codes/domain.codes';
+import { QueryCodes } from '@/shared/codes/query.codes';
 import { HandlerResult } from '@/shared/types/handler-result';
 
-type GetUserMeQueryProps = QueryProps<{
+type IGetUserMeQuery = IQuery<{
   userId: string;
 }>;
 export class GetUserMeQuery extends BaseQuery<
-  GetUserMeQueryProps,
+  IGetUserMeQuery,
   HandlerResult<GetUserMeQueryHandler>,
   UserEntity
-> {}
+> {
+  readonly domain = DomainCodes.User;
+  readonly code = QueryCodes.User.GetMe;
+  readonly resourceType = DomainCodes.User;
+
+  constructor(data: IGetUserMeQuery['data'], metadata: IGetUserMeQuery['metadata']) {
+    super(data.userId, data, metadata);
+  }
+}
 
 @QueryHandler(GetUserMeQuery)
 export class GetUserMeQueryHandler {
@@ -23,7 +33,7 @@ export class GetUserMeQueryHandler {
     private readonly userRepo: UserRepositoryPort,
   ) {}
 
-  async execute({ data }: GetUserMeQueryProps) {
+  async execute({ data }: IGetUserMeQuery) {
     const result = await this.userRepo.getOneById(data.userId);
     return result;
   }

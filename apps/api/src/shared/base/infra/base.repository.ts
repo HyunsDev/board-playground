@@ -56,7 +56,7 @@ export abstract class BaseRepository<
         data: record,
       });
 
-      this.publishEvents(entity);
+      void (await this.publishEvents(entity));
       return ok(this.mapper.toDomain(result));
     } catch (error: any) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -88,7 +88,7 @@ export abstract class BaseRepository<
         data: record,
       });
 
-      this.publishEvents(entity);
+      void (await this.publishEvents(entity));
       return ok(this.mapper.toDomain(result));
     } catch (error: any) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -122,7 +122,7 @@ export abstract class BaseRepository<
       void (await this.delegate.delete({
         where: { id: entity.id },
       }));
-      this.publishEvents(entity);
+      void (await this.publishEvents(entity));
       return ok(undefined);
     } catch (error: any) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
@@ -134,8 +134,8 @@ export abstract class BaseRepository<
     }
   }
 
-  protected publishEvents(entity: Aggregate): void {
+  protected async publishEvents(entity: Aggregate): Promise<void> {
     const events = entity.pullEvents();
-    this.eventDispatcher.addEvents(events);
+    void (await this.eventDispatcher.publishEvents(events));
   }
 }

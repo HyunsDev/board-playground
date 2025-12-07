@@ -8,7 +8,7 @@ import { LoginAuthCommandHandler } from './application/commands/login-auth.comma
 import { LogoutAuthCommandHandler } from './application/commands/logout-auth.command';
 import { RefreshTokenAuthCommandHandler } from './application/commands/refresh-token-auth.command';
 import { RegisterAuthCommandHandler } from './application/commands/register-auth.command';
-import { CheckUsernameAvailableQueryHandler } from './application/queries/check-username-avilable.query';
+import { CheckUsernameAvailableQueryHandler } from './application/queries/check-username-available.query';
 import { AuthHttpController } from './interface/auth.http.controller';
 
 const httpControllers = [AuthHttpController];

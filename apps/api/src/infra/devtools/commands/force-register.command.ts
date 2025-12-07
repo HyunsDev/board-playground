@@ -4,11 +4,14 @@ import { err, ok } from 'neverthrow';
 import { SessionService } from '@/domains/session/application/services/session.service';
 import { UserService } from '@/domains/user/application/services/user.service';
 import { TokenService } from '@/infra/security/services/token.service';
-import { BaseCommand, CommandProps } from '@/shared/base';
+import { BaseCommand, ICommand } from '@/shared/base';
+import { CommandCodes } from '@/shared/codes/command.codes';
+import { DomainCodes } from '@/shared/codes/domain.codes';
+import { ResourceTypes } from '@/shared/codes/resource-type.codes';
 import { HandlerResult } from '@/shared/types/handler-result';
 import { AuthTokens } from '@/shared/types/tokens';
 
-type ForceRegisterCommandProps = CommandProps<{
+type ForceRegisterCommandProps = ICommand<{
   email: string;
   username: string;
   nickname: string;
@@ -18,7 +21,18 @@ export class ForceRegisterCommand extends BaseCommand<
   ForceRegisterCommandProps,
   HandlerResult<ForceRegisterCommandHandler>,
   AuthTokens
-> {}
+> {
+  readonly domain = DomainCodes.Devtools;
+  readonly code = CommandCodes.Devtools.ForceRegister;
+  readonly resourceType = ResourceTypes.User;
+
+  constructor(
+    data: ForceRegisterCommandProps['data'],
+    metadata: ForceRegisterCommandProps['metadata'],
+  ) {
+    super(null, data, metadata);
+  }
+}
 
 @CommandHandler(ForceRegisterCommand)
 export class ForceRegisterCommandHandler implements ICommandHandler<ForceRegisterCommand> {

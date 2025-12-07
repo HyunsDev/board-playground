@@ -7,7 +7,8 @@ import { contract, ApiErrors } from '@workspace/contract';
 
 import { ForceLoginCommand } from './commands/force-login.command';
 import { ForceRegisterCommand } from './commands/force-register.command';
-import { ResetDbCommand } from './commands/reset-db.command';
+import { ResetDBCommand } from './commands/reset-db.command';
+import { ContextService } from '../context/context.service';
 
 import { EnvSchema } from '@/core/config/env.validation';
 import { apiErr, apiOk, InternalServerError } from '@/shared/base';
@@ -19,6 +20,7 @@ export class DevtoolsController {
   constructor(
     private readonly configService: ConfigService<EnvSchema>,
     private readonly commandBus: CommandBus,
+    private readonly contextService: ContextService,
   ) {}
 
   @TsRestHandler(contract.devtools)
@@ -32,11 +34,14 @@ export class DevtoolsController {
     return tsRestHandler(contract.devtools, {
       forceRegister: async ({ body }) => {
         const result = await this.commandBus.execute(
-          new ForceRegisterCommand({
-            email: body.email,
-            username: body.username,
-            nickname: body.nickname,
-          }),
+          new ForceRegisterCommand(
+            {
+              email: body.email,
+              username: body.username,
+              nickname: body.nickname,
+            },
+            this.contextService.getMessageMetadata(),
+          ),
         );
         return result.match(
           (tokens) => apiOk(200, tokens),
@@ -49,9 +54,12 @@ export class DevtoolsController {
       },
       forceLogin: async ({ body }) => {
         const result = await this.commandBus.execute(
-          new ForceLoginCommand({
-            email: body.email,
-          }),
+          new ForceLoginCommand(
+            {
+              email: body.email,
+            },
+            this.contextService.getMessageMetadata(),
+          ),
         );
         return result.match(
           (tokens) => apiOk(200, tokens),
@@ -62,7 +70,9 @@ export class DevtoolsController {
         );
       },
       resetDB: async () => {
-        const result = await this.commandBus.execute(new ResetDbCommand());
+        const result = await this.commandBus.execute(
+          new ResetDBCommand(undefined, this.contextService.getMessageMetadata()),
+        );
         return result.match(
           () => apiOk(200, undefined),
           () => null,

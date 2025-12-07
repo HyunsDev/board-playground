@@ -6,18 +6,28 @@ import { UserNotFoundError } from '@/domains/user/domain/user.domain-errors';
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constant';
-import { BaseQuery, QueryProps } from '@/shared/base';
+import { BaseQuery, IQuery } from '@/shared/base';
+import { DomainCodes } from '@/shared/codes/domain.codes';
+import { QueryCodes } from '@/shared/codes/query.codes';
 import { HandlerResult } from '@/shared/types/handler-result';
 
-type GetUserMeQueryProps = QueryProps<{
+type IGetUserMeQuery = IQuery<{
   userId: string;
 }>;
 
 export class GetUserQuery extends BaseQuery<
-  GetUserMeQueryProps,
+  IGetUserMeQuery,
   HandlerResult<GetUserQueryHandler>,
   UserEntity
-> {}
+> {
+  readonly domain = DomainCodes.User;
+  readonly code = QueryCodes.User.Get;
+  readonly resourceType = DomainCodes.User;
+
+  constructor(data: IGetUserMeQuery['data'], metadata: IGetUserMeQuery['metadata']) {
+    super(data.userId, data, metadata);
+  }
+}
 
 @QueryHandler(GetUserQuery)
 export class GetUserQueryHandler implements IQueryHandler<GetUserQuery> {
@@ -26,7 +36,7 @@ export class GetUserQueryHandler implements IQueryHandler<GetUserQuery> {
     private readonly userRepo: UserRepositoryPort,
   ) {}
 
-  async execute({ data }: GetUserMeQueryProps) {
+  async execute({ data }: IGetUserMeQuery) {
     const user = await this.userRepo.findOneById(data.userId);
     if (!user) return err(new UserNotFoundError());
     return ok(user);

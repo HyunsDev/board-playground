@@ -3,19 +3,30 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
 import { DatabaseService } from '@/infra/database/database.service';
-import { BaseCommand, CommandProps } from '@/shared/base';
+import { BaseCommand, ICommand } from '@/shared/base';
+import { CommandCodes } from '@/shared/codes/command.codes';
+import { DomainCodes } from '@/shared/codes/domain.codes';
+import { ResourceTypes } from '@/shared/codes/resource-type.codes';
 import { HandlerResult } from '@/shared/types/handler-result';
 
-type ResetDbCommandProps = CommandProps<void>;
+type ResetDbCommandProps = ICommand<void>;
 
-export class ResetDbCommand extends BaseCommand<
+export class ResetDBCommand extends BaseCommand<
   ResetDbCommandProps,
-  HandlerResult<ResetDbCommandHandler>,
+  HandlerResult<ResetDBCommandHandler>,
   void
-> {}
+> {
+  readonly domain = DomainCodes.Devtools;
+  readonly code = CommandCodes.Devtools.ResetDB;
+  readonly resourceType = ResourceTypes.User;
 
-@CommandHandler(ResetDbCommand)
-export class ResetDbCommandHandler implements ICommandHandler<ResetDbCommand> {
+  constructor(data: ResetDbCommandProps['data'], metadata: ResetDbCommandProps['metadata']) {
+    super(null, data, metadata);
+  }
+}
+
+@CommandHandler(ResetDBCommand)
+export class ResetDBCommandHandler implements ICommandHandler<ResetDBCommand> {
   constructor(
     private readonly prisma: DatabaseService,
     private readonly logger: Logger,
@@ -33,7 +44,7 @@ export class ResetDbCommandHandler implements ICommandHandler<ResetDbCommand> {
     const targets = tablesToTruncate.map((name) => `"${name}"`).join(', ');
     const query = `TRUNCATE TABLE ${targets} RESTART IDENTITY CASCADE;`;
     void (await this.prisma.$executeRawUnsafe(query));
-    this.logger.debug(`Truncated tables: ${targets}`, ResetDbCommandHandler.name);
+    this.logger.debug(`Truncated tables: ${targets}`, ResetDBCommandHandler.name);
     return ok(undefined);
   }
 }

@@ -10,6 +10,7 @@ import { DeleteSessionCommand } from '../application/commands/delete-session.com
 import { GetSessionQuery } from '../application/queries/get-session.query';
 import { ListSessionsQuery } from '../application/queries/list-sessions.query';
 
+import { ContextService } from '@/infra/context/context.service';
 import { Auth } from '@/infra/security/decorators/auth.decorator';
 import { Token } from '@/infra/security/decorators/token.decorator';
 import { apiErr, apiOk } from '@/shared/base';
@@ -21,6 +22,7 @@ export class SessionHttpController {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
     private readonly sessionDtoMapper: SessionDtoMapper,
+    private readonly contextService: ContextService,
   ) {}
 
   @TsRestHandler(contract.session.get)
@@ -28,7 +30,10 @@ export class SessionHttpController {
   async getSession(@Token() token: TokenPayload) {
     return tsRestHandler(contract.session.get, async ({ params }) => {
       const result = await this.queryBus.execute(
-        new GetSessionQuery({ userId: token.sub, sessionId: params.sessionId }),
+        new GetSessionQuery(
+          { userId: token.sub, sessionId: params.sessionId },
+          this.contextService.getMessageMetadata(),
+        ),
       );
 
       return result.match(
@@ -45,7 +50,9 @@ export class SessionHttpController {
   @Auth()
   async listSessions(@Token() token: TokenPayload) {
     return tsRestHandler(contract.session.list, async () => {
-      const result = await this.queryBus.execute(new ListSessionsQuery({ userId: token.sub }));
+      const result = await this.queryBus.execute(
+        new ListSessionsQuery({ userId: token.sub }, this.contextService.getMessageMetadata()),
+      );
 
       return result.match(
         (sessions) =>
@@ -62,11 +69,14 @@ export class SessionHttpController {
   async deleteSession(@Token() token: TokenPayload) {
     return tsRestHandler(contract.session.delete, async ({ params }) => {
       const result = await this.commandBus.execute(
-        new DeleteSessionCommand({
-          sessionId: params.sessionId,
-          userId: token.sub,
-          currentSessionId: token.sessionId,
-        }),
+        new DeleteSessionCommand(
+          {
+            sessionId: params.sessionId,
+            userId: token.sub,
+            currentSessionId: token.sessionId,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
       );
 
       return result.match(

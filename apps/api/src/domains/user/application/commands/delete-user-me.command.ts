@@ -4,19 +4,29 @@ import { err, ok } from 'neverthrow';
 
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constant';
-import { BaseCommand, CommandProps } from '@/shared/base';
+import { BaseCommand, ICommand } from '@/shared/base';
+import { CommandCodes } from '@/shared/codes/command.codes';
+import { DomainCodes } from '@/shared/codes/domain.codes';
 import { HandlerResult } from '@/shared/types/handler-result';
 import { matchError } from '@/shared/utils/match-error.utils';
 
-type DeleteUserMeCommandProps = CommandProps<{
+type IDeleteUserMeCommand = ICommand<{
   userId: string;
 }>;
 
 export class DeleteUserMeCommand extends BaseCommand<
-  DeleteUserMeCommandProps,
+  IDeleteUserMeCommand,
   HandlerResult<DeleteUserMeCommandHandler>,
   void
-> {}
+> {
+  readonly domain = DomainCodes.User;
+  readonly code = CommandCodes.User.DeleteMe;
+  readonly resourceType = DomainCodes.User;
+
+  constructor(data: IDeleteUserMeCommand['data'], metadata: IDeleteUserMeCommand['metadata']) {
+    super(data.userId, data, metadata);
+  }
+}
 
 @CommandHandler(DeleteUserMeCommand)
 export class DeleteUserMeCommandHandler implements ICommandHandler<DeleteUserMeCommand> {
@@ -25,7 +35,7 @@ export class DeleteUserMeCommandHandler implements ICommandHandler<DeleteUserMeC
     private readonly userRepo: UserRepositoryPort,
   ) {}
 
-  async execute({ data }: DeleteUserMeCommandProps) {
+  async execute({ data }: IDeleteUserMeCommand) {
     const userResult = await this.userRepo.getOneById(data.userId);
     if (userResult.isErr()) {
       return matchError(userResult.error, {

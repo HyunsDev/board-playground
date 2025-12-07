@@ -6,7 +6,7 @@ import { UserCreatedEvent } from './events/user-created.event';
 import { UserPasswordVO } from './user-password.vo';
 import { UserAdminCannotBeDeletedError } from './user.domain-errors';
 
-import { AggregateRoot, CommandMetadata } from '@/shared/base';
+import { AggregateRoot } from '@/shared/base';
 
 export interface UserProps {
   username: string;
@@ -30,7 +30,6 @@ export interface CreateUserProps {
 }
 
 export class UserEntity extends AggregateRoot<UserProps> {
-  private _password: UserPasswordVO;
   private constructor(props: UserProps, id?: string) {
     super({
       id: id || uuidv7(),
@@ -58,7 +57,7 @@ export class UserEntity extends AggregateRoot<UserProps> {
     return this.props.password;
   }
 
-  public static create(createProps: CreateUserProps, metadata?: CommandMetadata): UserEntity {
+  public static create(createProps: CreateUserProps): UserEntity {
     const id = uuidv7();
     const props: UserProps = {
       username: createProps.username,
@@ -78,11 +77,10 @@ export class UserEntity extends AggregateRoot<UserProps> {
 
     user.addEvent(
       new UserCreatedEvent({
-        aggregateId: id,
+        userId: id,
         email: props.email,
         username: props.username,
         nickname: props.nickname,
-        metadata,
       }),
     );
 

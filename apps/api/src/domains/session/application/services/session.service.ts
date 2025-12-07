@@ -7,7 +7,7 @@ import { DevicePlatform } from '@workspace/contract';
 
 import { SessionEntity } from '../../domain/session.entity';
 import { SessionRepositoryPort } from '../../domain/session.repository.port';
-import { SESSION_REPOSITORY } from '../../session.di-tokens';
+import { SESSION_REPOSITORY } from '../../session.constants';
 
 import { EnvSchema } from '@/core/config/env.validation';
 import { TokenService } from '@/infra/security/services/token.service';
