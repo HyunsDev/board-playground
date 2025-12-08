@@ -8,6 +8,9 @@ export const envSchema = z.object({
   JWT_ACCESS_SECRET: z.string().min(32),
   JWT_ACCESS_EXPIRATION_TIME: z.string().default('15m'),
 
+  REFRESH_TOKEN_SECRET: z.string().min(32),
+  REFRESH_TOKEN_EXPIRATION_DAYS: z.number().int().positive().default(30),
+
   COOKIE_SECRET: z.string().min(32),
 });
 

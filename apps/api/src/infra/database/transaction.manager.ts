@@ -1,32 +1,48 @@
 import { Injectable } from '@nestjs/common';
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
+import { err, Result } from 'neverthrow';
 
-import { DatabaseService } from './database.service';
 import { DomainEventDispatcher } from './domain-event.dispatcher';
-import { ContextService } from '../context/context.service';
+
+class TransactionRollbackError<E> extends Error {
+  constructor(public readonly originalError: E) {
+    super('ROLLBACK');
+  }
+}
 
 @Injectable()
 export class TransactionManager {
   constructor(
-    private readonly prisma: DatabaseService,
-    private readonly context: ContextService,
+    private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     private readonly eventDispatcher: DomainEventDispatcher,
   ) {}
 
-  async run<T>(operation: () => Promise<T>): Promise<T> {
-    const result = await this.prisma.$transaction(async (tx) => {
-      this.context.setTx(tx);
-      try {
-        const res = await operation();
-        return res;
-      } catch (error) {
-        this.eventDispatcher.clear();
-        throw error; // 롤백 트리거
-      } finally {
-        this.context.clearTx();
+  async run<Res extends Result<any, any>>(operation: () => Promise<Res>): Promise<Res> {
+    try {
+      const result = await this.txHost.withTransaction(async () => {
+        try {
+          const res = await operation();
+          if (res.isErr()) {
+            throw new TransactionRollbackError(res.error);
+          }
+          return res;
+        } catch (error) {
+          if (error instanceof TransactionRollbackError) {
+            throw error;
+          }
+          this.eventDispatcher.clear();
+          throw error;
+        }
+      });
+      void (await this.eventDispatcher.dispatchAll());
+      return result;
+    } catch (error) {
+      this.eventDispatcher.clear();
+      if (error instanceof TransactionRollbackError) {
+        return err(error.originalError) as Res;
       }
-    });
-
-    await this.eventDispatcher.dispatchAll();
-    return result;
+      throw error;
+    }
   }
 }

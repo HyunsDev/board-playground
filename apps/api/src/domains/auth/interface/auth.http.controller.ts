@@ -1,27 +1,32 @@
 import { Controller, Req, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { CommandBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { Request, Response } from 'express';
 
-import { contract, EXCEPTION } from '@workspace/contract';
+import { contract, ApiErrors } from '@workspace/contract';
 
-import { LoginAuthCommand } from '../application/commands/login-auth/login-auth.command';
-import { LogoutAuthCommand } from '../application/commands/logout-auth/logout-auth.command';
-import { RefreshTokenAuthCommand } from '../application/commands/refresh-token-auth/refresh-token-auth.command';
-import { RegisterAuthCommand } from '../application/commands/register-auth/register-auth.command';
+import { LoginAuthCommand } from '../application/commands/login-auth.command';
+import { LogoutAuthCommand } from '../application/commands/logout-auth.command';
+import { RefreshTokenAuthCommand } from '../application/commands/refresh-token-auth.command';
+import { RegisterAuthCommand } from '../application/commands/register-auth.command';
+import { CheckUsernameAvailableQuery } from '../application/queries/check-username-available.query';
 
 import { EnvSchema } from '@/core/config/env.validation';
-import { InvalidRefreshTokenError } from '@/domains/device/domain/device.errors';
+import { ContextService } from '@/infra/context/context.service';
+import { UnexpectedDomainError } from '@/shared/base';
+import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
 import { IpAddress } from '@/shared/decorators/ip-address.decorator';
 import { UserAgent } from '@/shared/decorators/user-agent.decorator';
-import { mapDomainErrorToResponse } from '@/shared/utils/error-mapper';
+import { matchPublicError } from '@/shared/utils/match-error.utils';
 
 @Controller()
 export class AuthHttpController {
   constructor(
+    private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
     private readonly configService: ConfigService<EnvSchema>,
+    private readonly contextService: ContextService,
   ) {}
 
   private getCookieOptions() {
@@ -42,29 +47,32 @@ export class AuthHttpController {
   ) {
     return tsRestHandler(contract.auth.register, async ({ body }) => {
       const result = await this.commandBus.execute(
-        new RegisterAuthCommand({
-          email: body.email,
-          username: body.username,
-          nickname: body.nickname,
-          password: body.password,
-          ipAddress: ipAddress,
-          userAgent: ua,
-        }),
+        new RegisterAuthCommand(
+          {
+            email: body.email,
+            username: body.username,
+            nickname: body.nickname,
+            password: body.password,
+            ipAddress: ipAddress,
+            userAgent: ua,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
       );
 
       return result.match(
         (data) => {
-          res.cookie('refreshToken', data.refreshToken, this.getCookieOptions());
-          return {
-            status: 200,
-            body: {
-              accessToken: data.accessToken,
-            },
-          } as const;
+          void res.cookie('refreshToken', data.refreshToken, this.getCookieOptions());
+          return apiOk(200, {
+            accessToken: data.accessToken,
+          });
         },
-        (err) => {
-          return mapDomainErrorToResponse(err);
-        },
+        (error) =>
+          matchPublicError(error, {
+            UserEmailAlreadyExists: () => apiErr(ApiErrors.User.EmailAlreadyExists),
+            UserUsernameAlreadyExists: () => apiErr(ApiErrors.User.UsernameAlreadyExists),
+            ValidationError: () => apiErr(ApiErrors.Common.ValidationError),
+          }),
       );
     });
   }
@@ -77,27 +85,28 @@ export class AuthHttpController {
   ) {
     return tsRestHandler(contract.auth.login, async ({ body }) => {
       const result = await this.commandBus.execute(
-        new LoginAuthCommand({
-          email: body.email,
-          password: body.password,
-          ipAddress: ipAddress,
-          userAgent: ua,
-        }),
+        new LoginAuthCommand(
+          {
+            email: body.email,
+            password: body.password,
+            ipAddress: ipAddress,
+            userAgent: ua,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
       );
 
       return result.match(
         (data) => {
-          res.cookie('refreshToken', data.refreshToken, this.getCookieOptions());
-          return {
-            status: 200,
-            body: {
-              accessToken: data.accessToken,
-            },
-          } as const;
+          void res.cookie('refreshToken', data.refreshToken, this.getCookieOptions());
+          return apiOk(200, {
+            accessToken: data.accessToken,
+          });
         },
-        (err) => {
-          return mapDomainErrorToResponse(err);
-        },
+        (error) =>
+          matchPublicError(error, {
+            InvalidCredentials: () => apiErr(ApiErrors.Auth.InvalidCredentials),
+          }),
       );
     });
   }
@@ -108,35 +117,40 @@ export class AuthHttpController {
       const refreshToken = req.cookies?.['refreshToken'];
 
       if (!refreshToken) {
-        return {
-          status: 401,
-          body: EXCEPTION.AUTH.MISSING_TOKEN,
-        } as const;
+        return apiErr(ApiErrors.Auth.RefreshTokenMissing);
       }
 
       const result = await this.commandBus.execute(
-        new RefreshTokenAuthCommand({
-          refreshToken: refreshToken,
-        }),
+        new RefreshTokenAuthCommand(
+          {
+            refreshToken,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
       );
 
       return result.match(
-        ({ accessToken, refreshToken: newRefreshToken }) => {
-          res.cookie('refreshToken', newRefreshToken, this.getCookieOptions());
-          return { status: 200, body: { accessToken } };
-        },
-        (err) => {
-          if (err instanceof InvalidRefreshTokenError) {
-            res.clearCookie('refreshToken', this.getCookieOptions());
-            return {
-              status: 400,
-              body: EXCEPTION.AUTH.INVALID_REFRESH_TOKEN,
-            } as const;
+        (data) => {
+          if (data.status === 'failed') {
+            if (data.error.code === 'TokenReuseDetected') {
+              void res.clearCookie('refreshToken', this.getCookieOptions());
+              return apiErr(ApiErrors.Auth.RefreshTokenReuseDetected);
+            }
+            throw new UnexpectedDomainError(data.error);
           }
 
-          res.clearCookie('refreshToken', this.getCookieOptions());
-          return mapDomainErrorToResponse(err);
+          void res.cookie('refreshToken', data.data.refreshToken, this.getCookieOptions());
+          return apiOk(200, {
+            accessToken: data.data.accessToken,
+          });
         },
+        (error) =>
+          matchPublicError(error, {
+            InvalidRefreshToken: () => apiErr(ApiErrors.Auth.RefreshTokenInvalid),
+            SessionClosed: () => apiErr(ApiErrors.Auth.SessionClosed),
+            SessionRevoked: () => apiErr(ApiErrors.Auth.SessionRevoked),
+            ExpiredToken: () => apiErr(ApiErrors.Auth.SessionExpired),
+          }),
       );
     });
   }
@@ -147,29 +161,50 @@ export class AuthHttpController {
       const refreshToken = req.cookies?.['refreshToken'];
 
       if (!refreshToken) {
-        return {
-          status: 204,
-          body: null,
-        } as const;
+        return apiOk(204, null);
       }
 
       const result = await this.commandBus.execute(
-        new LogoutAuthCommand({
-          refreshToken: refreshToken,
-        }),
+        new LogoutAuthCommand(
+          {
+            refreshToken: refreshToken,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
+      );
+
+      void res.clearCookie('refreshToken', this.getCookieOptions());
+      return result.match(
+        () => apiOk(204, null),
+        () => apiOk(204, null),
+      );
+    });
+  }
+
+  @TsRestHandler(contract.auth.checkUsername)
+  async checkUsername() {
+    return tsRestHandler(contract.auth.checkUsername, async ({ query }) => {
+      const result = await this.queryBus.execute(
+        new CheckUsernameAvailableQuery(
+          {
+            username: query.username,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
       );
 
       return result.match(
-        () => {
-          res.clearCookie('refreshToken', this.getCookieOptions());
-          return {
-            status: 204,
-            body: null,
-          } as const;
-        },
-        (err) => {
-          return mapDomainErrorToResponse(err);
-        },
+        () =>
+          apiOk(200, {
+            available: true,
+          }),
+        (error) =>
+          matchPublicError(error, {
+            UserUsernameAlreadyExists: () =>
+              apiOk(200, {
+                available: false,
+              }),
+          }),
       );
     });
   }

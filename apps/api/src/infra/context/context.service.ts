@@ -1,17 +1,30 @@
 import { Injectable } from '@nestjs/common';
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { ClsService } from 'nestjs-cls';
 
-import { Prisma } from '@workspace/db';
+import { UserRole } from '@workspace/contract';
 
 import { ClientContext, AppContext, TokenContext } from './context.types';
 
+import { CreateMessageMetadata } from '@/shared/base';
+import { CausationCodes } from '@/shared/codes/causation.codes';
+
 @Injectable()
 export class ContextService {
-  constructor(private readonly cls: ClsService<AppContext>) {}
+  constructor(
+    private readonly cls: ClsService<AppContext>,
+    private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+  ) {}
 
   // --- Request ID ---
   getRequestId(): string {
     return this.cls.getId();
+  }
+
+  // --- Trigger Type ---
+  getTriggerType() {
+    return this.cls.get('triggerType');
   }
 
   // --- Token ---
@@ -24,10 +37,10 @@ export class ContextService {
   }
 
   getUserId(): string | undefined {
-    return this.getToken()?.id;
+    return this.getToken()?.sub;
   }
 
-  getUserRole(): string | undefined {
+  getUserRole(): UserRole | undefined {
     return this.getToken()?.role;
   }
 
@@ -41,17 +54,38 @@ export class ContextService {
     return this.cls.get('client');
   }
 
-  // --- tx ---
-  setTx(transaction: Prisma.TransactionClient) {
-    this.cls.set('transaction', transaction);
+  public isTransactionActive(): boolean {
+    return this.txHost.isTransactionActive();
   }
 
-  getTx(): Prisma.TransactionClient | undefined {
-    return this.cls.get('transaction');
+  public getTx() {
+    return this.txHost.tx;
   }
 
-  clearTx() {
-    this.cls.set('transaction', undefined);
+  // --- error code ---
+  setErrorCode(code: string) {
+    this.cls.set('errorCode', code);
+  }
+
+  getErrorCode(): string | undefined {
+    return this.cls.get('errorCode');
+  }
+
+  // --- message metadata ---
+  setMessageMetadata(metadata: CreateMessageMetadata) {
+    this.cls.set('messageMetadata', metadata);
+  }
+
+  getMessageMetadata(): CreateMessageMetadata | undefined {
+    const metadata = this.cls.get('messageMetadata');
+    return (
+      metadata || {
+        causationId: this.getRequestId(),
+        causationType: CausationCodes.Infra.HttpRequest,
+        correlationId: this.getRequestId(),
+        userId: this.getUserId() || null,
+      }
+    );
   }
 
   // --- Run in Context ---

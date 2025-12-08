@@ -1,22 +1,21 @@
 import z from 'zod';
 
-import { UserDtoSchema } from '../user.dto';
-import { USER_ROLE } from '../user.enums';
+import { UserForMeDtoSchema } from '../user.dto';
 
-import { c } from '@/common';
-import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
-import { EXCEPTION } from '@/contracts/exception';
+import { c, toApiErrorResponses } from '@/common';
+import { ACCESS } from '@/common/access';
+import { ApiErrors } from '@/contracts/api-errors';
 
 export const getUserMe = c.query({
   method: 'GET',
   path: '/me',
   responses: {
     200: z.object({
-      user: UserDtoSchema,
+      me: UserForMeDtoSchema,
     }),
   },
   metadata: {
-    roles: [USER_ROLE.USER],
+    access: ACCESS.signedIn,
   },
 });
 
@@ -29,11 +28,11 @@ export const updateUserMeProfile = c.mutation({
   }),
   responses: {
     200: z.object({
-      user: UserDtoSchema,
+      me: UserForMeDtoSchema,
     }),
   },
   metadata: {
-    roles: [USER_ROLE.USER],
+    access: ACCESS.signedIn,
   },
 });
 
@@ -44,12 +43,12 @@ export const updateUserMeAvatar = c.mutation({
   contentType: 'multipart/form-data',
   responses: {
     200: z.object({
-      user: UserDtoSchema,
+      me: UserForMeDtoSchema,
     }),
-    400: toExceptionSchema(EXCEPTION.USER.INVALID_PROFILE_IMAGE),
+    ...toApiErrorResponses([ApiErrors.User.InvalidProfileImage]),
   },
   metadata: {
-    roles: [USER_ROLE.USER],
+    access: ACCESS.signedIn,
   },
 });
 
@@ -61,11 +60,11 @@ export const updateUserMeUsername = c.mutation({
   }),
   responses: {
     200: z.object({
-      user: UserDtoSchema,
+      me: UserForMeDtoSchema,
     }),
   },
   metadata: {
-    roles: [USER_ROLE.USER],
+    access: ACCESS.signedIn,
   },
 });
 
@@ -75,9 +74,10 @@ export const deleteUserMe = c.mutation({
   body: c.noBody(),
   responses: {
     204: c.noBody(),
-    400: toExceptionSchema(EXCEPTION.USER.ADMIN_CANNOT_BE_DELETED),
+    ...toApiErrorResponses([ApiErrors.User.NotFound]),
+    ...toApiErrorResponses([ApiErrors.User.AdminCannotBeDeleted]),
   },
   metadata: {
-    roles: [USER_ROLE.USER],
+    access: ACCESS.signedIn,
   },
 });

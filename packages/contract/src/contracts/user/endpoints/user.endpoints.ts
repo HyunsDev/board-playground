@@ -1,11 +1,10 @@
 import z from 'zod';
 
 import { UserDtoSchema } from '../user.dto';
-import { USER_ROLE } from '../user.enums';
 
-import { c, paginatedQueryOf, paginatedResponseOf } from '@/common';
-import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
-import { EXCEPTION } from '@/contracts/exception';
+import { c, paginatedQueryOf, paginatedResponseOf, toApiErrorResponses } from '@/common';
+import { ACCESS } from '@/common/access';
+import { ApiErrors } from '@/contracts/api-errors';
 
 export const getUser = c.query({
   method: 'GET',
@@ -17,10 +16,10 @@ export const getUser = c.query({
     200: z.object({
       user: UserDtoSchema,
     }),
-    404: toExceptionSchema(EXCEPTION.USER.NOT_FOUND),
+    ...toApiErrorResponses([ApiErrors.User.NotFound]),
   },
   metadata: {
-    roles: [USER_ROLE.ADMIN, USER_ROLE.USER],
+    access: ACCESS.signedIn,
   },
 });
 
@@ -36,6 +35,6 @@ export const searchUsers = c.query({
     200: paginatedResponseOf(UserDtoSchema),
   },
   metadata: {
-    roles: [USER_ROLE.ADMIN, USER_ROLE.USER],
+    access: ACCESS.signedIn,
   },
 });

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { UserDto, UserForAdminDto, UserSummaryDto } from '@workspace/contract';
+import { UserDto, UserForAdminDto, UserForMeDto, UserSummaryDto } from '@workspace/contract';
 
 import { UserEntity } from '../domain/user.entity';
 
@@ -46,6 +46,21 @@ export class UserDtoMapper extends BaseDtoMapper<UserEntity, UserDto> {
       email: props.email,
       updatedAt: props.updatedAt.toISOString(),
       memo: props.memo,
+    };
+  }
+
+  toUserForMeDto(entity: UserEntity): UserForMeDto {
+    const props = entity.getProps();
+    return {
+      id: props.id,
+      username: props.username,
+      nickname: props.nickname,
+      bio: props.bio,
+      avatarUrl: props.avatarUrl,
+      role: props.role,
+      status: props.status,
+      createdAt: props.createdAt.toISOString(),
+      email: props.email,
     };
   }
 }

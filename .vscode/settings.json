@@ -23,6 +23,7 @@
     "loggers": "log",
     "logger": "log",
     "endpoints": "api",
+    "codes": "constant",
 
     "api-e2e": "test",
     "jest-config": "test",

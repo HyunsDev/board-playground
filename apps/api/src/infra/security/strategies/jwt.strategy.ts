@@ -1,11 +1,11 @@
-// libs/auth/src/strategies/jwt.strategy.ts
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config'; // 환경변수 사용 시
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
+import { TokenPayload } from '@workspace/contract';
+
 import { EnvSchema } from '@/core/config/env.validation';
-import { TokenPayload } from '@/shared/types/token-payload.type';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {

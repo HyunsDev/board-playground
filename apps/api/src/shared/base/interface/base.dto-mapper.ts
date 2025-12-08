@@ -2,11 +2,11 @@ import { Paginated, PaginationMeta } from '@workspace/contract';
 
 import { Entity } from '../domain/base.entity';
 
-export interface DtoMapper<DomainEntity extends Entity<any>, Dto> {
+export interface DtoMapper<DomainEntity extends Entity<unknown>, Dto> {
   toDto(entity: DomainEntity): Dto;
 }
 
-export abstract class BaseDtoMapper<DomainEntity extends Entity<any>, Dto>
+export abstract class BaseDtoMapper<DomainEntity extends Entity<unknown>, Dto>
   implements DtoMapper<DomainEntity, Dto>
 {
   abstract toDto(entity: DomainEntity): Dto;

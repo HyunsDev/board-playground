@@ -1,26 +1,34 @@
-import { createHash, randomBytes } from 'crypto';
+import { createHmac, randomBytes } from 'crypto';
 
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
-import { TokenPayload } from '@/shared/types/token-payload.type';
+import { TokenPayload } from '@workspace/contract';
+
+import { EnvSchema } from '@/core/config/env.validation';
 
 @Injectable()
 export class TokenService {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService<EnvSchema>,
+  ) {}
 
   generateAccessToken(payload: TokenPayload) {
     return this.jwtService.sign(payload);
   }
 
   generateRefreshToken() {
-    const refreshToken = randomBytes(64).toString('hex');
-    const hashedRefreshToken = this.hashToken(refreshToken);
-    return { refreshToken, hashedRefreshToken };
+    const refreshToken = randomBytes(32).toString('hex');
+    const refreshTokenHash = this.hashToken(refreshToken);
+    return { refreshToken, refreshTokenHash };
   }
 
   hashToken(token: string) {
-    return createHash('sha256').update(token).digest('hex');
+    return createHmac('sha256', this.configService.get('REFRESH_TOKEN_SECRET'))
+      .update(token)
+      .digest('hex');
   }
 
   validateAccessToken(token: string) {

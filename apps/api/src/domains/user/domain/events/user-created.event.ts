@@ -1,14 +1,20 @@
-import { DomainEvent, DomainEventProps } from '@/shared/base';
+import { BaseDomainEvent, IDomainEvent } from '@/shared/base';
+import { DomainEventCodes } from '@/shared/codes/domain-event.codes';
+import { DomainCodes } from '@/shared/codes/domain.codes';
 
-export class UserCreatedEvent extends DomainEvent {
-  public readonly email: string;
-  public readonly username: string;
-  public readonly nickname: string;
+export type IUserCreatedEvent = IDomainEvent<{
+  userId: string;
+  email: string;
+  username: string;
+  nickname: string;
+}>;
 
-  constructor(props: DomainEventProps & { email: string; username: string; nickname: string }) {
-    super(props);
-    this.email = props.email;
-    this.username = props.username;
-    this.nickname = props.nickname;
+export class UserCreatedEvent extends BaseDomainEvent<IUserCreatedEvent> {
+  public readonly domain = DomainCodes.User;
+  readonly code = DomainEventCodes.User.Created;
+  readonly resourceType = DomainCodes.User;
+
+  constructor(data: IUserCreatedEvent['data'], metadata?: IUserCreatedEvent['metadata']) {
+    super(data.userId, data, metadata);
   }
 }

@@ -3,16 +3,17 @@ import { Injectable, ExecutionContext, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
+import { TokenPayload, tokenPayloadSchema } from '@workspace/contract';
+
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
-import {
-  ExpiredTokenException,
-  InvalidTokenException,
-  MissingTokenException,
-} from '../domain/security.exceptions';
 
 import { ContextService } from '@/infra/context/context.service';
-import { UnauthorizedException } from '@/shared/base';
-import { TokenPayload, tokenPayloadSchema } from '@/shared/types/token-payload.type';
+import { InternalServerErrorException } from '@/shared/base';
+import {
+  ExpiredTokenException,
+  InvalidAccessTokenException,
+  MissingTokenException,
+} from '@/shared/base/error/common.domain-exception';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -60,7 +61,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       }
 
       if (errorName === 'JsonWebTokenError') {
-        throw new InvalidTokenException();
+        throw new InvalidAccessTokenException();
       }
 
       if (errorMessage === 'No auth token') {
@@ -69,7 +70,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
       // 그 외 알 수 없는 인증 에러는 로그를 남기고 Unauthorized 처리
       this.logger.warn(`Unknown Auth Error: ${JSON.stringify(info)}`);
-      throw new UnauthorizedException();
+      throw new InternalServerErrorException();
     }
 
     // 3. Payload 구조 검증 (Zod safeParse)
@@ -78,17 +79,17 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     if (!parsedResult.success) {
       this.logger.error(`Invalid Token Payload: ${parsedResult.error}`);
-      throw new InvalidTokenException();
+      throw new InvalidAccessTokenException();
     }
 
     const validatedPayload: TokenPayload = parsedResult.data;
 
     // 4. ContextService에 토큰 정보 주입
     this.context.setToken({
-      id: validatedPayload.sub,
+      sub: validatedPayload.sub,
       email: validatedPayload.email,
       role: validatedPayload.role,
-      deviceId: validatedPayload.deviceId,
+      sessionId: validatedPayload.sessionId,
     });
 
     // 5. 요청 객체(req.user)에 할당될 값 반환

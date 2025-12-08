@@ -9,6 +9,14 @@
 * 🟢 You can import this file directly.
 */
 
+export const ManagerRole = {
+  MAIN_MANAGER: 'MAIN_MANAGER',
+  SUB_MANAGER: 'SUB_MANAGER'
+} as const
+
+export type ManagerRole = (typeof ManagerRole)[keyof typeof ManagerRole]
+
+
 export const DevicePlatform = {
   WEB: 'WEB',
   OTHER: 'OTHER'
@@ -17,12 +25,13 @@ export const DevicePlatform = {
 export type DevicePlatform = (typeof DevicePlatform)[keyof typeof DevicePlatform]
 
 
-export const ManagerRole = {
-  MAIN_MANAGER: 'MAIN_MANAGER',
-  SUB_MANAGER: 'SUB_MANAGER'
+export const SessionStatus = {
+  ACTIVE: 'ACTIVE',
+  CLOSED: 'CLOSED',
+  REVOKED: 'REVOKED'
 } as const
 
-export type ManagerRole = (typeof ManagerRole)[keyof typeof ManagerRole]
+export type SessionStatus = (typeof SessionStatus)[keyof typeof SessionStatus]
 
 
 export const UserRole = {

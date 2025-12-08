@@ -1,30 +1,38 @@
-// libs/common/src/events/domain-event.dispatcher.ts
 import { Injectable, Scope } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventBus } from '@nestjs/cqrs';
 
-import { DomainEvent } from '../../shared/base';
+import { BaseDomainEvent, CreateMessageMetadata } from '../../shared/base';
+import { ContextService } from '../context/context.service';
 
-@Injectable({ scope: Scope.REQUEST }) // [중요] 요청마다 별도의 버퍼 생성
+@Injectable({ scope: Scope.REQUEST })
 export class DomainEventDispatcher {
-  private events: DomainEvent[] = [];
+  private events: BaseDomainEvent[] = [];
 
-  constructor(private readonly eventEmitter: EventEmitter2) {}
+  constructor(
+    private readonly eventBus: EventBus, // [변경] EventBus 주입
+    private readonly contextService: ContextService,
+  ) {}
 
-  // 1. 이벤트를 바로 발행하지 않고 버퍼에 저장
-  addEvents(events: DomainEvent[]): void {
-    this.events.push(...events);
+  async publishEvents(events: BaseDomainEvent[]): Promise<void> {
+    this.events = [...this.events, ...events];
+    if (!this.contextService.isTransactionActive()) {
+      void (await this.dispatchAll());
+    }
   }
 
-  // 2. 버퍼 비우기 (롤백 시 사용)
   clear(): void {
     this.events = [];
   }
 
-  // 3. 모아둔 이벤트 실제 발행 (커밋 후 사용)
   async dispatchAll(): Promise<void> {
-    await Promise.all(
-      this.events.map((event) => this.eventEmitter.emitAsync(event.constructor.name, event)),
-    );
+    const metadata: CreateMessageMetadata = this.contextService.getMessageMetadata();
+
+    // 메타데이터 주입
+    this.events.forEach((event) => event.setMetadata(metadata));
+
+    // 한 번에 발행
+    void this.eventBus.publishAll(this.events);
+
     this.clear();
   }
 }

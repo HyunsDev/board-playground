@@ -1,40 +1,53 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
-import { Prisma, PrismaClient, User } from '@workspace/db';
+import { PrismaClient, User } from '@workspace/db';
 
 import { UserMapper } from './user.mapper';
-import { UserEntity } from '../domain/user.entity';
 import {
   UserEmailAlreadyExistsError,
   UserNotFoundError,
   UserUsernameAlreadyExistsError,
-} from '../domain/user.errors';
+} from '../domain/user.domain-errors';
+import { UserEntity } from '../domain/user.entity';
 import { UserRepositoryPort } from '../domain/user.repository.port';
 
 import { ContextService } from '@/infra/context/context.service';
 import { DatabaseService } from '@/infra/database/database.service';
 import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
+import { PaginatedResult } from '@/shared/base';
 import { BaseRepository } from '@/shared/base/infra/base.repository';
 import { DomainResult } from '@/shared/types/result.type';
+import { matchError } from '@/shared/utils/match-error.utils';
 
 @Injectable()
 export class UserRepository extends BaseRepository<UserEntity, User> implements UserRepositoryPort {
   constructor(
     protected readonly prisma: DatabaseService,
+    protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly context: ContextService,
     protected readonly mapper: UserMapper,
     protected readonly eventDispatcher: DomainEventDispatcher,
   ) {
-    super(prisma, context, mapper, eventDispatcher, new Logger(UserRepository.name));
+    super(prisma, txHost, mapper, eventDispatcher, new Logger(UserRepository.name));
   }
 
   protected get delegate(): PrismaClient['user'] {
-    return (this.client as PrismaClient).user;
+    return this.client.user;
   }
 
-  async getById(id: string): Promise<DomainResult<UserEntity, UserNotFoundError>> {
+  async getOneById(id: string): Promise<DomainResult<UserEntity, UserNotFoundError>> {
     const result = await this.findOneById(id);
+    if (!result) {
+      return err(new UserNotFoundError());
+    }
+    return ok(result);
+  }
+
+  async getOneByEmail(email: string): Promise<DomainResult<UserEntity, UserNotFoundError>> {
+    const result = await this.findOneByEmail(email);
     if (!result) {
       return err(new UserNotFoundError());
     }
@@ -55,66 +68,92 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     return record ? this.mapper.toDomain(record) : null;
   }
 
+  async usernameExists(username: string): Promise<boolean> {
+    const count = await this.delegate.count({
+      where: { username },
+    });
+    return count > 0;
+  }
+
+  async searchUsers(params: {
+    nickname?: string;
+    page: number;
+    take: number;
+  }): Promise<PaginatedResult<UserEntity>> {
+    const whereClause = params.nickname
+      ? {
+          nickname: {
+            contains: params.nickname,
+            mode: 'insensitive' as const,
+          },
+        }
+      : {};
+
+    const users = await this.delegate.findMany({
+      where: whereClause,
+      skip: (params.page - 1) * params.take,
+      take: params.take,
+      orderBy: { createdAt: 'desc' },
+    });
+    const total = await this.delegate.count({ where: whereClause });
+
+    return {
+      items: this.mapper.toDomainMany(users),
+      meta: {
+        total,
+        page: params.page,
+        take: params.take,
+        totalPages: Math.ceil(total / params.take),
+      },
+    };
+  }
+
   async count(): Promise<number> {
     return this.delegate.count();
   }
 
   async create(user: UserEntity) {
-    const record = this.mapper.toPersistence(user);
-
-    try {
-      const result = await this.delegate.create({
-        data: record,
-      });
-
-      this.publishEvents(user);
-      return ok(this.mapper.toDomain(result));
-    } catch (error: unknown) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          const targets = error.meta?.target as string[];
-          if (targets.includes('email')) {
-            return err(new UserEmailAlreadyExistsError());
-          }
-          if (targets.includes('username')) {
-            return err(new UserUsernameAlreadyExistsError());
-          }
-        }
-      }
-
-      throw error;
-    }
+    return (await this.createEntity(user)).match(
+      (user) => ok(user),
+      (error) =>
+        matchError(error, {
+          EntityConflict: ({ details: { conflicts } }) => {
+            if (conflicts.some((conflict) => conflict.field === 'email')) {
+              return err(new UserEmailAlreadyExistsError());
+            }
+            if (conflicts.some((conflict) => conflict.field === 'username')) {
+              return err(new UserUsernameAlreadyExistsError());
+            }
+          },
+        }),
+    );
   }
 
   async update(user: UserEntity) {
-    const record = this.mapper.toPersistence(user);
+    return (await this.updateEntity(user)).match(
+      (user) => ok(user),
+      (error) =>
+        matchError(error, {
+          EntityNotFound: () => err(new UserNotFoundError()),
+          EntityConflict: ({ details: { conflicts } }) => {
+            if (conflicts.some((conflict) => conflict.field === 'email')) {
+              return err(new UserEmailAlreadyExistsError());
+            }
+            if (conflicts.some((conflict) => conflict.field === 'username')) {
+              return err(new UserUsernameAlreadyExistsError());
+            }
+          },
+        }),
+    );
+  }
 
-    try {
-      const result = await this.delegate.update({
-        where: { id: user.id },
-        data: record,
-      });
-
-      this.publishEvents(user);
-      return ok(this.mapper.toDomain(result));
-    } catch (error: unknown) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          return err(new UserNotFoundError());
-        }
-        if (error.code === 'P2002') {
-          const targets = error.meta?.target as string[];
-
-          if (targets.includes('email')) {
-            return err(new UserEmailAlreadyExistsError());
-          }
-          if (targets.includes('username')) {
-            return err(new UserUsernameAlreadyExistsError());
-          }
-        }
-      }
-
-      throw error;
-    }
+  async delete(user: UserEntity) {
+    return (await this.deleteEntity(user)).match(
+      () => ok(undefined),
+      (error) =>
+        matchError(error, {
+          EntityNotFound: () => err(new UserNotFoundError()),
+        }),
+    );
   }
 }

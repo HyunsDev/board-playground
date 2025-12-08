@@ -2,9 +2,9 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 
 import { envSchema } from './config/env.validation';
+import { DomainExceptionFilter } from './filters/domain-exception.filter';
 import { GlobalExceptionsFilter } from './filters/global-exception.filter';
 import { RequestValidationFilter } from './filters/request-validation.filter';
 
@@ -16,6 +16,10 @@ const filters = [
   {
     provide: APP_FILTER,
     useClass: RequestValidationFilter,
+  },
+  {
+    provide: APP_FILTER,
+    useClass: DomainExceptionFilter,
   },
 ];
 
@@ -33,10 +37,9 @@ const filters = [
         return parsed.data;
       },
     }),
-    EventEmitterModule.forRoot(),
     CqrsModule,
   ],
   providers: [...filters],
-  exports: [CqrsModule, EventEmitterModule],
+  exports: [CqrsModule],
 })
 export class CoreModule {}

@@ -1,14 +1,14 @@
-import { ExceptionRecord } from '@/common';
+import { ApiErrorRecord } from '@/common';
 
-export const POST_EXCEPTION = {
-  NOT_FOUND: {
+export const PostApiErrors = {
+  NotFound: {
     status: 404,
     code: 'POST_NOT_FOUND',
     message: '요청한 게시글을 찾을 수 없습니다',
   },
-  PERMISSION_DENIED: {
+  PermissionDenied: {
     status: 403,
     code: 'POST_PERMISSION_DENIED',
     message: '게시글에 대한 권한이 없습니다',
   },
-} as const satisfies ExceptionRecord;
+} as const satisfies ApiErrorRecord;

@@ -1,49 +1,128 @@
 import { Controller } from '@nestjs/common';
-import { QueryBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { contract, EXCEPTION } from '@workspace/contract';
+import { contract, ApiErrors } from '@workspace/contract';
+import { TokenPayload } from '@workspace/contract';
 
 import { UserDtoMapper } from './user.dto-mapper';
-import { GetUserMeQuery } from '../application/queries/get-user-me/get-user-me.query';
-import { UserNotFoundError } from '../domain/user.errors';
+import { DeleteUserMeCommand } from '../application/commands/delete-user-me.command';
+import { UpdateUserMeProfileCommand } from '../application/commands/update-user-me-profile.command';
+import { UpdateUserMeUsernameCommand } from '../application/commands/update-user-me-username.command';
+import { GetUserMeQuery } from '../application/queries/get-user-me.query';
 
+import { ContextService } from '@/infra/context/context.service';
 import { Auth } from '@/infra/security/decorators/auth.decorator';
 import { Token } from '@/infra/security/decorators/token.decorator';
-import { TokenPayload } from '@/shared/types/token-payload.type';
-import { mapDomainErrorToResponse } from '@/shared/utils/error-mapper';
+import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
+import { matchPublicError } from '@/shared/utils/match-error.utils';
 
 @Controller()
 export class UserMeHttpController {
   constructor(
+    private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
     private readonly dtoMapper: UserDtoMapper,
+    private readonly contextService: ContextService,
   ) {}
 
   @TsRestHandler(contract.user.me.get)
   @Auth()
   async getMe(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.get, async () => {
-      const result = await this.queryBus.execute(new GetUserMeQuery(token.sub));
+      const result = await this.queryBus.execute(
+        new GetUserMeQuery({ userId: token.sub }, this.contextService.getMessageMetadata()),
+      );
       return result.match(
         (user) =>
-          ({
-            status: 200,
-            body: {
-              user: this.dtoMapper.toDto(user),
-            },
-          }) as const,
-        (error) => {
-          if (error instanceof UserNotFoundError) {
-            return {
-              status: 404,
-              body: {
-                ...EXCEPTION.USER.NOT_FOUND,
-              },
-            } as const;
-          }
-          return mapDomainErrorToResponse(error);
-        },
+          apiOk(200, {
+            me: this.dtoMapper.toUserForMeDto(user),
+          }),
+        (error) =>
+          matchPublicError(error, {
+            UserNotFound: () => apiErr(ApiErrors.User.NotFound),
+          }),
+      );
+    });
+  }
+
+  @TsRestHandler(contract.user.me.updateProfile)
+  @Auth()
+  async updateProfile(@Token() token: TokenPayload) {
+    return tsRestHandler(contract.user.me.updateProfile, async ({ body }) => {
+      const result = await this.commandBus.execute(
+        new UpdateUserMeProfileCommand(
+          {
+            userId: token.sub,
+            nickname: body.nickname,
+            bio: body.bio,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
+      );
+
+      return result.match(
+        (user) =>
+          apiOk(200, {
+            me: this.dtoMapper.toUserForMeDto(user),
+          }),
+        (error) =>
+          matchPublicError(error, {
+            UserNotFound: () => apiErr(ApiErrors.User.NotFound),
+            UserEmailAlreadyExists: () => apiErr(ApiErrors.User.EmailAlreadyExists),
+            UserUsernameAlreadyExists: () => apiErr(ApiErrors.User.UsernameAlreadyExists),
+          }),
+      );
+    });
+  }
+
+  @TsRestHandler(contract.user.me.updateUsername)
+  @Auth()
+  async updateUsername(@Token() token: TokenPayload) {
+    return tsRestHandler(contract.user.me.updateUsername, async ({ body }) => {
+      const result = await this.commandBus.execute(
+        new UpdateUserMeUsernameCommand(
+          {
+            userId: token.sub,
+            newUsername: body.username,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
+      );
+
+      return result.match(
+        (user) =>
+          apiOk(200, {
+            me: this.dtoMapper.toUserForMeDto(user),
+          }),
+        (error) =>
+          matchPublicError(error, {
+            UserNotFound: () => apiErr(ApiErrors.User.NotFound),
+            UserUsernameAlreadyExists: () => apiErr(ApiErrors.User.UsernameAlreadyExists),
+          }),
+      );
+    });
+  }
+
+  @TsRestHandler(contract.user.me.delete)
+  @Auth()
+  async deleteMe(@Token() token: TokenPayload) {
+    return tsRestHandler(contract.user.me.delete, async () => {
+      const result = await this.commandBus.execute(
+        new DeleteUserMeCommand(
+          {
+            userId: token.sub,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
+      );
+
+      return result.match(
+        () => apiOk(200, {}),
+        (error) =>
+          matchPublicError(error, {
+            UserNotFound: () => apiErr(ApiErrors.User.NotFound),
+          }),
       );
     });
   }

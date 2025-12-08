@@ -51,9 +51,10 @@ export const AnyNull = runtime.objectEnumValues.instances.AnyNull
 export const ModelName = {
   Board: 'Board',
   Comment: 'Comment',
-  Device: 'Device',
   Manager: 'Manager',
   Post: 'Post',
+  RefreshToken: 'RefreshToken',
+  Session: 'Session',
   User: 'User'
 } as const
 
@@ -101,25 +102,6 @@ export const CommentScalarFieldEnum = {
 export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
 
 
-export const DeviceScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  hashedRefreshToken: 'hashedRefreshToken',
-  name: 'name',
-  userAgent: 'userAgent',
-  os: 'os',
-  device: 'device',
-  browser: 'browser',
-  platform: 'platform',
-  ipAddress: 'ipAddress',
-  lastRefreshedAt: 'lastRefreshedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type DeviceScalarFieldEnum = (typeof DeviceScalarFieldEnum)[keyof typeof DeviceScalarFieldEnum]
-
-
 export const ManagerScalarFieldEnum = {
   id: 'id',
   boardId: 'boardId',
@@ -144,6 +126,39 @@ export const PostScalarFieldEnum = {
 export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
 
 
+export const RefreshTokenScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  isUsed: 'isUsed',
+  expiresAt: 'expiresAt',
+  sessionId: 'sessionId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum]
+
+
+export const SessionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  status: 'status',
+  userAgent: 'userAgent',
+  os: 'os',
+  device: 'device',
+  browser: 'browser',
+  platform: 'platform',
+  ipAddress: 'ipAddress',
+  lastRefreshedAt: 'lastRefreshedAt',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+} as const
+
+export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   username: 'username',
@@ -154,7 +169,7 @@ export const UserScalarFieldEnum = {
   role: 'role',
   status: 'status',
   memo: 'memo',
-  password: 'password',
+  hashedPassword: 'hashedPassword',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

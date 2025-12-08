@@ -1,26 +1,30 @@
 import z from 'zod';
 
-import { UserDtoSchema } from '../user';
+import { ApiErrors } from '../api-errors';
 
-import { c } from '@/common';
+import { c, toApiErrorResponses } from '@/common';
+import { ACCESS } from '@/common/access';
 
-export const createUserForDev = c.mutation({
+export const forceRegisterForDev = c.mutation({
   method: 'POST',
-  path: '/_devtools/create-user',
+  path: '/_devtools/force-register',
   body: z.object({
     email: z.string().email(),
-    password: z.string().min(6).max(100),
     username: z.string().min(3).max(30),
     nickname: z.string().min(2).max(20),
   }),
   responses: {
     200: z.object({
-      user: UserDtoSchema,
-      tokens: z.object({
-        accessToken: z.string(),
-        refreshToken: z.string(),
-      }),
+      refreshToken: z.string(),
+      accessToken: z.string(),
     }),
+    ...toApiErrorResponses([
+      ApiErrors.User.EmailAlreadyExists,
+      ApiErrors.User.UsernameAlreadyExists,
+    ]),
+  },
+  metadata: {
+    access: ACCESS.public,
   },
 });
 
@@ -28,12 +32,27 @@ export const forceLoginForDev = c.mutation({
   method: 'POST',
   path: '/_devtools/force-login',
   body: z.object({
-    userId: z.string().uuid(),
+    email: z.string().email(),
   }),
   responses: {
     200: z.object({
       refreshToken: z.string(),
       accessToken: z.string(),
     }),
+  },
+  metadata: {
+    access: ACCESS.public,
+  },
+});
+
+export const resetDBForDev = c.mutation({
+  method: 'POST',
+  path: '/_devtools/reset-db',
+  body: c.noBody(),
+  responses: {
+    200: z.void(),
+  },
+  metadata: {
+    access: ACCESS.public,
   },
 });

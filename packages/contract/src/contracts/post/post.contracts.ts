@@ -1,9 +1,8 @@
-import { createPost, deletePost, getPost, queryPosts, updatePost } from './endpoints';
+import { createPost, deletePost, getPost, queryPosts, updatePost } from './post.endpoints';
 
 import { c } from '@/common';
 
-
-export const postContracts = c.router({
+export const postContract = c.router({
   get: getPost,
   query: queryPosts,
   create: createPost,

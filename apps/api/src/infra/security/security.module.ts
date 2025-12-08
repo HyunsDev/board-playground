@@ -5,13 +5,12 @@ import { PassportModule } from '@nestjs/passport';
 
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
-import { PasswordService } from './services/password.service';
 import { TokenService } from './services/token.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 import { EnvSchema } from '@/core/config/env.validation';
 
-const services: Provider[] = [PasswordService, TokenService];
+const services: Provider[] = [TokenService];
 const guards: Provider[] = [JwtAuthGuard, RolesGuard];
 const strategies: Provider[] = [JwtStrategy];
 

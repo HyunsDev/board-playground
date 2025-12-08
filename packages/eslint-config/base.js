@@ -35,9 +35,15 @@ export const config = [
     },
     rules: {
       'unused-imports/no-unused-imports': 'error',
-      'unused-imports/no-unused-vars': [
+      'unused-imports/no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
         'warn',
-        { vars: 'all', varsIgnorePattern: '^_', argsIgnorePattern: '^_' },
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          argsIgnorePattern: '^_',
+          ignoreRestSiblings: true, // 구조분해할당에서 남은 변수 무시 옵션 (유용함)
+        },
       ],
       'import/order': [
         'warn',

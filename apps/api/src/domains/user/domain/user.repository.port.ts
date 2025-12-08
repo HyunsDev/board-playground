@@ -2,23 +2,24 @@ import {
   UserEmailAlreadyExistsError,
   UserNotFoundError,
   UserUsernameAlreadyExistsError,
-} from './user.errors';
+} from './user.domain-errors';
 import { UserEntity } from '../domain/user.entity';
 
-import { ConflictError, NotFoundError, RepositoryPort } from '@/shared/base';
+import { PaginatedResult, RepositoryPort } from '@/shared/base';
 import { DomainResult } from '@/shared/types/result.type';
 
 export interface UserRepositoryPort extends RepositoryPort<UserEntity> {
-  getById(id: string): Promise<DomainResult<UserEntity, UserNotFoundError>>;
+  getOneById(id: string): Promise<DomainResult<UserEntity, UserNotFoundError>>;
+  getOneByEmail(email: string): Promise<DomainResult<UserEntity, UserNotFoundError>>;
   findOneByEmail(email: string): Promise<UserEntity | null>;
   findOneByUsername(username: string): Promise<UserEntity | null>;
+  usernameExists(username: string): Promise<boolean>;
+  searchUsers(params: {
+    nickname?: string;
+    page: number;
+    take: number;
+  }): Promise<PaginatedResult<UserEntity>>;
   count(): Promise<number>;
-
-  /**
-   * @deprecated Use {@link create} or {@link update} instead.
-   */
-  save(entity: UserEntity): Promise<DomainResult<UserEntity, ConflictError | NotFoundError>>;
-
   create(
     user: UserEntity,
   ): Promise<
@@ -33,4 +34,5 @@ export interface UserRepositoryPort extends RepositoryPort<UserEntity> {
       UserNotFoundError | UserEmailAlreadyExistsError | UserUsernameAlreadyExistsError
     >
   >;
+  delete(user: UserEntity): Promise<DomainResult<void, UserNotFoundError>>;
 }

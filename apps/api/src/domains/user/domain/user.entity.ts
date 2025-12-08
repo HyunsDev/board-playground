@@ -3,9 +3,11 @@ import { v7 as uuidv7 } from 'uuid';
 import { USER_ROLE, USER_STATUS, UserRole, UserStatus } from '@workspace/contract';
 
 import { UserCreatedEvent } from './events/user-created.event';
-import { UserAdminCannotBeDeletedError } from './user.errors';
+import { UserUsernameChangedEvent } from './events/user-username-changed.event';
+import { UserPasswordVO } from './user-password.vo';
+import { UserAdminCannotBeDeletedError } from './user.domain-errors';
 
-import { AggregateRoot, CommandMetadata } from '@/shared/base';
+import { AggregateRoot } from '@/shared/base';
 
 export interface UserProps {
   username: string;
@@ -16,7 +18,7 @@ export interface UserProps {
   role: UserRole;
   status: UserStatus;
   memo: string | null;
-  password: string;
+  password: UserPasswordVO | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,7 +27,7 @@ export interface CreateUserProps {
   username: string;
   nickname: string;
   email: string;
-  password: string;
+  password: UserPasswordVO | null;
 }
 
 export class UserEntity extends AggregateRoot<UserProps> {
@@ -52,11 +54,11 @@ export class UserEntity extends AggregateRoot<UserProps> {
     return this.props.role;
   }
 
-  get password(): string {
+  get password(): UserPasswordVO {
     return this.props.password;
   }
 
-  public static create(createProps: CreateUserProps, metadata?: CommandMetadata): UserEntity {
+  public static create(createProps: CreateUserProps): UserEntity {
     const id = uuidv7();
     const props: UserProps = {
       username: createProps.username,
@@ -76,32 +78,37 @@ export class UserEntity extends AggregateRoot<UserProps> {
 
     user.addEvent(
       new UserCreatedEvent({
-        aggregateId: id,
+        userId: id,
         email: props.email,
         username: props.username,
         nickname: props.nickname,
-        metadata,
       }),
     );
 
     return user;
   }
 
-  public updateProfile(data: {
-    nickname?: string;
-    bio?: string | null;
-    avatarUrl?: string | null;
-  }) {
+  public updateProfile(data: { nickname?: string; bio?: string | null }) {
     if (data.nickname !== undefined) {
       this.props.nickname = data.nickname;
     }
     if (data.bio !== undefined) {
       this.props.bio = data.bio;
     }
-    if (data.avatarUrl !== undefined) {
-      this.props.avatarUrl = data.avatarUrl;
-    }
     this.props.updatedAt = new Date();
+  }
+
+  public updateUsername(username: string) {
+    this.props.username = username;
+    this.props.updatedAt = new Date();
+
+    this.addEvent(
+      new UserUsernameChangedEvent({
+        userId: this.id,
+        oldUsername: this.props.username,
+        newUsername: username,
+      }),
+    );
   }
 
   public validateDelete(): void {

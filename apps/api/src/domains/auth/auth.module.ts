@@ -2,12 +2,13 @@ import { Logger, Module, Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
 import { SecurityModule } from '../../infra/security/security.module';
-import { DeviceModule } from '../device/device.module';
+import { SessionModule } from '../session/session.module';
 import { UserModule } from '../user/user.module';
-import { LoginAuthCommandHandler } from './application/commands/login-auth/login-auth.command';
-import { LogoutAuthCommandHandler } from './application/commands/logout-auth/logout-auth.command';
-import { RefreshTokenAuthCommandHandler } from './application/commands/refresh-token-auth/refresh-token-auth.command';
-import { RegisterAuthCommandHandler } from './application/commands/register-auth/register-auth.command';
+import { LoginAuthCommandHandler } from './application/commands/login-auth.command';
+import { LogoutAuthCommandHandler } from './application/commands/logout-auth.command';
+import { RefreshTokenAuthCommandHandler } from './application/commands/refresh-token-auth.command';
+import { RegisterAuthCommandHandler } from './application/commands/register-auth.command';
+import { CheckUsernameAvailableQueryHandler } from './application/queries/check-username-available.query';
 import { AuthHttpController } from './interface/auth.http.controller';
 
 const httpControllers = [AuthHttpController];
@@ -17,13 +18,13 @@ const commandHandlers: Provider[] = [
   LogoutAuthCommandHandler,
   RefreshTokenAuthCommandHandler,
 ];
-const queryHandlers: Provider[] = [];
+const queryHandlers: Provider[] = [CheckUsernameAvailableQueryHandler];
 const services: Provider[] = [];
 const mappers: Provider[] = [];
 const repositories: Provider[] = [];
 
 @Module({
-  imports: [CqrsModule, UserModule, SecurityModule, DeviceModule],
+  imports: [CqrsModule, UserModule, SecurityModule, SessionModule],
   providers: [
     Logger,
     ...commandHandlers,

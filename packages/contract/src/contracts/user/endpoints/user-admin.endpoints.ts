@@ -1,11 +1,11 @@
 import z from 'zod';
 
 import { UserForAdminDtoSchema } from '../user.dto';
-import { USER_ROLE, UserRole, UserStatus } from '../user.enums';
+import { UserRole, UserStatus } from '../user.enums';
 
-import { c, paginatedQueryOf, paginatedResponseOf } from '@/common';
-import { toExceptionSchema } from '@/common/utils/toExceptionSchema';
-import { EXCEPTION } from '@/contracts/exception';
+import { c, paginatedQueryOf, paginatedResponseOf, toApiErrorResponses } from '@/common';
+import { ACCESS } from '@/common/access';
+import { ApiErrors } from '@/contracts/api-errors';
 
 export const getUserForAdmin = c.query({
   method: 'GET',
@@ -15,10 +15,10 @@ export const getUserForAdmin = c.query({
     200: z.object({
       user: UserForAdminDtoSchema,
     }),
-    404: toExceptionSchema(EXCEPTION.USER.NOT_FOUND),
+    ...toApiErrorResponses([ApiErrors.User.NotFound]),
   },
   metadata: {
-    roles: [USER_ROLE.ADMIN],
+    access: ACCESS.admin,
   },
 });
 
@@ -39,14 +39,16 @@ export const queryUsersForAdmin = c.query({
     200: paginatedResponseOf(UserForAdminDtoSchema),
   },
   metadata: {
-    roles: [USER_ROLE.ADMIN],
+    access: ACCESS.admin,
   },
 });
 
 export const updateUserForAdmin = c.mutation({
   method: 'PATCH',
   path: '/admin/users/:userId',
-  pathParams: c.type<{ userId: string }>(),
+  pathParams: z.object({
+    userId: z.string().uuid(),
+  }),
   body: z.object({
     nickname: z.string().min(2).max(20).optional(),
     username: z.string().min(3).max(30).optional(),
@@ -59,9 +61,10 @@ export const updateUserForAdmin = c.mutation({
     200: z.object({
       user: UserForAdminDtoSchema,
     }),
+    ...toApiErrorResponses([ApiErrors.User.NotFound]),
   },
   metadata: {
-    roles: [USER_ROLE.ADMIN],
+    access: ACCESS.admin,
   },
 });
 
@@ -69,13 +72,14 @@ export const deleteUserForAdmin = c.mutation({
   method: 'DELETE',
   path: '/admin/users/:userId',
   pathParams: z.object({
-    userId: z.string(),
+    userId: z.string().uuid(),
   }),
   body: c.noBody(),
   responses: {
     204: c.noBody(),
+    ...toApiErrorResponses([ApiErrors.User.NotFound]),
   },
   metadata: {
-    roles: [USER_ROLE.ADMIN],
+    access: ACCESS.admin,
   },
 });

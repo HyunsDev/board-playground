@@ -1,15 +1,13 @@
-import z from 'zod';
-
+import { ApiErrors } from './api-errors';
 import { authContract } from './auth/auth.contract';
 import { boardContract } from './board/board.contracts';
 import { commentContract } from './comment/comment.contracts';
-import { deviceContract } from './device/device.contract';
 import { DevtoolsContract } from './devtools/devtools.contract';
-import { EXCEPTION } from './exception';
-import { postContracts } from './post/post.contracts';
+import { postContract } from './post/post.contracts';
+import { sessionContract } from './session/session.contract';
 import { userContract, userForAdminContract } from './user/user.contracts';
 
-import { c, toExceptionSchema } from '@/common';
+import { c, toApiErrorResponses } from '@/common';
 
 export const contract = c.router(
   {
@@ -17,29 +15,21 @@ export const contract = c.router(
       user: userForAdminContract,
     }),
     auth: authContract,
-    device: deviceContract,
+    session: sessionContract,
     user: userContract,
     board: boardContract,
-    post: postContracts,
+    post: postContract,
     comment: commentContract,
 
     devtools: DevtoolsContract,
   },
   {
-    commonResponse: {
-      401: z.union([
-        toExceptionSchema(EXCEPTION.AUTH.EXPIRED_TOKEN),
-        toExceptionSchema(EXCEPTION.AUTH.INVALID_TOKEN),
-        toExceptionSchema(EXCEPTION.AUTH.MISSING_TOKEN),
-        toExceptionSchema(EXCEPTION.AUTH.UNAUTHORIZED),
+    commonResponses: {
+      ...toApiErrorResponses([
+        ApiErrors.Auth.AccessTokenExpired,
+        ApiErrors.Auth.AccessTokenInvalid,
+        ApiErrors.Auth.AccessTokenMissing,
       ]),
     },
-    baseHeaders: z.object({
-      'x-device-id': z.string().uuid().optional(),
-      authorization: z
-        .string()
-        .regex(/^Bearer\s.+$/)
-        .optional(),
-    }),
   },
 );

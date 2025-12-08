@@ -3,21 +3,21 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
-  HttpStatus,
   Logger,
   LogLevel,
 } from '@nestjs/common';
+import { ErrorHttpStatusCode } from '@nestjs/common/utils/http-error-by-code.util';
 import { HttpAdapterHost } from '@nestjs/core';
 
-import { ApiErrorResponse, EXCEPTION } from '@workspace/contract';
+import { ApiError, ApiErrors } from '@workspace/contract';
 
 import { ContextService } from '@/infra/context/context.service';
-import { BusinessException, DomainError } from '@/shared/base';
+import { DomainError } from '@/shared/base';
 
 interface ErrorInfo {
   level?: LogLevel;
 
-  status: number;
+  status: ErrorHttpStatusCode;
   code: string;
   message: string;
   details?: any;
@@ -44,7 +44,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
     this.logError(errorInfo, exception, requestId);
 
     // 3. 최종 응답 객체 생성
-    const responseBody: ApiErrorResponse = {
+    const responseBody: ApiError = {
       code: errorInfo.code,
       status: errorInfo.status,
       message: errorInfo.message,
@@ -52,7 +52,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
     };
 
     // 4. 응답 전송
-    httpAdapter.reply(ctx.getResponse(), responseBody, errorInfo.status as number);
+    void httpAdapter.reply(ctx.getResponse(), responseBody, errorInfo.status as number);
   }
 
   /**
@@ -60,26 +60,13 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
    */
   private resolveError(exception: unknown): ErrorInfo {
     if (exception instanceof DomainError) {
-      return this.handleUnhandledDomainException(exception);
-    }
-    if (exception instanceof BusinessException) {
-      return this.handleBusinessException(exception);
+      return this.handleUnhandledDomainException(exception as DomainError);
     }
     if (exception instanceof HttpException) {
       return this.handleHttpException(exception);
     }
     return this.handleUnknownError();
   }
-
-  private handleBusinessException(exception: BusinessException): ErrorInfo {
-    return {
-      status: exception.getStatus(),
-      code: exception.code,
-      message: exception.message,
-      details: exception.details,
-    };
-  }
-
   /**
    * NestJS 표준 HTTP 예외 처리
    */
@@ -103,9 +90,10 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
   private handleUnhandledDomainException(exception: DomainError): ErrorInfo {
     return {
       level: 'warn',
-      status: HttpStatus.BAD_REQUEST,
-      code: exception.code,
-      message: exception.message,
+      ...ApiErrors.Common.UnhandledDomainError,
+      details: {
+        originalErrorName: exception.code,
+      },
     };
   }
 
@@ -115,9 +103,9 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
   private handleUnknownError(): ErrorInfo {
     return {
       level: 'error',
-      status: EXCEPTION.COMMON.INTERNAL_SERVER_ERROR.status,
-      code: EXCEPTION.COMMON.INTERNAL_SERVER_ERROR.code,
-      message: EXCEPTION.COMMON.INTERNAL_SERVER_ERROR.message,
+      status: ApiErrors.Common.InternalServerError.status,
+      code: ApiErrors.Common.InternalServerError.code,
+      message: ApiErrors.Common.InternalServerError.message,
       details: undefined, // 보안을 위해 상세 내용 숨김
     };
   }

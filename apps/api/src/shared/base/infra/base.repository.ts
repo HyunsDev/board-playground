@@ -1,15 +1,20 @@
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
-import { Prisma } from '@workspace/db';
+import { Prisma } from '@workspace/db'; // 또는 @prisma/client
 
 import { Mapper } from './base.mapper';
 import { LoggerPort } from '../../logger/logger.port';
 import { DomainResult } from '../../types/result.type';
 import { AggregateRoot } from '../domain/base.aggregate-root';
 import { RepositoryPort } from '../domain/base.repository.port';
-import { ConflictError, ConflictErrorDetail, NotFoundError } from '../error/common.domain-errors';
+import {
+  EntityConflictInfo,
+  EntityConflictError,
+  EntityNotFoundError,
+} from '../error/common.domain-errors';
 
-import { ContextService } from '@/infra/context/context.service';
 import { DatabaseService } from '@/infra/database/database.service';
 import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
 
@@ -22,15 +27,17 @@ export abstract class BaseRepository<
 
   constructor(
     protected readonly prisma: DatabaseService,
-    protected readonly context: ContextService,
+    protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly mapper: Mapper<Aggregate, DbModel>,
     protected readonly eventDispatcher: DomainEventDispatcher,
     protected readonly logger: LoggerPort,
   ) {}
 
   protected get client(): Prisma.TransactionClient | DatabaseService {
-    const tx = this.context.getTx();
-    return tx ?? this.prisma;
+    if (this.txHost.isTransactionActive()) {
+      return this.txHost.tx; // 트랜잭션 클라이언트 사용
+    }
+    return this.prisma; // 평상시(Non-Tx) 클라이언트 사용
   }
 
   async findOneById(id: string): Promise<Aggregate | null> {
@@ -40,68 +47,95 @@ export abstract class BaseRepository<
     return record ? this.mapper.toDomain(record) : null;
   }
 
-  async save(entity: Aggregate): Promise<DomainResult<Aggregate, ConflictError | NotFoundError>> {
+  protected async createEntity(
+    entity: Aggregate,
+  ): Promise<DomainResult<Aggregate, EntityConflictError>> {
     const record = this.mapper.toPersistence(entity);
-
     try {
-      // upsert를 사용하여 ID가 있으면 update, 없으면 create 수행
-      const result = await this.delegate.upsert({
-        where: { id: entity.id },
-        create: record,
-        update: record,
+      const result = await this.delegate.create({
+        data: record,
       });
 
-      this.publishEvents(entity);
+      void (await this.publishEvents(entity));
       return ok(this.mapper.toDomain(result));
     } catch (error: any) {
-      // 비즈니스 에러만 잡아서 리턴, 기술적 에러는 throw
-      const businessError = this.handleKnownPrismaErrors(error, record);
-      if (businessError) return err(businessError);
-
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          const targets = (error.meta?.target as string[]) || [];
+          const details: EntityConflictInfo[] = targets.map((field) => ({
+            field,
+            value: record[field],
+          }));
+          return err(
+            new EntityConflictError({
+              entityName: record.constructor.name,
+              conflicts: details,
+            }),
+          );
+        }
+      }
       throw error;
     }
   }
 
-  async delete(entity: Aggregate): Promise<DomainResult<void, NotFoundError>> {
+  protected async updateEntity(
+    entity: Aggregate,
+  ): Promise<DomainResult<Aggregate, EntityNotFoundError | EntityConflictError>> {
+    const record = this.mapper.toPersistence(entity);
     try {
-      await this.delegate.delete({
+      const result = await this.delegate.update({
         where: { id: entity.id },
+        data: record,
       });
-      this.publishEvents(entity);
+
+      void (await this.publishEvents(entity));
+      return ok(this.mapper.toDomain(result));
+    } catch (error: any) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          const targets = (error.meta?.target as string[]) || [];
+          const details: EntityConflictInfo[] = targets.map((field) => ({
+            field,
+            value: record[field],
+          }));
+          return err(
+            new EntityConflictError({ entityName: record.constructor.name, conflicts: details }),
+          );
+        }
+        if (error.code === 'P2025') {
+          return err(
+            new EntityNotFoundError({
+              entityName: record.constructor.name,
+              entityId: record.id,
+            }),
+          );
+        }
+      }
+      throw error;
+    }
+  }
+
+  protected async deleteEntity(
+    entity: Aggregate,
+  ): Promise<DomainResult<void, EntityNotFoundError>> {
+    try {
+      void (await this.delegate.delete({
+        where: { id: entity.id },
+      }));
+      void (await this.publishEvents(entity));
       return ok(undefined);
     } catch (error: any) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-        return err(new NotFoundError(`Record with id ${entity.id} not found`));
+        return err(
+          new EntityNotFoundError({ entityName: entity.constructor.name, entityId: entity.id }),
+        );
       }
       throw error;
     }
   }
 
-  protected publishEvents(entity: Aggregate): void {
+  protected async publishEvents(entity: Aggregate): Promise<void> {
     const events = entity.pullEvents();
-    this.eventDispatcher.addEvents(events);
-  }
-
-  private handleKnownPrismaErrors(
-    error: any,
-    record: any, // 에러 발생 시 입력값 추적용
-  ): ConflictError | NotFoundError {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      // P2002: Unique constraint failed (중복 발생)
-      if (error.code === 'P2002') {
-        const targets = (error.meta?.target as string[]) || [];
-        const details: ConflictErrorDetail[] = targets.map((field) => ({
-          field,
-          value: record[field],
-        }));
-        return new ConflictError('Conflict detected', 'DB_CONFLICT', details);
-      }
-
-      // P2025: Record to update/delete not found
-      if (error.code === 'P2025') {
-        return new NotFoundError('Record not found');
-      }
-    }
-    throw error;
+    void (await this.eventDispatcher.publishEvents(events));
   }
 }

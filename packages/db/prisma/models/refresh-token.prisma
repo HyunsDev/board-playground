@@ -1,0 +1,12 @@
+model RefreshToken {
+    id        String   @id @default(uuid())
+    token     String   @unique
+    isUsed    Boolean  @default(false)
+    expiresAt DateTime
+
+    sessionId String
+    session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}

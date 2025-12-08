@@ -1,21 +1,34 @@
 import { Logger, Module, Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { GetUserHttpController } from './application/queries/get-user/get-user.http.controller';
-import { GetUserQueryHandler } from './application/queries/get-user/get-user.query';
-import { GetUserMeQueryHandler } from './application/queries/get-user-me/get-user-me.query';
-import { CreateUserService } from './application/services/create-user.service';
+import { DeleteUserMeCommandHandler } from './application/commands/delete-user-me.command';
+import { UpdateUserMeProfileCommandHandler } from './application/commands/update-user-me-profile.command';
+import { UpdateUserMeUsernameCommandHandler } from './application/commands/update-user-me-username.command';
+import { GetUserForAdminQueryHandler } from './application/queries/get-user-for-admin.query';
+import { GetUserMeQueryHandler } from './application/queries/get-user-me.query';
+import { GetUserQueryHandler } from './application/queries/get-user.query';
+import { SearchUserQueryHandler } from './application/queries/search-user.query';
+import { UserService } from './application/services/user.service';
 import { UserMapper } from './infra/user.mapper';
 import { UserRepository } from './infra/user.repository';
+import { UserAdminHttpController } from './interface/user-admin.http.controller';
 import { UserMeHttpController } from './interface/user-me.http.controller';
 import { UserDtoMapper } from './interface/user.dto-mapper';
-import { UserFacade } from './interface/user.facade';
+import { UserHttpController } from './interface/user.http.controller';
 import { USER_REPOSITORY } from './user.constant';
 
-const httpControllers = [GetUserHttpController, UserMeHttpController];
+const httpControllers = [UserHttpController, UserMeHttpController, UserAdminHttpController];
 const commandHandlers: Provider[] = [];
-const queryHandlers: Provider[] = [GetUserQueryHandler, GetUserMeQueryHandler];
-const services: Provider[] = [CreateUserService];
+const queryHandlers: Provider[] = [
+  GetUserQueryHandler,
+  GetUserMeQueryHandler,
+  SearchUserQueryHandler,
+  GetUserForAdminQueryHandler,
+  UpdateUserMeProfileCommandHandler,
+  UpdateUserMeUsernameCommandHandler,
+  DeleteUserMeCommandHandler,
+];
+const services: Provider[] = [UserService];
 const mappers: Provider[] = [UserMapper, UserDtoMapper];
 const repositories: Provider[] = [
   {
@@ -23,7 +36,6 @@ const repositories: Provider[] = [
     useClass: UserRepository,
   },
 ];
-const facades: Provider[] = [UserFacade];
 
 @Module({
   imports: [CqrsModule],
@@ -34,9 +46,8 @@ const facades: Provider[] = [UserFacade];
     ...services,
     ...mappers,
     ...repositories,
-    ...facades,
   ],
   controllers: [...httpControllers],
-  exports: [UserFacade],
+  exports: [UserService],
 })
 export class UserModule {}
