@@ -21,4 +21,5 @@ export const UserQueryCodes = {
 
 export const UserEventCodes = {
   Created: `user.event.created`,
+  UsernameChanged: `user.event.username-changed`,
 } as const satisfies DomainEventCodeRecord;

@@ -3,6 +3,7 @@ import { v7 as uuidv7 } from 'uuid';
 import { USER_ROLE, USER_STATUS, UserRole, UserStatus } from '@workspace/contract';
 
 import { UserCreatedEvent } from './events/user-created.event';
+import { UserUsernameChangedEvent } from './events/user-username-changed.event';
 import { UserPasswordVO } from './user-password.vo';
 import { UserAdminCannotBeDeletedError } from './user.domain-errors';
 
@@ -100,6 +101,14 @@ export class UserEntity extends AggregateRoot<UserProps> {
   public updateUsername(username: string) {
     this.props.username = username;
     this.props.updatedAt = new Date();
+
+    this.addEvent(
+      new UserUsernameChangedEvent({
+        userId: this.id,
+        oldUsername: this.props.username,
+        newUsername: username,
+      }),
+    );
   }
 
   public validateDelete(): void {
