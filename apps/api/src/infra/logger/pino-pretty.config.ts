@@ -26,19 +26,20 @@ export const createDevLoggerStream = async (): Promise<DestinationStream> => {
       const context = log.context ? chalk.yellow(`[${log.context}]`) : '';
       const reqId = formatId(log.reqId as string);
 
+      // CQRS Event Bus Log
       if (log.event) {
         const event = log.event as BaseDomainEvent;
 
-        const ctxText = chalk.gray('EVENT'.padStart(6));
+        const msgType = chalk.gray('EVENT'.padStart(6));
         const eventName = chalk.blue(msg);
-        return `${reqId} ${ctxText} ${eventName}(${event.code})`;
+        return `${reqId} ${msgType} ${eventName}(${event.code})`;
       }
 
-      // Case 1: CQRS Command/Query Bus Log
+      // CQRS Command/Query Bus Log
       if (log.duration) {
         const duration = formatDuration(log.duration);
         const err = log.err as DomainError | Error | undefined;
-        const ctxText =
+        const msgType =
           log.context === 'CommandBus'
             ? chalk.gray('CMD'.padStart(6))
             : log.context === 'QueryBus'
@@ -55,15 +56,15 @@ export const createDevLoggerStream = async (): Promise<DestinationStream> => {
           } else if (err instanceof Error) {
             errorCode = chalk.gray(`[${err.name || 'Error'}]`);
           }
-          return `${reqId} ${ctxText} ${cmdName} ${symbol} ${errorCode} ${duration}`;
+          return `${reqId} ${msgType} ${cmdName} ${symbol} ${errorCode} ${duration}`;
         }
 
         const symbol = chalk.green('(OK)');
         const cmdName = chalk.green(msg);
-        return `${reqId} ${ctxText} ${cmdName} ${symbol} ${duration}`;
+        return `${reqId} ${msgType} ${cmdName} ${symbol} ${duration}`;
       }
 
-      // Case 2: HTTP Request Log
+      // HTTP Request Log
       if (log.httpMethod && log.responseTime) {
         const methodRaw = (log.httpMethod as string).padStart(6, ' ');
         let methodColor = chalk.white;
