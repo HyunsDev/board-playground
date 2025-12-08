@@ -4,6 +4,7 @@ import { v7 as uuidv7 } from 'uuid';
 
 import { DevicePlatform, SESSION_STATUS, SessionStatus } from '@workspace/contract';
 
+import { RefreshTokenReuseDetectedEvent } from './events/refresh-token-reuse-detected.event';
 import { SessionCreatedEvent } from './events/session-created.event';
 import { SessionDeletedEvent } from './events/session-deleted.event';
 import { RefreshTokenEntity } from './refresh-token.entity';
@@ -115,6 +116,13 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
     if (tokenUseResult.isErr()) {
       return matchError(tokenUseResult.error, {
         TokenReuseDetected: (e) => {
+          this.addEvent(
+            new RefreshTokenReuseDetectedEvent({
+              userId: this.props.userId,
+              sessionId: this.id,
+              reusedTokenId: currentToken.id,
+            }),
+          );
           this.revoke();
           return ok({
             status: 'failed' as const,
