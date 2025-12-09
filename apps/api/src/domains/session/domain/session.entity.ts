@@ -27,6 +27,8 @@ export interface SessionProps {
   expiresAt: Date;
   createdAt: Date;
   updatedAt: Date;
+  closedAt: Date | null;
+  revokedAt: Date | null;
   status: SessionStatus;
   refreshTokens: RefreshTokenEntity[]; // 전체 토큰이 아닌 관련된 토큰만 Lazy Load
 }
@@ -65,6 +67,8 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
       expiresAt: createProps.expiresAt, // 30 days
       createdAt: new Date(),
       updatedAt: new Date(),
+      closedAt: null,
+      revokedAt: null,
       refreshTokens: [
         RefreshTokenEntity.create({
           token: createProps.refreshTokenHash,
@@ -159,6 +163,7 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
     }
 
     this.props.status = SESSION_STATUS.CLOSED;
+    this.props.closedAt = new Date();
     return ok(null);
   }
 
@@ -174,6 +179,7 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
 
   private revoke(): void {
     this.props.status = SESSION_STATUS.REVOKED;
+    this.props.revokedAt = new Date();
   }
 
   static reconstruct(props: SessionProps, id: string): SessionEntity {

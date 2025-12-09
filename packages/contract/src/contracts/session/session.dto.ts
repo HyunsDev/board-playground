@@ -1,10 +1,10 @@
-import z from 'zod';
+import { z } from 'zod';
 
 import { DevicePlatform, SessionStatus } from './session.enums';
 
 import { ID } from '@/common';
 
-export const SessionDtoSchema = z.object({
+export const SessionBaseDtoSchema = z.object({
   id: ID,
   userId: ID,
   name: z.string(),
@@ -21,6 +21,21 @@ export const SessionDtoSchema = z.object({
   createdAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: 'Invalid date format',
   }),
+  closedAt: z
+    .string()
+    .refine((date) => !isNaN(Date.parse(date)), {
+      message: 'Invalid date format',
+    })
+    .nullable(),
+  revokedAt: z
+    .string()
+    .refine((date) => !isNaN(Date.parse(date)), {
+      message: 'Invalid date format',
+    })
+    .nullable(),
   status: SessionStatus,
 });
+export type SessionBaseDto = z.infer<typeof SessionBaseDtoSchema>;
+
+export const SessionDtoSchema = SessionBaseDtoSchema;
 export type SessionDto = z.infer<typeof SessionDtoSchema>;

@@ -1,17 +1,21 @@
 model Session {
-    id              String         @id @default(uuid())
-    name            String
-    status          SessionStatus  @default(ACTIVE)
-    userAgent       String
-    os              String         @default("OTHER")
-    device          String         @default("OTHER")
-    browser         String         @default("OTHER")
-    platform        DevicePlatform @default(OTHER)
-    ipAddress       String?
-    lastRefreshedAt DateTime       @default(now())
+    id        String         @id @default(uuid())
+    name      String
+    status    SessionStatus  @default(ACTIVE)
+    userAgent String
+    os        String         @default("OTHER")
+    device    String         @default("OTHER")
+    browser   String         @default("OTHER")
+    platform  DevicePlatform @default(OTHER)
+    ipAddress String?
+
+    lastRefreshedAt DateTime @default(now())
     expiresAt       DateTime
-    createdAt       DateTime       @default(now())
-    updatedAt       DateTime       @updatedAt
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    closedAt  DateTime?
+    revokedAt DateTime?
 
     userId String
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
