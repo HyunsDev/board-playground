@@ -14,4 +14,13 @@ export const envSchema = z.object({
   COOKIE_SECRET: z.string().min(32),
 });
 
-export type EnvSchema = z.infer<typeof envSchema>;
+export type Env = z.infer<typeof envSchema>;
+
+export function validateEnv(config: Record<string, unknown>): Env {
+  const parsedEnv = envSchema.safeParse(config);
+  if (!parsedEnv.success) {
+    console.error('❌ Invalid environment variables:', parsedEnv.error.format());
+    throw new Error('Invalid environment variables');
+  }
+  return parsedEnv.data;
+}

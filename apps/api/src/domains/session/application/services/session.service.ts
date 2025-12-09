@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import dayjs from 'dayjs';
 import { err, ok } from 'neverthrow';
 
@@ -9,7 +8,7 @@ import { SessionEntity } from '../../domain/session.entity';
 import { SessionRepositoryPort } from '../../domain/session.repository.port';
 import { SESSION_REPOSITORY } from '../../session.constants';
 
-import { EnvSchema } from '@/core/config/env.validation';
+import { TokenConfig, tokenConfig } from '@/infra/config/configs/token.config';
 import { TokenService } from '@/infra/security/services/token.service';
 import { UnexpectedDomainErrorException } from '@/shared/base';
 import { matchError } from '@/shared/utils/match-error.utils';
@@ -20,7 +19,8 @@ export class SessionService {
     @Inject(SESSION_REPOSITORY)
     private readonly sessionRepo: SessionRepositoryPort,
     private readonly tokenService: TokenService,
-    private readonly configService: ConfigService<EnvSchema>,
+    @Inject(tokenConfig.KEY)
+    private readonly tokenConfig: TokenConfig,
   ) {}
 
   async getOneById(id: string) {
@@ -28,9 +28,7 @@ export class SessionService {
   }
 
   getExpiresAtDate(): Date {
-    const expirationDays = this.configService.get<number>(
-      'REFRESH_TOKEN_EXPIRATION_DAYS',
-    ) as number;
+    const expirationDays = this.tokenConfig.refreshTokenExpirationDays;
     return dayjs().add(expirationDays, 'day').toDate();
   }
 

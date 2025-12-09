@@ -1,9 +1,7 @@
 import { Global, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { envSchema } from './config/env.validation';
 import { DomainExceptionFilter } from './filters/domain-exception.filter';
 import { GlobalExceptionsFilter } from './filters/global-exception.filter';
 import { RequestValidationFilter } from './filters/request-validation.filter';
@@ -25,20 +23,7 @@ const filters = [
 
 @Global()
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      validate: (env) => {
-        const parsed = envSchema.safeParse(env);
-        if (!parsed.success) {
-          console.error(parsed.error.format());
-          throw new Error('❌ Invalid environment variables');
-        }
-        return parsed.data;
-      },
-    }),
-    CqrsModule,
-  ],
+  imports: [CqrsModule],
   providers: [...filters],
   exports: [CqrsModule],
 })

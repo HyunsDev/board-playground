@@ -1,5 +1,4 @@
 import { Global, Module, Provider } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, JwtSignOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
@@ -7,8 +6,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { TokenService } from './services/token.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
-
-import { EnvSchema } from '@/core/config/env.validation';
+import { TokenConfig, tokenConfig } from '../config/configs/token.config';
 
 const services: Provider[] = [TokenService];
 const guards: Provider[] = [JwtAuthGuard, RolesGuard];
@@ -19,12 +17,11 @@ const strategies: Provider[] = [JwtStrategy];
   imports: [
     PassportModule,
     JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (config: ConfigService<EnvSchema>) => ({
-        secret: config.get('JWT_ACCESS_SECRET'),
+      inject: [tokenConfig.KEY],
+      useFactory: (tokenConfig: TokenConfig) => ({
+        secret: tokenConfig.jwtAccessSecret,
         signOptions: {
-          expiresIn: config.get('JWT_ACCESS_EXPIRATION_TIME'),
+          expiresIn: tokenConfig.jwtAccessExpirationTime,
         } as JwtSignOptions,
       }),
     }),

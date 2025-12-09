@@ -1,5 +1,4 @@
 import { Controller, Req, Res } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { Request, Response } from 'express';
@@ -12,7 +11,6 @@ import { RefreshTokenAuthCommand } from '../application/commands/refresh-token-a
 import { RegisterAuthCommand } from '../application/commands/register-auth.command';
 import { CheckUsernameAvailableQuery } from '../application/queries/check-username-available.query';
 
-import { EnvSchema } from '@/core/config/env.validation';
 import { ContextService } from '@/infra/context/context.service';
 import { UnexpectedDomainError } from '@/shared/base';
 import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
@@ -26,7 +24,6 @@ export class AuthHttpController {
   constructor(
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
-    private readonly configService: ConfigService<EnvSchema>,
     private readonly contextService: ContextService,
   ) {}
 

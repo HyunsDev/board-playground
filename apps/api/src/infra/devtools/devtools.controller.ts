@@ -1,5 +1,4 @@
-import { Controller } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Controller, Inject } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
@@ -8,9 +7,9 @@ import { contract, ApiErrors } from '@workspace/contract';
 import { ForceLoginCommand } from './commands/force-login.command';
 import { ForceRegisterCommand } from './commands/force-register.command';
 import { ResetDBCommand } from './commands/reset-db.command';
+import { ExecutionConfig, executionConfig } from '../config/configs/execution.config';
 import { ContextService } from '../context/context.service';
 
-import { EnvSchema } from '@/core/config/env.validation';
 import { apiErr, apiOk, InternalServerError } from '@/shared/base';
 import { DomainException } from '@/shared/base/error/base.domain-exception';
 import { matchPublicError } from '@/shared/utils/match-error.utils';
@@ -18,14 +17,15 @@ import { matchPublicError } from '@/shared/utils/match-error.utils';
 @Controller()
 export class DevtoolsController {
   constructor(
-    private readonly configService: ConfigService<EnvSchema>,
+    @Inject(executionConfig.KEY)
+    private readonly executionConfig: ExecutionConfig,
     private readonly commandBus: CommandBus,
     private readonly contextService: ContextService,
   ) {}
 
   @TsRestHandler(contract.devtools)
   async handler() {
-    if (this.configService.get('NODE_ENV') !== 'development') {
+    if (this.executionConfig.nodeEnv !== 'development') {
       throw new DomainException(
         new InternalServerError('Devtools are only available in development environment'),
       );

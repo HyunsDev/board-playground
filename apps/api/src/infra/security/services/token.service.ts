@@ -1,18 +1,18 @@
 import { createHmac, randomBytes } from 'crypto';
 
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { TokenPayload } from '@workspace/contract';
 
-import { EnvSchema } from '@/core/config/env.validation';
+import { TokenConfig, tokenConfig } from '@/infra/config/configs/token.config';
 
 @Injectable()
 export class TokenService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService<EnvSchema>,
+    @Inject(tokenConfig.KEY)
+    private readonly tokenConfig: TokenConfig,
   ) {}
 
   generateAccessToken(payload: TokenPayload) {
@@ -26,9 +26,7 @@ export class TokenService {
   }
 
   hashToken(token: string) {
-    return createHmac('sha256', this.configService.get('REFRESH_TOKEN_SECRET') as string)
-      .update(token)
-      .digest('hex');
+    return createHmac('sha256', this.tokenConfig.refreshTokenSecret).update(token).digest('hex');
   }
 
   validateAccessToken(token: string) {

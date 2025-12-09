@@ -4,6 +4,7 @@ import { CoreModule } from './core/core.module';
 import { AuthModule } from './domains/auth/auth.module';
 import { SessionModule } from './domains/session/session.module';
 import { UserModule } from './domains/user/user.module';
+import { AppConfigModule } from './infra/config/app-config.module';
 import { ContextModule } from './infra/context/context.module';
 import { DatabaseModule } from './infra/database/database.module';
 import { DevtoolsModule } from './infra/devtools/devtools.module';
@@ -12,6 +13,7 @@ import { SecurityModule } from './infra/security/security.module';
 
 @Module({
   imports: [
+    AppConfigModule,
     CoreModule,
     ContextModule,
     DatabaseModule,
