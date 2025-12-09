@@ -268,7 +268,7 @@ export class CqrsLoggingService implements OnModuleInit, OnApplicationBootstrap 
                 error: result.error,
                 ...metadata,
               } satisfies EventHandledLogData,
-              `[Handle] ${eventName}`,
+              `${eventName}`,
             );
           } else {
             serviceThis.logger.log(
@@ -280,7 +280,7 @@ export class CqrsLoggingService implements OnModuleInit, OnApplicationBootstrap 
                 isError: false,
                 ...metadata,
               } satisfies EventHandledLogData,
-              `[Handle] ${eventName}`,
+              `${eventName}`,
             );
           }
           return result;
@@ -296,7 +296,7 @@ export class CqrsLoggingService implements OnModuleInit, OnApplicationBootstrap 
               error,
               ...metadata,
             } satisfies EventHandledLogData,
-            `[Handle] ${eventName}`,
+            `${eventName}`,
           );
           throw error;
         }

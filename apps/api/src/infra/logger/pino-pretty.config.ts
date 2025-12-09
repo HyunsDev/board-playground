@@ -40,7 +40,7 @@ export const createDevLoggerStream = async (): Promise<DestinationStream> => {
     singleLine: true,
     translateTime: 'SYS:HH:MM:ss',
     ignore:
-      'pid,hostname,req,res,responseTime,context,reqId,userId,sessionId,httpMethod,reqUrl,resStatus,duration,errorCode,event,type,action,isError,correlationId,causationId,causationType,createdAt,queryData,error',
+      'pid,hostname,req,res,responseTime,context,reqId,userId,sessionId,httpMethod,reqUrl,resStatus,duration,errorCode,event,type,action,isError,correlationId,causationId,causationType,createdAt,queryData,error,handlerName',
 
     messageFormat: (log, messageKey) => {
       const msg = log[messageKey] as string;
@@ -55,23 +55,19 @@ export const createDevLoggerStream = async (): Promise<DestinationStream> => {
       }
 
       // CQRS Command/Query Bus Log
-      if (
-        isCommandHandlerLogData(log) ||
-        isQueryHandlerLogData(log) ||
-        isEventHandlerLogData(log)
-      ) {
+      if (isCommandHandlerLogData(log) || isQueryHandlerLogData(log)) {
         const duration = formatDuration(log.duration);
         const error = log.isError ? log.error : undefined;
         const msgType = chalk.gray(
           {
             [LogTypes.CommandHandled]: 'CMD',
             [LogTypes.QueryHandled]: 'QUERY',
-            [LogTypes.EventHandled]: 'EVT',
+            [LogTypes.EventHandled]: 'EVENT',
           }[log.type]!.padStart(6),
         );
 
         if (error) {
-          const symbol = chalk.red('(ERR)');
+          const symbol = chalk.red('✕');
           const cmdName = chalk.red(msg);
           let errorCode = '';
 
@@ -83,9 +79,40 @@ export const createDevLoggerStream = async (): Promise<DestinationStream> => {
           return `${reqId} ${msgType} ${cmdName} ${symbol} ${errorCode} ${duration}`;
         }
 
-        const symbol = chalk.green('(OK)');
+        const symbol = chalk.green('✓');
         const cmdName = chalk.green(msg);
         return `${reqId} ${msgType} ${cmdName} ${symbol} ${duration}`;
+      }
+
+      if (isEventHandlerLogData(log)) {
+        const duration = formatDuration(log.duration);
+        const error = log.isError ? log.error : undefined;
+        const msgType = chalk.gray(
+          {
+            [LogTypes.CommandHandled]: 'CMD',
+            [LogTypes.QueryHandled]: 'QUERY',
+            [LogTypes.EventHandled]: 'EVENT',
+          }[log.type]!.padStart(6),
+        );
+
+        if (error) {
+          const symbol = chalk.red('✕');
+          const cmdName = chalk.gray(`(${msg})`);
+          const handlerName = chalk.red(log.handlerName);
+          let errorCode = '';
+
+          if (isDomainError(error)) {
+            errorCode = chalk.gray(`[${error.code}]`);
+          } else if (error instanceof Error) {
+            errorCode = chalk.gray(`[${error.name || 'Error'}]`);
+          }
+          return `${reqId} ${msgType} ${handlerName}${cmdName} ${symbol} ${errorCode} ${duration}`;
+        }
+
+        const symbol = chalk.green('✓');
+        const cmdName = chalk.gray(`(${msg})`);
+        const handlerName = chalk.green(log.handlerName);
+        return `${reqId} ${msgType} ${handlerName}${cmdName} ${symbol} ${duration}`;
       }
 
       // HTTP Request Log
