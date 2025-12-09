@@ -3,7 +3,7 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
-import { PrismaClient, User } from '@workspace/db';
+import { Prisma, PrismaClient, User } from '@workspace/db';
 
 import { UserMapper } from './user.mapper';
 import {
@@ -147,6 +147,24 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
           },
         }),
     );
+  }
+
+  async updateLastActiveAt(userId: string) {
+    try {
+      void (await this.delegate.update({
+        where: { id: userId },
+        data: { lastActiveAt: new Date() },
+        select: { id: true },
+      }));
+      return ok(undefined);
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          return err(new UserNotFoundError());
+        }
+      }
+      throw error;
+    }
   }
 
   async delete(user: UserEntity) {

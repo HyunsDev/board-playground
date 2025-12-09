@@ -4,6 +4,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { DeleteUserMeCommandHandler } from './application/commands/delete-user-me.command';
 import { UpdateUserMeProfileCommandHandler } from './application/commands/update-user-me-profile.command';
 import { UpdateUserMeUsernameCommandHandler } from './application/commands/update-user-me-username.command';
+import { UserActivityEventHandler } from './application/events/user-activity.event-handler';
 import { GetUserForAdminQueryHandler } from './application/queries/get-user-for-admin.query';
 import { GetUserMeQueryHandler } from './application/queries/get-user-me.query';
 import { GetUserQueryHandler } from './application/queries/get-user.query';
@@ -28,6 +29,7 @@ const queryHandlers: Provider[] = [
   UpdateUserMeUsernameCommandHandler,
   DeleteUserMeCommandHandler,
 ];
+const eventHandlers: Provider[] = [UserActivityEventHandler];
 const services: Provider[] = [UserService];
 const mappers: Provider[] = [UserMapper, UserDtoMapper];
 const repositories: Provider[] = [
@@ -43,6 +45,7 @@ const repositories: Provider[] = [
     Logger,
     ...commandHandlers,
     ...queryHandlers,
+    ...eventHandlers,
     ...services,
     ...mappers,
     ...repositories,

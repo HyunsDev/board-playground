@@ -72,7 +72,7 @@ export class UserEntity extends AggregateRoot<UserProps> {
       status: USER_STATUS.ACTIVE,
       password: createProps.password,
       adminMemo: null,
-      lastActiveAt: null,
+      lastActiveAt: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
       deletedAt: null,
