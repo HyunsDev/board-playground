@@ -38,7 +38,7 @@ export const toApiErrorResponses = <const T extends readonly ApiError[]>(excepti
   Object.entries(grouped).forEach(([statusStr, schemas]) => {
     const status = Number(statusStr);
     if (schemas.length === 1) {
-      responses[status] = schemas[0];
+      responses[status] = schemas[0] as z.ZodTypeAny;
     } else {
       responses[status] = z.union(schemas as [z.ZodTypeAny, z.ZodTypeAny, ...z.ZodTypeAny[]]);
     }
