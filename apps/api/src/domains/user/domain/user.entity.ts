@@ -56,7 +56,7 @@ export class UserEntity extends AggregateRoot<UserProps> {
     return this.props.role;
   }
 
-  get password(): UserPasswordVO {
+  get password(): UserPasswordVO | null {
     return this.props.password;
   }
 

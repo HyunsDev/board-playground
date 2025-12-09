@@ -41,7 +41,7 @@ const interceptors: Provider[] = [
         idGenerator: (req: Request) => (req.headers['x-request-id'] as string) ?? uuidv7(),
         setup: (cls, req: Request) => {
           const ipAddress =
-            (req.headers['x-forwarded-for'] as string)?.split(',')[0].trim() ||
+            (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
             req.socket.remoteAddress ||
             req.ip ||
             '0.0.0.0';

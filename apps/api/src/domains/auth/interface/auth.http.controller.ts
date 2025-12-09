@@ -152,7 +152,7 @@ export class AuthHttpController {
       const refreshToken = req.cookies?.['refreshToken'];
 
       if (!refreshToken) {
-        return apiOk(204, null);
+        return apiOk(204, undefined);
       }
 
       const result = await this.commandBus.execute(
@@ -166,8 +166,8 @@ export class AuthHttpController {
 
       void res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_OPTIONS);
       return result.match(
-        () => apiOk(204, null),
-        () => apiOk(204, null),
+        () => apiOk(204, undefined),
+        () => apiOk(204, undefined),
       );
     });
   }

@@ -28,7 +28,9 @@ export class SessionService {
   }
 
   getExpiresAtDate(): Date {
-    const expirationDays = this.configService.get<number>('REFRESH_TOKEN_EXPIRATION_DAYS');
+    const expirationDays = this.configService.get<number>(
+      'REFRESH_TOKEN_EXPIRATION_DAYS',
+    ) as number;
     return dayjs().add(expirationDays, 'day').toDate();
   }
 
@@ -106,6 +108,6 @@ export class SessionService {
     const updateResult = await this.sessionRepo.update(session);
     if (updateResult.isErr()) return updateResult;
 
-    return ok(null);
+    return ok(updateResult.value);
   }
 }

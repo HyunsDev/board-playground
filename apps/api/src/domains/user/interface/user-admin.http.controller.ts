@@ -32,7 +32,7 @@ export class UserAdminHttpController {
       );
 
       return result.match(
-        (user) => apiOk(200, { user: this.dtoMapper.toPublicProfileDto(user) }),
+        (user) => apiOk(200, { user: this.dtoMapper.toUserAdminDto(user) }),
         (error) =>
           matchError(error, {
             UserNotFound: () => apiErr(ApiErrors.User.NotFound),

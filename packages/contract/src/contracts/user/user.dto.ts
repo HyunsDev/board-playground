@@ -14,9 +14,12 @@ export const UserBaseDtoSchema = z.object({
   role: UserRole,
   status: UserStatus,
 
-  lastActiveAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: 'Invalid date format',
-  }),
+  lastActiveAt: z
+    .string()
+    .refine((date) => !isNaN(Date.parse(date)), {
+      message: 'Invalid date format',
+    })
+    .nullable(),
   createdAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: 'Invalid date format',
   }),

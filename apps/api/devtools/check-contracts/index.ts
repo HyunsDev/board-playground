@@ -244,10 +244,10 @@ class ContractAnalyzer {
         result.contractImplemented++;
 
         const routeInfo = this.nestRoutes[matchIndex];
-        const implAccess = routeInfo.accessInfo;
+        const implAccess = routeInfo?.accessInfo;
 
         const rowKey = `${indent}✔ ${currentKey} ${routeStr}`;
-        const controller = routeInfo.controllerName;
+        const controller = routeInfo?.controllerName as string;
 
         const isAccessMatch = contractAccess === implAccess;
 

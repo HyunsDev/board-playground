@@ -26,7 +26,7 @@ export class TokenService {
   }
 
   hashToken(token: string) {
-    return createHmac('sha256', this.configService.get('REFRESH_TOKEN_SECRET'))
+    return createHmac('sha256', this.configService.get('REFRESH_TOKEN_SECRET') as string)
       .update(token)
       .digest('hex');
   }

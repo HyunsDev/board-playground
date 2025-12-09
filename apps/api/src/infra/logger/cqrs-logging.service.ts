@@ -3,6 +3,8 @@ import { performance } from 'perf_hooks';
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { CommandBus, EventBus, QueryBus } from '@nestjs/cqrs';
 
+import { IDomainEvent } from '@/shared/base';
+
 @Injectable()
 export class CqrsLoggingService implements OnModuleInit {
   constructor(
@@ -18,7 +20,7 @@ export class CqrsLoggingService implements OnModuleInit {
   }
 
   private wrapBusExecute(bus: CommandBus | QueryBus, busName: string) {
-    const originalExecute = bus.execute.bind(bus);
+    const originalExecute: any = bus.execute.bind(bus);
     const logger = new Logger(busName);
 
     // eslint-disable-next-line functional/no-expression-statements
@@ -73,7 +75,7 @@ export class CqrsLoggingService implements OnModuleInit {
     const logger = new Logger(busName);
 
     // eslint-disable-next-line functional/no-expression-statements
-    bus.publish = <T>(event: T) => {
+    bus.publish = <T extends IDomainEvent<unknown>>(event: T) => {
       const eventName = (event as any)?.constructor?.name || 'UnknownEvent';
       logger.log(
         {
@@ -85,7 +87,7 @@ export class CqrsLoggingService implements OnModuleInit {
     };
 
     // eslint-disable-next-line functional/no-expression-statements
-    bus.publishAll = <T>(events: T[]) => {
+    bus.publishAll = <T extends IDomainEvent<unknown>>(events: T[]) => {
       events.forEach((event) => {
         const eventName = (event as any)?.constructor?.name || 'UnknownEvent';
         logger.log(

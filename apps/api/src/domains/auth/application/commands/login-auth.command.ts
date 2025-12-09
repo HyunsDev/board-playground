@@ -56,6 +56,10 @@ export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand
       }
       const user = userResult.value;
 
+      if (!user.password) {
+        return err(new InvalidCredentialsError());
+      }
+
       const validResult = await user.password.compare(command.data.password);
       if (validResult.isErr()) return validResult;
 

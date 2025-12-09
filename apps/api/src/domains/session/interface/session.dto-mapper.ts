@@ -22,6 +22,8 @@ export class SessionDtoMapper extends BaseDtoMapper<SessionEntity> {
       lastRefreshedAt: props.lastRefreshedAt.toISOString(),
       expiresAt: props.expiresAt.toISOString(),
       createdAt: props.createdAt.toISOString(),
+      closedAt: props.closedAt?.toISOString() || null,
+      revokedAt: props.revokedAt?.toISOString() || null,
     };
   }
 }

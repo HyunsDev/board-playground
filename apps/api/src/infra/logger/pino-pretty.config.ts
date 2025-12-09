@@ -11,7 +11,7 @@ export const createDevLoggerStream = async (): Promise<DestinationStream> => {
   // --- Helpers ---
   const formatId = (id: string) => (id ? chalk.gray(`[${id.slice(-7)}]`) : '');
   const formatDuration = (ms: any) => (ms ? chalk.gray(`+${ms}ms`) : '');
-  const isDomainError = (err: unknown): err is DomainError =>
+  const isDomainError = (err: DomainError | Error): err is DomainError =>
     err && typeof err === 'object' && 'code' in err;
 
   return build({

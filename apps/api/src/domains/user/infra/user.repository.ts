@@ -17,7 +17,7 @@ import { UserRepositoryPort } from '../domain/user.repository.port';
 import { ContextService } from '@/infra/context/context.service';
 import { DatabaseService } from '@/infra/database/database.service';
 import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
-import { PaginatedResult } from '@/shared/base';
+import { PaginatedResult, UnexpectedDomainErrorException } from '@/shared/base';
 import { BaseRepository } from '@/shared/base/infra/base.repository';
 import { DomainResult } from '@/shared/types/result.type';
 import { matchError } from '@/shared/utils/match-error.utils';
@@ -117,13 +117,14 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
       (user) => ok(user),
       (error) =>
         matchError(error, {
-          EntityConflict: ({ details: { conflicts } }) => {
-            if (conflicts.some((conflict) => conflict.field === 'email')) {
+          EntityConflict: ({ details }) => {
+            if (details?.conflicts.some((conflict) => conflict.field === 'email')) {
               return err(new UserEmailAlreadyExistsError());
             }
-            if (conflicts.some((conflict) => conflict.field === 'username')) {
+            if (details?.conflicts.some((conflict) => conflict.field === 'username')) {
               return err(new UserUsernameAlreadyExistsError());
             }
+            throw new UnexpectedDomainErrorException(error);
           },
         }),
     );
@@ -135,13 +136,14 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
       (error) =>
         matchError(error, {
           EntityNotFound: () => err(new UserNotFoundError()),
-          EntityConflict: ({ details: { conflicts } }) => {
-            if (conflicts.some((conflict) => conflict.field === 'email')) {
+          EntityConflict: ({ details }) => {
+            if (details?.conflicts.some((conflict) => conflict.field === 'email')) {
               return err(new UserEmailAlreadyExistsError());
             }
-            if (conflicts.some((conflict) => conflict.field === 'username')) {
+            if (details?.conflicts.some((conflict) => conflict.field === 'username')) {
               return err(new UserUsernameAlreadyExistsError());
             }
+            throw new UnexpectedDomainErrorException(error);
           },
         }),
     );

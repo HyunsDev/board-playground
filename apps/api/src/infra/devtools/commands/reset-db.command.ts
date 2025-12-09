@@ -40,7 +40,7 @@ export class ResetDBCommandHandler implements ICommandHandler<ResetDBCommand> {
     const tablesToTruncate = tables
       .map((t) => t.tablename)
       .filter((name) => name !== '_prisma_migrations');
-    if (tablesToTruncate.length === 0) return;
+    if (tablesToTruncate.length === 0) return ok(undefined);
     const targets = tablesToTruncate.map((name) => `"${name}"`).join(', ');
     const query = `TRUNCATE TABLE ${targets} RESTART IDENTITY CASCADE;`;
     void (await this.prisma.$executeRawUnsafe(query));

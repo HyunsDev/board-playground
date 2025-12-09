@@ -13,7 +13,7 @@ import { ListSessionsQuery } from '../application/queries/list-sessions.query';
 import { ContextService } from '@/infra/context/context.service';
 import { Auth } from '@/infra/security/decorators/auth.decorator';
 import { Token } from '@/infra/security/decorators/token.decorator';
-import { apiErr, apiOk } from '@/shared/base';
+import { apiErr, apiOk, UnexpectedDomainErrorException } from '@/shared/base';
 import { matchError } from '@/shared/utils/match-error.utils';
 
 @Controller()
@@ -59,7 +59,9 @@ export class SessionHttpController {
           apiOk(200, {
             sessions: sessions.map((session) => this.sessionDtoMapper.toDto(session)),
           }),
-        () => null,
+        (e) => {
+          throw new UnexpectedDomainErrorException(e);
+        },
       );
     });
   }
@@ -80,7 +82,7 @@ export class SessionHttpController {
       );
 
       return result.match(
-        () => apiOk(204, null),
+        () => apiOk(204, undefined),
         (error) =>
           matchError(error, {
             CurrentSessionCannotBeDeleted: () =>

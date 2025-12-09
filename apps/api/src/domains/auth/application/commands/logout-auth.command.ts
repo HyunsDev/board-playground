@@ -1,4 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { err, ok } from 'neverthrow';
 
 import { SessionService } from '@/domains/session/application/services/session.service';
 import { TransactionManager } from '@/infra/database/transaction.manager';
@@ -34,7 +35,10 @@ export class LogoutAuthCommandHandler implements ICommandHandler<LogoutAuthComma
 
   async execute(command: ILogoutAuthCommand) {
     return await this.txManager.run(async () => {
-      return await this.sessionService.close(command.data.refreshToken);
+      return (await this.sessionService.close(command.data.refreshToken)).match(
+        () => ok(undefined),
+        (e) => err(e),
+      );
     });
   }
 }

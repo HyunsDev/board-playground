@@ -75,7 +75,7 @@ export class DevtoolsController {
         );
         return result.match(
           () => apiOk(200, undefined),
-          () => null,
+          () => apiOk(200, undefined),
         );
       },
     });
