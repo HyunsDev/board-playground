@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 
-import { DomainExceptionFilter } from './domain-exception.filter';
-import { GlobalExceptionsFilter } from './global-exception.filter';
-import { RequestValidationFilter } from './request-validation.filter';
+import { DomainExceptionFilter } from './filters/domain-exception.filter';
+import { GlobalExceptionsFilter } from './filters/global-exception.filter';
+import { RequestValidationFilter } from './filters/request-validation.filter';
 
 const filters = [
   {

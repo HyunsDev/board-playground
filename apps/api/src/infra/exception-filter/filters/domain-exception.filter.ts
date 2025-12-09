@@ -4,27 +4,9 @@ import { HttpAdapterHost } from '@nestjs/core';
 import { ApiErrors } from '@workspace/contract';
 
 import { ContextService } from '@/infra/context/context.service';
-import {
-  AccessDeniedError,
-  ExpiredTokenError,
-  InternalServerError,
-  InvalidAccessTokenError,
-  MissingTokenError,
-  UnexpectedDomainError,
-} from '@/shared/base';
 import { DomainException } from '@/shared/base/error/base.domain-exception';
-import { EnsurePublic } from '@/shared/base/interface/api-error.types';
 import { apiErr } from '@/shared/base/interface/response.utils';
 import { matchPublicError } from '@/shared/utils/match-error.utils';
-
-export type GlobalDomainError = EnsurePublic<
-  | AccessDeniedError
-  | InternalServerError
-  | UnexpectedDomainError
-  | InvalidAccessTokenError
-  | ExpiredTokenError
-  | MissingTokenError
->;
 
 @Catch(DomainException)
 export class DomainExceptionFilter implements ExceptionFilter<DomainException> {
