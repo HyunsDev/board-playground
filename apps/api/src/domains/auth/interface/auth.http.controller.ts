@@ -16,6 +16,7 @@ import { EnvSchema } from '@/core/config/env.validation';
 import { ContextService } from '@/infra/context/context.service';
 import { UnexpectedDomainError } from '@/shared/base';
 import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
+import { REFRESH_TOKEN_COOKIE_OPTIONS } from '@/shared/constants/cookie.constant';
 import { IpAddress } from '@/shared/decorators/ip-address.decorator';
 import { UserAgent } from '@/shared/decorators/user-agent.decorator';
 import { matchPublicError } from '@/shared/utils/match-error.utils';
@@ -28,16 +29,6 @@ export class AuthHttpController {
     private readonly configService: ConfigService<EnvSchema>,
     private readonly contextService: ContextService,
   ) {}
-
-  private getCookieOptions() {
-    return {
-      httpOnly: true,
-      secure: this.configService.get('NODE_ENV') === 'production',
-      path: '/auth',
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      sameSite: 'strict' as const,
-    };
-  }
 
   @TsRestHandler(contract.auth.register)
   async register(
@@ -62,7 +53,7 @@ export class AuthHttpController {
 
       return result.match(
         (data) => {
-          void res.cookie('refreshToken', data.refreshToken, this.getCookieOptions());
+          void res.cookie('refreshToken', data.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
           return apiOk(200, {
             accessToken: data.accessToken,
           });
@@ -98,7 +89,7 @@ export class AuthHttpController {
 
       return result.match(
         (data) => {
-          void res.cookie('refreshToken', data.refreshToken, this.getCookieOptions());
+          void res.cookie('refreshToken', data.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
           return apiOk(200, {
             accessToken: data.accessToken,
           });
@@ -133,13 +124,13 @@ export class AuthHttpController {
         (data) => {
           if (data.status === 'failed') {
             if (data.error.code === 'TokenReuseDetected') {
-              void res.clearCookie('refreshToken', this.getCookieOptions());
+              void res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_OPTIONS);
               return apiErr(ApiErrors.Auth.RefreshTokenReuseDetected);
             }
             throw new UnexpectedDomainError(data.error);
           }
 
-          void res.cookie('refreshToken', data.data.refreshToken, this.getCookieOptions());
+          void res.cookie('refreshToken', data.data.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
           return apiOk(200, {
             accessToken: data.data.accessToken,
           });
@@ -173,7 +164,7 @@ export class AuthHttpController {
         ),
       );
 
-      void res.clearCookie('refreshToken', this.getCookieOptions());
+      void res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_OPTIONS);
       return result.match(
         () => apiOk(204, null),
         () => apiOk(204, null),

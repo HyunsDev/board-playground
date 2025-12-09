@@ -1,6 +1,7 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Res } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
+import { Response } from 'express';
 
 import { contract, ApiErrors } from '@workspace/contract';
 import { TokenPayload } from '@workspace/contract';
@@ -15,6 +16,7 @@ import { ContextService } from '@/infra/context/context.service';
 import { Auth } from '@/infra/security/decorators/auth.decorator';
 import { Token } from '@/infra/security/decorators/token.decorator';
 import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
+import { REFRESH_TOKEN_COOKIE_OPTIONS } from '@/shared/constants/cookie.constant';
 import { matchPublicError } from '@/shared/utils/match-error.utils';
 
 @Controller()
@@ -106,7 +108,7 @@ export class UserMeHttpController {
 
   @TsRestHandler(contract.user.me.delete)
   @Auth()
-  async deleteMe(@Token() token: TokenPayload) {
+  async deleteMe(@Res({ passthrough: true }) res: Response, @Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.delete, async () => {
       const result = await this.commandBus.execute(
         new DeleteUserMeCommand(
@@ -118,7 +120,10 @@ export class UserMeHttpController {
       );
 
       return result.match(
-        () => apiOk(200, {}),
+        () => {
+          void res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_OPTIONS);
+          return apiOk(200, {});
+        },
         (error) =>
           matchPublicError(error, {
             UserNotFound: () => apiErr(ApiErrors.User.NotFound),
