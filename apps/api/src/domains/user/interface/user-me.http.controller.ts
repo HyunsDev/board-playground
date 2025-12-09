@@ -7,10 +7,10 @@ import { contract, ApiErrors } from '@workspace/contract';
 import { TokenPayload } from '@workspace/contract';
 
 import { UserDtoMapper } from './user.dto-mapper';
-import { DeleteUserMeCommand } from '../application/commands/delete-user-me.command';
-import { UpdateUserMeProfileCommand } from '../application/commands/update-user-me-profile.command';
-import { UpdateUserMeUsernameCommand } from '../application/commands/update-user-me-username.command';
-import { GetUserMeQuery } from '../application/queries/get-user-me.query';
+import { DeleteUserMeCommand } from '../application/me/commands/delete-user-me.command';
+import { UpdateUserMeProfileCommand } from '../application/me/commands/update-user-me-profile.command';
+import { UpdateUserMeUsernameCommand } from '../application/me/commands/update-user-me-username.command';
+import { GetUserMeQuery } from '../application/me/queries/get-user-me.query';
 
 import { ContextService } from '@/infra/context/context.service';
 import { Token } from '@/infra/security/decorators/token.decorator';

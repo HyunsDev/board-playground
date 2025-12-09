@@ -5,7 +5,7 @@ import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { contract, ApiErrors, USER_ROLE } from '@workspace/contract';
 
 import { UserDtoMapper } from './user.dto-mapper';
-import { GetUserForAdminQuery } from '../application/queries/get-user-for-admin.query';
+import { GetUserForAdminQuery } from '../application/admin/queries/get-user-for-admin.query';
 
 import { ContextService } from '@/infra/context/context.service';
 import { Roles } from '@/infra/security/decorators/roles.decorator';

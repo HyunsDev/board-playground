@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
-import { USER_REPOSITORY } from '@/domains/user/user.constant';
+import { USER_REPOSITORY } from '@/domains/user/user.constants';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
 import { DomainCodes } from '@/shared/codes/domain.codes';

@@ -5,8 +5,8 @@ import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { contract, ApiErrors, PaginationMeta } from '@workspace/contract';
 
 import { UserDtoMapper } from './user.dto-mapper';
-import { GetUserQuery } from '../application/queries/get-user.query';
-import { SearchUserQuery } from '../application/queries/search-user.query';
+import { GetUserQuery } from '../application/public/queries/get-user.query';
+import { SearchUserQuery } from '../application/public/queries/search-user.query';
 import { UserEntity } from '../domain/user.entity';
 
 import { ContextService } from '@/infra/context/context.service';

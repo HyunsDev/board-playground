@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { CreateUserProps, UserEntity } from '../../domain/user.entity';
 import { UserRepositoryPort } from '../../domain/user.repository.port';
-import { USER_REPOSITORY } from '../../user.constant';
+import { USER_REPOSITORY } from '../../user.constants';
 
 @Injectable()
 export class UserFacade {

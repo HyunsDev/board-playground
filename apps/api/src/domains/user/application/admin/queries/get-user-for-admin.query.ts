@@ -1,9 +1,9 @@
 import { Inject } from '@nestjs/common';
 import { QueryHandler } from '@nestjs/cqrs';
 
-import { UserEntity } from '../../domain/user.entity';
-import { UserRepositoryPort } from '../../domain/user.repository.port';
-import { USER_REPOSITORY } from '../../user.constant';
+import { UserEntity } from '../../../domain/user.entity';
+import { UserRepositoryPort } from '../../../domain/user.repository.port';
+import { USER_REPOSITORY } from '../../../user.constants';
 
 import { IQuery, BaseQuery } from '@/shared/base';
 import { DomainCodes } from '@/shared/codes/domain.codes';

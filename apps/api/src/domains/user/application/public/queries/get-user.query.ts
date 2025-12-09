@@ -5,7 +5,7 @@ import { err, ok } from 'neverthrow';
 import { UserNotFoundError } from '@/domains/user/domain/user.domain-errors';
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
-import { USER_REPOSITORY } from '@/domains/user/user.constant';
+import { USER_REPOSITORY } from '@/domains/user/user.constants';
 import { BaseQuery, IQuery } from '@/shared/base';
 import { DomainCodes } from '@/shared/codes/domain.codes';
 import { QueryCodes } from '@/shared/codes/query.codes';

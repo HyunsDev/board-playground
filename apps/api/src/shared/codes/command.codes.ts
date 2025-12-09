@@ -4,7 +4,7 @@ import { DistributiveValueOf } from '../types/distributive-value-of.type';
 
 import { AuthCommandCodes } from '@/domains/auth/auth.contracts';
 import { SessionCommandCodes } from '@/domains/session/session.constants';
-import { UserCommandCodes } from '@/domains/user/user.constant';
+import { UserCommandCodes } from '@/domains/user/user.constants';
 import { DevtoolsCommandCodes } from '@/infra/devtools/devtools.contracts';
 
 export const CommandCodes = {

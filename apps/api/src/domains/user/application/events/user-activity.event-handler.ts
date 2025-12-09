@@ -2,7 +2,7 @@ import { Inject } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 
 import { UserRepository } from '../../infra/user.repository';
-import { USER_REPOSITORY } from '../../user.constant';
+import { USER_REPOSITORY } from '../../user.constants';
 
 import { SessionCreatedEvent } from '@/domains/session/domain/events/session-created.event';
 import { SessionRefreshedEvent } from '@/domains/session/domain/events/session-refreshed.event';
