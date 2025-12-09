@@ -17,10 +17,12 @@ export interface UserProps {
   avatarUrl: string | null;
   role: UserRole;
   status: UserStatus;
-  memo: string | null;
+  adminMemo: string | null;
   password: UserPasswordVO | null;
+  lastActiveAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
 }
 
 export interface CreateUserProps {
@@ -68,10 +70,12 @@ export class UserEntity extends AggregateRoot<UserProps> {
       avatarUrl: null,
       role: USER_ROLE.USER,
       status: USER_STATUS.ACTIVE,
-      memo: null,
       password: createProps.password,
+      adminMemo: null,
+      lastActiveAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
+      deletedAt: null,
     };
 
     const user = new UserEntity(props, id);

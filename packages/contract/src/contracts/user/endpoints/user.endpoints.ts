@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { UserDtoSchema } from '../user.dto';
+import { UserPublicProfileDtoSchema } from '../user.dto';
 
 import { c, paginatedQueryOf, paginatedResponseOf, toApiErrorResponses } from '@/common';
 import { ACCESS } from '@/common/access';
@@ -14,7 +14,7 @@ export const getUser = c.query({
   }),
   responses: {
     200: z.object({
-      user: UserDtoSchema,
+      user: UserPublicProfileDtoSchema,
     }),
     ...toApiErrorResponses([ApiErrors.User.NotFound]),
   },
@@ -32,7 +32,7 @@ export const searchUsers = c.query({
     }),
   ),
   responses: {
-    200: paginatedResponseOf(UserDtoSchema),
+    200: paginatedResponseOf(UserPublicProfileDtoSchema),
   },
   metadata: {
     access: ACCESS.signedIn,

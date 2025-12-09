@@ -7,7 +7,7 @@ import { SessionEntity } from '../domain/session.entity';
 import { BaseDtoMapper } from '@/shared/base';
 
 @Injectable()
-export class SessionDtoMapper extends BaseDtoMapper<SessionEntity, SessionDto> {
+export class SessionDtoMapper extends BaseDtoMapper<SessionEntity> {
   toDto(entity: SessionEntity): SessionDto {
     const props = entity.getProps();
     return {

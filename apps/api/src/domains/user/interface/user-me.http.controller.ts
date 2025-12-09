@@ -38,7 +38,7 @@ export class UserMeHttpController {
       return result.match(
         (user) =>
           apiOk(200, {
-            me: this.dtoMapper.toUserForMeDto(user),
+            me: this.dtoMapper.toPrivateProfileDto(user),
           }),
         (error) =>
           matchPublicError(error, {
@@ -66,7 +66,7 @@ export class UserMeHttpController {
       return result.match(
         (user) =>
           apiOk(200, {
-            me: this.dtoMapper.toUserForMeDto(user),
+            me: this.dtoMapper.toPrivateProfileDto(user),
           }),
         (error) =>
           matchPublicError(error, {
@@ -95,7 +95,7 @@ export class UserMeHttpController {
       return result.match(
         (user) =>
           apiOk(200, {
-            me: this.dtoMapper.toUserForMeDto(user),
+            me: this.dtoMapper.toPrivateProfileDto(user),
           }),
         (error) =>
           matchPublicError(error, {

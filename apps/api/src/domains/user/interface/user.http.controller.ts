@@ -31,7 +31,7 @@ export class UserHttpController {
       );
 
       return result.match(
-        (user) => apiOk(200, { user: this.dtoMapper.toDto(user) }),
+        (user) => apiOk(200, { user: this.dtoMapper.toPublicProfileDto(user) }),
         (error) =>
           matchPublicError(error, {
             UserNotFound: () => apiErr(ApiErrors.User.NotFound),
@@ -57,7 +57,7 @@ export class UserHttpController {
 
       return result.match(
         ({ items, meta }: { items: UserEntity[]; meta: PaginationMeta }) =>
-          apiOk(200, this.dtoMapper.toPaginatedDto(items, meta)),
+          apiOk(200, this.dtoMapper.toPaginatedPublicProfileDto(items, meta)),
         (error) => matchPublicError(error, {}),
       );
     });
