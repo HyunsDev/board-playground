@@ -6,7 +6,7 @@ import { DEVICE_PLATFORM } from '@workspace/contract';
 import { SessionService } from '@/domains/session/application/services/session.service';
 import { UserService } from '@/domains/user/application/services/user.service';
 import { UserPasswordVO } from '@/domains/user/domain/user-password.vo';
-import { TransactionManager } from '@/infra/database/transaction.manager';
+import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { TokenService } from '@/infra/security/services/token.service';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';

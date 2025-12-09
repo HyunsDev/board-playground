@@ -15,8 +15,8 @@ import {
   EntityNotFoundError,
 } from '../error/common.domain-errors';
 
-import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
-import { PrismaService } from '@/infra/database/prisma.service';
+import { DomainEventPublisher } from '@/infra/domain-event/domain-event.publisher';
+import { PrismaService } from '@/infra/prisma/prisma.service';
 
 export abstract class BaseRepository<
   Aggregate extends AggregateRoot<any>,
@@ -29,7 +29,7 @@ export abstract class BaseRepository<
     protected readonly prisma: PrismaService,
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly mapper: Mapper<Aggregate, DbModel>,
-    protected readonly eventDispatcher: DomainEventDispatcher,
+    protected readonly eventDispatcher: DomainEventPublisher,
     protected readonly logger: LoggerPort,
   ) {}
 
@@ -136,6 +136,6 @@ export abstract class BaseRepository<
 
   protected async publishEvents(entity: Aggregate): Promise<void> {
     const events = entity.pullEvents();
-    void (await this.eventDispatcher.publishEvents(events));
+    void (await this.eventDispatcher.publishMany(events));
   }
 }

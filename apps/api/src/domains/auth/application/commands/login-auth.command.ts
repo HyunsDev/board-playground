@@ -5,7 +5,7 @@ import { DEVICE_PLATFORM } from '@workspace/contract';
 
 import { SessionService } from '@/domains/session/application/services/session.service';
 import { UserService } from '@/domains/user/application/services/user.service';
-import { TransactionManager } from '@/infra/database/transaction.manager';
+import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { InvalidCredentialsError } from '@/infra/security/domain/security.domain-errors';
 import { TokenService } from '@/infra/security/services/token.service';
 import { BaseCommand, ICommand } from '@/shared/base';

@@ -15,8 +15,8 @@ import { UserEntity } from '../domain/user.entity';
 import { UserRepositoryPort } from '../domain/user.repository.port';
 
 import { ContextService } from '@/infra/context/context.service';
-import { PrismaService } from '@/infra/database/prisma.service';
-import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
+import { DomainEventPublisher } from '@/infra/domain-event/domain-event.publisher';
+import { PrismaService } from '@/infra/prisma/prisma.service';
 import { PaginatedResult, UnexpectedDomainErrorException } from '@/shared/base';
 import { BaseRepository } from '@/shared/base/infra/base.repository';
 import { DomainResult } from '@/shared/types/result.type';
@@ -29,7 +29,7 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly context: ContextService,
     protected readonly mapper: UserMapper,
-    protected readonly eventDispatcher: DomainEventDispatcher,
+    protected readonly eventDispatcher: DomainEventPublisher,
   ) {
     super(prisma, txHost, mapper, eventDispatcher, new Logger(UserRepository.name));
   }

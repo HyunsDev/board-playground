@@ -6,7 +6,7 @@ import { SESSION_REPOSITORY } from '../../session.constants';
 
 import { CurrentSessionCannotBeDeletedError } from '@/domains/session/domain/session.domain-errors';
 import { SessionRepositoryPort } from '@/domains/session/domain/session.repository.port';
-import { TransactionManager } from '@/infra/database/transaction.manager';
+import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
 import { DomainCodes } from '@/shared/codes/domain.codes';

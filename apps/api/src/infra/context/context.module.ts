@@ -8,8 +8,8 @@ import { v7 as uuidv7 } from 'uuid';
 
 import { ContextService } from './context.service';
 import { RequestIdInterceptor } from './interceptors/request-id.interceptor';
-import { PrismaModule } from '../database/prisma.module';
-import { PrismaService } from '../database/prisma.service';
+import { PrismaModule } from '../prisma/prisma.module';
+import { PrismaService } from '../prisma/prisma.service';
 import { ErrorLoggingInterceptor } from './interceptors/error-logging.interceptor';
 import { MessageCausationInterceptor } from './interceptors/message-causation.interceptor';
 

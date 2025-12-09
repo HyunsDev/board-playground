@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
-import { PrismaService } from '@/infra/database/prisma.service';
+import { PrismaService } from '@/infra/prisma/prisma.service';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
 import { DomainCodes } from '@/shared/codes/domain.codes';

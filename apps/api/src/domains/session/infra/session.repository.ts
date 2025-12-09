@@ -13,8 +13,8 @@ import { SessionRepositoryPort } from '../domain/session.repository.port';
 import { InvalidRefreshTokenError } from '../domain/token.domain-errors';
 
 import { ContextService } from '@/infra/context/context.service';
-import { PrismaService } from '@/infra/database/prisma.service';
-import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
+import { PrismaService } from '@/infra/prisma/prisma.service';
+import { DomainEventPublisher } from '@/infra/domain-event/domain-event.publisher';
 import { InternalServerErrorException, UnexpectedDomainErrorException } from '@/shared/base';
 import { BaseRepository } from '@/shared/base/infra/base.repository';
 import { DomainResult } from '@/shared/types/result.type';
@@ -31,7 +31,7 @@ export class SessionRepository
     protected readonly context: ContextService,
     protected readonly mapper: SessionMapper,
     protected readonly refreshTokenMapper: RefreshTokenMapper,
-    protected readonly eventDispatcher: DomainEventDispatcher,
+    protected readonly eventDispatcher: DomainEventPublisher,
   ) {
     super(prisma, txHost, mapper, eventDispatcher, new Logger(SessionRepository.name));
   }

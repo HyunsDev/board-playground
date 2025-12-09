@@ -5,7 +5,7 @@ import { BaseDomainEvent, CreateMessageMetadata } from '../../shared/base';
 import { ContextService } from '../context/context.service';
 
 @Injectable({ scope: Scope.REQUEST })
-export class DomainEventDispatcher {
+export class DomainEventPublisher {
   private events: BaseDomainEvent[] = [];
 
   constructor(
@@ -13,10 +13,17 @@ export class DomainEventDispatcher {
     private readonly contextService: ContextService,
   ) {}
 
-  async publishEvents(events: BaseDomainEvent[]): Promise<void> {
+  async publish(event: BaseDomainEvent): Promise<void> {
+    this.events = [...this.events, event];
+    if (!this.contextService.isTransactionActive()) {
+      void (await this.flush());
+    }
+  }
+
+  async publishMany(events: BaseDomainEvent[]): Promise<void> {
     this.events = [...this.events, ...events];
     if (!this.contextService.isTransactionActive()) {
-      void (await this.dispatchAll());
+      void (await this.flush());
     }
   }
 
@@ -24,15 +31,10 @@ export class DomainEventDispatcher {
     this.events = [];
   }
 
-  async dispatchAll(): Promise<void> {
+  async flush(): Promise<void> {
     const metadata: CreateMessageMetadata = this.contextService.getMessageMetadata();
-
-    // 메타데이터 주입
     this.events.forEach((event) => event.setMetadata(metadata));
-
-    // 한 번에 발행
     void this.eventBus.publishAll(this.events);
-
     this.clear();
   }
 }

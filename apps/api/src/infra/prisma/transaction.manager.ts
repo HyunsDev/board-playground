@@ -3,7 +3,7 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, Result } from 'neverthrow';
 
-import { DomainEventDispatcher } from './domain-event.dispatcher';
+import { DomainEventPublisher } from '../domain-event/domain-event.publisher';
 
 class TransactionRollbackError<E> extends Error {
   constructor(public readonly originalError: E) {
@@ -15,7 +15,7 @@ class TransactionRollbackError<E> extends Error {
 export class TransactionManager {
   constructor(
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
-    private readonly eventDispatcher: DomainEventDispatcher,
+    private readonly eventDispatcher: DomainEventPublisher,
   ) {}
 
   async run<Res extends Result<any, any>>(operation: () => Promise<Res>): Promise<Res> {
@@ -35,7 +35,7 @@ export class TransactionManager {
           throw error;
         }
       });
-      void (await this.eventDispatcher.dispatchAll());
+      void (await this.eventDispatcher.flush());
       return result;
     } catch (error) {
       this.eventDispatcher.clear();

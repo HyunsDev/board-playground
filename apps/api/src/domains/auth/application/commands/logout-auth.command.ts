@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { SessionService } from '@/domains/session/application/services/session.service';
-import { TransactionManager } from '@/infra/database/transaction.manager';
+import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
 import { DomainCodes } from '@/shared/codes/domain.codes';
