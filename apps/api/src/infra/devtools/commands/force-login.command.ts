@@ -3,7 +3,7 @@ import { err, ok } from 'neverthrow';
 
 import { SessionService } from '@/domains/session/application/services/session.service';
 import { UserService } from '@/domains/user/application/services/user.service';
-import { TokenProvider } from '@/infra/security/token.provider';
+import { TokenProvider } from '@/infra/security/providers/token.provider';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
 import { DomainCodes } from '@/shared/codes/domain.codes';

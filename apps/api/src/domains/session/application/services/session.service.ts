@@ -9,7 +9,7 @@ import { SessionRepositoryPort } from '../../domain/session.repository.port';
 import { SESSION_REPOSITORY } from '../../session.constants';
 
 import { TokenConfig, tokenConfig } from '@/infra/config/configs/token.config';
-import { TokenProvider } from '@/infra/security/token.provider';
+import { TokenProvider } from '@/infra/security/providers/token.provider';
 import { UnexpectedDomainErrorException } from '@/shared/base';
 import { matchError } from '@/shared/utils/match-error.utils';
 

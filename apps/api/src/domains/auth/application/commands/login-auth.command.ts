@@ -7,7 +7,8 @@ import { SessionService } from '@/domains/session/application/services/session.s
 import { UserService } from '@/domains/user/application/services/user.service';
 import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { InvalidCredentialsError } from '@/infra/security/domain/security.domain-errors';
-import { TokenProvider } from '@/infra/security/token.provider';
+import { PasswordProvider } from '@/infra/security/providers/password.provider';
+import { TokenProvider } from '@/infra/security/providers/token.provider';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
 import { DomainCodes } from '@/shared/codes/domain.codes';
@@ -43,6 +44,7 @@ export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand
     private readonly userService: UserService,
     private readonly sessionService: SessionService,
     private readonly tokenProvider: TokenProvider,
+    private readonly passwordProvider: PasswordProvider,
     private readonly txManager: TransactionManager,
   ) {}
 
@@ -60,8 +62,11 @@ export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand
         return err(new InvalidCredentialsError());
       }
 
-      const validResult = await user.password.compare(command.data.password);
-      if (validResult.isErr()) return validResult;
+      const validResult = await this.passwordProvider.compare(
+        command.data.password,
+        user.password.hashedValue,
+      );
+      if (!validResult) return err(new InvalidCredentialsError());
 
       const sessionResult = await this.sessionService.create({
         userId: user.id,

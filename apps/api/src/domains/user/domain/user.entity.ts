@@ -29,7 +29,7 @@ export interface CreateUserProps {
   username: string;
   nickname: string;
   email: string;
-  password: UserPasswordVO | null;
+  hashedPassword: string | null;
 }
 
 export class UserEntity extends AggregateRoot<UserProps> {
@@ -70,7 +70,9 @@ export class UserEntity extends AggregateRoot<UserProps> {
       avatarUrl: null,
       role: USER_ROLE.USER,
       status: USER_STATUS.ACTIVE,
-      password: createProps.password,
+      password: createProps.hashedPassword
+        ? UserPasswordVO.fromHash(createProps.hashedPassword)
+        : null,
       adminMemo: null,
       lastActiveAt: new Date(),
       createdAt: new Date(),

@@ -8,7 +8,7 @@ import {
 } from '@/domains/session/domain/token.domain-errors';
 import { UserService } from '@/domains/user/application/services/user.service';
 import { TransactionManager } from '@/infra/prisma/transaction.manager';
-import { TokenProvider } from '@/infra/security/token.provider';
+import { TokenProvider } from '@/infra/security/providers/token.provider';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
 import { DomainCodes } from '@/shared/codes/domain.codes';

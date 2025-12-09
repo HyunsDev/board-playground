@@ -1,14 +1,14 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
-import { DEVICE_PLATFORM } from '@workspace/contract';
+import { DEVICE_PLATFORM, passwordSchema } from '@workspace/contract';
 
 import { SessionService } from '@/domains/session/application/services/session.service';
 import { UserService } from '@/domains/user/application/services/user.service';
-import { UserPasswordVO } from '@/domains/user/domain/user-password.vo';
 import { TransactionManager } from '@/infra/prisma/transaction.manager';
-import { TokenProvider } from '@/infra/security/token.provider';
-import { BaseCommand, ICommand } from '@/shared/base';
+import { PasswordProvider } from '@/infra/security/providers/password.provider';
+import { TokenProvider } from '@/infra/security/providers/token.provider';
+import { BaseCommand, ICommand, ValidationError } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
 import { DomainCodes } from '@/shared/codes/domain.codes';
 import { ResourceTypes } from '@/shared/codes/resource-type.codes';
@@ -46,22 +46,30 @@ export class RegisterAuthCommandHandler
     private readonly userService: UserService,
     private readonly sessionService: SessionService,
     private readonly tokenProvider: TokenProvider,
+    private readonly passwordProvider: PasswordProvider,
     private readonly txManager: TransactionManager,
   ) {}
 
   async execute(command: IRegisterAuthCommand) {
     return await this.txManager.run(async () => {
-      const hashedPasswordResult = await UserPasswordVO.create(command.data.password);
-      if (hashedPasswordResult.isErr()) {
-        return err(hashedPasswordResult.error);
+      const passwordValidation = passwordSchema.safeParse(command.data.password);
+      if (!passwordValidation.success) {
+        return err(
+          new ValidationError({
+            body: passwordValidation.error.issues,
+            query: null,
+            pathParams: null,
+            headers: null,
+          }),
+        );
       }
-      const hashedPassword = hashedPasswordResult.value;
 
+      const hashedPassword = await this.passwordProvider.hash(passwordValidation.data);
       const createUserResult = await this.userService.create({
         email: command.data.email,
         username: command.data.username,
         nickname: command.data.nickname,
-        password: hashedPassword,
+        hashedPassword,
       });
       if (createUserResult.isErr()) return err(createUserResult.error);
 

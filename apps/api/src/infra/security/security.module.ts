@@ -5,11 +5,12 @@ import { PassportModule } from '@nestjs/passport';
 
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
+import { PasswordProvider } from './providers/password.provider';
+import { TokenProvider } from './providers/token.provider';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { TokenProvider } from './token.provider';
 import { TokenConfig, tokenConfig } from '../config/configs/token.config';
 
-const services: Provider[] = [TokenProvider];
+const providers: Provider[] = [TokenProvider, PasswordProvider];
 const guards: Provider[] = [
   {
     provide: APP_GUARD,
@@ -35,8 +36,8 @@ const strategies: Provider[] = [JwtStrategy];
       }),
     }),
   ],
-  providers: [...services, ...guards, ...strategies],
+  providers: [...providers, ...guards, ...strategies],
   controllers: [],
-  exports: [TokenProvider, JwtModule],
+  exports: [JwtModule, ...providers],
 })
 export class SecurityModule {}

@@ -1,15 +1,4 @@
-import * as bcrypt from 'bcrypt';
-import { err, ok, Result } from 'neverthrow';
-
-import { passwordSchema } from '@workspace/contract';
-
-import { InvalidCredentialsError } from '@/infra/security/domain/security.domain-errors';
-import {
-  DomainPrimitive,
-  InternalServerErrorException,
-  ValidationError,
-  ValueObject,
-} from '@/shared/base';
+import { DomainPrimitive, InternalServerErrorException, ValueObject } from '@/shared/base';
 
 export class UserPasswordVO extends ValueObject<string> {
   // 1. 유효성 검증 (해시된 문자열이 비어있는지 등)
@@ -19,33 +8,12 @@ export class UserPasswordVO extends ValueObject<string> {
     }
   }
 
-  static async create(plainText: string): Promise<Result<UserPasswordVO, ValidationError>> {
-    const validationResult = passwordSchema.safeParse(plainText);
-    if (validationResult.success === false) {
-      return err(
-        new ValidationError({
-          headers: null,
-          pathParams: null,
-          query: null,
-          body: validationResult.error.issues,
-        }),
-      );
-    }
-
-    const hashedPassword = await bcrypt.hash(plainText, 12);
-    return ok(new UserPasswordVO({ value: hashedPassword }));
-  }
-
   static fromHash(hashedPassword: string): UserPasswordVO {
     return new UserPasswordVO({ value: hashedPassword });
   }
 
-  async compare(plainText: string) {
-    const result = await bcrypt.compare(plainText, this.props.value);
-    if (result === false) {
-      return err(new InvalidCredentialsError());
-    }
-    return ok(null);
+  get hashedValue(): string {
+    return this.props.value;
   }
 
   public toJSON(): string {
