@@ -1,7 +1,7 @@
 import { performance } from 'perf_hooks';
 
 import { Injectable, Logger, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common';
-import { DiscoveryService, Reflector } from '@nestjs/core';
+import { DiscoveryService } from '@nestjs/core';
 import { CommandBus, EventBus, QueryBus } from '@nestjs/cqrs';
 
 import { EventPublishedLogData, LogType, LogTypes } from './log.types';
@@ -23,8 +23,6 @@ export class CqrsInstrumentation implements OnModuleInit, OnApplicationBootstrap
     private readonly queryBus: QueryBus,
     private readonly eventBus: EventBus,
     private readonly discoveryService: DiscoveryService,
-    // Reflector는 메타데이터 조회 시 권장되는 방식입니다.
-    private readonly reflector: Reflector,
   ) {}
 
   onModuleInit() {
@@ -60,7 +58,6 @@ export class CqrsInstrumentation implements OnModuleInit, OnApplicationBootstrap
 
   /**
    * EventBus의 publish 계열 메서드를 래핑합니다.
-   * EventBus는 결과를 리턴하지 않거나 void인 경우가 많아 별도 처리합니다.
    */
   private wrapEventBusPublish(bus: EventBus) {
     const originalPublish = bus.publish.bind(bus);
