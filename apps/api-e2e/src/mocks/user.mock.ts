@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { expect } from '@jest/globals';
 
-import { UserBaseDto, UserDto, UserForMeDto } from '@workspace/contract';
+import { UserBaseDto, UserPrivateProfileDto, UserPublicProfileDto } from '@workspace/contract';
 
 import { Matchable } from '@/utils/expect-res';
 
@@ -78,7 +78,9 @@ export class TestUser {
 
   // --- Assertions ---
 
-  toMeExpectObject(overrides?: Partial<UserForMeDto>): Matchable<UserForMeDto> {
+  toPrivateProfileExpectObject(
+    overrides?: Partial<UserPrivateProfileDto>,
+  ): Matchable<UserPrivateProfileDto> {
     if (!this.isRegistered) {
       throw new Error('Cannot create expect object for unregistered user');
     }
@@ -92,12 +94,16 @@ export class TestUser {
       avatarUrl: this._serverState.avatarUrl ?? null,
       role: this._serverState.role ?? 'USER',
       status: this._serverState.status ?? 'ACTIVE',
+      lastActiveAt: this._serverState.lastActiveAt ? expect.any(String) : null,
       createdAt: expect.any(String),
+      deletedAt: this._serverState.deletedAt ? expect.any(String) : null,
       ...overrides,
     };
   }
 
-  toExpectObject(overrides?: Partial<UserDto>): Matchable<UserDto> {
+  toPublicProfileExpectObject(
+    overrides?: Partial<UserPublicProfileDto>,
+  ): Matchable<UserPublicProfileDto> {
     if (!this.isRegistered) {
       throw new Error('Cannot create expect object for unregistered user');
     }
@@ -111,6 +117,7 @@ export class TestUser {
       role: this._serverState.role ?? 'USER',
       status: this._serverState.status ?? 'ACTIVE',
       createdAt: expect.any(String),
+      deletedAt: this._serverState.deletedAt ? expect.any(String) : null,
       ...overrides,
     };
   }

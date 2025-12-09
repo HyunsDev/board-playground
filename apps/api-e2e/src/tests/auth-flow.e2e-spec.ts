@@ -110,7 +110,9 @@ describe('Auth Flow E2E', () => {
           avatarUrl: null,
           role: 'USER',
           status: 'ACTIVE',
+          lastActiveAt: expect.any(String),
           createdAt: expect.any(String),
+          deletedAt: null,
         },
       });
     });
@@ -130,14 +132,14 @@ describe('Auth Flow E2E', () => {
 
     it('토큰 갱신: 이미 사용된 Refresh Token 사용 시 감지 (Reuse Detection)', async () => {
       // 1. 정상 갱신을 한 번 더 수행하여 "구 토큰"과 "신 토큰"을 생성
-      const oldRefreshToken = client.getRefreshToken();
+      const oldRefreshToken = client.getRefreshToken() || '';
 
       const res1 = await client.api.auth.refreshToken();
       expectRes(res1).toBeApiOk({
         accessToken: expect.any(String),
       });
 
-      const validRefreshToken = client.getRefreshToken();
+      const validRefreshToken = client.getRefreshToken() || '';
 
       // 2. 이미 사용된(old) 토큰으로 재요청 -> Reuse Detected
       client.setRefreshToken(oldRefreshToken);

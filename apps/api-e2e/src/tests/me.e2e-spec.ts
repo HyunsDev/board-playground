@@ -25,7 +25,7 @@ describe('Me E2E', () => {
     it('내 정보 조회 (200)', async () => {
       const res = await client.api.user.me.get();
       expectRes(res).toBeApiOk({
-        me: user.toMeExpectObject(),
+        me: user.toPrivateProfileExpectObject(),
       });
     });
   });
@@ -42,7 +42,7 @@ describe('Me E2E', () => {
       });
 
       expectRes(res).toBeApiOk({
-        me: user.toMeExpectObject({
+        me: user.toPrivateProfileExpectObject({
           bio: newBio,
           nickname: newNickname,
         }),
@@ -51,7 +51,7 @@ describe('Me E2E', () => {
 
       const meRes = await client.api.user.me.get();
       expectRes(meRes).toBeApiOk({
-        me: user.toMeExpectObject({
+        me: user.toPrivateProfileExpectObject({
           bio: newBio,
           nickname: newNickname,
         }),
@@ -69,7 +69,7 @@ describe('Me E2E', () => {
       });
 
       expectRes(res).toBeApiOk({
-        me: user.toMeExpectObject({
+        me: user.toPrivateProfileExpectObject({
           username: newUsername,
         }),
       });
@@ -77,7 +77,7 @@ describe('Me E2E', () => {
 
       const meRes = await client.api.user.me.get();
       expectRes(meRes).toBeApiOk({
-        me: user.toMeExpectObject({
+        me: user.toPrivateProfileExpectObject({
           username: newUsername,
         }),
       });
