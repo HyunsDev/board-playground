@@ -1,17 +1,21 @@
 model User {
-    id             String     @id @default(uuid())
-    username       String     @unique
-    nickname       String
-    email          String     @unique
-    bio            String?
-    avatarUrl      String?
-    role           UserRole   @default(USER)
-    status         UserStatus @default(ACTIVE)
-    memo           String?
+    id        String     @id @default(uuid())
+    username  String     @unique // 삭제시 deleted_{userId} 형태로 변경
+    nickname  String
+    email     String     @unique // 삭제시 deleted_{userId}@deleted.user 형태로 변경
+    bio       String?
+    avatarUrl String?
+    role      UserRole   @default(USER)
+    status    UserStatus @default(ACTIVE)
+
     hashedPassword String?
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    lastActiveAt DateTime?
+    createdAt    DateTime  @default(now())
+    updatedAt    DateTime  @updatedAt
+    deletedAt    DateTime?
+
+    adminMemo String?
 
     sessions Session[]
     managers Manager[]
@@ -28,4 +32,5 @@ enum UserStatus {
     ACTIVE
     INACTIVE
     BANNED
+    DELETED
 }
