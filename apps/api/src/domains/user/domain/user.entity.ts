@@ -1,3 +1,4 @@
+import { err, ok } from 'neverthrow';
 import { v7 as uuidv7 } from 'uuid';
 
 import { USER_ROLE, USER_STATUS, UserRole, UserStatus } from '@workspace/contract';
@@ -117,10 +118,11 @@ export class UserEntity extends AggregateRoot<UserProps> {
     );
   }
 
-  public validateDelete(): void {
+  public validateDelete() {
     if (this.props.role === USER_ROLE.ADMIN) {
-      throw new UserAdminCannotBeDeletedError();
+      return err(new UserAdminCannotBeDeletedError());
     }
+    return ok();
   }
 
   static reconstruct(props: UserProps, id: string): UserEntity {

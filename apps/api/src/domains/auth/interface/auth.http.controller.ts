@@ -13,7 +13,7 @@ import { CheckUsernameAvailableQuery } from '../application/queries/check-userna
 
 import { ContextService } from '@/infra/context/context.service';
 import { Public } from '@/infra/security/decorators/public.decorator';
-import { UnexpectedDomainError } from '@/shared/base';
+import { UnexpectedDomainErrorException } from '@/shared/base';
 import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from '@/shared/constants/cookie.constant';
 import { IpAddress } from '@/shared/decorators/ip-address.decorator';
@@ -128,7 +128,7 @@ export class AuthHttpController {
               void res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_OPTIONS);
               return apiErr(ApiErrors.Auth.RefreshTokenReuseDetected);
             }
-            throw new UnexpectedDomainError(data.error);
+            throw new UnexpectedDomainErrorException(data.error);
           }
 
           void res.cookie('refreshToken', data.data.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
