@@ -19,7 +19,7 @@ export interface UserProps {
   status: UserStatus;
   adminMemo: string | null;
   password: UserPasswordVO | null;
-  lastActiveAt: Date | null;
+  lastActiveAt: Date;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

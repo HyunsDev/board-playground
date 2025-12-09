@@ -10,9 +10,7 @@ export const PostDtoSchema = z.object({
   author: UserSummaryDtoSchema,
   title: z.string().min(1).max(100),
   content: z.string().min(1).max(5000),
-  createdAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: 'Invalid date format',
-  }),
+  createdAt: z.string().datetime(),
 });
 export type PostDto = z.infer<typeof PostDtoSchema>;
 

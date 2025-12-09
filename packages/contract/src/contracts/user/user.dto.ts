@@ -14,25 +14,10 @@ export const UserBaseDtoSchema = z.object({
   role: UserRole,
   status: UserStatus,
 
-  lastActiveAt: z
-    .string()
-    .refine((date) => !isNaN(Date.parse(date)), {
-      message: 'Invalid date format',
-    })
-    .nullable(),
-  createdAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: 'Invalid date format',
-  }),
-  updatedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: 'Invalid date format',
-  }),
-  deletedAt: z
-    .string()
-    .refine((date) => !isNaN(Date.parse(date)), {
-      message: 'Invalid date format',
-    })
-    .nullable(),
-
+  lastActiveAt: z.string().datetime(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+  deletedAt: z.string().datetime().nullable(),
   adminMemo: z.string().max(500).nullable(),
 });
 export type UserBaseDto = z.infer<typeof UserBaseDtoSchema>;

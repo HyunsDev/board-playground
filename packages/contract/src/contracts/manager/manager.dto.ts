@@ -10,9 +10,7 @@ export const ManagerDtoSchema = z.object({
   boardId: z.string().uuid(),
   userId: z.string().uuid(),
   role: ManagerRole,
-  createdAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: 'Invalid date format',
-  }),
+  createdAt: z.string().datetime(),
 });
 export type ManagerDto = z.infer<typeof ManagerDtoSchema>;
 

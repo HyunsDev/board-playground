@@ -10,9 +10,7 @@ export const BoardDtoSchema = z.object({
   name: z.string().min(3).max(50),
   description: z.string().max(200).nullable(),
   managerId: ID,
-  createdAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: 'Invalid date format',
-  }),
+  createdAt: z.string().datetime(),
 });
 export type BoardDto = z.infer<typeof BoardDtoSchema>;
 

@@ -46,7 +46,7 @@ export class UserDtoMapper extends BaseDtoMapper<UserEntity> {
       avatarUrl: props.avatarUrl,
       role: props.role,
       status: props.status,
-      lastActiveAt: props.lastActiveAt?.toISOString() || null,
+      lastActiveAt: props.lastActiveAt?.toISOString(),
       createdAt: props.createdAt.toISOString(),
       deletedAt: props.deletedAt?.toISOString() || null,
       email: props.email,
@@ -76,9 +76,9 @@ export class UserDtoMapper extends BaseDtoMapper<UserEntity> {
       status: props.status,
       createdAt: props.createdAt.toISOString(),
       email: props.email,
+      lastActiveAt: props.lastActiveAt?.toISOString(),
       updatedAt: props.updatedAt.toISOString(),
       deletedAt: props.deletedAt?.toISOString() || null,
-      lastActiveAt: props.lastActiveAt?.toISOString() || null,
       adminMemo: props.adminMemo,
     };
   }
