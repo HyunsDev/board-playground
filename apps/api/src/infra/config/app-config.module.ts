@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { cookieConfig } from './configs/cookie.config';
@@ -6,7 +6,6 @@ import { databaseConfig } from './configs/database.config';
 import { executionConfig } from './configs/execution.config';
 import { tokenConfig } from './configs/token.config';
 
-@Global()
 @Module({
   imports: [
     ConfigModule.forRoot({

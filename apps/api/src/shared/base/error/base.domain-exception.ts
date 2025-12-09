@@ -1,4 +1,4 @@
-import { GlobalDomainError } from '@/core/filters/domain-exception.filter';
+import { GlobalDomainError } from '@/infra/exception-filter/domain-exception.filter';
 
 export class DomainException extends Error {
   constructor(public readonly error: GlobalDomainError) {

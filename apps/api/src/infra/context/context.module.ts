@@ -1,4 +1,4 @@
-import { Global, Module, Provider } from '@nestjs/common';
+import { Module, Provider } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
@@ -30,7 +30,6 @@ const interceptors: Provider[] = [
   },
 ];
 
-@Global()
 @Module({
   imports: [
     ClsModule.forRoot({
