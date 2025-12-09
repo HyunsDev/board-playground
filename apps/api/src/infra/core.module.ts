@@ -5,7 +5,7 @@ import { AppConfigModule } from './config/app-config.module';
 import { ContextModule } from './context/context.module';
 import { DomainEventModule } from './domain-event/domain-event.module';
 import { ExceptionFilterModule } from './exception-filter/exception-filter.module';
-import { CoreLoggerModule } from './logger/core-logger.module';
+import { LoggingModule } from './logging/logging.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Global()
@@ -16,9 +16,9 @@ import { PrismaModule } from './prisma/prisma.module';
     ContextModule,
     DomainEventModule,
     PrismaModule,
-    CoreLoggerModule,
+    LoggingModule,
     CqrsModule,
   ],
-  exports: [ContextModule, PrismaModule, CoreLoggerModule, CqrsModule, DomainEventModule],
+  exports: [ContextModule, PrismaModule, LoggingModule, CqrsModule, DomainEventModule],
 })
 export class CoreModule {}

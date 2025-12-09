@@ -1,4 +1,3 @@
-// src/common/logger/pino-common.config.ts
 import { IncomingMessage, ServerResponse } from 'http';
 
 import { Params } from 'nestjs-pino';
@@ -11,7 +10,7 @@ export const getCommonPinoConfig = (
 ): Params['pinoHttp'] => {
   return {
     serializers: {
-      err: (e) => e, // 에러 객체 그대로 보존 (운영에서는 JSON stringify됨)
+      err: (e) => e,
       req: (req) => ({
         id: req.id,
         method: req.method,

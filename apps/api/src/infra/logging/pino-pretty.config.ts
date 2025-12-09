@@ -2,30 +2,14 @@
 
 import { DestinationStream } from 'pino';
 
+import { LogTypes } from './log.types';
 import {
-  CommandHandledLogData,
-  EventHandledLogData,
-  EventPublishedLogData,
-  LogTypes,
-  QueryHandledLogData,
-} from './logger.types';
-
-import { DomainError } from '@/shared/base';
-
-const isCommandHandlerLogData = (a: Record<string, any>): a is CommandHandledLogData => {
-  return a.type === LogTypes.CommandHandled;
-};
-const isQueryHandlerLogData = (a: Record<string, any>): a is QueryHandledLogData => {
-  return a.type === LogTypes.QueryHandled;
-};
-const isEventHandlerLogData = (a: Record<string, any>): a is EventHandledLogData => {
-  return a.type === LogTypes.EventHandled;
-};
-const isEventPublishedLogData = (a: Record<string, any>): a is EventPublishedLogData => {
-  return a.type === LogTypes.EventPublished;
-};
-const isDomainError = (err: DomainError | Error): err is DomainError =>
-  err && typeof err === 'object' && 'code' in err;
+  isEventPublishedLogData,
+  isCommandHandlerLogData,
+  isQueryHandlerLogData,
+  isDomainError,
+  isEventHandlerLogData,
+} from './logging.utils';
 
 export const createDevLoggerStream = async (): Promise<DestinationStream> => {
   const { build } = await import('pino-pretty');
