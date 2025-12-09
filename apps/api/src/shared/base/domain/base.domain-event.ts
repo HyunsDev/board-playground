@@ -37,7 +37,7 @@ export abstract class BaseDomainEvent<D extends IDomainEvent<unknown> = IDomainE
       causationId: metadata?.causationId || '',
       causationType: metadata?.causationType || CausationCodes.Infra.HttpRequest,
       userId: metadata?.userId || '',
-      timestamp: Date.now(),
+      createdAt: Date.now(),
     };
   }
 

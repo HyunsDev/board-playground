@@ -2,7 +2,30 @@
 
 import { DestinationStream } from 'pino';
 
-import { BaseDomainEvent, DomainError } from '@/shared/base';
+import {
+  CommandHandledLogData,
+  EventHandledLogData,
+  EventPublishedLogData,
+  LogTypes,
+  QueryHandledLogData,
+} from './logger.types';
+
+import { DomainError } from '@/shared/base';
+
+const isCommandHandlerLogData = (a: Record<string, any>): a is CommandHandledLogData => {
+  return a.type === LogTypes.CommandHandled;
+};
+const isQueryHandlerLogData = (a: Record<string, any>): a is QueryHandledLogData => {
+  return a.type === LogTypes.QueryHandled;
+};
+const isEventHandlerLogData = (a: Record<string, any>): a is EventHandledLogData => {
+  return a.type === LogTypes.EventHandled;
+};
+const isEventPublishedLogData = (a: Record<string, any>): a is EventPublishedLogData => {
+  return a.type === LogTypes.EventPublished;
+};
+const isDomainError = (err: DomainError | Error): err is DomainError =>
+  err && typeof err === 'object' && 'code' in err;
 
 export const createDevLoggerStream = async (): Promise<DestinationStream> => {
   const { build } = await import('pino-pretty');
@@ -11,15 +34,13 @@ export const createDevLoggerStream = async (): Promise<DestinationStream> => {
   // --- Helpers ---
   const formatId = (id: string) => (id ? chalk.gray(`[${id.slice(-7)}]`) : '');
   const formatDuration = (ms: any) => (ms ? chalk.gray(`+${ms}ms`) : '');
-  const isDomainError = (err: DomainError | Error): err is DomainError =>
-    err && typeof err === 'object' && 'code' in err;
 
   return build({
     colorize: true,
     singleLine: true,
     translateTime: 'SYS:HH:MM:ss',
     ignore:
-      'pid,hostname,req,res,responseTime,context,reqId,userId,sessionId,httpMethod,reqUrl,resStatus,duration,err,errorCode,event',
+      'pid,hostname,req,res,responseTime,context,reqId,userId,sessionId,httpMethod,reqUrl,resStatus,duration,errorCode,event,type,action,isError,correlationId,causationId,causationType,createdAt,queryData,error',
 
     messageFormat: (log, messageKey) => {
       const msg = log[messageKey] as string;
@@ -27,34 +48,37 @@ export const createDevLoggerStream = async (): Promise<DestinationStream> => {
       const reqId = formatId(log.reqId as string);
 
       // CQRS Event Bus Log
-      if (log.event) {
-        const event = log.event as BaseDomainEvent;
-
+      if (isEventPublishedLogData(log)) {
         const msgType = chalk.gray('EVENT'.padStart(6));
         const eventName = chalk.blue(msg);
-        return `${reqId} ${msgType} ${eventName}(${event.code})`;
+        return `${reqId} ${msgType} ${eventName}(${log.action})`;
       }
 
       // CQRS Command/Query Bus Log
-      if (log.duration) {
+      if (
+        isCommandHandlerLogData(log) ||
+        isQueryHandlerLogData(log) ||
+        isEventHandlerLogData(log)
+      ) {
         const duration = formatDuration(log.duration);
-        const err = log.err as DomainError | Error | undefined;
-        const msgType =
-          log.context === 'CommandBus'
-            ? chalk.gray('CMD'.padStart(6))
-            : log.context === 'QueryBus'
-              ? chalk.gray('QUERY'.padStart(6))
-              : '';
+        const error = log.isError ? log.error : undefined;
+        const msgType = chalk.gray(
+          {
+            [LogTypes.CommandHandled]: 'CMD',
+            [LogTypes.QueryHandled]: 'QUERY',
+            [LogTypes.EventHandled]: 'EVT',
+          }[log.type]!.padStart(6),
+        );
 
-        if (err) {
+        if (error) {
           const symbol = chalk.red('(ERR)');
           const cmdName = chalk.red(msg);
           let errorCode = '';
 
-          if (isDomainError(err)) {
-            errorCode = chalk.gray(`[${err.code}]`);
-          } else if (err instanceof Error) {
-            errorCode = chalk.gray(`[${err.name || 'Error'}]`);
+          if (isDomainError(error)) {
+            errorCode = chalk.gray(`[${error.code}]`);
+          } else if (error instanceof Error) {
+            errorCode = chalk.gray(`[${error.name || 'Error'}]`);
           }
           return `${reqId} ${msgType} ${cmdName} ${symbol} ${errorCode} ${duration}`;
         }

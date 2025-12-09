@@ -60,7 +60,7 @@ export abstract class BaseQuery<
       causationId: metadata.causationId,
       causationType: metadata.causationType,
       userId: metadata.userId,
-      timestamp: Date.now(),
+      createdAt: Date.now(),
     };
   }
 
