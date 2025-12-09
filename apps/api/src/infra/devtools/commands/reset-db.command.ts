@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
-import { DatabaseService } from '@/infra/database/database.service';
+import { PrismaService } from '@/infra/database/prisma.service';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
 import { DomainCodes } from '@/shared/codes/domain.codes';
@@ -28,7 +28,7 @@ export class ResetDBCommand extends BaseCommand<
 @CommandHandler(ResetDBCommand)
 export class ResetDBCommandHandler implements ICommandHandler<ResetDBCommand> {
   constructor(
-    private readonly prisma: DatabaseService,
+    private readonly prisma: PrismaService,
     private readonly logger: Logger,
   ) {}
 

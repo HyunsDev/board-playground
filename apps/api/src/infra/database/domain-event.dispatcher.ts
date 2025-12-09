@@ -9,7 +9,7 @@ export class DomainEventDispatcher {
   private events: BaseDomainEvent[] = [];
 
   constructor(
-    private readonly eventBus: EventBus, // [변경] EventBus 주입
+    private readonly eventBus: EventBus,
     private readonly contextService: ContextService,
   ) {}
 

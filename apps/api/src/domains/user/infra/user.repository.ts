@@ -15,7 +15,7 @@ import { UserEntity } from '../domain/user.entity';
 import { UserRepositoryPort } from '../domain/user.repository.port';
 
 import { ContextService } from '@/infra/context/context.service';
-import { DatabaseService } from '@/infra/database/database.service';
+import { PrismaService } from '@/infra/database/prisma.service';
 import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
 import { PaginatedResult, UnexpectedDomainErrorException } from '@/shared/base';
 import { BaseRepository } from '@/shared/base/infra/base.repository';
@@ -25,7 +25,7 @@ import { matchError } from '@/shared/utils/match-error.utils';
 @Injectable()
 export class UserRepository extends BaseRepository<UserEntity, User> implements UserRepositoryPort {
   constructor(
-    protected readonly prisma: DatabaseService,
+    protected readonly prisma: PrismaService,
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly context: ContextService,
     protected readonly mapper: UserMapper,

@@ -13,7 +13,7 @@ import { SessionRepositoryPort } from '../domain/session.repository.port';
 import { InvalidRefreshTokenError } from '../domain/token.domain-errors';
 
 import { ContextService } from '@/infra/context/context.service';
-import { DatabaseService } from '@/infra/database/database.service';
+import { PrismaService } from '@/infra/database/prisma.service';
 import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
 import { InternalServerErrorException, UnexpectedDomainErrorException } from '@/shared/base';
 import { BaseRepository } from '@/shared/base/infra/base.repository';
@@ -26,7 +26,7 @@ export class SessionRepository
   implements SessionRepositoryPort
 {
   constructor(
-    protected readonly prisma: DatabaseService,
+    protected readonly prisma: PrismaService,
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly context: ContextService,
     protected readonly mapper: SessionMapper,

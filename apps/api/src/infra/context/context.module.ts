@@ -8,8 +8,8 @@ import { v7 as uuidv7 } from 'uuid';
 
 import { ContextService } from './context.service';
 import { RequestIdInterceptor } from './interceptors/request-id.interceptor';
-import { DatabaseModule } from '../database/database.module';
-import { DatabaseService } from '../database/database.service';
+import { PrismaModule } from '../database/prisma.module';
+import { PrismaService } from '../database/prisma.service';
 import { ErrorLoggingInterceptor } from './interceptors/error-logging.interceptor';
 import { MessageCausationInterceptor } from './interceptors/message-causation.interceptor';
 
@@ -54,9 +54,9 @@ const interceptors: Provider[] = [
       },
       plugins: [
         new ClsPluginTransactional({
-          imports: [DatabaseModule],
+          imports: [PrismaModule],
           adapter: new TransactionalAdapterPrisma({
-            prismaInjectionToken: DatabaseService,
+            prismaInjectionToken: PrismaService,
           }),
         }),
       ],
