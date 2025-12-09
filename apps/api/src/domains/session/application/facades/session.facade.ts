@@ -12,6 +12,7 @@ import { TokenConfig, tokenConfig } from '@/infra/config/configs/token.config';
 import { TokenProvider } from '@/infra/security/providers/token.provider';
 import { UnexpectedDomainErrorException } from '@/shared/base';
 import { matchError } from '@/shared/utils/match-error.utils';
+import { matchType, typedOk } from '@/shared/utils/typed-ok.utils';
 
 @Injectable()
 export class SessionFacade {
@@ -61,7 +62,7 @@ export class SessionFacade {
     const hashedRefreshToken = this.tokenProvider.hashRefreshToken(currentRefreshToken);
     const sessionResult = await this.sessionRepo.getOneByHashedRefreshToken(hashedRefreshToken);
     if (sessionResult.isErr()) return sessionResult;
-    const session = sessionResult.value;
+    let session = sessionResult.value;
 
     const refreshTokenSet = this.tokenProvider.generateRefreshToken();
     const rotateResult = session.rotateRefreshToken({
@@ -78,21 +79,20 @@ export class SessionFacade {
           throw new UnexpectedDomainErrorException(e);
         },
       });
+    // eslint-disable-next-line functional/no-expression-statements
+    session = updatedSessionResult.value;
 
-    if (rotateResult.value.status === 'success') {
-      return ok({
-        status: 'success' as const,
-        data: {
-          session: updatedSessionResult.value,
+    return matchType(rotateResult.value, {
+      success: () =>
+        typedOk('rotated', {
+          session: session,
           refreshToken: refreshTokenSet.refreshToken,
-        },
-      });
-    } else {
-      return ok({
-        status: 'failed' as const,
-        error: rotateResult.value.error,
-      });
-    }
+        }),
+      revoked: () =>
+        typedOk('revoked', {
+          reason: 'TokenReuseDetected',
+        }),
+    });
   }
 
   async close(currentRefreshToken: string) {

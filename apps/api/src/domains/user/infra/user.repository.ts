@@ -117,14 +117,14 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
       (user) => ok(user),
       (error) =>
         matchError(error, {
-          EntityConflict: ({ details }) => {
-            if (details?.conflicts.some((conflict) => conflict.field === 'email')) {
+          EntityConflict: (e) => {
+            if (e.details?.conflicts.some((conflict) => conflict.field === 'email')) {
               return err(new UserEmailAlreadyExistsError());
             }
-            if (details?.conflicts.some((conflict) => conflict.field === 'username')) {
+            if (e.details?.conflicts.some((conflict) => conflict.field === 'username')) {
               return err(new UserUsernameAlreadyExistsError());
             }
-            throw new UnexpectedDomainErrorException(error);
+            throw new UnexpectedDomainErrorException(e);
           },
         }),
     );

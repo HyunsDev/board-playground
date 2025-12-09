@@ -1,11 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { err, ok } from 'neverthrow';
+import { err } from 'neverthrow';
 
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
-import {
-  InvalidRefreshTokenError,
-  TokenReuseDetectedError,
-} from '@/domains/session/domain/token.domain-errors';
+import { InvalidRefreshTokenError } from '@/domains/session/domain/token.domain-errors';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { TokenProvider } from '@/infra/security/providers/token.provider';
@@ -16,6 +13,7 @@ import { ResourceTypes } from '@/shared/codes/resource-type.codes';
 import { HandlerResult } from '@/shared/types/handler-result';
 import { AuthTokens } from '@/shared/types/tokens';
 import { matchError } from '@/shared/utils/match-error.utils';
+import { TypedData, typedOk } from '@/shared/utils/typed-ok.utils';
 
 type IRefreshTokenAuthCommand = ICommand<{
   refreshToken: string;
@@ -23,14 +21,13 @@ type IRefreshTokenAuthCommand = ICommand<{
 export class RefreshTokenAuthCommand extends BaseCommand<
   IRefreshTokenAuthCommand,
   HandlerResult<RefreshTokenAuthCommandHandler>,
-  | {
-      status: 'success';
-      data: AuthTokens;
-    }
-  | {
-      status: 'failed';
-      error: TokenReuseDetectedError;
-    }
+  | TypedData<'rotated', AuthTokens>
+  | TypedData<
+      'revoked',
+      {
+        reason: 'TokenReuseDetected';
+      }
+    >
 > {
   readonly domain = DomainCodes.Auth;
   readonly code = CommandCodes.Auth.RefreshToken;
@@ -66,11 +63,11 @@ export class RefreshTokenAuthCommandHandler implements ICommandHandler<RefreshTo
       }
 
       const sessionOkResult = sessionResult.value;
-      if (sessionOkResult.status === 'failed') {
-        return ok(sessionOkResult);
+      if (sessionOkResult.type === 'revoked') {
+        return typedOk('revoked', { reason: 'TokenReuseDetected' });
       }
 
-      const user = await this.userFacade.getOneById(sessionOkResult.data.session.userId);
+      const user = await this.userFacade.getOneById(sessionOkResult.session.userId);
       if (user.isErr())
         return matchError(user.error, {
           UserNotFound: () => err(new InvalidRefreshTokenError()),
@@ -80,15 +77,12 @@ export class RefreshTokenAuthCommandHandler implements ICommandHandler<RefreshTo
         sub: user.value.id,
         email: user.value.email,
         role: user.value.role,
-        sessionId: sessionOkResult.data.session.id,
+        sessionId: sessionOkResult.session.id,
       });
 
-      return ok({
-        status: 'success' as const,
-        data: {
-          accessToken: accessToken,
-          refreshToken: sessionOkResult.data.refreshToken,
-        },
+      return typedOk('rotated', {
+        accessToken: accessToken,
+        refreshToken: sessionOkResult.refreshToken,
       });
     });
   }

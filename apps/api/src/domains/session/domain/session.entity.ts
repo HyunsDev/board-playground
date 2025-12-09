@@ -14,6 +14,7 @@ import { InvalidRefreshTokenError } from './token.domain-errors';
 
 import { AggregateRoot } from '@/shared/base';
 import { matchError } from '@/shared/utils/match-error.utils';
+import { typedOk } from '@/shared/utils/typed-ok.utils';
 
 export interface SessionProps {
   userId: string;
@@ -120,7 +121,7 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
     const tokenUseResult = currentToken.use();
     if (tokenUseResult.isErr()) {
       return matchError(tokenUseResult.error, {
-        TokenReuseDetected: (e) => {
+        TokenReuseDetected: () => {
           this.addEvent(
             new RefreshTokenReuseDetectedEvent({
               userId: this.props.userId,
@@ -129,9 +130,8 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
             }),
           );
           this.revoke();
-          return ok({
-            status: 'failed' as const,
-            error: e,
+          return typedOk('revoked', {
+            reason: 'TokenReuseDetected',
           });
         },
         ExpiredToken: (e) => err(e),
@@ -156,8 +156,7 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
       }),
     );
 
-    return ok({
-      status: 'success' as const,
+    return typedOk('success', {
       newToken,
     });
   }
