@@ -1,7 +1,7 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
-import { UserService } from '@/domains/user/application/services/user.service';
+import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { UserUsernameAlreadyExistsError } from '@/domains/user/domain/user.domain-errors';
 import { BaseQuery, CreateMessageMetadata, IQuery } from '@/shared/base';
 import { DomainCodes } from '@/shared/codes/domain.codes';
@@ -31,10 +31,10 @@ export class CheckUsernameAvailableQuery extends BaseQuery<
 export class CheckUsernameAvailableQueryHandler
   implements IQueryHandler<CheckUsernameAvailableQuery>
 {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userFacade: UserFacade) {}
 
   async execute({ data }: ICheckUsernameAvailableQuery) {
-    const exists = await this.userService.usernameExists(data.username);
+    const exists = await this.userFacade.usernameExists(data.username);
     if (exists) {
       return err(new UserUsernameAlreadyExistsError());
     }

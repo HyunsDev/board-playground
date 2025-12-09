@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
-import { SessionService } from '@/domains/session/application/services/session.service';
-import { UserService } from '@/domains/user/application/services/user.service';
+import { SessionFacade } from '@/domains/session/application/facades/session.facade';
+import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { TokenProvider } from '@/infra/security/providers/token.provider';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
@@ -32,19 +32,19 @@ export class ForceLoginCommand extends BaseCommand<
 @CommandHandler(ForceLoginCommand)
 export class ForceLoginCommandHandler implements ICommandHandler<ForceLoginCommand> {
   constructor(
-    private readonly sessionService: SessionService,
+    private readonly sessionFacade: SessionFacade,
     private readonly tokenProvider: TokenProvider,
-    private readonly userService: UserService,
+    private readonly userFacade: UserFacade,
   ) {}
 
   async execute({ data }: IForceLoginCommand) {
-    const userResult = await this.userService.getOneByEmail(data.email);
+    const userResult = await this.userFacade.getOneByEmail(data.email);
     if (userResult.isErr()) {
       return err(userResult.error);
     }
     const user = userResult.value;
 
-    const sessionResult = await this.sessionService.create({
+    const sessionResult = await this.sessionFacade.create({
       userId: user.id,
       ipAddress: '127.0.0.1',
       userAgent: 'Devtools',

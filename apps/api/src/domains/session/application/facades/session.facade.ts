@@ -14,7 +14,7 @@ import { UnexpectedDomainErrorException } from '@/shared/base';
 import { matchError } from '@/shared/utils/match-error.utils';
 
 @Injectable()
-export class SessionService {
+export class SessionFacade {
   constructor(
     @Inject(SESSION_REPOSITORY)
     private readonly sessionRepo: SessionRepositoryPort,

@@ -9,7 +9,7 @@ import { GetUserForAdminQueryHandler } from './application/queries/get-user-for-
 import { GetUserMeQueryHandler } from './application/queries/get-user-me.query';
 import { GetUserQueryHandler } from './application/queries/get-user.query';
 import { SearchUserQueryHandler } from './application/queries/search-user.query';
-import { UserService } from './application/services/user.service';
+import { UserFacade } from './application/facades/user.facade';
 import { UserMapper } from './infra/user.mapper';
 import { UserRepository } from './infra/user.repository';
 import { UserAdminHttpController } from './interface/user-admin.http.controller';
@@ -30,7 +30,7 @@ const queryHandlers: Provider[] = [
   DeleteUserMeCommandHandler,
 ];
 const eventHandlers: Provider[] = [UserActivityEventHandler];
-const services: Provider[] = [UserService];
+const services: Provider[] = [UserFacade];
 const mappers: Provider[] = [UserMapper, UserDtoMapper];
 const repositories: Provider[] = [
   {
@@ -51,6 +51,6 @@ const repositories: Provider[] = [
     ...repositories,
   ],
   controllers: [...httpControllers],
-  exports: [UserService],
+  exports: [UserFacade],
 })
 export class UserModule {}

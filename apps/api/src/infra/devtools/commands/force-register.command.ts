@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
-import { SessionService } from '@/domains/session/application/services/session.service';
-import { UserService } from '@/domains/user/application/services/user.service';
+import { SessionFacade } from '@/domains/session/application/facades/session.facade';
+import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { TokenProvider } from '@/infra/security/providers/token.provider';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
@@ -37,13 +37,13 @@ export class ForceRegisterCommand extends BaseCommand<
 @CommandHandler(ForceRegisterCommand)
 export class ForceRegisterCommandHandler implements ICommandHandler<ForceRegisterCommand> {
   constructor(
-    private readonly userService: UserService,
-    private readonly sessionService: SessionService,
+    private readonly userFacade: UserFacade,
+    private readonly sessionFacade: SessionFacade,
     private readonly tokenProvider: TokenProvider,
   ) {}
 
   async execute({ data }: ForceRegisterCommandProps) {
-    const createUserResult = await this.userService.create({
+    const createUserResult = await this.userFacade.create({
       email: data.email,
       username: data.username,
       nickname: data.nickname,
@@ -52,7 +52,7 @@ export class ForceRegisterCommandHandler implements ICommandHandler<ForceRegiste
     if (createUserResult.isErr()) return err(createUserResult.error);
     const user = createUserResult.value;
 
-    const sessionResult = await this.sessionService.create({
+    const sessionResult = await this.sessionFacade.create({
       userId: user.id,
       ipAddress: '127.0.0.1',
       userAgent: 'Devtools',

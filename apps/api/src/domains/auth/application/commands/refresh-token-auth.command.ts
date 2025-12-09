@@ -1,12 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
-import { SessionService } from '@/domains/session/application/services/session.service';
+import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import {
   InvalidRefreshTokenError,
   TokenReuseDetectedError,
 } from '@/domains/session/domain/token.domain-errors';
-import { UserService } from '@/domains/user/application/services/user.service';
+import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { TokenProvider } from '@/infra/security/providers/token.provider';
 import { BaseCommand, ICommand } from '@/shared/base';
@@ -47,15 +47,15 @@ export class RefreshTokenAuthCommand extends BaseCommand<
 @CommandHandler(RefreshTokenAuthCommand)
 export class RefreshTokenAuthCommandHandler implements ICommandHandler<RefreshTokenAuthCommand> {
   constructor(
-    private readonly userService: UserService,
-    private readonly sessionService: SessionService,
+    private readonly userFacade: UserFacade,
+    private readonly sessionFacade: SessionFacade,
     private readonly tokenProvider: TokenProvider,
     private readonly txManager: TransactionManager,
   ) {}
 
   async execute(command: IRefreshTokenAuthCommand) {
     return await this.txManager.run(async () => {
-      const sessionResult = await this.sessionService.rotate(command.data.refreshToken);
+      const sessionResult = await this.sessionFacade.rotate(command.data.refreshToken);
       if (sessionResult.isErr()) {
         return matchError(sessionResult.error, {
           InvalidRefreshToken: (e) => err(e),
@@ -70,7 +70,7 @@ export class RefreshTokenAuthCommandHandler implements ICommandHandler<RefreshTo
         return ok(sessionOkResult);
       }
 
-      const user = await this.userService.getOneById(sessionOkResult.data.session.userId);
+      const user = await this.userFacade.getOneById(sessionOkResult.data.session.userId);
       if (user.isErr())
         return matchError(user.error, {
           UserNotFound: () => err(new InvalidRefreshTokenError()),

@@ -2,9 +2,9 @@ import { Logger, Module, Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
 import { DeleteSessionCommandHandler } from './application/commands/delete-session.command';
+import { SessionFacade } from './application/facades/session.facade';
 import { GetSessionQueryHandler } from './application/queries/get-session.query';
 import { ListSessionsQueryHandler } from './application/queries/list-sessions.query';
-import { SessionService } from './application/services/session.service';
 import { RefreshTokenMapper } from './infra/refresh-token.mapper';
 import { SessionMapper } from './infra/session.mapper';
 import { SessionRepository } from './infra/session.repository';
@@ -15,7 +15,7 @@ import { SESSION_REPOSITORY } from './session.constants';
 const httpControllers = [SessionHttpController];
 const commandHandlers: Provider[] = [DeleteSessionCommandHandler];
 const queryHandlers: Provider[] = [GetSessionQueryHandler, ListSessionsQueryHandler];
-const services: Provider[] = [SessionService];
+const services: Provider[] = [SessionFacade];
 const mappers: Provider[] = [SessionMapper, SessionDtoMapper, RefreshTokenMapper];
 const repositories: Provider[] = [
   {
@@ -35,6 +35,6 @@ const repositories: Provider[] = [
     ...repositories,
   ],
   controllers: [...httpControllers],
-  exports: [SessionMapper, SessionDtoMapper, RefreshTokenMapper, SessionService],
+  exports: [SessionFacade],
 })
 export class SessionModule {}

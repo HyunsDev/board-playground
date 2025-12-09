@@ -3,8 +3,8 @@ import { err, ok } from 'neverthrow';
 
 import { DEVICE_PLATFORM } from '@workspace/contract';
 
-import { SessionService } from '@/domains/session/application/services/session.service';
-import { UserService } from '@/domains/user/application/services/user.service';
+import { SessionFacade } from '@/domains/session/application/facades/session.facade';
+import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { InvalidCredentialsError } from '@/infra/security/domain/security.domain-errors';
 import { PasswordProvider } from '@/infra/security/providers/password.provider';
@@ -41,8 +41,8 @@ export class LoginAuthCommand extends BaseCommand<
 @CommandHandler(LoginAuthCommand)
 export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand> {
   constructor(
-    private readonly userService: UserService,
-    private readonly sessionService: SessionService,
+    private readonly userFacade: UserFacade,
+    private readonly sessionFacade: SessionFacade,
     private readonly tokenProvider: TokenProvider,
     private readonly passwordProvider: PasswordProvider,
     private readonly txManager: TransactionManager,
@@ -50,7 +50,7 @@ export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand
 
   async execute(command: ILoginAuthCommand) {
     return await this.txManager.run(async () => {
-      const userResult = await this.userService.getOneByEmail(command.data.email);
+      const userResult = await this.userFacade.getOneByEmail(command.data.email);
       if (userResult.isErr()) {
         return matchError(userResult.error, {
           UserNotFound: () => err(new InvalidCredentialsError()),
@@ -68,7 +68,7 @@ export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand
       );
       if (!validResult) return err(new InvalidCredentialsError());
 
-      const sessionResult = await this.sessionService.create({
+      const sessionResult = await this.sessionFacade.create({
         userId: user.id,
         userAgent: command.data.userAgent,
         ipAddress: command.data.ipAddress,

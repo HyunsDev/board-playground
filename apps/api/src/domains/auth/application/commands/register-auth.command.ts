@@ -3,8 +3,8 @@ import { err, ok } from 'neverthrow';
 
 import { DEVICE_PLATFORM, passwordSchema } from '@workspace/contract';
 
-import { SessionService } from '@/domains/session/application/services/session.service';
-import { UserService } from '@/domains/user/application/services/user.service';
+import { SessionFacade } from '@/domains/session/application/facades/session.facade';
+import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { PasswordProvider } from '@/infra/security/providers/password.provider';
 import { TokenProvider } from '@/infra/security/providers/token.provider';
@@ -43,8 +43,8 @@ export class RegisterAuthCommandHandler
   implements ICommandHandler<RegisterAuthCommand, HandlerResult<RegisterAuthCommandHandler>>
 {
   constructor(
-    private readonly userService: UserService,
-    private readonly sessionService: SessionService,
+    private readonly userFacade: UserFacade,
+    private readonly sessionFacade: SessionFacade,
     private readonly tokenProvider: TokenProvider,
     private readonly passwordProvider: PasswordProvider,
     private readonly txManager: TransactionManager,
@@ -65,7 +65,7 @@ export class RegisterAuthCommandHandler
       }
 
       const hashedPassword = await this.passwordProvider.hash(passwordValidation.data);
-      const createUserResult = await this.userService.create({
+      const createUserResult = await this.userFacade.create({
         email: command.data.email,
         username: command.data.username,
         nickname: command.data.nickname,
@@ -73,7 +73,7 @@ export class RegisterAuthCommandHandler
       });
       if (createUserResult.isErr()) return err(createUserResult.error);
 
-      const sessionResult = await this.sessionService.create({
+      const sessionResult = await this.sessionFacade.create({
         userId: createUserResult.value.id,
         userAgent: command.data.userAgent,
         ipAddress: command.data.ipAddress,

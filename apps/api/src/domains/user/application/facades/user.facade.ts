@@ -5,7 +5,7 @@ import { UserRepositoryPort } from '../../domain/user.repository.port';
 import { USER_REPOSITORY } from '../../user.constant';
 
 @Injectable()
-export class UserService {
+export class UserFacade {
   constructor(
     @Inject(USER_REPOSITORY)
     private readonly userRepo: UserRepositoryPort,
