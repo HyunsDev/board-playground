@@ -15,7 +15,7 @@ import {
 import { BaseCommand, BaseDomainEvent, BaseQuery, MessageMetadata } from '@/shared/base';
 
 /**
- * \@EventsHandler 데코레이터의 메타데이터 키
+ * `@EventsHandler` 데코레이터의 메타데이터 키
  * @see https://github.com/nestjs/cqrs/blob/master/src/decorators/constants.ts#L6
  */
 const EVENTS_HANDLER_METADATA = '__eventsHandler__';
@@ -236,25 +236,23 @@ export class CqrsLoggingService implements OnModuleInit, OnApplicationBootstrap 
         return;
       }
 
-      // 핸들러 이름 (ex: UserCreatedHandler)
       const handlerName = metatype.name || 'UnknownEventHandler';
       const originalHandle = metatype.prototype.handle;
       this.logger.debug(`Wrapping EventHandler: ${handlerName}`);
 
-      // handle 메소드 덮어쓰기
-
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const serviceThis = this; // CqrsLoggingService의 this 캡처
 
       // eslint-disable-next-line functional/no-expression-statements
       metatype.prototype.handle = async function (event: BaseDomainEvent) {
-        // [디버깅] 실제 호출되는지 확인
-
         const start = performance.now();
         const eventName = event?.constructor?.name || 'UnknownEvent';
-        const metadata = serviceThis.extractMetadata(event); // 캡처된 serviceThis 사용
+        const metadata = serviceThis.extractMetadata(event);
 
         try {
-          // [핵심] 원본 함수 실행 시 'this'를 현재 실행 컨텍스트(핸들러 인스턴스)로 전달
+          /**
+           * 원본 함수 실행시 실행 환경(ex: this.userRepository)의 this 바인딩.
+           */
           const result = await originalHandle.call(this, event);
 
           const duration = (performance.now() - start).toFixed(0);
@@ -304,11 +302,12 @@ export class CqrsLoggingService implements OnModuleInit, OnApplicationBootstrap 
         }
       };
 
-      // 중복 래핑 방지 플래그 설정
+      /**
+       * 중복 래핑 방지 플래그 설정
+       */
       // eslint-disable-next-line functional/no-expression-statements
-      (metatype.prototype.handle as any).__wrapped__ = true;
-      // eslint-disable-next-line functional/no-expression-statements
-      wrappedCount = wrappedCount + 1;
+      metatype.prototype.handle.__wrapped__ = true;
+      void wrappedCount++;
     });
 
     if (wrappedCount > 0) {

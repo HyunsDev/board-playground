@@ -19,7 +19,7 @@ type DeepMergeAll<T extends any[]> = T extends [infer Head, ...infer Tail]
   ? Tail extends []
     ? Head
     : DeepMergeTwo<Head, DeepMergeAll<Tail>>
-  : {};
+  : unknown;
 
 // 3. [런타임] 헬퍼 함수들
 function isObject(item: any): item is object {
@@ -32,12 +32,14 @@ function mergeTwo(target: any, source: any): any {
     Object.keys(source).forEach((key) => {
       if (isObject(source[key])) {
         if (!(key in target)) {
+          // eslint-disable-next-line functional/no-expression-statements
           Object.assign(output, { [key]: source[key] });
         } else {
+          // eslint-disable-next-line functional/no-expression-statements
           output[key] = mergeTwo(target[key], source[key]);
         }
       } else {
-        Object.assign(output, { [key]: source[key] });
+        void Object.assign(output, { [key]: source[key] });
       }
     });
   }

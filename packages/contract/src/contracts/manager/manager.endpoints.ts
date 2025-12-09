@@ -4,8 +4,8 @@ import { ManagerWithBoardDtoSchema, ManagerWithUserDtoSchema } from './manager.d
 import { ManagerRole } from './manager.enums';
 
 import { c, ID, toApiErrorResponses } from '@/common';
-import { BoardSlug } from '@/contracts/board/board.schemas';
 import { ApiErrors } from '@/contracts/api-errors';
+import { BoardSlug } from '@/contracts/board/board.schemas';
 import { USER_ROLE } from '@/contracts/user';
 
 export const listManagersOfBoard = c.query({
