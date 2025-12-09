@@ -7,6 +7,7 @@ import { DevicePlatform, SESSION_STATUS, SessionStatus } from '@workspace/contra
 import { RefreshTokenReuseDetectedEvent } from './events/refresh-token-reuse-detected.event';
 import { SessionCreatedEvent } from './events/session-created.event';
 import { SessionDeletedEvent } from './events/session-deleted.event';
+import { SessionRefreshedEvent } from './events/session-refreshed.event';
 import { RefreshTokenEntity } from './refresh-token.entity';
 import { SessionClosedError, SessionRevokedError } from './session.domain-errors';
 import { InvalidRefreshTokenError } from './token.domain-errors';
@@ -146,6 +147,14 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
     this.props.refreshTokens = [...this.props.refreshTokens, newToken];
     this.props.lastRefreshedAt = new Date();
     this.props.expiresAt = expiresAt;
+
+    this.addEvent(
+      new SessionRefreshedEvent({
+        sessionId: this.id,
+        userId: this.props.userId,
+        newRefreshTokenId: newToken.id,
+      }),
+    );
 
     return ok({
       status: 'success' as const,
