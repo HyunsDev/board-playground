@@ -144,7 +144,7 @@ export class SessionRepository
   ): Promise<DomainResult<SessionEntity, InvalidRefreshTokenError>> {
     const tokenRecord = await this.client.refreshToken.findUnique({
       where: {
-        token: hashedRefreshToken,
+        hashedToken: hashedRefreshToken,
       },
       select: {
         sessionId: true,
@@ -162,7 +162,7 @@ export class SessionRepository
       include: {
         refreshTokens: {
           where: {
-            token: hashedRefreshToken,
+            hashedToken: hashedRefreshToken,
           },
         },
       },

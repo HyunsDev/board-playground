@@ -7,7 +7,7 @@ import { Entity, ExpiredTokenError } from '@/shared/base';
 
 export interface RefreshTokenProps {
   id: string;
-  token: string;
+  hashedToken: string;
   isUsed: boolean;
   expiresAt: Date;
   sessionId: string;
@@ -34,7 +34,7 @@ export class RefreshTokenEntity extends Entity<RefreshTokenProps> {
     const id = v7();
     const props: RefreshTokenProps = {
       id,
-      token: createProps.token,
+      hashedToken: createProps.token,
       isUsed: false,
       expiresAt: createProps.expiresAt,
       sessionId: createProps.sessionId,
@@ -46,7 +46,7 @@ export class RefreshTokenEntity extends Entity<RefreshTokenProps> {
   }
 
   get token(): string {
-    return this.props.token;
+    return this.props.hashedToken;
   }
 
   public use() {

@@ -1,8 +1,8 @@
 model RefreshToken {
-    id        String   @id @default(uuid())
-    token     String   @unique
-    isUsed    Boolean  @default(false)
-    expiresAt DateTime
+    id          String   @id @default(uuid())
+    hashedToken String   @unique
+    isUsed      Boolean  @default(false)
+    expiresAt   DateTime
 
     sessionId String
     session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)

@@ -1027,7 +1027,7 @@ export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof Post
 
 export const RefreshTokenScalarFieldEnum = {
   id: 'id',
-  token: 'token',
+  hashedToken: 'hashedToken',
   isUsed: 'isUsed',
   expiresAt: 'expiresAt',
   sessionId: 'sessionId',
