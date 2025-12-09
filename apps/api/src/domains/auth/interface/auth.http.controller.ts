@@ -12,6 +12,7 @@ import { RegisterAuthCommand } from '../application/commands/register-auth.comma
 import { CheckUsernameAvailableQuery } from '../application/queries/check-username-available.query';
 
 import { ContextService } from '@/infra/context/context.service';
+import { Public } from '@/infra/security/decorators/public.decorator';
 import { UnexpectedDomainError } from '@/shared/base';
 import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from '@/shared/constants/cookie.constant';
@@ -27,6 +28,7 @@ export class AuthHttpController {
     private readonly contextService: ContextService,
   ) {}
 
+  @Public()
   @TsRestHandler(contract.auth.register)
   async register(
     @Res({ passthrough: true }) res: Response,
@@ -65,6 +67,7 @@ export class AuthHttpController {
     });
   }
 
+  @Public()
   @TsRestHandler(contract.auth.login)
   async login(
     @Res({ passthrough: true }) res: Response,
@@ -99,6 +102,7 @@ export class AuthHttpController {
     });
   }
 
+  @Public()
   @TsRestHandler(contract.auth.refreshToken)
   async refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     return tsRestHandler(contract.auth.refreshToken, async () => {
@@ -143,6 +147,7 @@ export class AuthHttpController {
     });
   }
 
+  @Public()
   @TsRestHandler(contract.auth.logout)
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     return tsRestHandler(contract.auth.logout, async () => {
@@ -169,6 +174,7 @@ export class AuthHttpController {
     });
   }
 
+  @Public()
   @TsRestHandler(contract.auth.checkUsername)
   async checkUsername() {
     return tsRestHandler(contract.auth.checkUsername, async ({ query }) => {

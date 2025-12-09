@@ -9,7 +9,7 @@ import { SessionRepositoryPort } from '../../domain/session.repository.port';
 import { SESSION_REPOSITORY } from '../../session.constants';
 
 import { TokenConfig, tokenConfig } from '@/infra/config/configs/token.config';
-import { TokenService } from '@/infra/security/services/token.service';
+import { TokenProvider } from '@/infra/security/token.provider';
 import { UnexpectedDomainErrorException } from '@/shared/base';
 import { matchError } from '@/shared/utils/match-error.utils';
 
@@ -18,7 +18,7 @@ export class SessionService {
   constructor(
     @Inject(SESSION_REPOSITORY)
     private readonly sessionRepo: SessionRepositoryPort,
-    private readonly tokenService: TokenService,
+    private readonly tokenProvider: TokenProvider,
     @Inject(tokenConfig.KEY)
     private readonly tokenConfig: TokenConfig,
   ) {}
@@ -38,7 +38,7 @@ export class SessionService {
     platform: DevicePlatform;
     ipAddress: string;
   }) {
-    const refreshTokenSet = this.tokenService.generateRefreshToken();
+    const refreshTokenSet = this.tokenProvider.generateRefreshToken();
     const session = SessionEntity.create({
       userId: props.userId,
       userAgent: props.userAgent,
@@ -58,12 +58,12 @@ export class SessionService {
   }
 
   async rotate(currentRefreshToken: string) {
-    const hashedRefreshToken = this.tokenService.hashToken(currentRefreshToken);
+    const hashedRefreshToken = this.tokenProvider.hashRefreshToken(currentRefreshToken);
     const sessionResult = await this.sessionRepo.getOneByHashedRefreshToken(hashedRefreshToken);
     if (sessionResult.isErr()) return sessionResult;
     const session = sessionResult.value;
 
-    const refreshTokenSet = this.tokenService.generateRefreshToken();
+    const refreshTokenSet = this.tokenProvider.generateRefreshToken();
     const rotateResult = session.rotateRefreshToken({
       currentTokenHash: hashedRefreshToken,
       newTokenHash: refreshTokenSet.refreshTokenHash,
@@ -96,7 +96,7 @@ export class SessionService {
   }
 
   async close(currentRefreshToken: string) {
-    const hashedRefreshToken = this.tokenService.hashToken(currentRefreshToken);
+    const hashedRefreshToken = this.tokenProvider.hashRefreshToken(currentRefreshToken);
     const sessionResult = await this.sessionRepo.getOneByHashedRefreshToken(hashedRefreshToken);
     if (sessionResult.isErr()) return sessionResult;
     const session = sessionResult.value;

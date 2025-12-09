@@ -3,7 +3,7 @@ import { err, ok } from 'neverthrow';
 
 import { SessionService } from '@/domains/session/application/services/session.service';
 import { UserService } from '@/domains/user/application/services/user.service';
-import { TokenService } from '@/infra/security/services/token.service';
+import { TokenProvider } from '@/infra/security/token.provider';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
 import { DomainCodes } from '@/shared/codes/domain.codes';
@@ -33,7 +33,7 @@ export class ForceLoginCommand extends BaseCommand<
 export class ForceLoginCommandHandler implements ICommandHandler<ForceLoginCommand> {
   constructor(
     private readonly sessionService: SessionService,
-    private readonly tokenService: TokenService,
+    private readonly tokenProvider: TokenProvider,
     private readonly userService: UserService,
   ) {}
 
@@ -55,7 +55,7 @@ export class ForceLoginCommandHandler implements ICommandHandler<ForceLoginComma
       return err(sessionResult.error);
     }
     const { session, refreshToken } = sessionResult.value;
-    const accessToken = this.tokenService.generateAccessToken({
+    const accessToken = this.tokenProvider.generateAccessToken({
       sub: user.id,
       sessionId: session.id,
       email: user.email,

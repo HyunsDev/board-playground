@@ -8,7 +8,7 @@ import { TokenPayload } from '@workspace/contract';
 import { TokenConfig, tokenConfig } from '@/infra/config/configs/token.config';
 
 @Injectable()
-export class TokenService {
+export class TokenProvider {
   constructor(
     private readonly jwtService: JwtService,
     @Inject(tokenConfig.KEY)
@@ -21,19 +21,13 @@ export class TokenService {
 
   generateRefreshToken() {
     const refreshToken = randomBytes(32).toString('hex');
-    const refreshTokenHash = this.hashToken(refreshToken);
+    const refreshTokenHash = this.hashRefreshToken(refreshToken);
     return { refreshToken, refreshTokenHash };
   }
 
-  hashToken(token: string) {
-    return createHmac('sha256', this.tokenConfig.refreshTokenSecret).update(token).digest('hex');
-  }
-
-  validateAccessToken(token: string) {
-    try {
-      return this.jwtService.verify(token);
-    } catch {
-      return null;
-    }
+  hashRefreshToken(refreshToken: string) {
+    return createHmac('sha256', this.tokenConfig.refreshTokenSecret)
+      .update(refreshToken)
+      .digest('hex');
   }
 }

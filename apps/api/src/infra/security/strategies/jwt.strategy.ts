@@ -10,7 +10,7 @@ import { TokenConfig, tokenConfig } from '@/infra/config/configs/token.config';
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     @Inject(tokenConfig.KEY)
-    private readonly tokenConfig: TokenConfig,
+    readonly tokenConfig: TokenConfig,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

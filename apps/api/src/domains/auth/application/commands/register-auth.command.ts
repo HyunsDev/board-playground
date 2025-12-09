@@ -7,7 +7,7 @@ import { SessionService } from '@/domains/session/application/services/session.s
 import { UserService } from '@/domains/user/application/services/user.service';
 import { UserPasswordVO } from '@/domains/user/domain/user-password.vo';
 import { TransactionManager } from '@/infra/prisma/transaction.manager';
-import { TokenService } from '@/infra/security/services/token.service';
+import { TokenProvider } from '@/infra/security/token.provider';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
 import { DomainCodes } from '@/shared/codes/domain.codes';
@@ -45,7 +45,7 @@ export class RegisterAuthCommandHandler
   constructor(
     private readonly userService: UserService,
     private readonly sessionService: SessionService,
-    private readonly tokenService: TokenService,
+    private readonly tokenProvider: TokenProvider,
     private readonly txManager: TransactionManager,
   ) {}
 
@@ -76,7 +76,7 @@ export class RegisterAuthCommandHandler
       }
       const { session, refreshToken } = sessionResult.value;
 
-      const accessToken = await this.tokenService.generateAccessToken({
+      const accessToken = await this.tokenProvider.generateAccessToken({
         sub: createUserResult.value.id,
         sessionId: session.id,
         email: createUserResult.value.email,

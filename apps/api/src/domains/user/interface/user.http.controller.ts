@@ -10,7 +10,6 @@ import { SearchUserQuery } from '../application/queries/search-user.query';
 import { UserEntity } from '../domain/user.entity';
 
 import { ContextService } from '@/infra/context/context.service';
-import { Auth } from '@/infra/security/decorators/auth.decorator';
 import { apiErr, apiOk } from '@/shared/base';
 import { matchPublicError } from '@/shared/utils/match-error.utils';
 
@@ -23,7 +22,6 @@ export class UserHttpController {
   ) {}
 
   @TsRestHandler(contract.user.get)
-  @Auth()
   async getUser() {
     return tsRestHandler(contract.user.get, async ({ params }) => {
       const result = await this.queryBus.execute(
@@ -41,7 +39,6 @@ export class UserHttpController {
   }
 
   @TsRestHandler(contract.user.search)
-  @Auth()
   async searchUsers() {
     return tsRestHandler(contract.user.search, async ({ query }) => {
       const result = await this.queryBus.execute(

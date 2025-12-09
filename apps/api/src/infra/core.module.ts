@@ -7,6 +7,7 @@ import { DomainEventModule } from './domain-event/domain-event.module';
 import { ExceptionFilterModule } from './exception-filter/exception-filter.module';
 import { LoggingModule } from './logging/logging.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { SecurityModule } from './security/security.module';
 
 @Global()
 @Module({
@@ -18,7 +19,15 @@ import { PrismaModule } from './prisma/prisma.module';
     PrismaModule,
     LoggingModule,
     CqrsModule,
+    SecurityModule,
   ],
-  exports: [ContextModule, PrismaModule, LoggingModule, CqrsModule, DomainEventModule],
+  exports: [
+    ContextModule,
+    PrismaModule,
+    LoggingModule,
+    CqrsModule,
+    DomainEventModule,
+    SecurityModule,
+  ],
 })
 export class CoreModule {}

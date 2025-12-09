@@ -9,9 +9,9 @@ import { ForceRegisterCommand } from './commands/force-register.command';
 import { ResetDBCommand } from './commands/reset-db.command';
 import { ExecutionConfig, executionConfig } from '../config/configs/execution.config';
 import { ContextService } from '../context/context.service';
+import { Public } from '../security/decorators/public.decorator';
 
-import { apiErr, apiOk, InternalServerError } from '@/shared/base';
-import { DomainException } from '@/shared/base/error/base.domain-exception';
+import { apiErr, apiOk } from '@/shared/base';
 import { matchPublicError } from '@/shared/utils/match-error.utils';
 
 @Controller()
@@ -23,61 +23,64 @@ export class DevtoolsController {
     private readonly contextService: ContextService,
   ) {}
 
-  @TsRestHandler(contract.devtools)
-  async handler() {
-    if (this.executionConfig.nodeEnv !== 'development') {
-      throw new DomainException(
-        new InternalServerError('Devtools are only available in development environment'),
+  @TsRestHandler(contract.devtools.forceRegister)
+  @Public()
+  async forceRegister() {
+    return tsRestHandler(contract.devtools.forceRegister, async ({ body }) => {
+      const result = await this.commandBus.execute(
+        new ForceRegisterCommand(
+          {
+            email: body.email,
+            username: body.username,
+            nickname: body.nickname,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
       );
-    }
+      return result.match(
+        (tokens) => apiOk(200, tokens),
+        (error) =>
+          matchPublicError(error, {
+            UserEmailAlreadyExists: () => apiErr(ApiErrors.User.EmailAlreadyExists),
+            UserUsernameAlreadyExists: () => apiErr(ApiErrors.User.UsernameAlreadyExists),
+          }),
+      );
+    });
+  }
 
-    return tsRestHandler(contract.devtools, {
-      forceRegister: async ({ body }) => {
-        const result = await this.commandBus.execute(
-          new ForceRegisterCommand(
-            {
-              email: body.email,
-              username: body.username,
-              nickname: body.nickname,
-            },
-            this.contextService.getMessageMetadata(),
-          ),
-        );
-        return result.match(
-          (tokens) => apiOk(200, tokens),
-          (error) =>
-            matchPublicError(error, {
-              UserEmailAlreadyExists: () => apiErr(ApiErrors.User.EmailAlreadyExists),
-              UserUsernameAlreadyExists: () => apiErr(ApiErrors.User.UsernameAlreadyExists),
-            }),
-        );
-      },
-      forceLogin: async ({ body }) => {
-        const result = await this.commandBus.execute(
-          new ForceLoginCommand(
-            {
-              email: body.email,
-            },
-            this.contextService.getMessageMetadata(),
-          ),
-        );
-        return result.match(
-          (tokens) => apiOk(200, tokens),
-          (error) =>
-            matchPublicError(error, {
-              UserNotFound: () => apiErr(ApiErrors.User.NotFound),
-            }),
-        );
-      },
-      resetDB: async () => {
-        const result = await this.commandBus.execute(
-          new ResetDBCommand(undefined, this.contextService.getMessageMetadata()),
-        );
-        return result.match(
-          () => apiOk(200, undefined),
-          () => apiOk(200, undefined),
-        );
-      },
+  @TsRestHandler(contract.devtools.forceLogin)
+  @Public()
+  async forceLogin() {
+    return tsRestHandler(contract.devtools.forceLogin, async ({ body }) => {
+      const result = await this.commandBus.execute(
+        new ForceLoginCommand(
+          {
+            email: body.email,
+          },
+          this.contextService.getMessageMetadata(),
+        ),
+      );
+      return result.match(
+        (tokens) => apiOk(200, tokens),
+        (error) =>
+          matchPublicError(error, {
+            UserNotFound: () => apiErr(ApiErrors.User.NotFound),
+          }),
+      );
+    });
+  }
+
+  @TsRestHandler(contract.devtools.resetDB)
+  @Public()
+  async resetDB() {
+    return tsRestHandler(contract.devtools.resetDB, async () => {
+      const result = await this.commandBus.execute(
+        new ResetDBCommand(undefined, this.contextService.getMessageMetadata()),
+      );
+      return result.match(
+        () => apiOk(200, undefined),
+        () => apiOk(200, undefined),
+      );
     });
   }
 }
