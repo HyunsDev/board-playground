@@ -3,7 +3,7 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
-import { Session, PrismaClient, Prisma } from '@workspace/db';
+import { Session, PrismaClient, Prisma } from '@workspace/database';
 
 import { RefreshTokenMapper } from './refresh-token.mapper';
 import { SessionMapper } from './session.mapper';

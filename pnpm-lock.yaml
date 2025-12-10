@@ -68,9 +68,9 @@ importers:
       '@workspace/contract':
         specifier: workspace:*
         version: link:../../packages/contract
-      '@workspace/db':
+      '@workspace/database':
         specifier: workspace:*
-        version: link:../../packages/db
+        version: link:../../packages/database
       bcrypt:
         specifier: ^6.0.0
         version: 6.0.0
@@ -225,9 +225,9 @@ importers:
       '@workspace/contract':
         specifier: workspace:*
         version: link:../../packages/contract
-      '@workspace/db':
+      '@workspace/database':
         specifier: workspace:*
-        version: link:../../packages/db
+        version: link:../../packages/database
       '@workspace/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
@@ -345,7 +345,7 @@ importers:
         specifier: 5.5.4
         version: 5.5.4
 
-  packages/db:
+  packages/database:
     dependencies:
       '@nestjs/mapped-types':
         specifier: '*'

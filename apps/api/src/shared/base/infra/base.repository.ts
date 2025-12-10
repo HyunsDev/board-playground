@@ -2,7 +2,7 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
-import { Prisma } from '@workspace/db';
+import { Prisma } from '@workspace/database';
 
 import { Mapper } from './base.mapper';
 import { LoggerPort } from '../../logger/logger.port';

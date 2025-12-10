@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { RefreshToken, Session } from '@workspace/db';
+import { RefreshToken, Session } from '@workspace/database';
 
 import { RefreshTokenMapper } from './refresh-token.mapper';
 import { SessionEntity, SessionProps } from '../domain/session.entity';

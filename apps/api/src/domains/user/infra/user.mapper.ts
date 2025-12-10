@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { User, UserRole, UserStatus } from '@workspace/db';
+import { User, UserRole, UserStatus } from '@workspace/database';
 
 import { UserPasswordVO } from '../domain/user-password.vo';
 import { UserEntity, UserProps } from '../domain/user.entity';

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { RefreshToken } from '@workspace/db';
+import { RefreshToken } from '@workspace/database';
 
 import { RefreshTokenEntity, RefreshTokenProps } from '../domain/refresh-token.entity';
 
