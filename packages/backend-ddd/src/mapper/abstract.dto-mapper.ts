@@ -1,0 +1,25 @@
+import { AbstractEntity } from '@/blocks';
+import { PaginatedResult, PaginationMetadata } from '@workspace/common';
+
+export abstract class AbstractDtoMapper<E extends AbstractEntity<unknown>> {
+  protected mapNullable<Dto>(entity: E | null, mapFn: (entity: E) => Dto): Dto | null {
+    if (!entity) return null;
+    return mapFn(entity);
+  }
+
+  protected mapMany<Dto>(entities: E[], mapFn: (entity: E) => Dto): Dto[] {
+    return entities.map(mapFn);
+  }
+
+  protected mapPaginated<Dto>(
+    entities: E[],
+    meta: PaginationMetadata,
+    mapFn: (entity: E) => Dto,
+  ): PaginatedResult<Dto> {
+    const items = this.mapMany(entities, mapFn);
+    return {
+      items,
+      meta,
+    };
+  }
+}

@@ -356,6 +356,9 @@ importers:
       '@workspace/common':
         specifier: workspace:*
         version: link:../common
+      neverthrow:
+        specifier: ^8.2.0
+        version: 8.2.0
       uuid:
         specifier: ^13.0.0
         version: 13.0.0

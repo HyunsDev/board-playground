@@ -28,8 +28,9 @@
     "lint": "eslint \"{src,test}/**/*.ts\""
   },
   "dependencies": {
-    "@workspace/common": "workspace:*",
     "@nestjs/cqrs": "^11.0.3",
+    "@workspace/common": "workspace:*",
+    "neverthrow": "^8.2.0",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
