@@ -65,6 +65,9 @@ importers:
       '@ts-rest/nest':
         specifier: ^3.52.1
         version: 3.52.1(@nestjs/common@11.1.8)(@nestjs/core@11.1.8)(@ts-rest/core@3.52.1)(rxjs@7.8.2)(zod@3.25.76)
+      '@workspace/common':
+        specifier: workspace:*
+        version: link:../../packages/common
       '@workspace/contract':
         specifier: workspace:*
         version: link:../../packages/contract
@@ -559,27 +562,6 @@ importers:
       typescript:
         specifier: ^5.8.2
         version: 5.8.2
-
-  packages/shared-types:
-    devDependencies:
-      '@types/node':
-        specifier: ^22.10.7
-        version: 22.19.0
-      '@workspace/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@workspace/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      ts-node:
-        specifier: ^10.9.2
-        version: 10.9.2(@types/node@22.19.0)(typescript@5.5.4)
-      tsup:
-        specifier: ^8.0.0
-        version: 8.5.1(typescript@5.5.4)
-      typescript:
-        specifier: 5.5.4
-        version: 5.5.4
 
   packages/typescript-config: {}
 

@@ -43,9 +43,6 @@ function mergeTwo(target: any, source: any): any {
   return output;
 }
 
-// 4. [메인 함수] 가변 인자(...objects)를 받아서 처리
-// 제네릭 T를 튜플로 추론하게 하여 리터럴 타입을 보존
-
 /**
  * 두 개 이상의 객체를 깊은 병합(Deep Merge)하는 유틸리티 함수
  * @param objects 병합할 객체들
