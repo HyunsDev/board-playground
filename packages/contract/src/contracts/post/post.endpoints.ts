@@ -1,8 +1,9 @@
 import z from 'zod';
 
-import { CreatePostDtoSchema, PostDtoSchema, UpdatePostDtoSchema } from './post.dto';
+import { PostDtoSchema } from './post.dto';
+import { BoardSlug } from '../board/board.schemas';
 
-import { ID, paginatedQueryOf, paginatedResponseOf } from '@/common';
+import { ACCESS, ID, paginatedQueryOf, paginatedResponseOf } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';
 import { c } from '@/internal/c';
 import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
@@ -20,7 +21,7 @@ export const getPost = c.query({
     ...toApiErrorResponses([ApiErrors.Post.NotFound]),
   },
   metadata: {
-    roles: ['USER', 'ADMIN'],
+    ...ACCESS.signedIn,
   },
 });
 
@@ -39,14 +40,18 @@ export const queryPosts = c.query({
     ...toApiErrorResponses([ApiErrors.Board.NotFound]),
   },
   metadata: {
-    roles: ['USER', 'ADMIN'],
+    ...ACCESS.signedIn,
   },
 });
 
 export const createPost = c.mutation({
   method: 'POST',
   path: '/posts',
-  body: CreatePostDtoSchema,
+  body: z.object({
+    boardSlug: BoardSlug,
+    title: z.string().min(1).max(100),
+    content: z.string().min(1).max(5000),
+  }),
   responses: {
     200: z.object({
       post: PostDtoSchema,
@@ -54,7 +59,7 @@ export const createPost = c.mutation({
     ...toApiErrorResponses([ApiErrors.Board.NotFound]),
   },
   metadata: {
-    roles: ['USER', 'ADMIN'],
+    ...ACCESS.signedIn,
   },
 });
 
@@ -64,7 +69,10 @@ export const updatePost = c.mutation({
   pathParams: z.object({
     postId: ID,
   }),
-  body: UpdatePostDtoSchema,
+  body: z.object({
+    title: z.string().min(1).max(100).optional(),
+    content: z.string().min(1).max(5000).optional(),
+  }),
   responses: {
     200: z.object({
       post: PostDtoSchema,
@@ -76,7 +84,7 @@ export const updatePost = c.mutation({
     ]),
   },
   metadata: {
-    roles: ['USER', 'ADMIN'],
+    ...ACCESS.signedIn,
   },
 });
 
@@ -94,6 +102,6 @@ export const deletePost = c.mutation({
     ...toApiErrorResponses([ApiErrors.Post.PermissionDenied, ApiErrors.Post.NotFound]),
   },
   metadata: {
-    roles: ['USER', 'ADMIN'],
+    ...ACCESS.signedIn,
   },
 });

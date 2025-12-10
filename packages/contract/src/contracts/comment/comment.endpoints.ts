@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { CommandDtoSchema, CreateCommentDtoSchema, UpdateCommentDtoSchema } from './comment.dto';
 
-import { ID, paginatedQueryOf, paginatedResponseOf } from '@/common';
+import { ACCESS, ID, paginatedQueryOf, paginatedResponseOf } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';
 import { USER_ROLE } from '@/contracts/user';
 import { c } from '@/internal/c';
@@ -21,7 +21,7 @@ export const getComment = c.query({
     ...toApiErrorResponses([ApiErrors.Comment.NotFound]),
   },
   metadata: {
-    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
+    ...ACCESS.signedIn,
   },
 });
 
@@ -53,7 +53,7 @@ export const createComment = c.mutation({
     ...toApiErrorResponses([ApiErrors.Comment.DepthExceeded, ApiErrors.Post.NotFound]),
   },
   metadata: {
-    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
+    ...ACCESS.signedIn,
   },
 });
 
@@ -71,7 +71,7 @@ export const updateComment = c.mutation({
     ...toApiErrorResponses([ApiErrors.Comment.NotFound, ApiErrors.Comment.PermissionDenied]),
   },
   metadata: {
-    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
+    ...ACCESS.signedIn,
   },
 });
 
@@ -87,6 +87,6 @@ export const deleteComment = c.mutation({
     ...toApiErrorResponses([ApiErrors.Comment.NotFound, ApiErrors.Comment.PermissionDenied]),
   },
   metadata: {
-    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
+    ...ACCESS.signedIn,
   },
 });
