@@ -1,4 +1,4 @@
-import { ApiError } from '@workspace/contract';
+import { ApiError } from '@workspace/common';
 
 export const apiOk = <const S extends number, const B>(status: S, body: B) => {
   return { status, body } as const;

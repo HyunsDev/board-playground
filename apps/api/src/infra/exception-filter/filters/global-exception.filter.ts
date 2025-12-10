@@ -9,7 +9,8 @@ import {
 import { ErrorHttpStatusCode } from '@nestjs/common/utils/http-error-by-code.util';
 import { HttpAdapterHost } from '@nestjs/core';
 
-import { ApiError, ApiErrors } from '@workspace/contract';
+import { ApiError } from '@workspace/common';
+import { ApiErrors } from '@workspace/contract';
 
 import { ContextService } from '@/infra/context/context.service';
 import { DomainError } from '@/shared/base';

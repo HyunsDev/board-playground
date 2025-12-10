@@ -1,4 +1,4 @@
-import { ApiError } from '@workspace/contract';
+import { ApiError } from '@workspace/common';
 
 import { DomainError } from '../error/base.domain-errors';
 

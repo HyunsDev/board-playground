@@ -353,6 +353,9 @@ importers:
       '@nestjs/cqrs':
         specifier: ^11.0.3
         version: 11.0.3(@nestjs/common@11.1.8)(@nestjs/core@11.1.8)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@workspace/common':
+        specifier: workspace:*
+        version: link:../common
       uuid:
         specifier: ^13.0.0
         version: 13.0.0
@@ -399,6 +402,9 @@ importers:
 
   packages/common:
     dependencies:
+      '@ts-rest/core':
+        specifier: ^3.52.1
+        version: 3.52.1(@types/node@22.19.0)(zod@3.25.76)
       neverthrow:
         specifier: ^8.2.0
         version: 8.2.0
@@ -433,6 +439,9 @@ importers:
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@22.19.0)(zod@3.25.76)
+      '@workspace/common':
+        specifier: workspace:*
+        version: link:../common
       zod:
         specifier: ^3.25.76
         version: 3.25.76

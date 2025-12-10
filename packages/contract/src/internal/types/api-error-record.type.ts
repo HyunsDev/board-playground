@@ -1,3 +1,3 @@
-import { type ApiError } from '../../common/types/api-error.type';
+import type { ApiError } from '@workspace/common';
 
 export type ApiErrorRecord = Record<string, ApiError>;

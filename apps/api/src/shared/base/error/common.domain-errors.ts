@@ -1,4 +1,4 @@
-import { ValidationDetails } from '@workspace/contract';
+import { ValidationDetails } from '@workspace/common';
 
 import {
   BaseAccessDeniedError,
