@@ -26,13 +26,16 @@
       "require": "./dist/index.cjs"
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "neverthrow": "^8.2.0",
+    "zod": "^3"
+  },
   "devDependencies": {
     "@types/node": "^22.10.7",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "ts-node": "^10.9.2",
-    "typescript": "5.5.4",
-    "tsup": "^8.0.0"
+    "tsup": "^8.0.0",
+    "typescript": "5.5.4"
   }
 }

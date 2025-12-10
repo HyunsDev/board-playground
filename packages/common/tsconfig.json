@@ -1,6 +1,7 @@
 {
   "extends": "@workspace/typescript-config/common-library.json",
   "compilerOptions": {
+    "outDir": "dist",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
