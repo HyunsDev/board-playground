@@ -1,6 +1,6 @@
-export interface LoggerPort {
-  log(message: string, ...meta: unknown[]): void;
-  error(message: string, trace?: unknown, ...meta: unknown[]): void;
-  warn(message: string, ...meta: unknown[]): void;
-  debug(message: string, ...meta: unknown[]): void;
+export abstract class LoggerPort {
+  abstract log(message: string, ...meta: unknown[]): void;
+  abstract error(message: string, trace?: unknown, ...meta: unknown[]): void;
+  abstract warn(message: string, ...meta: unknown[]): void;
+  abstract debug(message: string, ...meta: unknown[]): void;
 }
