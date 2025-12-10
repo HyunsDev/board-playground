@@ -13,7 +13,7 @@ import { CheckUsernameAvailableQuery } from '../application/queries/check-userna
 
 import { ContextService } from '@/infra/context/context.service';
 import { Public } from '@/infra/security/decorators/public.decorator';
-import { InternalServerErrorException } from '@/shared/base';
+import { InvariantViolationException } from '@/shared/base';
 import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from '@/shared/constants/cookie.constant';
 import { IpAddress } from '@/shared/decorators/ip-address.decorator';
@@ -128,7 +128,7 @@ export class AuthHttpController {
               void res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_OPTIONS);
               return apiErr(ApiErrors.Auth.RefreshTokenReuseDetected);
             }
-            throw new InternalServerErrorException();
+            throw new InvariantViolationException();
           }
 
           void res.cookie('refreshToken', data.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);

@@ -4,10 +4,8 @@ import {
   BaseAccessDeniedError,
   BaseBadRequestError,
   BaseConflictError,
-  BaseInternalServerError,
   BaseNotFoundError,
   BaseValidationError,
-  DomainError,
 } from './base.domain-errors';
 
 export class EntityNotFoundError extends BaseNotFoundError<
@@ -61,27 +59,6 @@ export class AccessDeniedError extends BaseAccessDeniedError<'AccessDenied'> {
   public readonly scope = 'public';
   constructor() {
     super('Access denied');
-  }
-}
-
-export class InternalServerError extends BaseInternalServerError<'InternalServerError', any> {
-  public readonly code = 'InternalServerError';
-  public readonly scope = 'public';
-  constructor(message?: string, details?: any) {
-    super(message ?? 'An internal server error occurred', details);
-  }
-}
-
-export class UnexpectedDomainError extends BaseInternalServerError<
-  'UnexpectedDomainError',
-  { error: DomainError }
-> {
-  public readonly code = 'UnexpectedDomainError';
-  public readonly scope = 'public';
-  constructor(error: DomainError) {
-    super('An unexpected domain error occurred', {
-      error: error,
-    });
   }
 }
 

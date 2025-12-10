@@ -4,6 +4,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { DomainExceptionFilter } from './filters/domain-exception.filter';
 import { GlobalExceptionsFilter } from './filters/global-exception.filter';
 import { RequestValidationFilter } from './filters/request-validation.filter';
+import { SystemExceptionFilter } from './filters/system-exception.filter';
 
 const filters = [
   {
@@ -17,6 +18,10 @@ const filters = [
   {
     provide: APP_FILTER,
     useClass: DomainExceptionFilter,
+  },
+  {
+    provide: APP_FILTER,
+    useClass: SystemExceptionFilter,
   },
 ];
 

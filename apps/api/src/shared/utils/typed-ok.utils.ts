@@ -1,6 +1,6 @@
 import { Ok, ok } from 'neverthrow';
 
-import { InternalServerErrorException } from '../base';
+import { InvariantViolationException } from '../base';
 
 export type TypedData<T extends string, D extends Record<string, unknown> & { type?: never }> = {
   type: T;
@@ -37,7 +37,7 @@ export function matchType<
 ): ReturnType<H[keyof H]> {
   const handler = handlers[variant.type as keyof H];
   if (!handler) {
-    throw new InternalServerErrorException(`No handler for variant type: ${variant.type}`);
+    throw new InvariantViolationException(`No handler for variant type: ${variant.type}`);
   }
   return (handler as any)(variant);
 }

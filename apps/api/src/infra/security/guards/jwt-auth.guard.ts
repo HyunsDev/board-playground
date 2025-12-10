@@ -8,12 +8,13 @@ import { TokenPayload, tokenPayloadSchema } from '@workspace/contract';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 import { ContextService } from '@/infra/context/context.service';
-import { InternalServerErrorException } from '@/shared/base';
 import {
-  ExpiredTokenException,
-  InvalidAccessTokenException,
-  MissingTokenException,
-} from '@/shared/base/error/common.domain-exception';
+  DomainException,
+  ExpiredTokenError,
+  InternalServerErrorException,
+  InvalidAccessTokenError,
+  MissingTokenError,
+} from '@/shared/base';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -57,15 +58,15 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       const errorMessage = info?.message;
 
       if (errorName === 'TokenExpiredError') {
-        throw new ExpiredTokenException();
+        throw new DomainException(new ExpiredTokenError());
       }
 
       if (errorName === 'JsonWebTokenError') {
-        throw new InvalidAccessTokenException();
+        throw new DomainException(new InvalidAccessTokenError());
       }
 
       if (errorMessage === 'No auth token') {
-        throw new MissingTokenException();
+        throw new DomainException(new MissingTokenError());
       }
 
       // 그 외 알 수 없는 인증 에러는 로그를 남기고 Unauthorized 처리
@@ -79,7 +80,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     if (!parsedResult.success) {
       this.logger.error(`Invalid Token Payload: ${parsedResult.error}`);
-      throw new InvalidAccessTokenException();
+      throw new DomainException(new InvalidAccessTokenError());
     }
 
     const validatedPayload: TokenPayload = parsedResult.data;

@@ -88,6 +88,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
    * Controller에서 처리되지 않은 도메인 예외 처리
    */
   private handleUnhandledDomainException(exception: DomainError): ErrorInfo {
+    this.logger.error(`Unhandled domain error: ${exception.code}`);
     return {
       level: 'warn',
       ...ApiErrors.Common.UnhandledDomainError,
