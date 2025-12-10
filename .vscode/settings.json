@@ -27,6 +27,7 @@
     "facade": "interface",
     "facades": "interface",
     "internal": "private",
+    "persistence": "database",
 
     "api-e2e": "test",
     "jest-config": "test",

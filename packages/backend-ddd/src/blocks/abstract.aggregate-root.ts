@@ -1,7 +1,7 @@
 import { AbstractDomainEvent, IAbstractDomainEvent } from '@/cqrs/abstract.domain-event';
 import { AbstractEntity } from './abstract.entity';
 
-export abstract class AggregateRoot<
+export abstract class AbstractAggregateRoot<
   DomainEvent extends AbstractDomainEvent<
     string,
     string,
