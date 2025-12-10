@@ -5,7 +5,7 @@ import {
   type PaginationOptions,
   paginationMetadataSchema,
   paginationOptionsSchema,
-} from '../schema/pagination.schema';
+} from './pagination.schema';
 
 // ======================================================================
 // Schema Utilities (Zod 스키마 결합용)
