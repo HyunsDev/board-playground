@@ -1,13 +1,13 @@
 import { ValidationDetails } from '@workspace/common';
 import {
-  BaseAccessDeniedError,
-  BaseBadRequestError,
-  BaseConflictError,
-  BaseNotFoundError,
-  BaseValidationError,
-} from './domain-errors';
+  AbstractAccessDeniedError,
+  AbstractBadRequestError,
+  AbstractConflictError,
+  AbstractNotFoundError,
+  AbstractValidationError,
+} from './abstract.domain-errors';
 
-export class EntityNotFoundError extends BaseNotFoundError<
+export class EntityNotFoundError extends AbstractNotFoundError<
   'EntityNotFound',
   EntityNotFoundErrorDetails
 > {
@@ -31,7 +31,7 @@ export interface EntityConflictErrorDetails {
   entityName?: string;
   conflicts: EntityConflictInfo[];
 }
-export class EntityConflictError extends BaseConflictError<
+export class EntityConflictError extends AbstractConflictError<
   'EntityConflict',
   EntityConflictErrorDetails
 > {
@@ -45,7 +45,7 @@ export class EntityConflictError extends BaseConflictError<
 /**
  * 주의: 사용자 Request Validation의 에러는 ts-rest가 이 클래스가 아닌 RequestValidationError 클래스를 던집니다.
  */
-export class ValidationError extends BaseValidationError<'ValidationError', ValidationDetails> {
+export class ValidationError extends AbstractValidationError<'ValidationError', ValidationDetails> {
   public readonly code = 'ValidationError';
   public readonly scope = 'public';
   constructor(details?: ValidationDetails) {
@@ -53,7 +53,7 @@ export class ValidationError extends BaseValidationError<'ValidationError', Vali
   }
 }
 
-export class AccessDeniedError extends BaseAccessDeniedError<'AccessDenied'> {
+export class AccessDeniedError extends AbstractAccessDeniedError<'AccessDenied'> {
   public readonly code = 'AccessDenied';
   public readonly scope = 'public';
   constructor() {
@@ -61,7 +61,7 @@ export class AccessDeniedError extends BaseAccessDeniedError<'AccessDenied'> {
   }
 }
 
-export class InvalidAccessTokenError extends BaseBadRequestError<'InvalidAccessToken'> {
+export class InvalidAccessTokenError extends AbstractBadRequestError<'InvalidAccessToken'> {
   public readonly code = 'InvalidAccessToken';
   public readonly scope = 'public';
   constructor() {
@@ -69,7 +69,7 @@ export class InvalidAccessTokenError extends BaseBadRequestError<'InvalidAccessT
   }
 }
 
-export class ExpiredTokenError extends BaseBadRequestError<'ExpiredToken'> {
+export class ExpiredTokenError extends AbstractBadRequestError<'ExpiredToken'> {
   public readonly code = 'ExpiredToken';
   public readonly scope = 'public';
   constructor() {
@@ -77,7 +77,7 @@ export class ExpiredTokenError extends BaseBadRequestError<'ExpiredToken'> {
   }
 }
 
-export class MissingTokenError extends BaseBadRequestError<'MissingToken'> {
+export class MissingTokenError extends AbstractBadRequestError<'MissingToken'> {
   public readonly code = 'MissingToken';
   public readonly scope = 'public';
   constructor() {

@@ -1,4 +1,4 @@
-export type DomainErrorScope = 'public' | 'private';
+import { DomainErrorScope } from './error.types';
 
 /**
  * 비즈니스 로직에 의해서 발생하는 오류
@@ -16,32 +16,32 @@ export abstract class DomainError<Code extends string = string, Details = unknow
   }
 }
 
-export abstract class BaseNotFoundError<
+export abstract class AbstractNotFoundError<
   Code extends string = string,
   Details = unknown,
 > extends DomainError<Code, Details> {}
 
-export abstract class BaseConflictError<
+export abstract class AbstractConflictError<
   Code extends string = string,
   Details = unknown,
 > extends DomainError<Code, Details> {}
 
-export abstract class BaseAccessDeniedError<
+export abstract class AbstractAccessDeniedError<
   Code extends string = string,
   Details = unknown,
 > extends DomainError<Code, Details> {}
 
-export abstract class BaseUnauthorizedError<
+export abstract class AbstractUnauthorizedError<
   Code extends string = string,
   Details = unknown,
 > extends DomainError<Code, Details> {}
 
-export abstract class BaseValidationError<
+export abstract class AbstractValidationError<
   Code extends string = string,
   Details = unknown,
 > extends DomainError<Code, Details> {}
 
-export abstract class BaseBadRequestError<
+export abstract class AbstractBadRequestError<
   Code extends string = string,
   Details = unknown,
 > extends DomainError<Code, Details> {}
