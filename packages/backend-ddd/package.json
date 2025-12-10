@@ -27,14 +27,17 @@
     "build": "pnpm clean && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "lint": "eslint \"{src,test}/**/*.ts\""
   },
-  "dependencies": {},
+  "dependencies": {
+    "@nestjs/cqrs": "^11.0.3",
+    "uuid": "^13.0.0"
+  },
   "devDependencies": {
     "@types/node": "^22.10.7",
-    "typescript": "5.5.4",
-    "rimraf": "^6.0.0",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "tsc-alias": "^1.8.16"
+    "rimraf": "^6.0.0",
+    "tsc-alias": "^1.8.16",
+    "typescript": "5.5.4"
   },
   "engines": {
     "node": ">=18"
