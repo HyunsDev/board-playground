@@ -1,6 +1,6 @@
 import { createPost, deletePost, getPost, queryPosts, updatePost } from './post.endpoints';
 
-import { c } from '@/common';
+import { c } from '@/internal/c';
 
 export const postContract = c.router({
   get: getPost,

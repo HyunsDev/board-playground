@@ -4,7 +4,9 @@ import { registerAuthReqDto } from './auth.dto';
 import { ApiErrors } from '../api-errors';
 import { passwordSchema } from './auth.schemas';
 
-import { ACCESS, c, toApiErrorResponses } from '@/common';
+import { ACCESS } from '@/common';
+import { c } from '@/internal/c';
+import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 
 export const checkUsername = c.query({
   method: 'GET',

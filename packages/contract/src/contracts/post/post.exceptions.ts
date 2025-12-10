@@ -1,4 +1,4 @@
-import { ApiErrorRecord } from '@/common';
+import type { ApiErrorRecord } from '@/internal/types/api-error-record.type';
 
 export const PostApiErrors = {
   NotFound: {

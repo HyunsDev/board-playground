@@ -2,9 +2,10 @@ import z from 'zod';
 
 import { UserPrivateProfileDtoSchema } from '../user.dto';
 
-import { c, toApiErrorResponses } from '@/common';
 import { ACCESS } from '@/common/access';
 import { ApiErrors } from '@/contracts/api-errors';
+import { c } from '@/internal/c';
+import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 
 export const getUserMe = c.query({
   method: 'GET',

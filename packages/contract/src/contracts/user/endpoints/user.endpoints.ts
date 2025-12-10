@@ -2,9 +2,11 @@ import z from 'zod';
 
 import { UserPublicProfileDtoSchema } from '../user.dto';
 
-import { c, paginatedQueryOf, paginatedResponseOf, toApiErrorResponses } from '@/common';
+import { paginatedQueryOf, paginatedResponseOf } from '@/common';
 import { ACCESS } from '@/common/access';
 import { ApiErrors } from '@/contracts/api-errors';
+import { c } from '@/internal/c';
+import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 
 export const getUser = c.query({
   method: 'GET',

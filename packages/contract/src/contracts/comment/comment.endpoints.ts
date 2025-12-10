@@ -2,9 +2,11 @@ import z from 'zod';
 
 import { CommandDtoSchema, CreateCommentDtoSchema, UpdateCommentDtoSchema } from './comment.dto';
 
-import { c, ID, paginatedQueryOf, paginatedResponseOf, toApiErrorResponses } from '@/common';
+import { ID, paginatedQueryOf, paginatedResponseOf } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';
 import { USER_ROLE } from '@/contracts/user';
+import { c } from '@/internal/c';
+import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 
 export const getComment = c.query({
   method: 'GET',

@@ -13,7 +13,7 @@ import {
 } from './endpoints';
 import { listManagerOfMe } from '../manager/manager.endpoints';
 
-import { c } from '@/common';
+import { c } from '@/internal/c';
 
 export const userContract = c.router({
   me: c.router({

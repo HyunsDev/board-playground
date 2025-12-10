@@ -6,8 +6,7 @@ import {
   updateComment,
 } from './comment.endpoints';
 
-import { c } from '@/common';
-
+import { c } from '@/internal/c';
 
 export const commentContract = c.router({
   get: getComment,

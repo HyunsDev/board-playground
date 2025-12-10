@@ -26,6 +26,7 @@
     "codes": "constant",
     "facade": "interface",
     "facades": "interface",
+    "internal": "private",
 
     "api-e2e": "test",
     "jest-config": "test",

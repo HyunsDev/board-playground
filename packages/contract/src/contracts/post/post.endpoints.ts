@@ -2,8 +2,10 @@ import z from 'zod';
 
 import { CreatePostDtoSchema, PostDtoSchema, UpdatePostDtoSchema } from './post.dto';
 
-import { c, ID, paginatedQueryOf, paginatedResponseOf, toApiErrorResponses } from '@/common';
+import { ID, paginatedQueryOf, paginatedResponseOf } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';
+import { c } from '@/internal/c';
+import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 
 export const getPost = c.query({
   method: 'GET',

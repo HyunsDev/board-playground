@@ -3,9 +3,11 @@ import z from 'zod';
 import { UserAdminDtoSchema } from '../user.dto';
 import { UserRole, UserStatus } from '../user.enums';
 
-import { c, paginatedQueryOf, paginatedResponseOf, toApiErrorResponses } from '@/common';
+import { paginatedQueryOf, paginatedResponseOf } from '@/common';
 import { ACCESS } from '@/common/access';
 import { ApiErrors } from '@/contracts/api-errors';
+import { c } from '@/internal/c';
+import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 
 export const getUserForAdmin = c.query({
   method: 'GET',

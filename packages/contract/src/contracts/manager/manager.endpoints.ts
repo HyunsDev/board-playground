@@ -3,10 +3,12 @@ import z from 'zod';
 import { ManagerWithBoardDtoSchema, ManagerWithUserDtoSchema } from './manager.dto';
 import { ManagerRole } from './manager.enums';
 
-import { c, ID, toApiErrorResponses } from '@/common';
+import { ID } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';
 import { BoardSlug } from '@/contracts/board/board.schemas';
 import { USER_ROLE } from '@/contracts/user';
+import { c } from '@/internal/c';
+import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 
 export const listManagersOfBoard = c.query({
   method: 'GET',

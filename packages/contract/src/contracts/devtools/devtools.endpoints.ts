@@ -2,8 +2,9 @@ import z from 'zod';
 
 import { ApiErrors } from '../api-errors';
 
-import { c, toApiErrorResponses } from '@/common';
 import { ACCESS } from '@/common/access';
+import { c } from '@/internal/c';
+import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 
 export const forceRegisterForDev = c.mutation({
   method: 'POST',

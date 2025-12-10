@@ -7,7 +7,8 @@ import { postContract } from './post/post.contracts';
 import { sessionContract } from './session/session.contract';
 import { userContract, userForAdminContract } from './user/user.contracts';
 
-import { c, toApiErrorResponses } from '@/common';
+import { c } from '@/internal/c';
+import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 
 export const contract = c.router(
   {
