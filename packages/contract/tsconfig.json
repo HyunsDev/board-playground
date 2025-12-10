@@ -1,16 +1,9 @@
 {
-  "extends": "@workspace/typescript-config/nestjs.json",
+  "extends": "@workspace/typescript-config/common-library.json",
   "compilerOptions": {
-    "allowJs": true,
-    "esModuleInterop": true,
-    "incremental": false,
-    "outDir": "dist",
-    "types": ["node"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     }
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
+  }
 }

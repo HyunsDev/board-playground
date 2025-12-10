@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { ApiError } from '../types';
+import { type ApiError } from '../types';
 
 type ErrorResponseMap<T extends ApiError> = {
   [K in T['status']]: z.ZodType<{

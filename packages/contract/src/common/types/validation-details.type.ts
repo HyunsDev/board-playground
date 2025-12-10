@@ -1,7 +1,7 @@
-import { ErrorHttpStatusCode } from '@ts-rest/core';
-import { ZodIssue } from 'zod';
+import { type ErrorHttpStatusCode } from '@ts-rest/core';
+import { type ZodIssue } from 'zod';
 
-import { ApiError } from './api-error.type';
+import { type ApiError } from './api-error.type';
 
 export type ValidationDetails = {
   body: ZodIssue[] | null;

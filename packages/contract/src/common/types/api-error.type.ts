@@ -1,4 +1,4 @@
-import { ErrorHttpStatusCode } from '@ts-rest/core';
+import { type ErrorHttpStatusCode } from '@ts-rest/core';
 
 export interface ApiError<
   S extends ErrorHttpStatusCode = ErrorHttpStatusCode,

@@ -1,6 +1,6 @@
-import { ErrorHttpStatusCode, HTTPStatusCode, SuccessfulHttpStatusCode } from '@ts-rest/core';
+import { type ApiError } from './api-error.type';
 
-import { ApiError } from './api-error.type';
+import type { ErrorHttpStatusCode, HTTPStatusCode, SuccessfulHttpStatusCode } from '@ts-rest/core';
 
 export type ApiResponse<S extends HTTPStatusCode = HTTPStatusCode> =
   S extends SuccessfulHttpStatusCode
