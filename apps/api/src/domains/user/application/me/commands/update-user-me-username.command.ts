@@ -21,7 +21,6 @@ export class UpdateUserMeUsernameCommand extends BaseCommand<
   HandlerResult<UpdateUserMeUsernameCommandHandler>,
   UserEntity
 > {
-  readonly domain = DomainCodes.User;
   readonly code = CommandCodes.User.UpdateMeUsername;
   readonly resourceType = DomainCodes.User;
 

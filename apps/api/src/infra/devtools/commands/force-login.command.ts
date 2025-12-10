@@ -6,7 +6,6 @@ import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { TokenProvider } from '@/infra/security/providers/token.provider';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
-import { DomainCodes } from '@/shared/codes/domain.codes';
 import { ResourceTypes } from '@/shared/codes/resource-type.codes';
 import { HandlerResult } from '@/shared/types/handler-result';
 import { AuthTokens } from '@/shared/types/tokens';
@@ -20,7 +19,6 @@ export class ForceLoginCommand extends BaseCommand<
   HandlerResult<ForceLoginCommandHandler>,
   AuthTokens
 > {
-  readonly domain = DomainCodes.Devtools;
   readonly code = CommandCodes.Devtools.ForceLogin;
   readonly resourceType = ResourceTypes.User;
 

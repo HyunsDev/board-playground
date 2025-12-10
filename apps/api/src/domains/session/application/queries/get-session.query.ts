@@ -7,7 +7,6 @@ import { SessionRepositoryPort } from '../../domain/session.repository.port';
 import { SESSION_REPOSITORY } from '../../session.constants';
 
 import { BaseQuery, IQuery } from '@/shared/base';
-import { DomainCodes } from '@/shared/codes/domain.codes';
 import { QueryCodes } from '@/shared/codes/query.codes';
 import { QueryResourceTypes } from '@/shared/codes/resource-type.codes';
 import { HandlerResult } from '@/shared/types/handler-result';
@@ -23,7 +22,6 @@ export class GetSessionQuery extends BaseQuery<
   HandlerResult<GetSessionQueryHandler>,
   SessionEntity
 > {
-  readonly domain = DomainCodes.Session;
   readonly code = QueryCodes.Session.Get;
   readonly resourceType = QueryResourceTypes.Session;
 

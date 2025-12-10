@@ -5,7 +5,6 @@ import { SessionFacade } from '@/domains/session/application/facades/session.fac
 import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
-import { DomainCodes } from '@/shared/codes/domain.codes';
 import { ResourceTypes } from '@/shared/codes/resource-type.codes';
 import { HandlerResult } from '@/shared/types/handler-result';
 
@@ -17,7 +16,6 @@ export class LogoutAuthCommand extends BaseCommand<
   HandlerResult<LogoutAuthCommandHandler>,
   void
 > {
-  readonly domain = DomainCodes.Auth;
   readonly code = CommandCodes.Auth.Logout;
   readonly resourceType = ResourceTypes.User;
 

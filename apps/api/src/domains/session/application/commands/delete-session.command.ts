@@ -9,7 +9,6 @@ import { SessionRepositoryPort } from '@/domains/session/domain/session.reposito
 import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
-import { DomainCodes } from '@/shared/codes/domain.codes';
 import { ResourceTypes } from '@/shared/codes/resource-type.codes';
 import { HandlerResult } from '@/shared/types/handler-result';
 
@@ -24,7 +23,6 @@ export class DeleteSessionCommand extends BaseCommand<
   HandlerResult<DeleteSessionCommandHandler>,
   void
 > {
-  readonly domain = DomainCodes.Session;
   readonly code = CommandCodes.Session.Delete;
   readonly resourceType = ResourceTypes.Session;
 

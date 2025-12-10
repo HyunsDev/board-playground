@@ -20,7 +20,6 @@ export class GetUserQuery extends BaseQuery<
   HandlerResult<GetUserQueryHandler>,
   UserEntity
 > {
-  readonly domain = DomainCodes.User;
   readonly code = QueryCodes.User.Get;
   readonly resourceType = DomainCodes.User;
 

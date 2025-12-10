@@ -10,7 +10,6 @@ import { PasswordProvider } from '@/infra/security/providers/password.provider';
 import { TokenProvider } from '@/infra/security/providers/token.provider';
 import { BaseCommand, ICommand, ValidationError } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
-import { DomainCodes } from '@/shared/codes/domain.codes';
 import { ResourceTypes } from '@/shared/codes/resource-type.codes';
 import { HandlerResult } from '@/shared/types/handler-result';
 import { AuthTokens } from '@/shared/types/tokens';
@@ -29,7 +28,6 @@ export class RegisterAuthCommand extends BaseCommand<
   HandlerResult<RegisterAuthCommandHandler>,
   AuthTokens
 > {
-  readonly domain = DomainCodes.Auth;
   readonly code = CommandCodes.Auth.Register;
   readonly resourceType = ResourceTypes.User;
 

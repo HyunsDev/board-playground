@@ -19,7 +19,6 @@ export class SearchUserQuery extends BaseQuery<
   HandlerResult<SearchUserQueryHandler>,
   PaginatedResult<UserEntity>
 > {
-  readonly domain = DomainCodes.User;
   readonly code = QueryCodes.User.Search;
   readonly resourceType = DomainCodes.User;
 

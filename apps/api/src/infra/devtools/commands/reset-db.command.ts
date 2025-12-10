@@ -5,7 +5,6 @@ import { ok } from 'neverthrow';
 import { PrismaService } from '@/infra/prisma/prisma.service';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
-import { DomainCodes } from '@/shared/codes/domain.codes';
 import { ResourceTypes } from '@/shared/codes/resource-type.codes';
 import { HandlerResult } from '@/shared/types/handler-result';
 
@@ -16,7 +15,6 @@ export class ResetDBCommand extends BaseCommand<
   HandlerResult<ResetDBCommandHandler>,
   void
 > {
-  readonly domain = DomainCodes.Devtools;
   readonly code = CommandCodes.Devtools.ResetDB;
   readonly resourceType = ResourceTypes.User;
 

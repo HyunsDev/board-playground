@@ -4,7 +4,6 @@ import { err, ok } from 'neverthrow';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { UserUsernameAlreadyExistsError } from '@/domains/user/domain/user.domain-errors';
 import { BaseQuery, CreateMessageMetadata, IQuery } from '@/shared/base';
-import { DomainCodes } from '@/shared/codes/domain.codes';
 import { QueryCodes } from '@/shared/codes/query.codes';
 import { QueryResourceTypes } from '@/shared/codes/resource-type.codes';
 import { HandlerResult } from '@/shared/types/handler-result';
@@ -18,7 +17,6 @@ export class CheckUsernameAvailableQuery extends BaseQuery<
   HandlerResult<CheckUsernameAvailableQueryHandler>,
   void
 > {
-  readonly domain = DomainCodes.User;
   readonly code = QueryCodes.Auth.CheckUsernameAvailable;
   readonly resourceType = QueryResourceTypes.User;
 

@@ -19,7 +19,6 @@ export class DeleteUserMeCommand extends BaseCommand<
   HandlerResult<DeleteUserMeCommandHandler>,
   void
 > {
-  readonly domain = DomainCodes.User;
   readonly code = CommandCodes.User.DeleteMe;
   readonly resourceType = DomainCodes.User;
 

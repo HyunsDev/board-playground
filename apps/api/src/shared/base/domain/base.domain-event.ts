@@ -6,7 +6,6 @@ import { CreateMessageMetadata, MessageMetadata } from '../interface/message-met
 import { AggregateCode } from '@/shared/codes/aggregate.codes';
 import { CausationCodes } from '@/shared/codes/causation.codes';
 import { DomainEventCode } from '@/shared/codes/domain-event.codes';
-import { DomainCode } from '@/shared/codes/domain.codes';
 
 export interface IDomainEvent<Data> extends IEvent {
   readonly data: Data;
@@ -18,7 +17,6 @@ export interface IDomainEvent<Data> extends IEvent {
 }
 
 export abstract class BaseDomainEvent<D extends IDomainEvent<unknown> = IDomainEvent<unknown>> {
-  public abstract readonly domain: DomainCode;
   public abstract readonly code: DomainEventCode;
   public abstract readonly resourceType: AggregateCode;
 

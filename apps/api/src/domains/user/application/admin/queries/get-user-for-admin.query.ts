@@ -18,7 +18,6 @@ export class GetUserForAdminQuery extends BaseQuery<
   HandlerResult<GetUserForAdminQueryHandler>,
   UserEntity
 > {
-  readonly domain = DomainCodes.User;
   readonly code = QueryCodes.User.GetForAdmin;
   readonly resourceType = DomainCodes.User;
 

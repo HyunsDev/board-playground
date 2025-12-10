@@ -5,7 +5,6 @@ import { DomainError } from '../error';
 import { CreateMessageMetadata, MessageMetadata } from '../interface';
 
 import { CommandCode } from '@/shared/codes/command.codes';
-import { DomainCode } from '@/shared/codes/domain.codes';
 import { ResourceType } from '@/shared/codes/resource-type.codes';
 import { DomainResult } from '@/shared/types/result.type';
 
@@ -30,7 +29,6 @@ export abstract class BaseCommand<
   R extends DomainResult<O, DomainError>,
   O,
 > extends Command<R> {
-  public abstract readonly domain: DomainCode;
   public abstract readonly code: CommandCode;
   public abstract readonly resourceType: ResourceType;
 
