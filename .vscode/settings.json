@@ -35,6 +35,6 @@
     "backend-common": "lib",
     "backend-ddd": "cluster",
     "backend-infra": "server",
-    "shared-types": "lib"
+    "backend-core": "core"
   }
 }
