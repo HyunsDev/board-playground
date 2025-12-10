@@ -1,6 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
+import { HandlerResult } from '@workspace/backend-common';
 import { DEVICE_PLATFORM } from '@workspace/contract';
 
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
@@ -12,7 +13,6 @@ import { TokenProvider } from '@/infra/security/providers/token.provider';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
 import { ResourceTypes } from '@/shared/codes/resource-type.codes';
-import { HandlerResult } from '@/shared/types/handler-result';
 import { AuthTokens } from '@/shared/types/tokens';
 import { matchError } from '@/shared/utils/match-error.utils';
 

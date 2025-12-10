@@ -1,6 +1,8 @@
 import { Inject } from '@nestjs/common';
 import { QueryHandler } from '@nestjs/cqrs';
 
+import { HandlerResult } from '@workspace/backend-common';
+
 import { UserEntity } from '../../../domain/user.entity';
 import { UserRepositoryPort } from '../../../domain/user.repository.port';
 import { USER_REPOSITORY } from '../../../user.constants';
@@ -8,7 +10,6 @@ import { USER_REPOSITORY } from '../../../user.constants';
 import { IQuery, BaseQuery } from '@/shared/base';
 import { DomainCodes } from '@/shared/codes/domain.codes';
 import { QueryCodes } from '@/shared/codes/query.codes';
-import { HandlerResult } from '@/shared/types/handler-result';
 
 type IGetUserForAdminQuery = IQuery<{
   userId: string;

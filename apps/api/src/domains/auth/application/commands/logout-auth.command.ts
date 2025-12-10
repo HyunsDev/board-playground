@@ -1,12 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
+import { HandlerResult } from '@workspace/backend-common';
+
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
 import { ResourceTypes } from '@/shared/codes/resource-type.codes';
-import { HandlerResult } from '@/shared/types/handler-result';
 
 type ILogoutAuthCommand = ICommand<{
   refreshToken: string;

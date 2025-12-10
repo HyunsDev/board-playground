@@ -33,6 +33,7 @@
     "@workspace/contract": "workspace:*",
     "@workspace/database": "workspace:*",
     "@workspace/common": "workspace:*",
+    "@workspace/backend-common": "workspace:*",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "dayjs": "^1.11.19",

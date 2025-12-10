@@ -1,12 +1,13 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
+import { HandlerResult } from '@workspace/backend-common';
+
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { UserUsernameAlreadyExistsError } from '@/domains/user/domain/user.domain-errors';
 import { BaseQuery, CreateMessageMetadata, IQuery } from '@/shared/base';
 import { QueryCodes } from '@/shared/codes/query.codes';
 import { QueryResourceTypes } from '@/shared/codes/resource-type.codes';
-import { HandlerResult } from '@/shared/types/handler-result';
 
 type ICheckUsernameAvailableQuery = IQuery<{
   username: string;

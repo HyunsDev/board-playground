@@ -2,11 +2,12 @@ import { Logger } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
+import { HandlerResult } from '@workspace/backend-common';
+
 import { PrismaService } from '@/infra/prisma/prisma.service';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
 import { ResourceTypes } from '@/shared/codes/resource-type.codes';
-import { HandlerResult } from '@/shared/types/handler-result';
 
 type ResetDbCommandProps = ICommand<void>;
 

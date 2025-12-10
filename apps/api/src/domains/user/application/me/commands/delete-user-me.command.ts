@@ -2,12 +2,13 @@ import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
+import { HandlerResult } from '@workspace/backend-common';
+
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constants';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
 import { DomainCodes } from '@/shared/codes/domain.codes';
-import { HandlerResult } from '@/shared/types/handler-result';
 import { matchError } from '@/shared/utils/match-error.utils';
 
 type IDeleteUserMeCommand = ICommand<{

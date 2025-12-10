@@ -2,6 +2,8 @@ import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
+import { HandlerResult } from '@workspace/backend-common';
+
 import { SessionEntity } from '../../domain/session.entity';
 import { SESSION_REPOSITORY } from '../../session.constants';
 
@@ -9,7 +11,6 @@ import { SessionRepositoryPort } from '@/domains/session/domain/session.reposito
 import { BaseQuery, IQuery } from '@/shared/base';
 import { QueryCodes } from '@/shared/codes/query.codes';
 import { QueryResourceType, QueryResourceTypes } from '@/shared/codes/resource-type.codes';
-import { HandlerResult } from '@/shared/types/handler-result';
 
 type ISessionsQuery = IQuery<{
   userId: string;

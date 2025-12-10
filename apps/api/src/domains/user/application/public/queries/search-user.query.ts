@@ -2,13 +2,14 @@ import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
+import { HandlerResult } from '@workspace/backend-common';
+
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 import { USER_REPOSITORY } from '@/domains/user/user.constants';
 import { BaseQuery, PaginatedQueryProps, PaginatedResult } from '@/shared/base';
 import { DomainCodes } from '@/shared/codes/domain.codes';
 import { QueryCodes } from '@/shared/codes/query.codes';
-import { HandlerResult } from '@/shared/types/handler-result';
 
 type ISearchUserQuery = PaginatedQueryProps<{
   nickname?: string;
