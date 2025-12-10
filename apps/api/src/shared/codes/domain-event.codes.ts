@@ -1,6 +1,7 @@
+import { DistributiveValueOf } from '@workspace/common';
+
 import { DomainCodeKey } from './domain.codes';
 import { DomainEventCodeRecord } from '../types/code-record.types';
-import { DistributiveValueOf } from '../types/distributive-value-of.type';
 
 import { AuthEventCodes } from '@/domains/auth/auth.contracts';
 import { SessionEventCodes } from '@/domains/session/session.constants';

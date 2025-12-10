@@ -1,6 +1,7 @@
+import { DistributiveValueOf } from '@workspace/common';
+
 import { DomainCodeKey } from './domain.codes';
 import { QueryCodeRecord } from '../types/code-record.types';
-import { DistributiveValueOf } from '../types/distributive-value-of.type';
 
 import { AuthQueryCodes } from '@/domains/auth/auth.contracts';
 import { SessionQueryCodes } from '@/domains/session/session.constants';

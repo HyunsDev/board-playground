@@ -1,9 +1,8 @@
-import { deepMerge } from '@workspace/common';
+import { deepMerge, DistributiveValueOf } from '@workspace/common';
 
 import { CommandCodes } from './command.codes';
 import { DomainEventCodes } from './domain-event.codes';
 import { TriggerCodes } from './trigger.codes';
-import { DistributiveValueOf } from '../types/distributive-value-of.type';
 
 /**
  * CausationCode는 Command, Query, DomainEvent 원인(Cause)을 나타내는 코드 타입입니다.
