@@ -26,8 +26,13 @@
     "codes": "constant",
     "facade": "interface",
     "facades": "interface",
+
     "api-e2e": "test",
     "jest-config": "test",
-    "typescript-config": "typescript"
+    "typescript-config": "typescript",
+    "backend-common": "lib",
+    "backend-ddd": "cluster",
+    "backend-infra": "server",
+    "shared-types": "lib"
   }
 }
