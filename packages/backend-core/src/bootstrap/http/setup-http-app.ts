@@ -1,15 +1,13 @@
 import { INestApplication } from '@nestjs/common';
+import cookieParser from 'cookie-parser';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
+
+import { httpConfig, HttpConfig } from '@/config';
 
 export interface BootstrapOptions {
   enableCors?: boolean;
 }
 
-/**
- * [ts-rest & Zod 전용]
- * class-validator/transformer 관련 설정을 모두 제거하고,
- * 순수하게 서버 인프라(로깅, 네트워크, 종료 훅) 설정만 수행합니다.
- */
 export function setupHttpApp(app: INestApplication, options: BootstrapOptions = {}) {
   // Logger 연결 (nestjs-pino)
   const logger = app.get(Logger);
@@ -32,6 +30,10 @@ export function setupHttpApp(app: INestApplication, options: BootstrapOptions = 
       credentials: true,
     });
   }
+
+  // Cookie Parser
+  const { cookieSecret } = app.get<HttpConfig>(httpConfig.KEY);
+  void app.use(cookieParser(cookieSecret));
 
   // Graceful Shutdown
   // SIGTERM 시그널 등을 받았을 때 연결을 안전하게 끊음
