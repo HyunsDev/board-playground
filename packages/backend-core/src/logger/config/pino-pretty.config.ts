@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { DestinationStream } from 'pino';
 
-import { LogTypes } from './log.types';
+import { LogTypes } from '../log.types';
 import {
   isEventPublishedLogData,
   isCommandHandlerLogData,
   isQueryHandlerLogData,
   isDomainError,
   isEventHandlerLogData,
-} from './logging.utils';
+} from '../logging.utils';
 
 export const createDevLoggerStream = async (): Promise<DestinationStream> => {
   const { build } = await import('pino-pretty');

@@ -2,7 +2,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 
 import { Params } from 'nestjs-pino';
 
-import { ContextService } from '../context/context.service';
+import { ContextService } from '../../context/context.service';
 
 export const getCommonPinoConfig = (
   isProduction: boolean,

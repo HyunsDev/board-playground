@@ -4,9 +4,9 @@ import { DiscoveryModule } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 import { LoggerModule } from 'nestjs-pino';
 
+import { getCommonPinoConfig } from './config/pino-common.config';
+import { createDevLoggerStream } from './config/pino-pretty.config';
 import { CqrsInstrumentation } from './cqrs.instrumentation';
-import { getCommonPinoConfig } from './pino-common.config';
-import { createDevLoggerStream } from './pino-pretty.config';
 import { ContextService } from '../context/context.service';
 
 import { CoreContextModule } from '@/context/context.module';
@@ -20,7 +20,6 @@ import { CoreContextModule } from '@/context/context.module';
       imports: [ConfigModule, CoreContextModule],
       inject: [ConfigService, ContextService],
       useFactory: async (configService: ConfigService, contextService: ContextService) => {
-        // [MODIFIED] ExecutionConfig 대신 ConfigService 사용 (의존성 분리)
         const nodeEnv = configService.get<string>('NODE_ENV', 'development');
         const isProduction = nodeEnv === 'production';
 
