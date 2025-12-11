@@ -33,6 +33,8 @@
     "@workspace/contract": "workspace:*",
     "@workspace/database": "workspace:*",
     "@workspace/common": "workspace:*",
+    "@workspace/domain": "workspace:*",
+    "@workspace/backend-ddd": "workspace:*",
     "@workspace/backend-common": "workspace:*",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
