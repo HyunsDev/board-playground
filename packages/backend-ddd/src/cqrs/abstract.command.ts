@@ -4,13 +4,13 @@ import { v7 as uuidv7 } from 'uuid';
 import { DomainError, DomainResult } from '../error';
 import { AbstractCreateMessageMetadata, AbstractMessageMetadata } from './message-metadata.type';
 
-export type AbstractICommand<CausationCodeUnion extends string, T> = {
+export type AbstractICommand<CausationCodeType extends string, T> = {
   readonly data: T;
-  readonly metadata: AbstractCreateMessageMetadata<CausationCodeUnion>;
+  readonly metadata: AbstractCreateMessageMetadata<CausationCodeType>;
   deriveMetadata(
-    this: AbstractICommand<CausationCodeUnion, T>,
-    overrides?: Partial<AbstractCreateMessageMetadata<CausationCodeUnion>>,
-  ): AbstractCreateMessageMetadata<CausationCodeUnion>;
+    this: AbstractICommand<CausationCodeType, T>,
+    overrides?: Partial<AbstractCreateMessageMetadata<CausationCodeType>>,
+  ): AbstractCreateMessageMetadata<CausationCodeType>;
 };
 
 /**
@@ -21,25 +21,25 @@ export type AbstractICommand<CausationCodeUnion extends string, T> = {
  * @template O - 커맨드 핸들러가 성공적으로 처리했을 때 반환하는 값의 타입
  */
 export abstract class AbstractCommand<
-  CommandCodeUnion extends CausationCodeUnion,
-  ResourceTypeUnion extends string,
-  CausationCodeUnion extends string,
-  D extends AbstractICommand<CausationCodeUnion, unknown>,
+  CommandCodeType extends CausationCodeType,
+  ResourceCodeType extends string,
+  CausationCodeType extends string,
+  D extends AbstractICommand<CausationCodeType, unknown>,
   R extends DomainResult<O, DomainError>,
   O,
 > extends Command<R> {
-  public abstract readonly code: CommandCodeUnion;
-  public abstract readonly resourceType: ResourceTypeUnion;
+  public abstract readonly code: CommandCodeType;
+  public abstract readonly resourceType: ResourceCodeType;
 
   readonly id: string;
   public readonly resourceId: string | null;
   readonly data: D['data'];
-  readonly metadata: AbstractMessageMetadata<CausationCodeUnion>;
+  readonly metadata: AbstractMessageMetadata<CausationCodeType>;
 
   constructor(
     resourceId: string | null,
     data: D['data'],
-    metadata: AbstractCreateMessageMetadata<CausationCodeUnion>,
+    metadata: AbstractCreateMessageMetadata<CausationCodeType>,
   ) {
     super();
     this.id = uuidv7();
@@ -56,8 +56,8 @@ export abstract class AbstractCommand<
   }
 
   public deriveMetadata(
-    overrides?: Partial<AbstractCreateMessageMetadata<CausationCodeUnion>>,
-  ): AbstractCreateMessageMetadata<CausationCodeUnion> {
+    overrides?: Partial<AbstractCreateMessageMetadata<CausationCodeType>>,
+  ): AbstractCreateMessageMetadata<CausationCodeType> {
     return {
       correlationId: this.metadata.correlationId, // 뿌리 유지
       causationId: this.id,

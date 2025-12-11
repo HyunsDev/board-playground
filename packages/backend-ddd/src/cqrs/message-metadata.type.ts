@@ -5,10 +5,10 @@
  * @property causationId - 이 이벤트를 유발한 원인(Event, Command, Trigger)의 ID
  * @property userId - 이벤트를 발생시킨 User의 Id
  */
-export type AbstractMessageMetadata<CausationCode extends string> = {
+export type AbstractMessageMetadata<CausationCodeType extends string> = {
   readonly createdAt: number | null;
   readonly correlationId: string | null;
-  readonly causationType: CausationCode | null;
+  readonly causationType: CausationCodeType | null;
   readonly causationId: string | null;
   readonly userId: string | null;
 };

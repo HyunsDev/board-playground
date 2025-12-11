@@ -1,5 +1,6 @@
-import { AbstractEntity } from '@/blocks';
 import { createPaginatedResult, PaginatedResult } from '@workspace/common';
+
+import { AbstractEntity } from '@/blocks';
 
 export abstract class AbstractMapper<Entity extends AbstractEntity<any>, DbRecord> {
   abstract toDomain(record: any): Entity;

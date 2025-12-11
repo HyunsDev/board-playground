@@ -1,6 +1,6 @@
-import { DomainError } from './abstract.domain-errors';
 import { Result as NeverthrowResult } from 'neverthrow';
 
+import { DomainError } from './abstract.domain-errors';
 import { SystemException } from './abstract.system-exception';
 
 export type DomainErrorScope = 'public' | 'private';

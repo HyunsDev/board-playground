@@ -3,36 +3,36 @@ import { v7 as uuidv7 } from 'uuid';
 
 import { AbstractCreateMessageMetadata, AbstractMessageMetadata } from './message-metadata.type';
 
-export interface IAbstractDomainEvent<CausationCodeUnion extends string, Data> extends IEvent {
+export interface IAbstractDomainEvent<CausationCodeType extends string, Data> extends IEvent {
   readonly data: Data;
-  readonly metadata: AbstractCreateMessageMetadata<CausationCodeUnion>;
+  readonly metadata: AbstractCreateMessageMetadata<CausationCodeType>;
   deriveMetadata(
-    this: IAbstractDomainEvent<CausationCodeUnion, Data>,
-    overrides?: Partial<AbstractCreateMessageMetadata<CausationCodeUnion>>,
-  ): AbstractCreateMessageMetadata<CausationCodeUnion>;
+    this: IAbstractDomainEvent<CausationCodeType, Data>,
+    overrides?: Partial<AbstractCreateMessageMetadata<CausationCodeType>>,
+  ): AbstractCreateMessageMetadata<CausationCodeType>;
 }
 
 export abstract class AbstractDomainEvent<
-  DomainEventCodeUnion extends CausationCodeUnion,
-  AggregateCode extends string,
-  CausationCodeUnion extends string,
-  D extends IAbstractDomainEvent<CausationCodeUnion, unknown> = IAbstractDomainEvent<
-    CausationCodeUnion,
+  DomainEventCodeType extends CausationCodeType,
+  AggregateCodeType extends string,
+  CausationCodeType extends string,
+  D extends IAbstractDomainEvent<CausationCodeType, unknown> = IAbstractDomainEvent<
+    CausationCodeType,
     unknown
   >,
 > {
-  public abstract readonly code: DomainEventCodeUnion;
-  public abstract readonly resourceType: AggregateCode;
+  public abstract readonly code: DomainEventCodeType;
+  public abstract readonly resourceType: AggregateCodeType;
 
   public readonly id: string;
   public readonly resourceId: string | null;
   public readonly data: D['data'];
-  public metadata: AbstractMessageMetadata<CausationCodeUnion>;
+  public metadata: AbstractMessageMetadata<CausationCodeType>;
 
   constructor(
     resourceId: string | null,
     data: D['data'],
-    metadata?: AbstractCreateMessageMetadata<CausationCodeUnion>,
+    metadata?: AbstractCreateMessageMetadata<CausationCodeType>,
   ) {
     this.id = uuidv7();
     this.data = data;
@@ -47,7 +47,7 @@ export abstract class AbstractDomainEvent<
     };
   }
 
-  public setMetadata(metadata: AbstractCreateMessageMetadata<CausationCodeUnion>): void {
+  public setMetadata(metadata: AbstractCreateMessageMetadata<CausationCodeType>): void {
     this.metadata = {
       ...this.metadata,
       ...metadata,
@@ -56,8 +56,8 @@ export abstract class AbstractDomainEvent<
   }
 
   public deriveMetadata(
-    overrides?: Partial<AbstractCreateMessageMetadata<CausationCodeUnion>>,
-  ): AbstractCreateMessageMetadata<CausationCodeUnion> {
+    overrides?: Partial<AbstractCreateMessageMetadata<CausationCodeType>>,
+  ): AbstractCreateMessageMetadata<CausationCodeType> {
     return {
       correlationId: this.metadata.correlationId, // 뿌리 유지
       causationId: this.id,

@@ -4,13 +4,13 @@ import { v7 as uuidv7 } from 'uuid';
 import { DomainError, DomainResult } from '../error';
 import { AbstractCreateMessageMetadata, AbstractMessageMetadata } from './message-metadata.type';
 
-export type AbstractIQuery<CausationCodeUnion extends string, T> = {
+export type AbstractIQuery<CausationCodeType extends string, T> = {
   readonly data: T;
-  readonly metadata: AbstractCreateMessageMetadata<CausationCodeUnion>;
+  readonly metadata: AbstractCreateMessageMetadata<CausationCodeType>;
 };
 
-export type AbstractPaginatedQueryProps<CausationCodeUnion extends string, T> = AbstractIQuery<
-  CausationCodeUnion,
+export type AbstractPaginatedQueryProps<CausationCodeType extends string, T> = AbstractIQuery<
+  CausationCodeType,
   T & {
     page: number;
     take: number;
@@ -24,26 +24,26 @@ export type AbstractPaginatedQueryProps<CausationCodeUnion extends string, T> = 
  * @template R - 쿼리 핸들러의 반환 타입
  * @template O - 쿼리 핸들러가 성공적으로 처리했을 때 반환하는 값의 타입
  */
-export abstract class BaseQuery<
-  QueryCodeUnion extends CausationCodeUnion,
-  QueryResourceTypeUnion extends string,
-  CausationCodeUnion extends string,
-  D extends AbstractIQuery<CausationCodeUnion, unknown>,
+export abstract class AbstractQuery<
+  QueryCodeType extends CausationCodeType,
+  QueryResourceCodeType extends string,
+  CausationCodeType extends string,
+  D extends AbstractIQuery<CausationCodeType, unknown>,
   R extends DomainResult<O, DomainError>,
   O,
 > extends Query<R> {
-  public abstract readonly code: QueryCodeUnion;
-  public abstract readonly resourceType: QueryResourceTypeUnion;
+  public abstract readonly code: QueryCodeType;
+  public abstract readonly resourceType: QueryResourceCodeType;
 
   readonly id: string;
   readonly resourceId: string | null;
   readonly data: D['data'];
-  readonly metadata: AbstractMessageMetadata<CausationCodeUnion>;
+  readonly metadata: AbstractMessageMetadata<CausationCodeType>;
 
   constructor(
     resourceId: string | null,
     data: D['data'],
-    metadata: AbstractCreateMessageMetadata<CausationCodeUnion>,
+    metadata: AbstractCreateMessageMetadata<CausationCodeType>,
   ) {
     super();
     this.id = uuidv7();

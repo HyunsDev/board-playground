@@ -1,5 +1,6 @@
-import { AbstractEntity } from '@/blocks';
 import { PaginatedResult, PaginationMetadata } from '@workspace/common';
+
+import { AbstractEntity } from '@/blocks';
 
 export abstract class AbstractDtoMapper<E extends AbstractEntity<unknown>> {
   protected mapNullable<Dto>(entity: E | null, mapFn: (entity: E) => Dto): Dto | null {
