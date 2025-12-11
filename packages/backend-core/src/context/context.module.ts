@@ -6,18 +6,19 @@ import { ClsModule } from 'nestjs-cls';
 
 import { ContextService } from './context.service';
 import { MessageCausationInterceptor } from './message-causation.interceptor';
-import { PrismaModule } from '../database/prisma.module';
 import { PrismaService } from '../database/prisma.service';
+
+import { DatabaseModule } from '@/database/database.module';
 
 @Global()
 @Module({
   imports: [
-    PrismaModule,
+    DatabaseModule,
     ClsModule.forRoot({
       global: true,
       plugins: [
         new ClsPluginTransactional({
-          imports: [PrismaModule],
+          imports: [DatabaseModule],
           adapter: new TransactionalAdapterPrisma({
             prismaInjectionToken: PrismaService,
           }),
