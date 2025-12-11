@@ -1,7 +1,4 @@
-import { DomainError, MessageMetadata } from '@/shared/base';
-import { CommandCode } from '@/shared/codes/command.codes';
-import { DomainEventCode } from '@/shared/codes/domain-event.codes';
-import { QueryCode } from '@/shared/codes/query.codes';
+import { AbstractMessageMetadata, DomainError } from '@workspace/backend-ddd';
 
 export const LogTypes = {
   CommandHandled: 'CQRS_COMMAND_HANDLED',
@@ -13,7 +10,7 @@ export type LogType = (typeof LogTypes)[keyof typeof LogTypes];
 
 export type CommandHandledLogData = {
   type: typeof LogTypes.CommandHandled;
-  action: CommandCode;
+  action: string;
   duration?: string;
 } & (
   | {
@@ -24,11 +21,11 @@ export type CommandHandledLogData = {
       error: DomainError | Error;
     }
 ) &
-  MessageMetadata;
+  AbstractMessageMetadata<string>;
 
 export type QueryHandledLogData = {
   type: typeof LogTypes.QueryHandled;
-  action: QueryCode;
+  action: string;
   duration?: string;
   queryData: any;
 } & (
@@ -40,11 +37,11 @@ export type QueryHandledLogData = {
       error: DomainError | Error;
     }
 ) &
-  MessageMetadata;
+  AbstractMessageMetadata<string>;
 
 export type EventHandledLogData = {
   type: typeof LogTypes.EventHandled;
-  action: DomainEventCode;
+  action: string;
   duration?: string;
   handlerName: string;
 } & (
@@ -56,9 +53,9 @@ export type EventHandledLogData = {
       error: DomainError | Error;
     }
 ) &
-  MessageMetadata;
+  AbstractMessageMetadata<string>;
 
 export type EventPublishedLogData = {
   type: typeof LogTypes.EventPublished;
-  action: DomainEventCode;
-} & MessageMetadata;
+  action: string;
+} & AbstractMessageMetadata<string>;
