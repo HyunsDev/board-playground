@@ -1,4 +1,4 @@
-import { deepMerge, DistributiveValueOf } from '@workspace/common';
+import { deepMerge, ExtractEnumValues } from '@workspace/common';
 
 import { CommandCodes } from './command.codes';
 import { DomainEventCodes } from './domain-event.codes';
@@ -9,4 +9,4 @@ import { TriggerCodes } from './trigger.codes';
  * Query는 일반적으로 상태 변경을 일으키지 않으므로 CausationCode에 포함되지 않습니다.
  */
 export const CausationCodes = deepMerge(CommandCodes, DomainEventCodes, TriggerCodes);
-export type CausationCode = DistributiveValueOf<typeof CausationCodes>;
+export type CausationCode = ExtractEnumValues<typeof CausationCodes>;

@@ -1,4 +1,4 @@
-import { DistributiveValueOf } from '@workspace/common';
+import { ExtractEnumValues } from '@workspace/common';
 
 import { DomainCodeKey } from './domain.codes';
 import { QueryCodeRecord } from '../types/code-record.types';
@@ -16,4 +16,4 @@ export const QueryCodes = {
   Devtools: DevtoolsQueryCodes,
 } as const satisfies Record<DomainCodeKey, QueryCodeRecord>;
 
-export type QueryCode = DistributiveValueOf<typeof QueryCodes>;
+export type QueryCode = ExtractEnumValues<typeof QueryCodes>;

@@ -1,4 +1,4 @@
-import { DistributiveValueOf } from '@workspace/common';
+import { ExtractEnumValues } from '@workspace/common';
 
 import { DomainCodeKey } from './domain.codes';
 import { DomainEventCodeRecord } from '../types/code-record.types';
@@ -16,4 +16,4 @@ export const DomainEventCodes = {
   Devtools: DevtoolsEventCodes,
 } as const satisfies Record<DomainCodeKey, DomainEventCodeRecord>;
 
-export type DomainEventCode = DistributiveValueOf<typeof DomainEventCodes>;
+export type DomainEventCode = ExtractEnumValues<typeof DomainEventCodes>;
