@@ -5,6 +5,8 @@ import { ClsService } from 'nestjs-cls';
 
 import { AppContext, ClientContext, TokenContext, MessageMetadataContext } from './context.types';
 
+import { TriggerCodeEnum } from '@/common';
+
 @Injectable()
 export class ContextService {
   constructor(
@@ -62,13 +64,25 @@ export class ContextService {
     this.cls.set('errorCode', code);
   }
 
+  getErrorCode(): string | undefined {
+    return this.cls.get('errorCode');
+  }
+
   // --- Message Metadata (CQRS/Event) ---
   setMessageMetadata(metadata: MessageMetadataContext) {
     this.cls.set('messageMetadata', metadata);
   }
 
-  getMessageMetadata(): MessageMetadataContext | undefined {
-    return this.cls.get('messageMetadata');
+  getMessageMetadata(): MessageMetadataContext {
+    const metadata = this.cls.get('messageMetadata');
+    return (
+      metadata || {
+        causationId: this.getRequestId() || null,
+        causationType: TriggerCodeEnum.Unknown,
+        correlationId: this.getRequestId() || null,
+        userId: this.getUserId() || null,
+      }
+    );
   }
 
   // --- Run in Context ---
