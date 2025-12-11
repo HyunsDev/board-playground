@@ -27,7 +27,8 @@
     }
   },
   "dependencies": {
-    "@workspace/common": "workspace:*"
+    "@workspace/common": "workspace:*",
+    "zod": "^3"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",

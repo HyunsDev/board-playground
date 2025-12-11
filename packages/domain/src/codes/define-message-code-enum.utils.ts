@@ -8,7 +8,7 @@ import {
 
 import type { BCCodeEnumKey } from './bounded-context-code.enums.js';
 
-export type MessageType = 'cmd' | 'evt' | 'qry';
+export type MessageType = 'cmd' | 'evt' | 'qry' | 'trg';
 
 // ---------------------------------------------------------------------------
 // 1. Base Types & Validation Logic
