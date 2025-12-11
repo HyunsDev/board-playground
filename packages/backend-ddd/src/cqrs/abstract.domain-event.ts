@@ -1,5 +1,6 @@
 import { IEvent } from '@nestjs/cqrs';
 import { v7 as uuidv7 } from 'uuid';
+
 import { AbstractCreateMessageMetadata, AbstractMessageMetadata } from './message-metadata.type';
 
 export interface IAbstractDomainEvent<CausationCodeUnion extends string, Data> extends IEvent {
