@@ -1,7 +1,6 @@
 import type { IsStrictSnakeCase } from '@workspace/common';
-
-import type { MessageType } from './define-message-code-enum.utils';
-import type { DomainCodeEnums } from './domain-code.enums';
+import type { MessageType } from '@workspace/domain/src/codes/define-message-code-enum.utils';
+import type { DomainCodeEnums } from '@workspace/domain/src/codes/domain-code.enums';
 
 type ValidateTriggerCode<
   T extends string,
