@@ -19,7 +19,7 @@ type ValidateTriggerCode<
 const defineTriggerCode = <const T extends string>(code: ValidateTriggerCode<T>): T =>
   code as unknown as T;
 
-export const TriggerCodeEnums = {
+export const TriggerCodeEnum = {
   // HTTP
   Http: defineTriggerCode('system:infra:trg:http'), // 일반적인 API 요청
   Webhook: defineTriggerCode('system:infra:trg:webhook'), // 외부 솔루션 웹훅
@@ -35,7 +35,10 @@ export const TriggerCodeEnums = {
 
   // Debug
   Test: defineTriggerCode('system:infra:trg:test'), // 테스트 용도
+
+  // Unknown
+  Unknown: defineTriggerCode('system:infra:trg:unknown'), // 알 수 없는 트리거
 } as const;
 
-export type TriggerCodeEnum = typeof TriggerCodeEnums;
+export type TriggerCodeEnum = typeof TriggerCodeEnum;
 export type TriggerCode = ValidateTriggerCode<Extract<keyof TriggerCodeEnum, string>>;
