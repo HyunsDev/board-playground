@@ -4,10 +4,11 @@ import { err, ok } from 'neverthrow';
 import { HandlerResult } from '@workspace/backend-common';
 import { DEVICE_PLATFORM } from '@workspace/contract';
 
+import { InvalidCredentialsError } from '../../auth.domain-error';
+
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { TransactionManager } from '@/infra/prisma/transaction.manager';
-import { InvalidCredentialsError } from '@/infra/security/domain/security.domain-errors';
 import { PasswordProvider } from '@/infra/security/providers/password.provider';
 import { TokenProvider } from '@/infra/security/providers/token.provider';
 import { BaseCommand, ICommand } from '@/shared/base';
