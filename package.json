@@ -11,6 +11,7 @@
     "dev": "turbo run dev dev:check --concurrency=20",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "format:pkg": "pnpm exec sort-package-json \"**/package.json\" \"!**/node_modules/**\"",
+    "knip": "knip --config knip.json",
     "lint": "turbo run lint",
     "prepare": "husky",
     "test": "turbo run test",
