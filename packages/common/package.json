@@ -25,17 +25,16 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@ts-rest/core": "^3.52.1",
+    "@ts-rest/core": "3.53.0-rc.1",
     "neverthrow": "^8.2.0",
-    "zod": "^3"
+    "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@types/node": "^22.10.7",
+    "@types/node": "^24.10.3",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "source-map-support": "^0.5.21",
-    "tsup": "^8.0.0",
-    "typescript": "5.5.4"
+    "tsup": "^8.5.1"
   },
   "publishConfig": {
     "access": "public"

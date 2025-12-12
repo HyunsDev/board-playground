@@ -1,4 +1,4 @@
-import z from 'zod';
+import { z } from 'zod';
 
 import { UserPrivateProfileDtoSchema } from '../user.dto';
 
@@ -40,7 +40,9 @@ export const updateUserMeProfile = c.mutation({
 export const updateUserMeAvatar = c.mutation({
   method: 'PUT',
   path: '/me/avatar',
-  body: c.type<{ files: File[] }>(),
+  body: z.object({
+    file: z.custom<File>(),
+  }),
   contentType: 'multipart/form-data',
   responses: {
     200: z.object({

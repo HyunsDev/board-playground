@@ -1,4 +1,4 @@
-import z from 'zod';
+import { z } from 'zod';
 
 import { ManagerWithBoardDtoSchema, ManagerWithUserDtoSchema } from './manager.dto';
 import { ManagerRole } from './manager.enums';

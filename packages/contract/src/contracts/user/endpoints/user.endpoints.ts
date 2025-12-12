@@ -1,4 +1,4 @@
-import z from 'zod';
+import { z } from 'zod';
 
 import { withPagination, paginatedResultSchemaOf } from '@workspace/common';
 
@@ -13,7 +13,7 @@ export const getUser = c.query({
   method: 'GET',
   path: '/users/:userId',
   pathParams: z.object({
-    userId: z.string().uuid(),
+    userId: z.uuid(),
   }),
   responses: {
     200: z.object({

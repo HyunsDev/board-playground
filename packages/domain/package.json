@@ -26,14 +26,13 @@
   },
   "dependencies": {
     "@workspace/common": "workspace:*",
-    "zod": "^3"
+    "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@types/node": "^22.10.7",
+    "@types/node": "^24.10.3",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "tsup": "^8.0.0",
-    "typescript": "5.5.4"
+    "tsup": "^8.5.1"
   },
   "publishConfig": {
     "access": "public"

@@ -32,15 +32,11 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "@types/node": "^22.10.7",
+    "@types/node": "^24.10.3",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "rimraf": "^6.0.0",
-    "tsc-alias": "^1.8.16",
-    "typescript": "5.5.4"
-  },
-  "engines": {
-    "node": ">=18"
+    "rimraf": "^6.1.2",
+    "tsc-alias": "^1.8.16"
   },
   "publishConfig": {
     "access": "public"

@@ -1,4 +1,4 @@
-import z from 'zod';
+import { z } from 'zod';
 
 import { withPagination, paginatedResultSchemaOf } from '@workspace/common';
 
@@ -13,7 +13,9 @@ import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 export const getUserForAdmin = c.query({
   method: 'GET',
   path: '/admin/users/:userId',
-  pathParams: c.type<{ userId: string }>(),
+  pathParams: z.object({
+    userId: z.uuid(),
+  }),
   responses: {
     200: z.object({
       user: UserAdminDtoSchema,
@@ -30,8 +32,8 @@ export const queryUsersForAdmin = c.query({
   path: '/admin/users',
   query: withPagination(
     z.object({
-      userId: z.string().uuid().optional(),
-      email: z.string().email().optional(),
+      userId: z.uuid().optional(),
+      email: z.email().optional(),
       username: z.string().min(3).max(30).optional(),
       nickname: z.string().min(2).max(20).optional(),
       role: UserRole.optional(),
@@ -50,13 +52,13 @@ export const updateUserForAdmin = c.mutation({
   method: 'PATCH',
   path: '/admin/users/:userId',
   pathParams: z.object({
-    userId: z.string().uuid(),
+    userId: z.uuid(),
   }),
   body: z.object({
     nickname: z.string().min(2).max(20).optional(),
     username: z.string().min(3).max(30).optional(),
     bio: z.string().max(160).nullable().optional(),
-    avatarUrl: z.string().url().nullable().optional(),
+    avatarUrl: z.url().nullable().optional(),
     status: UserStatus.optional(),
     role: UserRole.optional(),
   }),
@@ -75,7 +77,7 @@ export const deleteUserForAdmin = c.mutation({
   method: 'DELETE',
   path: '/admin/users/:userId',
   pathParams: z.object({
-    userId: z.string().uuid(),
+    userId: z.uuid(),
   }),
   body: c.noBody(),
   responses: {

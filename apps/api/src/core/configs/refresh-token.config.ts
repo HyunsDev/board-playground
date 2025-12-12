@@ -1,9 +1,9 @@
 import { ConfigType, registerAs } from '@nestjs/config';
-import z from 'zod';
+import { z } from 'zod';
 
 const refreshTokenConfigSchema = z.object({
   REFRESH_TOKEN_SECRET: z.string().min(32),
-  REFRESH_TOKEN_EXPIRATION_DAYS: z.coerce.number().int().positive().default(30),
+  REFRESH_TOKEN_EXPIRATION_DAYS: z.coerce.number().int().positive().prefault(30),
 });
 
 export const refreshTokenConfig = registerAs('refreshToken', () => {

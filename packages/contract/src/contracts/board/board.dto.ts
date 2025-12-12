@@ -1,4 +1,4 @@
-import z from 'zod';
+import { z } from 'zod';
 
 import { BoardSlug } from './board.schemas';
 
@@ -10,7 +10,7 @@ export const BoardDtoSchema = z.object({
   name: z.string().min(3).max(50),
   description: z.string().max(200).nullable(),
   managerId: ID,
-  createdAt: z.string().datetime(),
+  createdAt: z.iso.datetime(),
 });
 export type BoardDto = z.infer<typeof BoardDtoSchema>;
 

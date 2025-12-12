@@ -1,4 +1,4 @@
-import z from 'zod';
+import { z } from 'zod';
 
 import { SessionDtoSchema } from './session.dto';
 
@@ -11,7 +11,7 @@ export const getSession = c.query({
   method: 'GET',
   path: '/sessions/:sessionId',
   pathParams: z.object({
-    sessionId: z.string().uuid(),
+    sessionId: z.uuid(),
   }),
   responses: {
     200: z.object({
@@ -42,7 +42,7 @@ export const deleteSession = c.mutation({
   path: '/sessions/:sessionId',
   body: c.noBody(),
   pathParams: z.object({
-    sessionId: z.string().uuid(),
+    sessionId: z.uuid(),
   }),
   responses: {
     204: z.undefined(),
