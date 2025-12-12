@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "devDependencies": {
-    "next": "^15.5.9"
+    "next": "^16.0.10"
   },
   "peerDependencies": {
     "next": "^15"
