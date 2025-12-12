@@ -1,3 +1,3 @@
-import * from './base.entity'
-import * from './base.aggregate-root'
-import * from './base.value-object'
+export * from './base.entity';
+export * from './base.aggregate-root';
+export * from './base.value-object';
