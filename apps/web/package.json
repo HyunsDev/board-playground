@@ -14,17 +14,17 @@
   "dependencies": {
     "@workspace/ui": "workspace:*",
     "next": "15.5.7",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
   },
   "devDependencies": {
-    "@types/node": "^22.15.3",
+    "@types/node": "^22.19.2",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",
     "@workspace/contract": "workspace:*",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "eslint": "^9.31.0",
+    "eslint": "^9.39.1",
     "typescript": "5.8.2"
   }
 }

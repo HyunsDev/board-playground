@@ -28,10 +28,10 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/node": "^22.10.7",
+    "@types/node": "^22.19.2",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "tsup": "^8.0.0",
+    "tsup": "^8.5.1",
     "typescript": "5.5.4"
   },
   "publishConfig": {

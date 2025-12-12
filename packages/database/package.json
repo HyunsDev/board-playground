@@ -31,14 +31,14 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.0",
+    "@prisma/client": "^6.19.1",
     "dotenv": "^17.2.3"
   },
   "devDependencies": {
-    "@types/node": "^22.10.7",
+    "@types/node": "^22.19.2",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "prisma": "^6.19.0",
+    "prisma": "^6.19.1",
     "typescript": "5.5.4"
   },
   "publishConfig": {
