@@ -231,6 +231,9 @@ importers:
       '@workspace/database':
         specifier: workspace:*
         version: link:../../packages/database
+      '@workspace/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@workspace/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config

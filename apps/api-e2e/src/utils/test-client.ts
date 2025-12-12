@@ -1,7 +1,8 @@
 import { initClient, InitClientArgs, InitClientReturn } from '@ts-rest/core';
 import * as cookie from 'cookie';
 
-import { contract, TokenPayload } from '@workspace/contract';
+import { contract } from '@workspace/contract';
+import { TokenPayload } from '@workspace/domain';
 
 import { TestUser } from '@/mocks/user.mock';
 
@@ -155,7 +156,7 @@ export class TestClient {
         if (
           !['Path', 'Expires', 'Secure', 'HttpOnly', 'SameSite', 'Domain', 'Max-Age'].includes(key)
         ) {
-          this._cookies[key] = parsed[key];
+          this._cookies[key] = parsed[key] as string;
         }
       }
     });
@@ -166,7 +167,7 @@ export class TestClient {
     if (parts.length !== 3) return null;
 
     const payload = parts[1];
-    const decoded = Buffer.from(payload, 'base64').toString('utf-8');
+    const decoded = Buffer.from(payload as string, 'base64').toString('utf-8');
     return JSON.parse(decoded);
   }
 
