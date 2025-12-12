@@ -40,9 +40,9 @@ export const updateUserMeProfile = c.mutation({
 export const updateUserMeAvatar = c.mutation({
   method: 'PUT',
   path: '/me/avatar',
-  body: {
-    avatar: c.file(),
-  },
+  body: z.object({
+    file: z.custom<File>(),
+  }),
   contentType: 'multipart/form-data',
   responses: {
     200: z.object({
