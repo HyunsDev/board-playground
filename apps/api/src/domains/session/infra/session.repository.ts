@@ -14,7 +14,7 @@ import { Session, PrismaClient, Prisma } from '@workspace/database';
 
 import { RefreshTokenMapper } from './refresh-token.mapper';
 import { SessionMapper } from './session.mapper';
-import { SessionNotFoundError } from '../domain/session.domain-errors';
+import { SessionConflictError, SessionNotFoundError } from '../domain/session.domain-errors';
 import { SessionEntity } from '../domain/session.entity';
 import { SessionRepositoryPort } from '../domain/session.repository.port';
 import { InvalidRefreshTokenError } from '../domain/token.domain-errors';
@@ -72,7 +72,7 @@ export class SessionRepository
     if (result.isErr()) {
       return matchError(result.error, {
         EntityConflict: () => {
-          throw new UnexpectedDomainErrorException(result.error);
+          throw new UnexpectedDomainErrorException(new SessionConflictError());
         },
       });
     }
@@ -102,7 +102,7 @@ export class SessionRepository
       return matchError(result.error, {
         EntityNotFound: () => err(new SessionNotFoundError()),
         EntityConflict: () => {
-          throw new UnexpectedDomainErrorException(result.error);
+          throw new UnexpectedDomainErrorException(new SessionConflictError());
         },
       });
     }
