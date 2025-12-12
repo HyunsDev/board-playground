@@ -22,11 +22,11 @@ export abstract class AbstractAggregateRoot<
     this._domainEvents = [...this._domainEvents, domainEvent];
   }
 
-  public clearEvents(): void {
+  clearEvents(): void {
     this._domainEvents = [];
   }
 
-  public pullEvents(): TDomainEvent[] {
+  pullEvents(): TDomainEvent[] {
     const events = [...this._domainEvents];
     this.clearEvents();
     return events;

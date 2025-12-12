@@ -20,7 +20,7 @@ export abstract class AbstractValueObject<T> {
    * 재귀적으로 Value Object의 동등성을 비교합니다.
    * JSON.stringify보다 안전하고 정확합니다.
    */
-  public equals(vo?: AbstractValueObject<T>): boolean {
+  equals(vo?: AbstractValueObject<T>): boolean {
     if (vo === null || vo === undefined) {
       return false;
     }
@@ -34,7 +34,7 @@ export abstract class AbstractValueObject<T> {
    * 원시 값(Primitive)을 반환하거나, 객체를 그대로 반환합니다.
    * 불변성을 위해 객체인 경우 Object.freeze 처리가 된 상태가 권장됩니다.
    */
-  public unpack(): T {
+  unpack(): T {
     if (this.isDomainPrimitive(this.props)) {
       return this.props.value as unknown as T; // Type assertion needed for conditional types
     }

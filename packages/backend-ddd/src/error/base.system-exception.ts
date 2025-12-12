@@ -7,10 +7,10 @@ export abstract class SystemException<
   Code extends string = string,
   Details = unknown,
 > extends Error {
-  public abstract readonly code: Code;
-  public readonly scope: SystemExceptionScope = 'private';
-  public readonly message: string;
-  public readonly details?: Details;
+  abstract readonly code: Code;
+  readonly scope: SystemExceptionScope = 'private';
+  readonly message: string;
+  readonly details?: Details;
 
   constructor(message: string, details?: Details) {
     super(message);

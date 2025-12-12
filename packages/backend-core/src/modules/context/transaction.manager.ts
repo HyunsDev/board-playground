@@ -6,8 +6,10 @@ import { err } from 'neverthrow';
 import { DomainError, DomainEventPublisher, DomainResult } from '@workspace/backend-ddd';
 
 class TransactionRollbackError<E> extends Error {
-  constructor(public readonly originalError: E) {
+  originalError: E;
+  constructor(readonly error: E) {
     super('ROLLBACK');
+    this.originalError = error;
   }
 }
 

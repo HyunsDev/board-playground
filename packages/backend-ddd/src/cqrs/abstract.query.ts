@@ -35,8 +35,8 @@ export abstract class AbstractQuery<
   R extends DomainResult<O, DomainError>,
   O,
 > extends Query<R> {
-  public abstract readonly code: QueryCodeType;
-  public abstract readonly resourceType: QueryResourceCodeType;
+  abstract readonly code: QueryCodeType;
+  abstract readonly resourceType: QueryResourceCodeType;
 
   readonly id: string;
   readonly resourceId: string | null;
@@ -62,7 +62,7 @@ export abstract class AbstractQuery<
     };
   }
 
-  public get streamId(): string {
+  get streamId(): string {
     return `${this.resourceType}:${this.resourceId}`;
   }
 }

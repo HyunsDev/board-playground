@@ -6,7 +6,7 @@ export class InternalServerErrorException extends BaseInternalServerException<
   'InternalServerError',
   any
 > {
-  public readonly code = 'InternalServerError';
+  readonly code = 'InternalServerError';
   constructor(message?: string, details?: any) {
     super(message ?? 'An internal server error occurred', details);
   }
@@ -19,7 +19,7 @@ export class UnexpectedDomainErrorException extends BaseInternalServerException<
   'UnexpectedDomainError',
   { error: DomainError }
 > {
-  public readonly code = 'UnexpectedDomainError';
+  readonly code = 'UnexpectedDomainError';
   constructor(error: DomainError) {
     super('An unexpected domain error occurred', {
       error: error,
@@ -34,7 +34,7 @@ export class InvariantViolationException extends BaseInternalServerException<
   'InvariantViolation',
   any
 > {
-  public readonly code = 'InvariantViolation';
+  readonly code = 'InvariantViolation';
   constructor(message?: string, details?: any) {
     super(message ?? 'An invariant violation occurred', details);
   }

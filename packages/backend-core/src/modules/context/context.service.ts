@@ -51,11 +51,11 @@ export class ContextService {
   }
 
   // --- Transaction ---
-  public isTransactionActive(): boolean {
+  isTransactionActive(): boolean {
     return this.txHost.isTransactionActive();
   }
 
-  public getTx() {
+  getTx() {
     return this.txHost.tx;
   }
 

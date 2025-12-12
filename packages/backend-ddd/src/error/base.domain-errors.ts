@@ -5,10 +5,10 @@ import { DomainErrorScope } from './error.types';
  * - DomainError는 Err로 return 되어야 하며, throw 되어서는 안된다.
  */
 export abstract class DomainError<Code extends string = string, Details = unknown> {
-  public abstract readonly code: Code;
-  public abstract readonly scope: DomainErrorScope;
-  public readonly message: string;
-  public readonly details?: Details;
+  abstract readonly code: Code;
+  abstract readonly scope: DomainErrorScope;
+  readonly message: string;
+  readonly details?: Details;
 
   constructor(message: string, details?: Details) {
     this.message = message;
