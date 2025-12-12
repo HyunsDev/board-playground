@@ -5,7 +5,7 @@ import { PublicDomainError } from '../error.types';
 export function matchError<
   E extends DomainError,
   const H extends {
-    [Code in E['code']]: (error: Extract<E, { code: Code }>) => any;
+    [Code in E['code']]: (error: Extract<E, { code: Code }>) => unknown;
   },
 >(
   error: E,
@@ -17,13 +17,14 @@ export function matchError<
   if (!handler) {
     throw new InvariantViolationException(error.code);
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (handler as any)(error);
 }
 
 export function matchPublicError<
   E extends PublicDomainError,
   const H extends {
-    [Code in E['code']]: (error: Extract<E, { code: Code }>) => any;
+    [Code in E['code']]: (error: Extract<E, { code: Code }>) => unknown;
   },
 >(
   error: E,
@@ -35,5 +36,6 @@ export function matchPublicError<
   if (!handler) {
     throw new InvariantViolationException(error.code);
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (handler as any)(error);
 }

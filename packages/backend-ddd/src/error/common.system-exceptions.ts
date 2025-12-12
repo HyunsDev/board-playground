@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DomainError } from './base.domain-errors';
 import { BaseInternalServerException } from './base.system-exception';
 

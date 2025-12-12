@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DomainError } from '@workspace/backend-ddd';
 
 import {

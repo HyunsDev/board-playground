@@ -27,7 +27,7 @@ export type QueryHandledLogData = {
   type: typeof LogTypes.QueryHandled;
   action: string;
   duration?: string;
-  queryData: any;
+  queryData: unknown;
 } & (
   | {
       isError: false;

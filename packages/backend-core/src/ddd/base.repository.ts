@@ -17,10 +17,10 @@ import {
 import { PrismaClient, Prisma } from '@workspace/database';
 
 type AbstractCrudDelegate<R> = {
-  findUnique(args: any): Promise<R | null>;
-  create(args: any): Promise<R>;
-  update(args: any): Promise<R>;
-  delete(args: any): Promise<R>;
+  findUnique(args: unknown): Promise<R | null>;
+  create(args: unknown): Promise<R>;
+  update(args: unknown): Promise<R>;
+  delete(args: unknown): Promise<R>;
 };
 
 export abstract class BaseRepository<
@@ -74,14 +74,14 @@ export abstract class BaseRepository<
 
       await this.publishEvents(entity);
       return ok(this.mapper.toDomain(result));
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         // Unique Constraint Violation
         if (error.code === 'P2002') {
           const targets = (error.meta?.target as string[]) || [];
           const details = targets.map((field) => ({
             field,
-            value: (record as any)[field],
+            value: (record as Record<string, unknown>)[field],
           }));
 
           return err(
@@ -92,7 +92,11 @@ export abstract class BaseRepository<
           );
         }
       }
-      this.logger.error(`[CreateEntity] Unexpected Error: ${error.message}`, error);
+      if (error instanceof Error) {
+        this.logger.error(`[CreateEntity] Unexpected Error: ${error.message}`, error);
+      } else {
+        this.logger.error(`[CreateEntity] Unexpected Error: ${String(error)}`);
+      }
       throw error;
     }
   }
@@ -109,14 +113,14 @@ export abstract class BaseRepository<
 
       await this.publishEvents(entity);
       return ok(this.mapper.toDomain(result));
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         // Unique Constraint Violation
         if (error.code === 'P2002') {
           const targets = (error.meta?.target as string[]) || [];
           const details = targets.map((field) => ({
             field,
-            value: (record as any)[field],
+            value: (record as Record<string, unknown>)[field],
           }));
           return err(
             new EntityConflictError({
@@ -135,7 +139,11 @@ export abstract class BaseRepository<
           );
         }
       }
-      this.logger.error(`[UpdateEntity] Unexpected Error: ${error.message}`, error);
+      if (error instanceof Error) {
+        this.logger.error(`[CreateEntity] Unexpected Error: ${error.message}`, error);
+      } else {
+        this.logger.error(`[CreateEntity] Unexpected Error: ${String(error)}`);
+      }
       throw error;
     }
   }
@@ -150,7 +158,7 @@ export abstract class BaseRepository<
 
       await this.publishEvents(entity);
       return ok(undefined);
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
         return err(
           new EntityNotFoundError({
@@ -159,7 +167,11 @@ export abstract class BaseRepository<
           }),
         );
       }
-      this.logger.error(`[DeleteEntity] Unexpected Error: ${error.message}`, error);
+      if (error instanceof Error) {
+        this.logger.error(`[CreateEntity] Unexpected Error: ${error.message}`, error);
+      } else {
+        this.logger.error(`[CreateEntity] Unexpected Error: ${String(error)}`);
+      }
       throw error;
     }
   }

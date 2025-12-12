@@ -7,14 +7,14 @@ import { ContextService } from '../context/context.service';
 
 @Injectable({ scope: Scope.REQUEST }) // 요청(트랜잭션) 단위로 상태를 유지해야 하므로 REQUEST 스코프 필수
 export class NestJSDomainEventPublisher implements DomainEventPublisher {
-  private events: AbstractDomainEvent<any, any, any>[] = [];
+  private events: AbstractDomainEvent<string, string, string>[] = [];
 
   constructor(
     private readonly eventBus: EventBus,
     private readonly contextService: ContextService,
   ) {}
 
-  async publish(event: AbstractDomainEvent<any, any, any>): Promise<void> {
+  async publish(event: AbstractDomainEvent<string, string, string>): Promise<void> {
     this.events.push(event);
     // 트랜잭션이 활성화되어 있지 않다면 즉시 발행
     if (!this.contextService.isTransactionActive()) {
@@ -22,7 +22,7 @@ export class NestJSDomainEventPublisher implements DomainEventPublisher {
     }
   }
 
-  async publishMany(events: AbstractDomainEvent<any, any, any>[]): Promise<void> {
+  async publishMany(events: AbstractDomainEvent<string, string, string>[]): Promise<void> {
     this.events.push(...events);
     if (!this.contextService.isTransactionActive()) {
       await this.flush();

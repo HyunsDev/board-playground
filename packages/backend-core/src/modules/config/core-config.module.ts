@@ -41,7 +41,7 @@ export class CoreConfigModule {
 
     // HTTP가 켜져있으면 병합
     if (isHttp) {
-      mergedSchema = mergedSchema.merge(httpConfigSchema as any);
+      mergedSchema = mergedSchema.merge(httpConfigSchema);
     }
 
     // 사용자 정의 스키마(JWT 등)가 있으면 intersection으로 병합

@@ -16,6 +16,7 @@ export interface TokenContext {
   sessionId: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type MessageMetadataContext = AbstractCreateMessageMetadata<CausationCode<any>>;
 
 export interface AppContext extends ClsStore {

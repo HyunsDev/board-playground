@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ValidationDetails } from '@workspace/common';
 
 import {

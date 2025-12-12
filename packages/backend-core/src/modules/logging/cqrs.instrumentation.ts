@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { performance } from 'perf_hooks';
 
 import { Injectable, Logger, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common';

@@ -7,6 +7,7 @@ export abstract class AbstractAggregateRoot<
     string,
     string,
     string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     AbstractIDomainEvent<string, any>
   >,
   TProps,

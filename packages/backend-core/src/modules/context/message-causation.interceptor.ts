@@ -9,12 +9,11 @@ import { ContextService } from './context.service';
 export class MessageCausationInterceptor implements NestInterceptor {
   constructor(private readonly context: ContextService) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const message = context.switchToRpc().getData();
     if (message instanceof AbstractDomainEvent || message instanceof AbstractCommand) {
       this.context.setMessageMetadata(message.deriveMetadata());
     }
-
     return next.handle();
   }
 }

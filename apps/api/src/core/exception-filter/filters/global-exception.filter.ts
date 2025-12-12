@@ -20,7 +20,7 @@ interface ErrorInfo {
   status: ErrorHttpStatusCode;
   code: string;
   message: string;
-  details?: any;
+  details?: unknown;
 }
 
 @Catch()
@@ -72,7 +72,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
    */
   private handleHttpException(exception: HttpException): ErrorInfo {
     const status = exception.getStatus();
-    const res = exception.getResponse() as Record<string, any>;
+    const res = exception.getResponse() as { error?: string; message?: string };
 
     const code = res.error || `HTTP_ERROR_${status}`;
     const message = res.message || exception.message;

@@ -45,7 +45,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
    * @param payload - Strategy 검증 후 반환된 데이터 (Token Payload)
    * @param info - 검증 실패 시 에러 정보 (Error 객체 또는 메시지)
    */
-  handleRequest(err: any, payload: any, info: any): any {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  handleRequest(err: any, payload: unknown, info: any): any {
     // 1. 에러가 있거나, 토큰 페이로드가 없는 경우 예외 처리
     if (err || !payload) {
       if (err) {

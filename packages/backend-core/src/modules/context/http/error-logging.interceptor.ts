@@ -8,10 +8,11 @@ import { ContextService } from '../context.service';
 export class ErrorLoggingInterceptor implements NestInterceptor {
   constructor(private readonly contextService: ContextService) {}
 
-  intercept(_context: ExecutionContext, next: CallHandler): Observable<any> {
+  intercept(_context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(
       tap((data) => {
-        const body = data?.body || data;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const body = (data as any)?.body || data;
         if (body && body.code) {
           this.contextService.setErrorCode(body.code as string);
         }

@@ -51,6 +51,7 @@ export abstract class AbstractValueObject<T> {
   /**
    * 객체 및 배열, Date, 다른 ValueObject에 대한 재귀적 비교
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private shallowEqual(objA: any, objB: any): boolean {
     if (objA === objB) return true;
 
