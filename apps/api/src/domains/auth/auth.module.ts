@@ -1,7 +1,6 @@
 import { Logger, Module, Provider } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { SecurityModule } from '../../infra/security/security.module';
 import { SessionModule } from '../session/session.module';
 import { UserModule } from '../user/user.module';
 import { LoginAuthCommandHandler } from './application/commands/login-auth.command';
@@ -10,6 +9,8 @@ import { RefreshTokenAuthCommandHandler } from './application/commands/refresh-t
 import { RegisterAuthCommandHandler } from './application/commands/register-auth.command';
 import { CheckUsernameAvailableQueryHandler } from './application/queries/check-username-available.query';
 import { AuthHttpController } from './interface/auth.http.controller';
+
+import { CryptoModule } from '@/infra/crypto';
 
 const httpControllers = [AuthHttpController];
 const commandHandlers: Provider[] = [
@@ -24,7 +25,7 @@ const mappers: Provider[] = [];
 const repositories: Provider[] = [];
 
 @Module({
-  imports: [CqrsModule, UserModule, SecurityModule, SessionModule],
+  imports: [CqrsModule, UserModule, CryptoModule, SessionModule],
   providers: [
     Logger,
     ...commandHandlers,

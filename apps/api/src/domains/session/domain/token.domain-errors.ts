@@ -1,4 +1,4 @@
-import { BaseBadRequestError, BaseNotFoundError } from '@/shared/base';
+import { BaseNotFoundError, BaseBadRequestError } from '@workspace/backend-ddd';
 
 export class RefreshTokenNotFoundError extends BaseNotFoundError<'RefreshTokenNotFound'> {
   public readonly code = 'RefreshTokenNotFound';

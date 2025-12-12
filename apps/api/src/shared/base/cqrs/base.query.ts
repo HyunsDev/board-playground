@@ -5,10 +5,10 @@ import {
   DomainError,
   DomainResult,
 } from '@workspace/backend-ddd';
-import { CausationCode } from '@workspace/domain';
+import { CausationCode, QueryCode } from '@workspace/domain';
 
 export type BaseIQuery<T> = AbstractIQuery<CausationCode<string>, T>;
-export type BaseIPaginatedQueryProps<T> = AbstractIPaginatedQuery<CausationCode<string>, T>;
+export type BaseIPaginatedQuery<T> = AbstractIPaginatedQuery<CausationCode<string>, T>;
 
 /**
  * BaseQuery는 모든 쿼리의 공통 속성과 동작을 정의하는 추상 클래스입니다.
@@ -21,4 +21,4 @@ export abstract class BaseQuery<
   D extends BaseIQuery<unknown>,
   R extends DomainResult<O, DomainError>,
   O,
-> extends AbstractQuery<CausationCode<string>, string, CausationCode<string>, D, R, O> {}
+> extends AbstractQuery<QueryCode<string>, string, CausationCode<string>, D, R, O> {}

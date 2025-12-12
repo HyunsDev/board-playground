@@ -3,8 +3,10 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { Response } from 'express';
 
+import { ContextService, Token } from '@workspace/backend-core';
+import { apiOk, matchPublicError, apiErr } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
-import { TokenPayload } from '@workspace/contract';
+import { TokenPayload } from '@workspace/domain';
 
 import { UserDtoMapper } from './user.dto-mapper';
 import { DeleteUserMeCommand } from '../application/me/commands/delete-user-me.command';
@@ -12,11 +14,7 @@ import { UpdateUserMeProfileCommand } from '../application/me/commands/update-us
 import { UpdateUserMeUsernameCommand } from '../application/me/commands/update-user-me-username.command';
 import { GetUserMeQuery } from '../application/me/queries/get-user-me.query';
 
-import { ContextService } from '@/infra/context/context.service';
-import { Token } from '@/infra/security/decorators/token.decorator';
-import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from '@/shared/constants/cookie.constant';
-import { matchPublicError } from '@/shared/utils/match-error.utils';
 
 @Controller()
 export class UserMeHttpController {

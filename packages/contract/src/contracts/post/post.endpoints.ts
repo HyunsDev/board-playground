@@ -1,9 +1,11 @@
 import z from 'zod';
 
+import { paginatedResultSchemaOf, withPagination } from '@workspace/common';
+
 import { PostDtoSchema } from './post.dto';
 import { BoardSlug } from '../board/board.schemas';
 
-import { ACCESS, ID, paginatedQueryOf, paginatedResponseOf } from '@/common';
+import { ACCESS, ID } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';
 import { c } from '@/internal/c';
 import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
@@ -28,7 +30,7 @@ export const getPost = c.query({
 export const queryPosts = c.query({
   method: 'GET',
   path: '/posts',
-  query: paginatedQueryOf(
+  query: withPagination(
     z.object({
       boardSlug: z.string().optional(),
       title: z.string().min(1).max(100).optional(),
@@ -36,7 +38,7 @@ export const queryPosts = c.query({
     }),
   ),
   responses: {
-    200: paginatedResponseOf(PostDtoSchema),
+    200: paginatedResultSchemaOf(PostDtoSchema),
     ...toApiErrorResponses([ApiErrors.Board.NotFound]),
   },
   metadata: {

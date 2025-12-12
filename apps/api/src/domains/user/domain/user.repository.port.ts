@@ -1,3 +1,6 @@
+import { DomainResult, RepositoryPort } from '@workspace/backend-ddd';
+import { PaginatedResult } from '@workspace/common';
+
 import {
   UserEmailAlreadyExistsError,
   UserNotFoundError,
@@ -5,27 +8,24 @@ import {
 } from './user.domain-errors';
 import { UserEntity } from '../domain/user.entity';
 
-import { PaginatedResult, RepositoryPort } from '@/shared/base';
-import { DomainResult } from '@/shared/types/result.type';
-
-export interface UserRepositoryPort extends RepositoryPort<UserEntity> {
-  getOneById(id: string): Promise<DomainResult<UserEntity, UserNotFoundError>>;
-  getOneByEmail(email: string): Promise<DomainResult<UserEntity, UserNotFoundError>>;
-  findOneByEmail(email: string): Promise<UserEntity | null>;
-  findOneByUsername(username: string): Promise<UserEntity | null>;
-  usernameExists(username: string): Promise<boolean>;
-  searchUsers(params: {
+export abstract class UserRepositoryPort extends RepositoryPort<UserEntity> {
+  abstract getOneById(id: string): Promise<DomainResult<UserEntity, UserNotFoundError>>;
+  abstract getOneByEmail(email: string): Promise<DomainResult<UserEntity, UserNotFoundError>>;
+  abstract findOneByEmail(email: string): Promise<UserEntity | null>;
+  abstract findOneByUsername(username: string): Promise<UserEntity | null>;
+  abstract usernameExists(username: string): Promise<boolean>;
+  abstract searchUsers(params: {
     nickname?: string;
     page: number;
     take: number;
   }): Promise<PaginatedResult<UserEntity>>;
-  count(): Promise<number>;
-  create(
+  abstract count(): Promise<number>;
+  abstract create(
     user: UserEntity,
   ): Promise<
     DomainResult<UserEntity, UserEmailAlreadyExistsError | UserUsernameAlreadyExistsError>
   >;
-  update(
+  abstract update(
     user: UserEntity,
   ): Promise<
     DomainResult<
@@ -33,6 +33,6 @@ export interface UserRepositoryPort extends RepositoryPort<UserEntity> {
       UserNotFoundError | UserEmailAlreadyExistsError | UserUsernameAlreadyExistsError
     >
   >;
-  updateLastActiveAt(userId: string): Promise<DomainResult<void, UserNotFoundError>>;
-  delete(user: UserEntity): Promise<DomainResult<void, UserNotFoundError>>;
+  abstract updateLastActiveAt(userId: string): Promise<DomainResult<void, UserNotFoundError>>;
+  abstract delete(user: UserEntity): Promise<DomainResult<void, UserNotFoundError>>;
 }

@@ -8,7 +8,7 @@ import { UserUsernameChangedEvent } from './events/user-username-changed.event';
 import { UserPasswordVO } from './user-password.vo';
 import { UserAdminCannotBeDeletedError } from './user.domain-errors';
 
-import { AggregateRoot } from '@/shared/base';
+import { BaseAggregateRoot } from '@/shared/base';
 
 export interface UserProps {
   username: string;
@@ -33,7 +33,7 @@ export interface CreateUserProps {
   hashedPassword: string | null;
 }
 
-export class UserEntity extends AggregateRoot<UserProps> {
+export class UserEntity extends BaseAggregateRoot<UserProps> {
   private constructor(props: UserProps, id?: string) {
     super({
       id: id || uuidv7(),

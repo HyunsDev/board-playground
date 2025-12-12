@@ -4,7 +4,7 @@ import {
   DomainError,
   DomainResult,
 } from '@workspace/backend-ddd';
-import { AggregateCode, CausationCode } from '@workspace/domain';
+import { AggregateCode, CausationCode, CommandCode } from '@workspace/domain';
 
 export type BaseICommand<T> = AbstractICommand<CausationCode<string>, T>;
 
@@ -19,4 +19,4 @@ export abstract class BaseCommand<
   D extends BaseICommand<unknown>,
   R extends DomainResult<O, DomainError>,
   O,
-> extends AbstractCommand<CausationCode<string>, AggregateCode, CausationCode<string>, D, R, O> {}
+> extends AbstractCommand<CommandCode<string>, AggregateCode, CausationCode<string>, D, R, O> {}

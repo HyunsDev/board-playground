@@ -2,10 +2,9 @@ import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { RequestValidationError } from '@ts-rest/nest';
 import { Response } from 'express';
 
+import { apiErr } from '@workspace/backend-ddd';
 import { ValidationDetails } from '@workspace/common';
 import { ApiErrors } from '@workspace/contract';
-
-import { apiErr } from '@/shared/base/interface/response.utils';
 
 @Catch(RequestValidationError)
 export class RequestValidationFilter implements ExceptionFilter<RequestValidationError> {

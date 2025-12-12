@@ -48,11 +48,12 @@ export const getPaginationSkip = (options: PaginationOptions) => {
  * [응답 유틸] 데이터 목록, 전체 개수, 옵션을 받아 메타데이터가 포함된 결과 객체를 생성합니다.
  * 백엔드 서비스 로직의 마지막 return 문에서 사용하기 좋습니다.
  */
-export const createPaginatedResult = <T>(
-  items: T[],
-  totalItems: number,
-  options: PaginationOptions,
-): PaginatedResult<T> => {
+export const createPaginatedResult = <T>(props: {
+  items: T[];
+  totalItems: number;
+  options: PaginationOptions;
+}): PaginatedResult<T> => {
+  const { items, totalItems, options } = props;
   const { page, limit } = options;
   const totalPages = Math.ceil(totalItems / limit);
 

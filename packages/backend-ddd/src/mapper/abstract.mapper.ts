@@ -15,7 +15,11 @@ export abstract class AbstractMapper<Entity extends AbstractEntity<any>, DbRecor
     totalRecords: number,
     options: { page: number; limit: number },
   ): PaginatedResult<Entity> {
-    return createPaginatedResult(this.toDomainMany(records), totalRecords, options);
+    return createPaginatedResult({
+      items: this.toDomainMany(records),
+      totalItems: totalRecords,
+      options,
+    });
   }
 
   toPersistenceMany(entities: Entity[]): DbRecord[] {

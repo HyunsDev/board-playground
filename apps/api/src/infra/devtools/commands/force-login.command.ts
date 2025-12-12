@@ -2,16 +2,15 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { AccessTokenProvider } from '@workspace/backend-core';
+import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
-import { TokenProvider } from '@/infra/security/providers/token.provider';
-import { BaseCommand, ICommand } from '@/shared/base';
-import { CommandCodes } from '@/shared/codes/command.codes';
-import { ResourceTypes } from '@/shared/codes/resource-type.codes';
+import { BaseCommand, BaseICommand } from '@/shared/base';
 import { AuthTokens } from '@/shared/types/tokens';
 
-type IForceLoginCommand = ICommand<{
+type IForceLoginCommand = BaseICommand<{
   email: string;
 }>;
 
@@ -20,8 +19,8 @@ export class ForceLoginCommand extends BaseCommand<
   HandlerResult<ForceLoginCommandHandler>,
   AuthTokens
 > {
-  readonly code = CommandCodes.Devtools.ForceLogin;
-  readonly resourceType = ResourceTypes.User;
+  readonly code = defineCommandCode('system:devtools:cmd:force_login');
+  readonly resourceType = AggregateCodeEnum.Account.User;
 
   constructor(data: IForceLoginCommand['data'], metadata: IForceLoginCommand['metadata']) {
     super(null, data, metadata);
@@ -32,7 +31,7 @@ export class ForceLoginCommand extends BaseCommand<
 export class ForceLoginCommandHandler implements ICommandHandler<ForceLoginCommand> {
   constructor(
     private readonly sessionFacade: SessionFacade,
-    private readonly tokenProvider: TokenProvider,
+    private readonly accessTokenProvider: AccessTokenProvider,
     private readonly userFacade: UserFacade,
   ) {}
 
@@ -54,7 +53,7 @@ export class ForceLoginCommandHandler implements ICommandHandler<ForceLoginComma
       return err(sessionResult.error);
     }
     const { session, refreshToken } = sessionResult.value;
-    const accessToken = this.tokenProvider.generateAccessToken({
+    const accessToken = this.accessTokenProvider.generateAccessToken({
       sub: user.id,
       sessionId: session.id,
       email: user.email,

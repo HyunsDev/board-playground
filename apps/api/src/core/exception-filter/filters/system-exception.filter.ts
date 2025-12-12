@@ -1,11 +1,8 @@
 import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
+import { SystemException, matchError, apiErr, GlobalSystemException } from '@workspace/backend-ddd';
 import { ApiErrors } from '@workspace/contract';
-
-import { GlobalSystemException, SystemException } from '@/shared/base';
-import { apiErr } from '@/shared/base/interface/response.utils';
-import { matchError } from '@/shared/utils/match-error.utils';
 
 @Catch(SystemException)
 export class SystemExceptionFilter implements ExceptionFilter<SystemException> {

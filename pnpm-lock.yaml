@@ -70,7 +70,7 @@ importers:
         version: link:../../packages/backend-common
       '@workspace/backend-core':
         specifier: workspace:*
-        version: link:../../packages/backend-core
+        version: file:packages/backend-core(@nestjs-cls/transactional-adapter-prisma@1.3.1)(@nestjs-cls/transactional@3.1.1)(@nestjs/common@11.1.9)(@nestjs/config@4.0.2)(@nestjs/core@11.1.9)(@nestjs/cqrs@11.0.3)(@nestjs/passport@11.0.5)(@nestjs/platform-express@11.1.9)(@workspace/backend-ddd@packages+backend-ddd)(@workspace/common@packages+common)(@workspace/database@packages+database)(@workspace/domain@packages+domain)(cookie-parser@1.4.7)(nestjs-cls@6.1.0)(nestjs-pino@4.5.0)(pino@10.1.0)(rxjs@7.8.2)
       '@workspace/backend-ddd':
         specifier: workspace:*
         version: link:../../packages/backend-ddd
@@ -222,6 +222,9 @@ importers:
       typescript:
         specifier: 5.5.4
         version: 5.5.4
+    dependenciesMeta:
+      '@workspace/backend-core':
+        injected: true
 
   apps/api-e2e:
     devDependencies:
@@ -407,13 +410,16 @@ importers:
         version: 4.0.2(@nestjs/common@11.1.9)(rxjs@7.8.2)
       '@nestjs/core':
         specifier: ^11.0.0
-        version: 11.1.9(@nestjs/common@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+        version: 11.1.9(@nestjs/common@11.1.9)(@nestjs/platform-express@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/cqrs':
         specifier: ^11.0.3
         version: 11.0.3(@nestjs/common@11.1.9)(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/passport':
         specifier: ^11.0.5
         version: 11.0.5(@nestjs/common@11.1.9)(passport@0.7.0)
+      '@nestjs/platform-express':
+        specifier: ^11.0.0
+        version: 11.1.9(@nestjs/common@11.1.9)(@nestjs/core@11.1.9)
       '@types/cookie-parser':
         specifier: ^1.4.10
         version: 1.4.10(@types/express@4.17.25)
@@ -2284,7 +2290,7 @@ packages:
       rxjs: '>= 7'
     dependencies:
       '@nestjs/common': 11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/core': 11.1.9(@nestjs/common@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/core': 11.1.9(@nestjs/common@11.1.9)(@nestjs/platform-express@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       nestjs-cls: 6.1.0(@nestjs/common@11.1.9)(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       reflect-metadata: 0.2.2
       rxjs: 7.8.2
@@ -2392,35 +2398,6 @@ packages:
       tslib: 2.8.1
       uid: 2.0.2
 
-  /@nestjs/core@11.1.9(@nestjs/common@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2):
-    resolution: {integrity: sha512-a00B0BM4X+9z+t3UxJqIZlemIwCQdYoPKrMcM+ky4z3pkqqG1eTWexjs+YXpGObnLnjtMPVKWlcZHp3adDYvUw==}
-    engines: {node: '>= 20'}
-    requiresBuild: true
-    peerDependencies:
-      '@nestjs/common': ^11.0.0
-      '@nestjs/microservices': ^11.0.0
-      '@nestjs/platform-express': ^11.0.0
-      '@nestjs/websockets': ^11.0.0
-      reflect-metadata: ^0.1.12 || ^0.2.0
-      rxjs: ^7.1.0
-    peerDependenciesMeta:
-      '@nestjs/microservices':
-        optional: true
-      '@nestjs/platform-express':
-        optional: true
-      '@nestjs/websockets':
-        optional: true
-    dependencies:
-      '@nestjs/common': 11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nuxt/opencollective': 0.4.1
-      fast-safe-stringify: 2.1.1
-      iterare: 1.2.1
-      path-to-regexp: 8.3.0
-      reflect-metadata: 0.2.2
-      rxjs: 7.8.2
-      tslib: 2.8.1
-      uid: 2.0.2
-
   /@nestjs/cqrs@11.0.3(@nestjs/common@11.1.9)(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2):
     resolution: {integrity: sha512-2ezBftiXqVfNTzjCrmhazohYhIQzgm8rvM0aKndv73IOOBcVlNuNiQ3HHiHdd4c2w/3MOQDtsGbQHgZUuW6DPw==}
     peerDependencies:
@@ -2430,7 +2407,7 @@ packages:
       rxjs: ^7.2.0
     dependencies:
       '@nestjs/common': 11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/core': 11.1.9(@nestjs/common@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/core': 11.1.9(@nestjs/common@11.1.9)(@nestjs/platform-express@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       reflect-metadata: 0.2.2
       rxjs: 7.8.2
 
@@ -2921,7 +2898,7 @@ packages:
     resolution: {integrity: sha512-4oeoZEBQdLdt5WmP/hx1KZ6D3/Oid/0cUb2nk4F0pTDAWy+KCH3/EnAkZF/bvckWo8I33EqBm01lIPgmgc8rCA==}
     engines: {node: '>=18'}
     dependencies:
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@5.5.0)
       fflate: 0.8.2
       token-types: 6.1.1
     transitivePeerDependencies:
@@ -4437,17 +4414,6 @@ packages:
     dependencies:
       ms: 2.1.3
     dev: true
-
-  /debug@4.4.3:
-    resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
-    engines: {node: '>=6.0'}
-    peerDependencies:
-      supports-color: '*'
-    peerDependenciesMeta:
-      supports-color:
-        optional: true
-    dependencies:
-      ms: 2.1.3
 
   /debug@4.4.3(supports-color@5.5.0):
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -6948,7 +6914,7 @@ packages:
       rxjs: '>= 7'
     dependencies:
       '@nestjs/common': 11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/core': 11.1.9(@nestjs/common@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/core': 11.1.9(@nestjs/common@11.1.9)(@nestjs/platform-express@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       reflect-metadata: 0.2.2
       rxjs: 7.8.2
 
@@ -6976,6 +6942,7 @@ packages:
   /next@15.5.7(@babel/core@7.28.5)(react-dom@19.2.3)(react@19.2.3):
     resolution: {integrity: sha512-+t2/0jIJ48kUpGKkdlhgkv+zPTEOoXyr60qXe68eB/pl3CMJaLeIGjzp5D6Oqt25hCBiBTt8wEeeAzfJvUKnPQ==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
+    deprecated: This version has a security vulnerability. Please upgrade to a patched version. See https://nextjs.org/blog/security-update-2025-12-11 for more details.
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
@@ -9159,3 +9126,53 @@ packages:
 
   /zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+
+  file:packages/backend-core(@nestjs-cls/transactional-adapter-prisma@1.3.1)(@nestjs-cls/transactional@3.1.1)(@nestjs/common@11.1.9)(@nestjs/config@4.0.2)(@nestjs/core@11.1.9)(@nestjs/cqrs@11.0.3)(@nestjs/passport@11.0.5)(@nestjs/platform-express@11.1.9)(@workspace/backend-ddd@packages+backend-ddd)(@workspace/common@packages+common)(@workspace/database@packages+database)(@workspace/domain@packages+domain)(cookie-parser@1.4.7)(nestjs-cls@6.1.0)(nestjs-pino@4.5.0)(pino@10.1.0)(rxjs@7.8.2):
+    resolution: {directory: packages/backend-core, type: directory}
+    id: file:packages/backend-core
+    name: '@workspace/backend-core'
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@nestjs-cls/transactional': ^3.1.1
+      '@nestjs-cls/transactional-adapter-prisma': ^1.3.1
+      '@nestjs/common': ^11.0.0
+      '@nestjs/config': ^4.0.2
+      '@nestjs/core': ^11.0.0
+      '@nestjs/cqrs': ^11.0.3
+      '@nestjs/passport': ^11.0.5
+      '@nestjs/platform-express': ^11.0.0
+      '@workspace/backend-ddd': workspace:*
+      '@workspace/common': workspace:*
+      '@workspace/database': workspace:*
+      '@workspace/domain': workspace:^
+      cookie-parser: ^1.4.7
+      nestjs-cls: ^6.1.0
+      nestjs-pino: ^4.5.0
+      pino: ^10.1.0
+      rxjs: ^7.8.1
+    dependencies:
+      '@nestjs-cls/transactional': 3.1.1(@nestjs/common@11.1.9)(@nestjs/core@11.1.9)(nestjs-cls@6.1.0)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs-cls/transactional-adapter-prisma': 1.3.1(@nestjs-cls/transactional@3.1.1)(@prisma/client@6.19.1)(nestjs-cls@6.1.0)(prisma@6.19.1)
+      '@nestjs/common': 11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/config': 4.0.2(@nestjs/common@11.1.9)(rxjs@7.8.2)
+      '@nestjs/core': 11.1.9(@nestjs/common@11.1.9)(@nestjs/platform-express@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/cqrs': 11.0.3(@nestjs/common@11.1.9)(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/jwt': 11.0.2(@nestjs/common@11.1.9)
+      '@nestjs/passport': 11.0.5(@nestjs/common@11.1.9)(passport@0.7.0)
+      '@nestjs/platform-express': 11.1.9(@nestjs/common@11.1.9)(@nestjs/core@11.1.9)
+      '@workspace/backend-ddd': link:packages/backend-ddd
+      '@workspace/common': link:packages/common
+      '@workspace/database': link:packages/database
+      '@workspace/domain': link:packages/domain
+      chalk: 5.6.2
+      cookie-parser: 1.4.7
+      nestjs-cls: 6.1.0(@nestjs/common@11.1.9)(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      nestjs-pino: 4.5.0(@nestjs/common@11.1.9)(pino-http@11.0.0)(pino@10.1.0)(rxjs@7.8.2)
+      neverthrow: 8.2.0
+      passport-jwt: 4.0.1
+      pino: 10.1.0
+      pino-pretty: 13.1.3
+      rxjs: 7.8.2
+      uuid: 13.0.0
+      zod: 3.25.76
+    dev: false

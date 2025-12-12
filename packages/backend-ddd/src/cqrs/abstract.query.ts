@@ -16,7 +16,7 @@ export type AbstractIPaginatedQuery<CausationCodeType extends string, T> = Abstr
   CausationCodeType,
   T & {
     page: number;
-    take: number;
+    limit: number;
   }
 >;
 
@@ -28,7 +28,7 @@ export type AbstractIPaginatedQuery<CausationCodeType extends string, T> = Abstr
  * @template O - 쿼리 핸들러가 성공적으로 처리했을 때 반환하는 값의 타입
  */
 export abstract class AbstractQuery<
-  QueryCodeType extends CausationCodeType,
+  QueryCodeType extends string,
   QueryResourceCodeType extends string,
   CausationCodeType extends string,
   D extends AbstractIQuery<CausationCodeType, unknown>,

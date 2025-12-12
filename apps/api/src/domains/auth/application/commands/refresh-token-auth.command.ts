@@ -2,35 +2,36 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { AccessTokenProvider, TransactionManager } from '@workspace/backend-core';
+import { TypedData, matchError, typedOk } from '@workspace/backend-ddd';
+import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import { InvalidRefreshTokenError } from '@/domains/session/domain/token.domain-errors';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
-import { TransactionManager } from '@/infra/prisma/transaction.manager';
-import { TokenProvider } from '@/infra/security/providers/token.provider';
-import { BaseCommand, ICommand } from '@/shared/base';
-import { CommandCodes } from '@/shared/codes/command.codes';
-import { ResourceTypes } from '@/shared/codes/resource-type.codes';
+import { BaseICommand, BaseCommand } from '@/shared/base';
 import { AuthTokens } from '@/shared/types/tokens';
-import { matchError } from '@/shared/utils/match-error.utils';
-import { TypedData, typedOk } from '@/shared/utils/typed-ok.utils';
 
-type IRefreshTokenAuthCommand = ICommand<{
+type IRefreshTokenAuthCommand = BaseICommand<{
   refreshToken: string;
 }>;
-export class RefreshTokenAuthCommand extends BaseCommand<
-  IRefreshTokenAuthCommand,
-  HandlerResult<RefreshTokenAuthCommandHandler>,
+
+type RefreshTokenAuthCommandResult =
   | TypedData<'rotated', AuthTokens>
   | TypedData<
       'revoked',
       {
         reason: 'TokenReuseDetected';
       }
-    >
+    >;
+
+export class RefreshTokenAuthCommand extends BaseCommand<
+  IRefreshTokenAuthCommand,
+  HandlerResult<RefreshTokenAuthCommandHandler>,
+  RefreshTokenAuthCommandResult
 > {
-  readonly code = CommandCodes.Auth.RefreshToken;
-  readonly resourceType = ResourceTypes.User;
+  readonly code = defineCommandCode('account:auth:cmd:refresh_token');
+  readonly resourceType = AggregateCodeEnum.Account.User;
 
   constructor(
     data: IRefreshTokenAuthCommand['data'],
@@ -45,7 +46,7 @@ export class RefreshTokenAuthCommandHandler implements ICommandHandler<RefreshTo
   constructor(
     private readonly userFacade: UserFacade,
     private readonly sessionFacade: SessionFacade,
-    private readonly tokenProvider: TokenProvider,
+    private readonly accessTokenProvider: AccessTokenProvider,
     private readonly txManager: TransactionManager,
   ) {}
 
@@ -72,7 +73,7 @@ export class RefreshTokenAuthCommandHandler implements ICommandHandler<RefreshTo
           UserNotFound: () => err(new InvalidRefreshTokenError()),
         });
 
-      const accessToken = this.tokenProvider.generateAccessToken({
+      const accessToken = this.accessTokenProvider.generateAccessToken({
         sub: user.value.id,
         email: user.value.email,
         role: user.value.role,

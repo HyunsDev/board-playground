@@ -84,5 +84,10 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "5.5.4"
+  },
+  "dependenciesMeta": {
+    "@workspace/backend-core": {
+      "injected": true
+    }
   }
 }

@@ -1,17 +1,14 @@
-import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
-import { USER_REPOSITORY } from '@/domains/user/user.constants';
-import { BaseCommand, ICommand } from '@/shared/base';
-import { CommandCodes } from '@/shared/codes/command.codes';
-import { DomainCodes } from '@/shared/codes/domain.codes';
+import { BaseCommand, BaseICommand } from '@/shared/base';
 
-type IUpdateUserMeProfileCommand = ICommand<{
+type IUpdateUserMeProfileCommand = BaseICommand<{
   userId: string;
   nickname?: string;
   bio?: string | null;
@@ -22,8 +19,8 @@ export class UpdateUserMeProfileCommand extends BaseCommand<
   HandlerResult<UpdateUserMeProfileCommandHandler>,
   UserEntity
 > {
-  readonly code = CommandCodes.User.UpdateMeProfile;
-  readonly resourceType = DomainCodes.User;
+  readonly code = defineCommandCode('account:user:cmd:update_me_profile');
+  readonly resourceType = AggregateCodeEnum.Account.User;
 
   constructor(
     data: IUpdateUserMeProfileCommand['data'],
@@ -37,10 +34,7 @@ export class UpdateUserMeProfileCommand extends BaseCommand<
 export class UpdateUserMeProfileCommandHandler
   implements ICommandHandler<UpdateUserMeProfileCommand>
 {
-  constructor(
-    @Inject(USER_REPOSITORY)
-    private readonly userRepo: UserRepositoryPort,
-  ) {}
+  constructor(private readonly userRepo: UserRepositoryPort) {}
 
   async execute({ data }: IUpdateUserMeProfileCommand) {
     const userResult = await this.userRepo.getOneById(data.userId);

@@ -31,8 +31,12 @@ export class SecurityModule {
     const { enableGlobalAuthGuard = true } = options;
 
     const guards: Provider[] = [];
+    const guardExports: Provider[] = [];
     if (enableGlobalAuthGuard) {
       guards.push(...globalAuthGuard);
+    } else {
+      guards.push(JwtAuthGuard, RolesGuard);
+      guardExports.push(JwtAuthGuard, RolesGuard);
     }
 
     return {
@@ -51,7 +55,7 @@ export class SecurityModule {
       ],
       providers: [AccessTokenProvider, JwtStrategy, ...guards],
       controllers: [],
-      exports: [JwtModule, AccessTokenProvider, JwtAuthGuard, RolesGuard],
+      exports: [JwtModule, AccessTokenProvider, ...guardExports],
     };
   }
 }

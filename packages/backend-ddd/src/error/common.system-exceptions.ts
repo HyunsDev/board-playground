@@ -38,3 +38,8 @@ export class InvariantViolationException extends BaseInternalServerException<
     super(message ?? 'An invariant violation occurred', details);
   }
 }
+
+export type GlobalSystemException =
+  | InternalServerErrorException
+  | UnexpectedDomainErrorException
+  | InvariantViolationException;

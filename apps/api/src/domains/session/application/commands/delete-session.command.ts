@@ -1,19 +1,16 @@
-import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { TransactionManager } from '@workspace/backend-core';
+import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
-import { SESSION_REPOSITORY } from '../../session.constants';
+import { CurrentSessionCannotBeDeletedError } from '../../domain/session.domain-errors';
 
-import { CurrentSessionCannotBeDeletedError } from '@/domains/session/domain/session.domain-errors';
 import { SessionRepositoryPort } from '@/domains/session/domain/session.repository.port';
-import { TransactionManager } from '@/infra/prisma/transaction.manager';
-import { BaseCommand, ICommand } from '@/shared/base';
-import { CommandCodes } from '@/shared/codes/command.codes';
-import { ResourceTypes } from '@/shared/codes/resource-type.codes';
+import { BaseCommand, BaseICommand } from '@/shared/base';
 
-type IDeleteSessionCommand = ICommand<{
+type IDeleteSessionCommand = BaseICommand<{
   sessionId: string;
   userId: string;
   currentSessionId: string;
@@ -24,8 +21,8 @@ export class DeleteSessionCommand extends BaseCommand<
   HandlerResult<DeleteSessionCommandHandler>,
   void
 > {
-  readonly code = CommandCodes.Session.Delete;
-  readonly resourceType = ResourceTypes.Session;
+  readonly code = defineCommandCode('account:session:cmd:delete');
+  readonly resourceType = AggregateCodeEnum.Account.Session;
 
   constructor(data: IDeleteSessionCommand['data'], metadata: IDeleteSessionCommand['metadata']) {
     super(data.sessionId, data, metadata);
@@ -35,7 +32,6 @@ export class DeleteSessionCommand extends BaseCommand<
 @CommandHandler(DeleteSessionCommand)
 export class DeleteSessionCommandHandler implements ICommandHandler<DeleteSessionCommand> {
   constructor(
-    @Inject(SESSION_REPOSITORY)
     private readonly sessionRepo: SessionRepositoryPort,
     private readonly txManager: TransactionManager,
   ) {}
@@ -53,10 +49,14 @@ export class DeleteSessionCommandHandler implements ICommandHandler<DeleteSessio
         return err(sessionResult.error);
       }
       const session = sessionResult.value;
-      return (await this.sessionRepo.delete(session)).match(
-        () => ok(),
-        (error) => err(error),
-      );
+
+      const deleteResult = await this.sessionRepo.delete(session);
+
+      if (deleteResult.isErr()) {
+        return err(deleteResult.error);
+      }
+
+      return ok(undefined);
     });
   }
 }

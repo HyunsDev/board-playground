@@ -2,14 +2,13 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { UserUsernameAlreadyExistsError } from '@/domains/user/domain/user.domain-errors';
-import { BaseQuery, CreateMessageMetadata, IQuery } from '@/shared/base';
-import { QueryCodes } from '@/shared/codes/query.codes';
-import { QueryResourceTypes } from '@/shared/codes/resource-type.codes';
+import { BaseIQuery, BaseQuery } from '@/shared/base';
 
-type ICheckUsernameAvailableQuery = IQuery<{
+type ICheckUsernameAvailableQuery = BaseIQuery<{
   username: string;
 }>;
 
@@ -18,10 +17,13 @@ export class CheckUsernameAvailableQuery extends BaseQuery<
   HandlerResult<CheckUsernameAvailableQueryHandler>,
   void
 > {
-  readonly code = QueryCodes.Auth.CheckUsernameAvailable;
-  readonly resourceType = QueryResourceTypes.User;
+  readonly code = defineQueryCode('account:auth:qry:check_username_available');
+  readonly resourceType = DomainCodeEnums.Account.User;
 
-  constructor(data: ICheckUsernameAvailableQuery['data'], metadata: CreateMessageMetadata) {
+  constructor(
+    data: ICheckUsernameAvailableQuery['data'],
+    metadata: ICheckUsernameAvailableQuery['metadata'],
+  ) {
     super(null, data, metadata);
   }
 }

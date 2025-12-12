@@ -48,6 +48,7 @@
     "@nestjs/core": "^11.0.0",
     "@nestjs/cqrs": "^11.0.3",
     "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-express": "^11.0.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^4.17.17",
     "@types/node": "^22.10.7",
@@ -61,7 +62,11 @@
     "rimraf": "^6.0.0",
     "rxjs": "^7.8.1",
     "tsc-alias": "^1.8.16",
-    "typescript": "5.5.4"
+    "typescript": "5.5.4",
+    "@workspace/backend-ddd": "workspace:*",
+    "@workspace/common": "workspace:*",
+    "@workspace/database": "workspace:*",
+    "@workspace/domain": "workspace:^"
   },
   "peerDependencies": {
     "@nestjs-cls/transactional": "^3.1.1",
@@ -71,6 +76,11 @@
     "@nestjs/core": "^11.0.0",
     "@nestjs/cqrs": "^11.0.3",
     "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-express": "^11.0.0",
+    "@workspace/backend-ddd": "workspace:*",
+    "@workspace/common": "workspace:*",
+    "@workspace/database": "workspace:*",
+    "@workspace/domain": "workspace:^",
     "cookie-parser": "^1.4.7",
     "nestjs-cls": "^6.1.0",
     "nestjs-pino": "^4.5.0",

@@ -1,11 +1,12 @@
-import { Global, Module } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core'; // Global Interceptor 등록용
+import { Global, Module } from '@nestjs/common'; // 👈 Global 임포트 확인
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { ClsModule } from 'nestjs-cls';
 
 import { ContextService } from './context.service';
 import { MessageCausationInterceptor } from './message-causation.interceptor';
+import { TransactionManager } from './transaction.manager';
 import { PrismaService } from '../database/prisma.service';
 
 import { DatabaseModule } from '@/database/database.module';
@@ -16,6 +17,7 @@ import { DatabaseModule } from '@/database/database.module';
     DatabaseModule,
     ClsModule.forRoot({
       global: true,
+      middleware: { mount: false },
       plugins: [
         new ClsPluginTransactional({
           imports: [DatabaseModule],
@@ -28,11 +30,12 @@ import { DatabaseModule } from '@/database/database.module';
   ],
   providers: [
     ContextService,
+    TransactionManager,
     {
-      provide: APP_INTERCEPTOR, // 추후 EventBusModule로 이동 고려
+      provide: APP_INTERCEPTOR,
       useClass: MessageCausationInterceptor,
     },
   ],
-  exports: [ContextService, ClsModule],
+  exports: [ContextService, ClsModule, TransactionManager],
 })
 export class CoreContextModule {}

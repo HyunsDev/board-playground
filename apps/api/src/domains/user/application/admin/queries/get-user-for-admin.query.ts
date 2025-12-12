@@ -1,17 +1,14 @@
-import { Inject } from '@nestjs/common';
 import { QueryHandler } from '@nestjs/cqrs';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserEntity } from '../../../domain/user.entity';
 import { UserRepositoryPort } from '../../../domain/user.repository.port';
-import { USER_REPOSITORY } from '../../../user.constants';
 
-import { IQuery, BaseQuery } from '@/shared/base';
-import { DomainCodes } from '@/shared/codes/domain.codes';
-import { QueryCodes } from '@/shared/codes/query.codes';
+import { BaseQuery, BaseIQuery } from '@/shared/base';
 
-type IGetUserForAdminQuery = IQuery<{
+type IGetUserForAdminQuery = BaseIQuery<{
   userId: string;
 }>;
 export class GetUserForAdminQuery extends BaseQuery<
@@ -19,8 +16,8 @@ export class GetUserForAdminQuery extends BaseQuery<
   HandlerResult<GetUserForAdminQueryHandler>,
   UserEntity
 > {
-  readonly code = QueryCodes.User.GetForAdmin;
-  readonly resourceType = DomainCodes.User;
+  readonly code = defineQueryCode('account:user:qry:get_for_admin');
+  readonly resourceType = DomainCodeEnums.Account.User;
 
   constructor(data: IGetUserForAdminQuery['data'], metadata: IGetUserForAdminQuery['metadata']) {
     super(data.userId, data, metadata);
@@ -29,10 +26,7 @@ export class GetUserForAdminQuery extends BaseQuery<
 
 @QueryHandler(GetUserForAdminQuery)
 export class GetUserForAdminQueryHandler {
-  constructor(
-    @Inject(USER_REPOSITORY)
-    private readonly userRepo: UserRepositoryPort,
-  ) {}
+  constructor(private readonly userRepo: UserRepositoryPort) {}
 
   async execute({ data }: IGetUserForAdminQuery) {
     const result = await this.userRepo.getOneById(data.userId);

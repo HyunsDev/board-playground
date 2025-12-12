@@ -1,4 +1,4 @@
-import { BaseBadRequestError, BaseConflictError, BaseNotFoundError } from '@/shared/base';
+import { BaseBadRequestError, BaseConflictError, BaseNotFoundError } from '@workspace/backend-ddd';
 
 export class UserAdminCannotBeDeletedError extends BaseBadRequestError<'UserAdminCannotBeDeleted'> {
   public readonly code = 'UserAdminCannotBeDeleted';

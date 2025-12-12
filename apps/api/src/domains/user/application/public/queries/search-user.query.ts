@@ -1,17 +1,15 @@
-import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { PaginatedResult } from '@workspace/common';
+import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
-import { USER_REPOSITORY } from '@/domains/user/user.constants';
-import { BaseQuery, PaginatedQueryProps, PaginatedResult } from '@/shared/base';
-import { DomainCodes } from '@/shared/codes/domain.codes';
-import { QueryCodes } from '@/shared/codes/query.codes';
+import { BaseIPaginatedQuery, BaseQuery } from '@/shared/base';
 
-type ISearchUserQuery = PaginatedQueryProps<{
+type ISearchUserQuery = BaseIPaginatedQuery<{
   nickname?: string;
 }>;
 
@@ -20,8 +18,8 @@ export class SearchUserQuery extends BaseQuery<
   HandlerResult<SearchUserQueryHandler>,
   PaginatedResult<UserEntity>
 > {
-  readonly code = QueryCodes.User.Search;
-  readonly resourceType = DomainCodes.User;
+  readonly code = defineQueryCode('account:user:qry:search');
+  readonly resourceType = DomainCodeEnums.Account.User;
 
   constructor(data: ISearchUserQuery['data'], metadata: ISearchUserQuery['metadata']) {
     super(null, data, metadata);
@@ -30,16 +28,13 @@ export class SearchUserQuery extends BaseQuery<
 
 @QueryHandler(SearchUserQuery)
 export class SearchUserQueryHandler implements IQueryHandler<SearchUserQuery> {
-  constructor(
-    @Inject(USER_REPOSITORY)
-    private readonly userRepo: UserRepositoryPort,
-  ) {}
+  constructor(private readonly userRepo: UserRepositoryPort) {}
 
   async execute({ data }: ISearchUserQuery) {
     const { items, meta } = await this.userRepo.searchUsers({
       nickname: data.nickname,
       page: data.page,
-      take: data.take,
+      take: data.limit,
     });
 
     return ok({ items, meta });

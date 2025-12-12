@@ -1,8 +1,10 @@
 import z from 'zod';
 
+import { paginatedResultSchemaOf, withPagination } from '@workspace/common';
+
 import { CommandDtoSchema, CreateCommentDtoSchema, UpdateCommentDtoSchema } from './comment.dto';
 
-import { ACCESS, ID, paginatedQueryOf, paginatedResponseOf } from '@/common';
+import { ACCESS, ID } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';
 import { USER_ROLE } from '@/contracts/user';
 import { c } from '@/internal/c';
@@ -28,13 +30,13 @@ export const getComment = c.query({
 export const listComments = c.query({
   method: 'GET',
   path: '/comments',
-  queryParams: paginatedQueryOf(
+  queryParams: withPagination(
     z.object({
       postId: ID,
     }),
   ),
   responses: {
-    200: paginatedResponseOf(CommandDtoSchema),
+    200: paginatedResultSchemaOf(CommandDtoSchema),
     ...toApiErrorResponses([ApiErrors.Post.NotFound]),
   },
   metadata: {

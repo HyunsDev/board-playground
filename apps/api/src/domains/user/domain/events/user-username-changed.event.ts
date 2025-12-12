@@ -1,16 +1,16 @@
-import { IDomainEvent, BaseDomainEvent } from '@/shared/base';
-import { DomainEventCodes } from '@/shared/codes/domain-event.codes';
-import { DomainCodes } from '@/shared/codes/domain.codes';
+import { AggregateCodeEnum, defineEventCode } from '@workspace/domain';
 
-export type IUserNameChangedEvent = IDomainEvent<{
+import { BaseIDomainEvent, BaseDomainEvent } from '@/shared/base';
+
+export type IUserNameChangedEvent = BaseIDomainEvent<{
   userId: string;
   oldUsername: string;
   newUsername: string;
 }>;
 
 export class UserUsernameChangedEvent extends BaseDomainEvent<IUserNameChangedEvent> {
-  readonly code = DomainEventCodes.User.UsernameChanged;
-  readonly resourceType = DomainCodes.User;
+  readonly code = defineEventCode('account:user:evt:username_changed');
+  readonly resourceType = AggregateCodeEnum.Account.User;
 
   constructor(data: IUserNameChangedEvent['data'], metadata?: IUserNameChangedEvent['metadata']) {
     super(data.userId, data, metadata);

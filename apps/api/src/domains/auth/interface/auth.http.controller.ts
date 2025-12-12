@@ -3,6 +3,13 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { Request, Response } from 'express';
 
+import { ContextService, Public, IpAddress, UserAgent } from '@workspace/backend-core';
+import {
+  apiOk,
+  matchPublicError,
+  apiErr,
+  InvariantViolationException,
+} from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
 
 import { LoginAuthCommand } from '../application/commands/login-auth.command';
@@ -11,14 +18,7 @@ import { RefreshTokenAuthCommand } from '../application/commands/refresh-token-a
 import { RegisterAuthCommand } from '../application/commands/register-auth.command';
 import { CheckUsernameAvailableQuery } from '../application/queries/check-username-available.query';
 
-import { ContextService } from '@/infra/context/context.service';
-import { Public } from '@/infra/security/decorators/public.decorator';
-import { InvariantViolationException } from '@/shared/base';
-import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from '@/shared/constants/cookie.constant';
-import { IpAddress } from '@/shared/decorators/ip-address.decorator';
-import { UserAgent } from '@/shared/decorators/user-agent.decorator';
-import { matchPublicError } from '@/shared/utils/match-error.utils';
 
 @Controller()
 export class AuthHttpController {

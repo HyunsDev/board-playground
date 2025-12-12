@@ -1,4 +1,4 @@
-import { BaseBadRequestError, BaseNotFoundError } from '@/shared/base';
+import { BaseBadRequestError, BaseNotFoundError } from '@workspace/backend-ddd';
 
 export class SessionConflictError extends BaseBadRequestError<'SessionConflict'> {
   public readonly code = 'SessionConflict';

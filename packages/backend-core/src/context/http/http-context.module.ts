@@ -17,6 +17,6 @@ import { ErrorLoggingInterceptor } from './error-logging.interceptor';
 })
 export class HttpContextModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(ContextMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL }); // 모든 라우트에 적용
+    consumer.apply(ContextMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL }); // Cls run 및 Context 초기화
   }
 }

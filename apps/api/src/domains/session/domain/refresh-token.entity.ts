@@ -1,9 +1,11 @@
 import { err, ok } from 'neverthrow';
 import { v7 } from 'uuid';
 
+import { ExpiredTokenError } from '@workspace/backend-ddd';
+
 import { TokenReuseDetectedError } from './token.domain-errors';
 
-import { Entity, ExpiredTokenError } from '@/shared/base';
+import { BaseEntity } from '@/shared/base';
 
 export interface RefreshTokenProps {
   id: string;
@@ -22,7 +24,7 @@ export interface CreateRefreshTokenProps {
   sessionId: string;
 }
 
-export class RefreshTokenEntity extends Entity<RefreshTokenProps> {
+export class RefreshTokenEntity extends BaseEntity<RefreshTokenProps> {
   private constructor(props: RefreshTokenProps, id?: string) {
     super({
       id: id || props.id,

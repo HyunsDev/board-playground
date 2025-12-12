@@ -1,8 +1,8 @@
-import { BaseDomainEvent, IDomainEvent } from '@/shared/base';
-import { DomainEventCodes } from '@/shared/codes/domain-event.codes';
-import { DomainCodes } from '@/shared/codes/domain.codes';
+import { AggregateCodeEnum, defineEventCode } from '@workspace/domain';
 
-export type IUserCreatedEvent = IDomainEvent<{
+import { BaseDomainEvent, BaseIDomainEvent } from '@/shared/base';
+
+export type IUserCreatedEvent = BaseIDomainEvent<{
   userId: string;
   email: string;
   username: string;
@@ -10,8 +10,8 @@ export type IUserCreatedEvent = IDomainEvent<{
 }>;
 
 export class UserCreatedEvent extends BaseDomainEvent<IUserCreatedEvent> {
-  readonly code = DomainEventCodes.User.Created;
-  readonly resourceType = DomainCodes.User;
+  readonly code = defineEventCode('account:user:evt:created');
+  readonly resourceType = AggregateCodeEnum.Account.User;
 
   constructor(data: IUserCreatedEvent['data'], metadata?: IUserCreatedEvent['metadata']) {
     super(data.userId, data, metadata);

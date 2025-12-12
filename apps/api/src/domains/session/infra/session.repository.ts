@@ -1,8 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
+import { BaseRepository, PrismaService, ContextService } from '@workspace/backend-core';
+import {
+  DomainEventPublisher,
+  DomainResult,
+  matchError,
+  UnexpectedDomainErrorException,
+} from '@workspace/backend-ddd';
 import { Session, PrismaClient, Prisma } from '@workspace/database';
 
 import { RefreshTokenMapper } from './refresh-token.mapper';
@@ -11,14 +18,6 @@ import { SessionNotFoundError } from '../domain/session.domain-errors';
 import { SessionEntity } from '../domain/session.entity';
 import { SessionRepositoryPort } from '../domain/session.repository.port';
 import { InvalidRefreshTokenError } from '../domain/token.domain-errors';
-
-import { ContextService } from '@/infra/context/context.service';
-import { DomainEventPublisher } from '@/infra/domain-event/domain-event.publisher';
-import { PrismaService } from '@/infra/prisma/prisma.service';
-import { InternalServerErrorException, UnexpectedDomainErrorException } from '@/shared/base';
-import { BaseRepository } from '@/shared/base/infra/base.repository';
-import { DomainResult } from '@/shared/types/result.type';
-import { matchError } from '@/shared/utils/match-error.utils';
 
 @Injectable()
 export class SessionRepository

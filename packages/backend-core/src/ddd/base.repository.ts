@@ -29,10 +29,9 @@ export abstract class BaseRepository<
     unknown
   >,
   TDbModel extends { id: string },
-  TDelegate extends AbstractCrudDelegate<TDbModel>,
 > implements RepositoryPort<TAggregate>
 {
-  protected abstract get delegate(): TDelegate;
+  protected abstract get delegate(): AbstractCrudDelegate<TDbModel>;
 
   constructor(
     protected readonly prisma: PrismaClient,

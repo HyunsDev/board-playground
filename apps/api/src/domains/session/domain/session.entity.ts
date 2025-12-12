@@ -2,6 +2,7 @@ import { err, ok } from 'neverthrow';
 import { UAParser } from 'ua-parser-js';
 import { v7 as uuidv7 } from 'uuid';
 
+import { matchError, typedOk } from '@workspace/backend-ddd';
 import { DevicePlatform, SESSION_STATUS, SessionStatus } from '@workspace/contract';
 
 import { RefreshTokenReuseDetectedEvent } from './events/refresh-token-reuse-detected.event';
@@ -12,9 +13,7 @@ import { RefreshTokenEntity } from './refresh-token.entity';
 import { SessionClosedError, SessionRevokedError } from './session.domain-errors';
 import { InvalidRefreshTokenError } from './token.domain-errors';
 
-import { AggregateRoot } from '@/shared/base';
-import { matchError } from '@/shared/utils/match-error.utils';
-import { typedOk } from '@/shared/utils/typed-ok.utils';
+import { BaseAggregateRoot } from '@/shared/base';
 
 export interface SessionProps {
   userId: string;
@@ -44,7 +43,7 @@ export interface CreateSessionProps {
   expiresAt: Date;
 }
 
-export class SessionEntity extends AggregateRoot<SessionProps> {
+export class SessionEntity extends BaseAggregateRoot<SessionProps> {
   private constructor(props: SessionProps, id?: string) {
     super({
       id: id || uuidv7(),

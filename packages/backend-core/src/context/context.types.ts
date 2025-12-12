@@ -2,7 +2,7 @@ import { ClsStore } from 'nestjs-cls';
 
 import { AbstractCreateMessageMetadata } from '@workspace/backend-ddd';
 import { Prisma } from '@workspace/database';
-import { UserRole } from '@workspace/domain';
+import { CausationCode, UserRole } from '@workspace/domain';
 
 export interface ClientContext {
   ipAddress: string;
@@ -16,7 +16,7 @@ export interface TokenContext {
   sessionId: string;
 }
 
-export type MessageMetadataContext = AbstractCreateMessageMetadata<string>;
+export type MessageMetadataContext = AbstractCreateMessageMetadata<CausationCode<any>>;
 
 export interface AppContext extends ClsStore {
   requestId: string;

@@ -1,4 +1,5 @@
 import { Global, Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 
 import {
   CoreConfigModule,
@@ -19,8 +20,9 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
       isHttp: true,
       extraLoad: [refreshTokenConfig],
     }),
-    HttpContextModule,
+    CqrsModule.forRoot(),
     DatabaseModule,
+    HttpContextModule,
     EventBusModule,
     LoggingModule,
     SecurityModule.forRoot({

@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
+import { PaginationMetadata } from '@workspace/common';
 import {
   UserPublicProfileDto,
   UserAdminDto,
   UserPrivateProfileDto,
   UserSummaryDto,
-  PaginationMeta,
 } from '@workspace/contract';
 
 import { UserEntity } from '../domain/user.entity';
@@ -31,8 +31,8 @@ export class UserDtoMapper extends BaseDtoMapper<UserEntity> {
 
   toPaginatedPublicProfileDto(
     entities: UserEntity[],
-    meta: PaginationMeta,
-  ): { items: UserPublicProfileDto[]; meta: PaginationMeta } {
+    meta: PaginationMetadata,
+  ): { items: UserPublicProfileDto[]; meta: PaginationMetadata } {
     return this.mapPaginated(entities, meta, (item) => this.toPublicProfileDto(item));
   }
 
