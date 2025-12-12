@@ -47,10 +47,6 @@ type IsValidCharRecursive<S extends string> = S extends ''
 export type IsLowerSnakeCase<S extends string> =
   S extends Lowercase<S> ? IsValidCharRecursive<S> : false;
 
-export type IsStrictSnakeCase<S extends string> = S extends `${LowerAlphabet}${string}` // 첫 글자는 알파벳
-  ? IsLowerSnakeCase<S>
-  : false;
-
 /**
  * 사용자에게 노출할 에러 메시지 타입
  */
@@ -64,6 +60,3 @@ type SnakeCaseError<S extends string> =
  */
 export type LowerSnakeCaseString<S extends string> =
   IsLowerSnakeCase<S> extends true ? S : SnakeCaseError<S>;
-
-export type StrictLowerSnakeCaseString<S extends string> =
-  IsStrictSnakeCase<S> extends true ? S : SnakeCaseError<S>;

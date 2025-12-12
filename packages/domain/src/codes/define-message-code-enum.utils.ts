@@ -1,4 +1,4 @@
-import type { IsStrictSnakeCase } from '@workspace/common';
+import type { IsCodeLiteral } from '@workspace/common';
 
 import {
   DomainCodeEnums,
@@ -23,7 +23,7 @@ type ValidateCode<
   T extends string,
   M extends MessageType,
 > = T extends `${DomainCode}:${M}:${infer Action}`
-  ? IsStrictSnakeCase<Action> extends true
+  ? IsCodeLiteral<Action, 1> extends true
     ? T // ✅
     : `[ Error: Action '${Action}' must be lower_snake_case ]` // ❌ 케이스가 틀림
   : `${DomainCode}:${M}:`;
@@ -70,7 +70,7 @@ export type ValidateMessageCode<
   TMessageType extends MessageType,
   Value extends string,
 > = Value extends `${DomainCodeEnums[TBCCodeKey][TDomainCodeKey] & DomainCode}:${TMessageType}:${infer MessageAction}`
-  ? IsStrictSnakeCase<MessageAction> extends true
+  ? IsCodeLiteral<MessageAction, 1> extends true
     ? Value
     : never
   : never;

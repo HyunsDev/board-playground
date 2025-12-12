@@ -1,12 +1,12 @@
 import {
   extractEnumValues,
+  type CodeLiteral,
   type ExtractEnumValues,
   type Invert,
-  type StrictLowerSnakeCaseString,
 } from '@workspace/common';
 
 const defineBCCodeEnum = <const T extends Record<string, string>>(codes: {
-  [K in keyof T]: StrictLowerSnakeCaseString<T[K]>;
+  [K in keyof T]: CodeLiteral<T[K], 1>;
 }) => {
   return codes;
 };

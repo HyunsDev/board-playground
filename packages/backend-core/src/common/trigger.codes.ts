@@ -1,4 +1,4 @@
-import type { ExtractEnumValues, IsStrictSnakeCase } from '@workspace/common';
+import type { ExtractEnumValues, IsCodeLiteral } from '@workspace/common';
 import type { MessageType } from '@workspace/domain/src/codes/define-message-code-enum.utils';
 import type { DomainCodeEnums } from '@workspace/domain/src/codes/domain-code.enums';
 
@@ -6,7 +6,7 @@ type ValidateTriggerCode<
   T extends string,
   M extends MessageType = 'trg',
 > = T extends `${DomainCodeEnums['System']['Infra']}:${M}:${infer Action}`
-  ? IsStrictSnakeCase<Action> extends true
+  ? IsCodeLiteral<Action, 1> extends true
     ? T // ✅
     : `[ Error: Action '${Action}' must be lower_snake_case ]` // ❌ 케이스가 틀림
   : `${DomainCodeEnums['System']['Infra']}:${M}:`;
