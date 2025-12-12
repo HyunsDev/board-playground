@@ -13,7 +13,6 @@ import eslintPluginUnusedImports from 'eslint-plugin-unused-imports';
  * */
 export const config = [
   js.configs.recommended,
-  eslintConfigPrettier,
   ...tseslint.configs.recommended,
   {
     plugins: {
@@ -89,6 +88,7 @@ export const config = [
       ],
     },
   },
+  eslintConfigPrettier,
   {
     ignores: ['dist/**'],
   },
