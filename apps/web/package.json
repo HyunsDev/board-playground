@@ -24,7 +24,6 @@
     "@workspace/contract": "workspace:*",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "eslint": "^9.39.1",
-    "typescript": "5.8.2"
+    "eslint": "^9.39.1"
   }
 }

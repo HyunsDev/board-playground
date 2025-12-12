@@ -38,8 +38,7 @@
     "@types/node": "^22.19.2",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "prisma": "^6.19.1",
-    "typescript": "5.5.4"
+    "prisma": "^6.19.1"
   },
   "publishConfig": {
     "access": "public"

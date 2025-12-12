@@ -32,8 +32,7 @@
     "@types/node": "^22.19.2",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "tsup": "^8.5.1",
-    "typescript": "5.5.4"
+    "tsup": "^8.5.1"
   },
   "publishConfig": {
     "access": "public"
