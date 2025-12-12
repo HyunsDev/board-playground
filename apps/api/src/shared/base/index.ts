@@ -1,5 +1,2 @@
-export * from './domain';
-export * from './application';
-export * from './error';
-export * from './infra';
-export * from './interface';
+export * from './blocks';
+export * from './cqrs';

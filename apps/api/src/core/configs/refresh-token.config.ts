@@ -6,7 +6,7 @@ const refreshTokenConfigSchema = z.object({
   REFRESH_TOKEN_EXPIRATION_DAYS: z.coerce.number().int().positive().default(30),
 });
 
-export const tokenConfig = registerAs('token', () => {
+export const refreshTokenConfig = registerAs('refreshToken', () => {
   const parsed = refreshTokenConfigSchema.parse(process.env);
   return {
     refreshTokenSecret: parsed.REFRESH_TOKEN_SECRET,
@@ -14,4 +14,4 @@ export const tokenConfig = registerAs('token', () => {
   };
 });
 
-export type RefreshTokenConfig = ConfigType<typeof tokenConfig>;
+export type RefreshTokenConfig = ConfigType<typeof refreshTokenConfig>;

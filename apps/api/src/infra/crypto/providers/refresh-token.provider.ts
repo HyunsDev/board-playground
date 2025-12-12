@@ -2,13 +2,13 @@ import { createHmac, randomBytes } from 'crypto';
 
 import { Inject, Injectable } from '@nestjs/common';
 
-import { TokenConfig, tokenConfig } from '@/infra/config/configs/token.config';
+import { RefreshTokenConfig, refreshTokenConfig } from '@/core/configs/refresh-token.config';
 
 @Injectable()
 export class RefreshTokenProvider {
   constructor(
-    @Inject(tokenConfig.KEY)
-    private readonly tokenConfig: TokenConfig,
+    @Inject(refreshTokenConfig.KEY)
+    private readonly tokenConfig: RefreshTokenConfig,
   ) {}
 
   generateRefreshToken() {
