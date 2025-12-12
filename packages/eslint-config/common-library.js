@@ -20,7 +20,6 @@ export const commonLibraryConfig = [
   {
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/explicit-module-boundary-types': 'warn',
     },
   },
   {
