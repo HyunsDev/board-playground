@@ -14,6 +14,7 @@
     "@jest/globals": "^30.2.0",
     "@prisma/client": "^6.19.1",
     "@ts-rest/core": "^3.52.1",
+    "@types/node": "^24.10.3",
     "@workspace/common": "workspace:*",
     "@workspace/contract": "workspace:*",
     "@workspace/database": "workspace:*",
