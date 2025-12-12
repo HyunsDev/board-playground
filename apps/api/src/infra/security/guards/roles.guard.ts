@@ -7,7 +7,7 @@ import { ROLES_KEY } from '../decorators/roles.decorator';
 
 import { ContextService } from '@/infra/context/context.service';
 import { AccessDeniedError } from '@/shared/base';
-import { DomainException } from '@/shared/base/error/base.domain-exception';
+import { DomainException } from '@/shared/base/error/domain-exception';
 
 @Injectable()
 export class RolesGuard implements CanActivate {

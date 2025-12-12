@@ -148,7 +148,7 @@ class NestRouteExtractor {
     const roles = reflector.getAllAndOverride<string[]>(ROLES_KEY, [method, controllerClass]);
 
     // roles가 undefined이면(데코레이터 없음) Public
-    if (roles === undefined) return 'Public';
+    if (roles === undefined) return 'SignedIn';
 
     // roles가 빈 배열이면(@Auth()만 사용) SignedIn
     if (roles.length === 0) return 'SignedIn';
@@ -244,10 +244,10 @@ class ContractAnalyzer {
         result.contractImplemented++;
 
         const routeInfo = this.nestRoutes[matchIndex];
-        const implAccess = routeInfo.accessInfo;
+        const implAccess = routeInfo?.accessInfo;
 
         const rowKey = `${indent}✔ ${currentKey} ${routeStr}`;
-        const controller = routeInfo.controllerName;
+        const controller = routeInfo?.controllerName as string;
 
         const isAccessMatch = contractAccess === implAccess;
 

@@ -8,7 +8,6 @@ export type IRefreshTokenReuseDetectedEvent = IDomainEvent<{
   reusedTokenId: string;
 }>;
 export class RefreshTokenReuseDetectedEvent extends BaseDomainEvent<IRefreshTokenReuseDetectedEvent> {
-  public readonly domain = DomainCodes.Session;
   public readonly code = DomainEventCodes.Session.RefreshTokenReuseDetected;
   public readonly resourceType = DomainCodes.Session;
 

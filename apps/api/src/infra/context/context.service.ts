@@ -76,7 +76,7 @@ export class ContextService {
     this.cls.set('messageMetadata', metadata);
   }
 
-  getMessageMetadata(): CreateMessageMetadata | undefined {
+  getMessageMetadata(): CreateMessageMetadata {
     const metadata = this.cls.get('messageMetadata');
     return (
       metadata || {

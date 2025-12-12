@@ -1,22 +1,22 @@
+import { IEvent } from '@nestjs/cqrs';
 import { v7 as uuidv7 } from 'uuid';
 
 import { CreateMessageMetadata, MessageMetadata } from '../interface/message-metadata.type';
 
 import { AggregateCode } from '@/shared/codes/aggregate.codes';
+import { CausationCodes } from '@/shared/codes/causation.codes';
 import { DomainEventCode } from '@/shared/codes/domain-event.codes';
-import { DomainCode } from '@/shared/codes/domain.codes';
 
-export type IDomainEvent<Data> = {
+export interface IDomainEvent<Data> extends IEvent {
   readonly data: Data;
   readonly metadata: CreateMessageMetadata;
   deriveMetadata(
     this: IDomainEvent<Data>,
     overrides?: Partial<CreateMessageMetadata>,
   ): CreateMessageMetadata;
-};
+}
 
 export abstract class BaseDomainEvent<D extends IDomainEvent<unknown> = IDomainEvent<unknown>> {
-  public abstract readonly domain: DomainCode;
   public abstract readonly code: DomainEventCode;
   public abstract readonly resourceType: AggregateCode;
 
@@ -32,10 +32,10 @@ export abstract class BaseDomainEvent<D extends IDomainEvent<unknown> = IDomainE
 
     this.metadata = {
       correlationId: metadata?.correlationId || '',
-      causationId: metadata?.causationId,
-      causationType: metadata?.causationType,
-      userId: metadata?.userId,
-      timestamp: Date.now(),
+      causationId: metadata?.causationId || '',
+      causationType: metadata?.causationType || CausationCodes.Infra.HttpRequest,
+      userId: metadata?.userId || '',
+      createdAt: Date.now(),
     };
   }
 

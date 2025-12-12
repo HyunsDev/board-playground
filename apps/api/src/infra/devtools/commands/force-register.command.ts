@@ -1,14 +1,14 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
-import { SessionService } from '@/domains/session/application/services/session.service';
-import { UserService } from '@/domains/user/application/services/user.service';
-import { TokenService } from '@/infra/security/services/token.service';
+import { HandlerResult } from '@workspace/backend-common';
+
+import { SessionFacade } from '@/domains/session/application/facades/session.facade';
+import { UserFacade } from '@/domains/user/application/facades/user.facade';
+import { TokenProvider } from '@/infra/security/providers/token.provider';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
-import { DomainCodes } from '@/shared/codes/domain.codes';
 import { ResourceTypes } from '@/shared/codes/resource-type.codes';
-import { HandlerResult } from '@/shared/types/handler-result';
 import { AuthTokens } from '@/shared/types/tokens';
 
 type ForceRegisterCommandProps = ICommand<{
@@ -22,7 +22,6 @@ export class ForceRegisterCommand extends BaseCommand<
   HandlerResult<ForceRegisterCommandHandler>,
   AuthTokens
 > {
-  readonly domain = DomainCodes.Devtools;
   readonly code = CommandCodes.Devtools.ForceRegister;
   readonly resourceType = ResourceTypes.User;
 
@@ -37,22 +36,22 @@ export class ForceRegisterCommand extends BaseCommand<
 @CommandHandler(ForceRegisterCommand)
 export class ForceRegisterCommandHandler implements ICommandHandler<ForceRegisterCommand> {
   constructor(
-    private readonly userService: UserService,
-    private readonly sessionService: SessionService,
-    private readonly tokenService: TokenService,
+    private readonly userFacade: UserFacade,
+    private readonly sessionFacade: SessionFacade,
+    private readonly tokenProvider: TokenProvider,
   ) {}
 
   async execute({ data }: ForceRegisterCommandProps) {
-    const createUserResult = await this.userService.create({
+    const createUserResult = await this.userFacade.create({
       email: data.email,
       username: data.username,
       nickname: data.nickname,
-      password: null,
+      hashedPassword: null,
     });
     if (createUserResult.isErr()) return err(createUserResult.error);
     const user = createUserResult.value;
 
-    const sessionResult = await this.sessionService.create({
+    const sessionResult = await this.sessionFacade.create({
       userId: user.id,
       ipAddress: '127.0.0.1',
       userAgent: 'Devtools',
@@ -63,7 +62,7 @@ export class ForceRegisterCommandHandler implements ICommandHandler<ForceRegiste
       return err(sessionResult.error);
     }
     const { session, refreshToken } = sessionResult.value;
-    const accessToken = this.tokenService.generateAccessToken({
+    const accessToken = this.tokenProvider.generateAccessToken({
       sub: user.id,
       sessionId: session.id,
       email: user.email,

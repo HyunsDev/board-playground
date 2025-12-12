@@ -9,7 +9,6 @@ export type IUserNameChangedEvent = IDomainEvent<{
 }>;
 
 export class UserUsernameChangedEvent extends BaseDomainEvent<IUserNameChangedEvent> {
-  public readonly domain = DomainCodes.User;
   readonly code = DomainEventCodes.User.UsernameChanged;
   readonly resourceType = DomainCodes.User;
 

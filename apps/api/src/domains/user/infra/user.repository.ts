@@ -3,7 +3,7 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
-import { PrismaClient, User } from '@workspace/db';
+import { Prisma, PrismaClient, User } from '@workspace/database';
 
 import { UserMapper } from './user.mapper';
 import {
@@ -15,9 +15,9 @@ import { UserEntity } from '../domain/user.entity';
 import { UserRepositoryPort } from '../domain/user.repository.port';
 
 import { ContextService } from '@/infra/context/context.service';
-import { DatabaseService } from '@/infra/database/database.service';
-import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
-import { PaginatedResult } from '@/shared/base';
+import { DomainEventPublisher } from '@/infra/domain-event/domain-event.publisher';
+import { PrismaService } from '@/infra/prisma/prisma.service';
+import { PaginatedResult, UnexpectedDomainErrorException } from '@/shared/base';
 import { BaseRepository } from '@/shared/base/infra/base.repository';
 import { DomainResult } from '@/shared/types/result.type';
 import { matchError } from '@/shared/utils/match-error.utils';
@@ -25,11 +25,11 @@ import { matchError } from '@/shared/utils/match-error.utils';
 @Injectable()
 export class UserRepository extends BaseRepository<UserEntity, User> implements UserRepositoryPort {
   constructor(
-    protected readonly prisma: DatabaseService,
+    protected readonly prisma: PrismaService,
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly context: ContextService,
     protected readonly mapper: UserMapper,
-    protected readonly eventDispatcher: DomainEventDispatcher,
+    protected readonly eventDispatcher: DomainEventPublisher,
   ) {
     super(prisma, txHost, mapper, eventDispatcher, new Logger(UserRepository.name));
   }
@@ -117,13 +117,14 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
       (user) => ok(user),
       (error) =>
         matchError(error, {
-          EntityConflict: ({ details: { conflicts } }) => {
-            if (conflicts.some((conflict) => conflict.field === 'email')) {
+          EntityConflict: (e) => {
+            if (e.details?.conflicts.some((conflict) => conflict.field === 'email')) {
               return err(new UserEmailAlreadyExistsError());
             }
-            if (conflicts.some((conflict) => conflict.field === 'username')) {
+            if (e.details?.conflicts.some((conflict) => conflict.field === 'username')) {
               return err(new UserUsernameAlreadyExistsError());
             }
+            throw new UnexpectedDomainErrorException(e);
           },
         }),
     );
@@ -135,16 +136,35 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
       (error) =>
         matchError(error, {
           EntityNotFound: () => err(new UserNotFoundError()),
-          EntityConflict: ({ details: { conflicts } }) => {
-            if (conflicts.some((conflict) => conflict.field === 'email')) {
+          EntityConflict: ({ details }) => {
+            if (details?.conflicts.some((conflict) => conflict.field === 'email')) {
               return err(new UserEmailAlreadyExistsError());
             }
-            if (conflicts.some((conflict) => conflict.field === 'username')) {
+            if (details?.conflicts.some((conflict) => conflict.field === 'username')) {
               return err(new UserUsernameAlreadyExistsError());
             }
+            throw new UnexpectedDomainErrorException(error);
           },
         }),
     );
+  }
+
+  async updateLastActiveAt(userId: string) {
+    try {
+      void (await this.delegate.update({
+        where: { id: userId },
+        data: { lastActiveAt: new Date() },
+        select: { id: true },
+      }));
+      return ok(undefined);
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          return err(new UserNotFoundError());
+        }
+      }
+      throw error;
+    }
   }
 
   async delete(user: UserEntity) {

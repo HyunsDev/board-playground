@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { RefreshToken, Session } from '@workspace/db';
+import { RefreshToken, Session } from '@workspace/database';
 
 import { RefreshTokenMapper } from './refresh-token.mapper';
 import { SessionEntity, SessionProps } from '../domain/session.entity';
@@ -31,6 +31,8 @@ export class SessionMapper extends BaseMapper<SessionEntity, Session> {
       expiresAt: record.expiresAt,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
+      closedAt: record.closedAt,
+      revokedAt: record.revokedAt,
       status: record.status,
       refreshTokens:
         record.refreshTokens?.map((token) => this.refreshTokenMapper.toDomain(token)) ?? [],
@@ -55,6 +57,8 @@ export class SessionMapper extends BaseMapper<SessionEntity, Session> {
       status: props.status,
       createdAt: props.createdAt,
       updatedAt: props.updatedAt,
+      closedAt: props.closedAt,
+      revokedAt: props.revokedAt,
     };
   }
 }

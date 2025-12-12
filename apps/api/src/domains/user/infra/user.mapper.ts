@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { User, UserRole, UserStatus } from '@workspace/db';
+import { User, UserRole, UserStatus } from '@workspace/database';
 
 import { UserPasswordVO } from '../domain/user-password.vo';
 import { UserEntity, UserProps } from '../domain/user.entity';
@@ -18,10 +18,12 @@ export class UserMapper extends BaseMapper<UserEntity, User> {
       avatarUrl: record.avatarUrl,
       role: record.role,
       status: record.status,
-      memo: record.memo,
+      adminMemo: record.adminMemo,
       password: record.hashedPassword ? UserPasswordVO.fromHash(record.hashedPassword) : null,
+      lastActiveAt: record.lastActiveAt,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
+      deletedAt: record.deletedAt,
     };
     return UserEntity.reconstruct(props, record.id);
   }
@@ -37,10 +39,12 @@ export class UserMapper extends BaseMapper<UserEntity, User> {
       avatarUrl: props.avatarUrl,
       role: props.role as UserRole,
       status: props.status as UserStatus,
-      memo: props.memo,
+      adminMemo: props.adminMemo,
       hashedPassword: props.password ? props.password.unpack() : null,
+      lastActiveAt: props.lastActiveAt,
       createdAt: props.createdAt,
       updatedAt: props.updatedAt,
+      deletedAt: props.deletedAt,
     };
   }
 }

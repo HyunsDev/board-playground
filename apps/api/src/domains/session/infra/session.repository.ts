@@ -3,7 +3,7 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
-import { Session, PrismaClient, Prisma } from '@workspace/db';
+import { Session, PrismaClient, Prisma } from '@workspace/database';
 
 import { RefreshTokenMapper } from './refresh-token.mapper';
 import { SessionMapper } from './session.mapper';
@@ -13,8 +13,8 @@ import { SessionRepositoryPort } from '../domain/session.repository.port';
 import { InvalidRefreshTokenError } from '../domain/token.domain-errors';
 
 import { ContextService } from '@/infra/context/context.service';
-import { DatabaseService } from '@/infra/database/database.service';
-import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
+import { DomainEventPublisher } from '@/infra/domain-event/domain-event.publisher';
+import { PrismaService } from '@/infra/prisma/prisma.service';
 import { InternalServerErrorException, UnexpectedDomainErrorException } from '@/shared/base';
 import { BaseRepository } from '@/shared/base/infra/base.repository';
 import { DomainResult } from '@/shared/types/result.type';
@@ -26,12 +26,12 @@ export class SessionRepository
   implements SessionRepositoryPort
 {
   constructor(
-    protected readonly prisma: DatabaseService,
+    protected readonly prisma: PrismaService,
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly context: ContextService,
     protected readonly mapper: SessionMapper,
     protected readonly refreshTokenMapper: RefreshTokenMapper,
-    protected readonly eventDispatcher: DomainEventDispatcher,
+    protected readonly eventDispatcher: DomainEventPublisher,
   ) {
     super(prisma, txHost, mapper, eventDispatcher, new Logger(SessionRepository.name));
   }
@@ -144,7 +144,7 @@ export class SessionRepository
   ): Promise<DomainResult<SessionEntity, InvalidRefreshTokenError>> {
     const tokenRecord = await this.client.refreshToken.findUnique({
       where: {
-        token: hashedRefreshToken,
+        hashedToken: hashedRefreshToken,
       },
       select: {
         sessionId: true,
@@ -162,7 +162,7 @@ export class SessionRepository
       include: {
         refreshTokens: {
           where: {
-            token: hashedRefreshToken,
+            hashedToken: hashedRefreshToken,
           },
         },
       },

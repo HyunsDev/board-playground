@@ -7,7 +7,7 @@ import { SessionEntity } from '../domain/session.entity';
 import { BaseDtoMapper } from '@/shared/base';
 
 @Injectable()
-export class SessionDtoMapper extends BaseDtoMapper<SessionEntity, SessionDto> {
+export class SessionDtoMapper extends BaseDtoMapper<SessionEntity> {
   toDto(entity: SessionEntity): SessionDto {
     const props = entity.getProps();
     return {
@@ -22,6 +22,8 @@ export class SessionDtoMapper extends BaseDtoMapper<SessionEntity, SessionDto> {
       lastRefreshedAt: props.lastRefreshedAt.toISOString(),
       expiresAt: props.expiresAt.toISOString(),
       createdAt: props.createdAt.toISOString(),
+      closedAt: props.closedAt?.toISOString() || null,
+      revokedAt: props.revokedAt?.toISOString() || null,
     };
   }
 }

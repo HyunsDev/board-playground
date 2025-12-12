@@ -1,5 +1,4 @@
 import { Controller, Req, Res } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { Request, Response } from 'express';
@@ -12,10 +11,11 @@ import { RefreshTokenAuthCommand } from '../application/commands/refresh-token-a
 import { RegisterAuthCommand } from '../application/commands/register-auth.command';
 import { CheckUsernameAvailableQuery } from '../application/queries/check-username-available.query';
 
-import { EnvSchema } from '@/core/config/env.validation';
 import { ContextService } from '@/infra/context/context.service';
-import { UnexpectedDomainError } from '@/shared/base';
+import { Public } from '@/infra/security/decorators/public.decorator';
+import { InvariantViolationException } from '@/shared/base';
 import { apiErr, apiOk } from '@/shared/base/interface/response.utils';
+import { REFRESH_TOKEN_COOKIE_OPTIONS } from '@/shared/constants/cookie.constant';
 import { IpAddress } from '@/shared/decorators/ip-address.decorator';
 import { UserAgent } from '@/shared/decorators/user-agent.decorator';
 import { matchPublicError } from '@/shared/utils/match-error.utils';
@@ -25,20 +25,10 @@ export class AuthHttpController {
   constructor(
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
-    private readonly configService: ConfigService<EnvSchema>,
     private readonly contextService: ContextService,
   ) {}
 
-  private getCookieOptions() {
-    return {
-      httpOnly: true,
-      secure: this.configService.get('NODE_ENV') === 'production',
-      path: '/auth',
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-      sameSite: 'strict' as const,
-    };
-  }
-
+  @Public()
   @TsRestHandler(contract.auth.register)
   async register(
     @Res({ passthrough: true }) res: Response,
@@ -62,7 +52,7 @@ export class AuthHttpController {
 
       return result.match(
         (data) => {
-          void res.cookie('refreshToken', data.refreshToken, this.getCookieOptions());
+          void res.cookie('refreshToken', data.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
           return apiOk(200, {
             accessToken: data.accessToken,
           });
@@ -77,6 +67,7 @@ export class AuthHttpController {
     });
   }
 
+  @Public()
   @TsRestHandler(contract.auth.login)
   async login(
     @Res({ passthrough: true }) res: Response,
@@ -98,7 +89,7 @@ export class AuthHttpController {
 
       return result.match(
         (data) => {
-          void res.cookie('refreshToken', data.refreshToken, this.getCookieOptions());
+          void res.cookie('refreshToken', data.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
           return apiOk(200, {
             accessToken: data.accessToken,
           });
@@ -111,6 +102,7 @@ export class AuthHttpController {
     });
   }
 
+  @Public()
   @TsRestHandler(contract.auth.refreshToken)
   async refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     return tsRestHandler(contract.auth.refreshToken, async () => {
@@ -131,17 +123,17 @@ export class AuthHttpController {
 
       return result.match(
         (data) => {
-          if (data.status === 'failed') {
-            if (data.error.code === 'TokenReuseDetected') {
-              void res.clearCookie('refreshToken', this.getCookieOptions());
+          if (data.type === 'revoked') {
+            if (data.reason === 'TokenReuseDetected') {
+              void res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_OPTIONS);
               return apiErr(ApiErrors.Auth.RefreshTokenReuseDetected);
             }
-            throw new UnexpectedDomainError(data.error);
+            throw new InvariantViolationException();
           }
 
-          void res.cookie('refreshToken', data.data.refreshToken, this.getCookieOptions());
+          void res.cookie('refreshToken', data.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
           return apiOk(200, {
-            accessToken: data.data.accessToken,
+            accessToken: data.accessToken,
           });
         },
         (error) =>
@@ -155,13 +147,14 @@ export class AuthHttpController {
     });
   }
 
+  @Public()
   @TsRestHandler(contract.auth.logout)
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     return tsRestHandler(contract.auth.logout, async () => {
       const refreshToken = req.cookies?.['refreshToken'];
 
       if (!refreshToken) {
-        return apiOk(204, null);
+        return apiOk(204, undefined);
       }
 
       const result = await this.commandBus.execute(
@@ -173,14 +166,15 @@ export class AuthHttpController {
         ),
       );
 
-      void res.clearCookie('refreshToken', this.getCookieOptions());
+      void res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_OPTIONS);
       return result.match(
-        () => apiOk(204, null),
-        () => apiOk(204, null),
+        () => apiOk(204, undefined),
+        () => apiOk(204, undefined),
       );
     });
   }
 
+  @Public()
   @TsRestHandler(contract.auth.checkUsername)
   async checkUsername() {
     return tsRestHandler(contract.auth.checkUsername, async ({ query }) => {

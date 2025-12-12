@@ -1,36 +1,43 @@
-import { Global, Module, Provider } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Module, Provider } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { JwtModule, JwtSignOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
-import { TokenService } from './services/token.service';
+import { PasswordProvider } from './providers/password.provider';
+import { TokenProvider } from './providers/token.provider';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { TokenConfig, tokenConfig } from '../config/configs/token.config';
 
-import { EnvSchema } from '@/core/config/env.validation';
-
-const services: Provider[] = [TokenService];
-const guards: Provider[] = [JwtAuthGuard, RolesGuard];
+const providers: Provider[] = [TokenProvider, PasswordProvider];
+const guards: Provider[] = [
+  {
+    provide: APP_GUARD,
+    useClass: JwtAuthGuard,
+  },
+  {
+    provide: APP_GUARD,
+    useClass: RolesGuard,
+  },
+];
 const strategies: Provider[] = [JwtStrategy];
 
-@Global()
 @Module({
   imports: [
     PassportModule,
     JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (config: ConfigService<EnvSchema>) => ({
-        secret: config.get('JWT_ACCESS_SECRET'),
+      inject: [tokenConfig.KEY],
+      useFactory: (tokenConfig: TokenConfig) => ({
+        secret: tokenConfig.jwtAccessSecret,
         signOptions: {
-          expiresIn: config.get('JWT_ACCESS_EXPIRATION_TIME'),
+          expiresIn: tokenConfig.jwtAccessExpirationTime,
         } as JwtSignOptions,
       }),
     }),
   ],
-  providers: [...services, ...guards, ...strategies],
+  providers: [...providers, ...guards, ...strategies],
   controllers: [],
-  exports: [...services],
+  exports: [JwtModule, ...providers],
 })
 export class SecurityModule {}

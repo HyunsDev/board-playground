@@ -7,12 +7,14 @@ import { DevicePlatform, SESSION_STATUS, SessionStatus } from '@workspace/contra
 import { RefreshTokenReuseDetectedEvent } from './events/refresh-token-reuse-detected.event';
 import { SessionCreatedEvent } from './events/session-created.event';
 import { SessionDeletedEvent } from './events/session-deleted.event';
+import { SessionRefreshedEvent } from './events/session-refreshed.event';
 import { RefreshTokenEntity } from './refresh-token.entity';
 import { SessionClosedError, SessionRevokedError } from './session.domain-errors';
 import { InvalidRefreshTokenError } from './token.domain-errors';
 
 import { AggregateRoot } from '@/shared/base';
 import { matchError } from '@/shared/utils/match-error.utils';
+import { typedOk } from '@/shared/utils/typed-ok.utils';
 
 export interface SessionProps {
   userId: string;
@@ -27,6 +29,8 @@ export interface SessionProps {
   expiresAt: Date;
   createdAt: Date;
   updatedAt: Date;
+  closedAt: Date | null;
+  revokedAt: Date | null;
   status: SessionStatus;
   refreshTokens: RefreshTokenEntity[]; // 전체 토큰이 아닌 관련된 토큰만 Lazy Load
 }
@@ -65,6 +69,8 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
       expiresAt: createProps.expiresAt, // 30 days
       createdAt: new Date(),
       updatedAt: new Date(),
+      closedAt: null,
+      revokedAt: null,
       refreshTokens: [
         RefreshTokenEntity.create({
           token: createProps.refreshTokenHash,
@@ -115,7 +121,7 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
     const tokenUseResult = currentToken.use();
     if (tokenUseResult.isErr()) {
       return matchError(tokenUseResult.error, {
-        TokenReuseDetected: (e) => {
+        TokenReuseDetected: () => {
           this.addEvent(
             new RefreshTokenReuseDetectedEvent({
               userId: this.props.userId,
@@ -124,9 +130,8 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
             }),
           );
           this.revoke();
-          return ok({
-            status: 'failed' as const,
-            error: e,
+          return typedOk('revoked', {
+            reason: 'TokenReuseDetected',
           });
         },
         ExpiredToken: (e) => err(e),
@@ -143,8 +148,15 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
     this.props.lastRefreshedAt = new Date();
     this.props.expiresAt = expiresAt;
 
-    return ok({
-      status: 'success' as const,
+    this.addEvent(
+      new SessionRefreshedEvent({
+        sessionId: this.id,
+        userId: this.props.userId,
+        newRefreshTokenId: newToken.id,
+      }),
+    );
+
+    return typedOk('success', {
       newToken,
     });
   }
@@ -159,6 +171,7 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
     }
 
     this.props.status = SESSION_STATUS.CLOSED;
+    this.props.closedAt = new Date();
     return ok(null);
   }
 
@@ -174,6 +187,7 @@ export class SessionEntity extends AggregateRoot<SessionProps> {
 
   private revoke(): void {
     this.props.status = SESSION_STATUS.REVOKED;
+    this.props.revokedAt = new Date();
   }
 
   static reconstruct(props: SessionProps, id: string): SessionEntity {

@@ -25,7 +25,6 @@ export interface UserRepositoryPort extends RepositoryPort<UserEntity> {
   ): Promise<
     DomainResult<UserEntity, UserEmailAlreadyExistsError | UserUsernameAlreadyExistsError>
   >;
-
   update(
     user: UserEntity,
   ): Promise<
@@ -34,5 +33,6 @@ export interface UserRepositoryPort extends RepositoryPort<UserEntity> {
       UserNotFoundError | UserEmailAlreadyExistsError | UserUsernameAlreadyExistsError
     >
   >;
+  updateLastActiveAt(userId: string): Promise<DomainResult<void, UserNotFoundError>>;
   delete(user: UserEntity): Promise<DomainResult<void, UserNotFoundError>>;
 }

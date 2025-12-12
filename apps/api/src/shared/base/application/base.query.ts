@@ -6,7 +6,6 @@ import { PaginationMeta } from '@workspace/contract';
 import { DomainError } from '../error';
 import { CreateMessageMetadata, MessageMetadata } from '../interface';
 
-import { DomainCode } from '@/shared/codes/domain.codes';
 import { QueryCode } from '@/shared/codes/query.codes';
 import { QueryResourceType } from '@/shared/codes/resource-type.codes';
 import { DomainResult } from '@/shared/types/result.type';
@@ -40,7 +39,6 @@ export abstract class BaseQuery<
   R extends DomainResult<O, DomainError>,
   O,
 > extends Query<R> {
-  public abstract readonly domain: DomainCode;
   public abstract readonly code: QueryCode;
   public abstract readonly resourceType: QueryResourceType;
 
@@ -60,7 +58,7 @@ export abstract class BaseQuery<
       causationId: metadata.causationId,
       causationType: metadata.causationType,
       userId: metadata.userId,
-      timestamp: Date.now(),
+      createdAt: Date.now(),
     };
   }
 

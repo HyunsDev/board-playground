@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { RefreshToken } from '@workspace/db';
+import { RefreshToken } from '@workspace/database';
 
 import { RefreshTokenEntity, RefreshTokenProps } from '../domain/refresh-token.entity';
 
@@ -12,7 +12,7 @@ export class RefreshTokenMapper extends BaseMapper<RefreshTokenEntity, RefreshTo
     const props: RefreshTokenProps = {
       id: record.id,
       sessionId: record.sessionId,
-      token: record.token,
+      hashedToken: record.hashedToken,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
       expiresAt: record.expiresAt,
@@ -25,7 +25,7 @@ export class RefreshTokenMapper extends BaseMapper<RefreshTokenEntity, RefreshTo
     return {
       id: props.id,
       sessionId: props.sessionId,
-      token: props.token,
+      hashedToken: props.hashedToken,
       isUsed: props.isUsed,
       expiresAt: props.expiresAt,
       createdAt: props.createdAt,

@@ -2,12 +2,12 @@ import { Logger } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
-import { DatabaseService } from '@/infra/database/database.service';
+import { HandlerResult } from '@workspace/backend-common';
+
+import { PrismaService } from '@/infra/prisma/prisma.service';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
-import { DomainCodes } from '@/shared/codes/domain.codes';
 import { ResourceTypes } from '@/shared/codes/resource-type.codes';
-import { HandlerResult } from '@/shared/types/handler-result';
 
 type ResetDbCommandProps = ICommand<void>;
 
@@ -16,7 +16,6 @@ export class ResetDBCommand extends BaseCommand<
   HandlerResult<ResetDBCommandHandler>,
   void
 > {
-  readonly domain = DomainCodes.Devtools;
   readonly code = CommandCodes.Devtools.ResetDB;
   readonly resourceType = ResourceTypes.User;
 
@@ -28,7 +27,7 @@ export class ResetDBCommand extends BaseCommand<
 @CommandHandler(ResetDBCommand)
 export class ResetDBCommandHandler implements ICommandHandler<ResetDBCommand> {
   constructor(
-    private readonly prisma: DatabaseService,
+    private readonly prisma: PrismaService,
     private readonly logger: Logger,
   ) {}
 
@@ -40,7 +39,7 @@ export class ResetDBCommandHandler implements ICommandHandler<ResetDBCommand> {
     const tablesToTruncate = tables
       .map((t) => t.tablename)
       .filter((name) => name !== '_prisma_migrations');
-    if (tablesToTruncate.length === 0) return;
+    if (tablesToTruncate.length === 0) return ok(undefined);
     const targets = tablesToTruncate.map((name) => `"${name}"`).join(', ');
     const query = `TRUNCATE TABLE ${targets} RESTART IDENTITY CASCADE;`;
     void (await this.prisma.$executeRawUnsafe(query));

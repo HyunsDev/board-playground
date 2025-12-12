@@ -2,9 +2,11 @@ import z from 'zod';
 
 import { BoardDtoSchema, CreateBoardDtoSchema, UpdateBoardDtoSchema } from './board.dto';
 
-import { c, paginatedQueryOf, paginatedResponseOf, toApiErrorResponses } from '@/common';
+import { paginatedQueryOf, paginatedResponseOf } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';
 import { USER_ROLE } from '@/contracts/user/user.enums';
+import { c } from '@/internal/c';
+import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 
 export const getBoard = c.query({
   method: 'GET',

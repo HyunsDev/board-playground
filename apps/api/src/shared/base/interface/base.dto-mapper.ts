@@ -2,27 +2,24 @@ import { Paginated, PaginationMeta } from '@workspace/contract';
 
 import { Entity } from '../domain/base.entity';
 
-export interface DtoMapper<DomainEntity extends Entity<unknown>, Dto> {
-  toDto(entity: DomainEntity): Dto;
-}
-
-export abstract class BaseDtoMapper<DomainEntity extends Entity<unknown>, Dto>
-  implements DtoMapper<DomainEntity, Dto>
-{
-  abstract toDto(entity: DomainEntity): Dto;
-
-  toDtoMany(entities: DomainEntity[]): Dto[] {
-    return entities.map((entity) => this.toDto(entity));
-  }
-
-  toDtoOrNull(entity: DomainEntity | null): Dto | null {
+export abstract class BaseDtoMapper<E extends Entity<unknown>> {
+  protected mapNullable<Dto>(entity: E | null, mapFn: (entity: E) => Dto): Dto | null {
     if (!entity) return null;
-    return this.toDto(entity);
+    return mapFn(entity);
   }
 
-  toPaginatedDto(entities: DomainEntity[], meta: PaginationMeta): Paginated<Dto> {
+  protected mapMany<Dto>(entities: E[], mapFn: (entity: E) => Dto): Dto[] {
+    return entities.map(mapFn);
+  }
+
+  protected mapPaginated<Dto>(
+    entities: E[],
+    meta: PaginationMeta,
+    mapFn: (entity: E) => Dto,
+  ): Paginated<Dto> {
+    const items = this.mapMany(entities, mapFn);
     return {
-      items: this.toDtoMany(entities),
+      items,
       meta,
     };
   }

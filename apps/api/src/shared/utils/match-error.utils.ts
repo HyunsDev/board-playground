@@ -1,4 +1,4 @@
-import { DomainError, UnexpectedDomainErrorException } from '../base';
+import { DomainError, InvariantViolationException } from '../base';
 import { PublicDomainError } from '../base/interface/api-error.types';
 
 export function matchError<
@@ -14,7 +14,7 @@ export function matchError<
 ): ReturnType<H[keyof H]> {
   const handler = handlers[error.code as keyof H];
   if (!handler) {
-    throw new UnexpectedDomainErrorException(error);
+    throw new InvariantViolationException(error.code);
   }
   return (handler as any)(error);
 }
@@ -32,7 +32,7 @@ export function matchPublicError<
 ): ReturnType<H[keyof H]> {
   const handler = handlers[error.code as keyof H];
   if (!handler) {
-    throw new UnexpectedDomainErrorException(error);
+    throw new InvariantViolationException(error.code);
   }
   return (handler as any)(error);
 }

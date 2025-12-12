@@ -1,11 +1,13 @@
 import z from 'zod';
 
-import { UserForAdminDtoSchema } from '../user.dto';
+import { UserAdminDtoSchema } from '../user.dto';
 import { UserRole, UserStatus } from '../user.enums';
 
-import { c, paginatedQueryOf, paginatedResponseOf, toApiErrorResponses } from '@/common';
+import { paginatedQueryOf, paginatedResponseOf } from '@/common';
 import { ACCESS } from '@/common/access';
 import { ApiErrors } from '@/contracts/api-errors';
+import { c } from '@/internal/c';
+import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 
 export const getUserForAdmin = c.query({
   method: 'GET',
@@ -13,7 +15,7 @@ export const getUserForAdmin = c.query({
   pathParams: c.type<{ userId: string }>(),
   responses: {
     200: z.object({
-      user: UserForAdminDtoSchema,
+      user: UserAdminDtoSchema,
     }),
     ...toApiErrorResponses([ApiErrors.User.NotFound]),
   },
@@ -36,7 +38,7 @@ export const queryUsersForAdmin = c.query({
     }),
   ),
   responses: {
-    200: paginatedResponseOf(UserForAdminDtoSchema),
+    200: paginatedResponseOf(UserAdminDtoSchema),
   },
   metadata: {
     access: ACCESS.admin,
@@ -59,7 +61,7 @@ export const updateUserForAdmin = c.mutation({
   }),
   responses: {
     200: z.object({
-      user: UserForAdminDtoSchema,
+      user: UserAdminDtoSchema,
     }),
     ...toApiErrorResponses([ApiErrors.User.NotFound]),
   },

@@ -3,10 +3,11 @@ import z from 'zod';
 import { ManagerWithBoardDtoSchema, ManagerWithUserDtoSchema } from './manager.dto';
 import { ManagerRole } from './manager.enums';
 
-import { c, ID, toApiErrorResponses } from '@/common';
-import { BoardSlug } from '@/contracts/board/board.schemas';
+import { ACCESS, ID } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';
-import { USER_ROLE } from '@/contracts/user';
+import { BoardSlug } from '@/contracts/board/board.schemas';
+import { c } from '@/internal/c';
+import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 
 export const listManagersOfBoard = c.query({
   method: 'GET',
@@ -21,7 +22,7 @@ export const listManagersOfBoard = c.query({
     ...toApiErrorResponses([ApiErrors.Board.NotFound]),
   },
   metadata: {
-    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
+    ...ACCESS.signedIn,
   },
 });
 
@@ -38,7 +39,7 @@ export const listManagerOfMe = c.query({
     ...toApiErrorResponses([ApiErrors.User.NotFound]),
   },
   metadata: {
-    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
+    ...ACCESS.signedIn,
   },
 });
 
@@ -59,7 +60,7 @@ export const appointManagerToBoard = c.mutation({
     ...toApiErrorResponses([ApiErrors.Board.NotFound, ApiErrors.User.NotFound]),
   },
   metadata: {
-    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
+    ...ACCESS.signedIn,
   },
 });
 
@@ -81,7 +82,7 @@ export const dismissManagerFromBoard = c.mutation({
     ]),
   },
   metadata: {
-    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
+    ...ACCESS.signedIn,
   },
 });
 
@@ -107,6 +108,6 @@ export const changeManagerRole = c.mutation({
     ]),
   },
   metadata: {
-    roles: [USER_ROLE.USER, USER_ROLE.ADMIN],
+    ...ACCESS.signedIn,
   },
 });

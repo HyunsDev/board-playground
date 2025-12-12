@@ -1,3 +1,4 @@
+import { err, ok } from 'neverthrow';
 import { v7 as uuidv7 } from 'uuid';
 
 import { USER_ROLE, USER_STATUS, UserRole, UserStatus } from '@workspace/contract';
@@ -17,17 +18,19 @@ export interface UserProps {
   avatarUrl: string | null;
   role: UserRole;
   status: UserStatus;
-  memo: string | null;
+  adminMemo: string | null;
   password: UserPasswordVO | null;
+  lastActiveAt: Date;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
 }
 
 export interface CreateUserProps {
   username: string;
   nickname: string;
   email: string;
-  password: UserPasswordVO | null;
+  hashedPassword: string | null;
 }
 
 export class UserEntity extends AggregateRoot<UserProps> {
@@ -54,7 +57,7 @@ export class UserEntity extends AggregateRoot<UserProps> {
     return this.props.role;
   }
 
-  get password(): UserPasswordVO {
+  get password(): UserPasswordVO | null {
     return this.props.password;
   }
 
@@ -68,10 +71,14 @@ export class UserEntity extends AggregateRoot<UserProps> {
       avatarUrl: null,
       role: USER_ROLE.USER,
       status: USER_STATUS.ACTIVE,
-      memo: null,
-      password: createProps.password,
+      password: createProps.hashedPassword
+        ? UserPasswordVO.fromHash(createProps.hashedPassword)
+        : null,
+      adminMemo: null,
+      lastActiveAt: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
+      deletedAt: null,
     };
 
     const user = new UserEntity(props, id);
@@ -111,10 +118,11 @@ export class UserEntity extends AggregateRoot<UserProps> {
     );
   }
 
-  public validateDelete(): void {
+  public validateDelete() {
     if (this.props.role === USER_ROLE.ADMIN) {
-      throw new UserAdminCannotBeDeletedError();
+      return err(new UserAdminCannotBeDeletedError());
     }
+    return ok();
   }
 
   static reconstruct(props: UserProps, id: string): UserEntity {

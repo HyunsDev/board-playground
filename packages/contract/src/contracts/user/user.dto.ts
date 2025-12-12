@@ -1,4 +1,4 @@
-import z from 'zod';
+import { z } from 'zod';
 
 import { UserRole, UserStatus } from './user.enums';
 
@@ -13,17 +13,16 @@ export const UserBaseDtoSchema = z.object({
   avatarUrl: z.string().url().nullable(),
   role: UserRole,
   status: UserStatus,
-  memo: z.string().max(500).nullable(),
-  createdAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: 'Invalid date format',
-  }),
-  updatedAt: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: 'Invalid date format',
-  }),
+
+  lastActiveAt: z.string().datetime(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+  deletedAt: z.string().datetime().nullable(),
+  adminMemo: z.string().max(500).nullable(),
 });
 export type UserBaseDto = z.infer<typeof UserBaseDtoSchema>;
 
-export const UserDtoSchema = UserBaseDtoSchema.pick({
+export const UserPublicProfileDtoSchema = UserBaseDtoSchema.pick({
   id: true,
   username: true,
   nickname: true,
@@ -31,22 +30,21 @@ export const UserDtoSchema = UserBaseDtoSchema.pick({
   avatarUrl: true,
   role: true,
   status: true,
+  deletedAt: true,
   createdAt: true,
 });
-export type UserDto = z.infer<typeof UserDtoSchema>;
+export type UserPublicProfileDto = z.infer<typeof UserPublicProfileDtoSchema>;
 
 export const UserSummaryDtoSchema = UserBaseDtoSchema.pick({
   id: true,
   username: true,
   nickname: true,
   avatarUrl: true,
+  role: true,
 });
 export type UserSummaryDto = z.infer<typeof UserSummaryDtoSchema>;
 
-export const UserForAdminDtoSchema = UserBaseDtoSchema;
-export type UserForAdminDto = z.infer<typeof UserForAdminDtoSchema>;
-
-export const UserForMeDtoSchema = UserBaseDtoSchema.pick({
+export const UserPrivateProfileDtoSchema = UserBaseDtoSchema.pick({
   id: true,
   email: true,
   username: true,
@@ -55,6 +53,11 @@ export const UserForMeDtoSchema = UserBaseDtoSchema.pick({
   avatarUrl: true,
   role: true,
   status: true,
+  lastActiveAt: true,
   createdAt: true,
+  deletedAt: true,
 });
-export type UserForMeDto = z.infer<typeof UserForMeDtoSchema>;
+export type UserPrivateProfileDto = z.infer<typeof UserPrivateProfileDtoSchema>;
+
+export const UserAdminDtoSchema = UserBaseDtoSchema;
+export type UserAdminDto = z.infer<typeof UserAdminDtoSchema>;

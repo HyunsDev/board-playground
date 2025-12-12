@@ -1,14 +1,20 @@
 import { Injectable } from '@nestjs/common';
 
-import { UserDto, UserForAdminDto, UserForMeDto, UserSummaryDto } from '@workspace/contract';
+import {
+  UserPublicProfileDto,
+  UserAdminDto,
+  UserPrivateProfileDto,
+  UserSummaryDto,
+  PaginationMeta,
+} from '@workspace/contract';
 
 import { UserEntity } from '../domain/user.entity';
 
 import { BaseDtoMapper } from '@/shared/base';
 
 @Injectable()
-export class UserDtoMapper extends BaseDtoMapper<UserEntity, UserDto> {
-  toDto(entity: UserEntity): UserDto {
+export class UserDtoMapper extends BaseDtoMapper<UserEntity> {
+  toPublicProfileDto(entity: UserEntity): UserPublicProfileDto {
     const props = entity.getProps();
     return {
       id: props.id,
@@ -19,6 +25,31 @@ export class UserDtoMapper extends BaseDtoMapper<UserEntity, UserDto> {
       role: props.role,
       status: props.status,
       createdAt: props.createdAt.toISOString(),
+      deletedAt: props.deletedAt?.toISOString() || null,
+    };
+  }
+
+  toPaginatedPublicProfileDto(
+    entities: UserEntity[],
+    meta: PaginationMeta,
+  ): { items: UserPublicProfileDto[]; meta: PaginationMeta } {
+    return this.mapPaginated(entities, meta, (item) => this.toPublicProfileDto(item));
+  }
+
+  toPrivateProfileDto(entity: UserEntity): UserPrivateProfileDto {
+    const props = entity.getProps();
+    return {
+      id: props.id,
+      username: props.username,
+      nickname: props.nickname,
+      bio: props.bio,
+      avatarUrl: props.avatarUrl,
+      role: props.role,
+      status: props.status,
+      lastActiveAt: props.lastActiveAt?.toISOString(),
+      createdAt: props.createdAt.toISOString(),
+      deletedAt: props.deletedAt?.toISOString() || null,
+      email: props.email,
     };
   }
 
@@ -29,10 +60,11 @@ export class UserDtoMapper extends BaseDtoMapper<UserEntity, UserDto> {
       username: props.username,
       nickname: props.nickname,
       avatarUrl: props.avatarUrl,
+      role: props.role,
     };
   }
 
-  toUserForAdminDto(entity: UserEntity): UserForAdminDto {
+  toUserAdminDto(entity: UserEntity): UserAdminDto {
     const props = entity.getProps();
     return {
       id: props.id,
@@ -44,23 +76,10 @@ export class UserDtoMapper extends BaseDtoMapper<UserEntity, UserDto> {
       status: props.status,
       createdAt: props.createdAt.toISOString(),
       email: props.email,
+      lastActiveAt: props.lastActiveAt?.toISOString(),
       updatedAt: props.updatedAt.toISOString(),
-      memo: props.memo,
-    };
-  }
-
-  toUserForMeDto(entity: UserEntity): UserForMeDto {
-    const props = entity.getProps();
-    return {
-      id: props.id,
-      username: props.username,
-      nickname: props.nickname,
-      bio: props.bio,
-      avatarUrl: props.avatarUrl,
-      role: props.role,
-      status: props.status,
-      createdAt: props.createdAt.toISOString(),
-      email: props.email,
+      deletedAt: props.deletedAt?.toISOString() || null,
+      adminMemo: props.adminMemo,
     };
   }
 }

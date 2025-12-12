@@ -5,15 +5,15 @@ import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { contract, ApiErrors, USER_ROLE } from '@workspace/contract';
 
 import { UserDtoMapper } from './user.dto-mapper';
-import { GetUserForAdminQuery } from '../application/queries/get-user-for-admin.query';
+import { GetUserForAdminQuery } from '../application/admin/queries/get-user-for-admin.query';
 
 import { ContextService } from '@/infra/context/context.service';
-import { Auth } from '@/infra/security/decorators/auth.decorator';
+import { Roles } from '@/infra/security/decorators/roles.decorator';
 import { apiErr, apiOk } from '@/shared/base';
 import { matchError } from '@/shared/utils/match-error.utils';
 
 @Controller()
-@Auth(USER_ROLE.ADMIN)
+@Roles(USER_ROLE.ADMIN)
 export class UserAdminHttpController {
   constructor(
     private readonly queryBus: QueryBus,
@@ -32,7 +32,7 @@ export class UserAdminHttpController {
       );
 
       return result.match(
-        (user) => apiOk(200, { user: this.dtoMapper.toDto(user) }),
+        (user) => apiOk(200, { user: this.dtoMapper.toUserAdminDto(user) }),
         (error) =>
           matchError(error, {
             UserNotFound: () => apiErr(ApiErrors.User.NotFound),

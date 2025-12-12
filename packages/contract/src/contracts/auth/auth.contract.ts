@@ -1,6 +1,6 @@
 import { checkUsername, loginAuth, logoutAuth, refreshToken, registerAuth } from './auth.endpoint';
 
-import { c } from '@/common';
+import { c } from '@/internal/c';
 
 export const authContract = c.router({
   checkUsername: checkUsername,

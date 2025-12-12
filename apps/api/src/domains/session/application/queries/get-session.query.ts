@@ -2,15 +2,15 @@ import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
+import { HandlerResult } from '@workspace/backend-common';
+
 import { SessionEntity } from '../../domain/session.entity';
 import { SessionRepositoryPort } from '../../domain/session.repository.port';
 import { SESSION_REPOSITORY } from '../../session.constants';
 
 import { BaseQuery, IQuery } from '@/shared/base';
-import { DomainCodes } from '@/shared/codes/domain.codes';
 import { QueryCodes } from '@/shared/codes/query.codes';
 import { QueryResourceTypes } from '@/shared/codes/resource-type.codes';
-import { HandlerResult } from '@/shared/types/handler-result';
 import { matchError } from '@/shared/utils/match-error.utils';
 
 type ISessionQuery = IQuery<{
@@ -23,7 +23,6 @@ export class GetSessionQuery extends BaseQuery<
   HandlerResult<GetSessionQueryHandler>,
   SessionEntity
 > {
-  readonly domain = DomainCodes.Session;
   readonly code = QueryCodes.Session.Get;
   readonly resourceType = QueryResourceTypes.Session;
 

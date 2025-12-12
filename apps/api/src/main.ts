@@ -1,10 +1,12 @@
-import { ConfigService } from '@nestjs/config';
+import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
+import { CookieConfig, cookieConfig } from './infra/config/configs/cookie.config';
+import { executionConfig, ExecutionConfig } from './infra/config/configs/execution.config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -13,9 +15,8 @@ async function bootstrap() {
   void app.useLogger(app.get(Logger));
   void app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
-  const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT', 4000);
-  const cookieSecret = configService.get<string>('COOKIE_SECRET');
+  const { port } = app.get<ExecutionConfig>(executionConfig.KEY);
+  const { cookieSecret } = app.get<CookieConfig>(cookieConfig.KEY);
 
   void app.use(cookieParser(cookieSecret));
 

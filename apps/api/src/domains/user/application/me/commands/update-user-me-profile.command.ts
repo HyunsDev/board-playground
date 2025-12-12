@@ -1,0 +1,60 @@
+import { Inject } from '@nestjs/common';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { err, ok } from 'neverthrow';
+
+import { HandlerResult } from '@workspace/backend-common';
+
+import { UserEntity } from '@/domains/user/domain/user.entity';
+import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
+import { USER_REPOSITORY } from '@/domains/user/user.constants';
+import { BaseCommand, ICommand } from '@/shared/base';
+import { CommandCodes } from '@/shared/codes/command.codes';
+import { DomainCodes } from '@/shared/codes/domain.codes';
+
+type IUpdateUserMeProfileCommand = ICommand<{
+  userId: string;
+  nickname?: string;
+  bio?: string | null;
+}>;
+
+export class UpdateUserMeProfileCommand extends BaseCommand<
+  IUpdateUserMeProfileCommand,
+  HandlerResult<UpdateUserMeProfileCommandHandler>,
+  UserEntity
+> {
+  readonly code = CommandCodes.User.UpdateMeProfile;
+  readonly resourceType = DomainCodes.User;
+
+  constructor(
+    data: IUpdateUserMeProfileCommand['data'],
+    metadata: IUpdateUserMeProfileCommand['metadata'],
+  ) {
+    super(data.userId, data, metadata);
+  }
+}
+
+@CommandHandler(UpdateUserMeProfileCommand)
+export class UpdateUserMeProfileCommandHandler
+  implements ICommandHandler<UpdateUserMeProfileCommand>
+{
+  constructor(
+    @Inject(USER_REPOSITORY)
+    private readonly userRepo: UserRepositoryPort,
+  ) {}
+
+  async execute({ data }: IUpdateUserMeProfileCommand) {
+    const userResult = await this.userRepo.getOneById(data.userId);
+    if (userResult.isErr()) return err(userResult.error);
+    const user = userResult.value;
+
+    user.updateProfile({
+      nickname: data.nickname,
+      bio: data.bio,
+    });
+
+    const updateResult = await this.userRepo.update(user);
+    if (updateResult.isErr()) return err(updateResult.error);
+
+    return ok(user);
+  }
+}

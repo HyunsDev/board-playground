@@ -1,21 +1,19 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { err, ok } from 'neverthrow';
+import { err } from 'neverthrow';
 
-import { SessionService } from '@/domains/session/application/services/session.service';
-import {
-  InvalidRefreshTokenError,
-  TokenReuseDetectedError,
-} from '@/domains/session/domain/token.domain-errors';
-import { UserService } from '@/domains/user/application/services/user.service';
-import { TransactionManager } from '@/infra/database/transaction.manager';
-import { TokenService } from '@/infra/security/services/token.service';
+import { HandlerResult } from '@workspace/backend-common';
+
+import { SessionFacade } from '@/domains/session/application/facades/session.facade';
+import { InvalidRefreshTokenError } from '@/domains/session/domain/token.domain-errors';
+import { UserFacade } from '@/domains/user/application/facades/user.facade';
+import { TransactionManager } from '@/infra/prisma/transaction.manager';
+import { TokenProvider } from '@/infra/security/providers/token.provider';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
-import { DomainCodes } from '@/shared/codes/domain.codes';
 import { ResourceTypes } from '@/shared/codes/resource-type.codes';
-import { HandlerResult } from '@/shared/types/handler-result';
 import { AuthTokens } from '@/shared/types/tokens';
 import { matchError } from '@/shared/utils/match-error.utils';
+import { TypedData, typedOk } from '@/shared/utils/typed-ok.utils';
 
 type IRefreshTokenAuthCommand = ICommand<{
   refreshToken: string;
@@ -23,16 +21,14 @@ type IRefreshTokenAuthCommand = ICommand<{
 export class RefreshTokenAuthCommand extends BaseCommand<
   IRefreshTokenAuthCommand,
   HandlerResult<RefreshTokenAuthCommandHandler>,
-  | {
-      status: 'success';
-      data: AuthTokens;
-    }
-  | {
-      status: 'failed';
-      error: TokenReuseDetectedError;
-    }
+  | TypedData<'rotated', AuthTokens>
+  | TypedData<
+      'revoked',
+      {
+        reason: 'TokenReuseDetected';
+      }
+    >
 > {
-  readonly domain = DomainCodes.Auth;
   readonly code = CommandCodes.Auth.RefreshToken;
   readonly resourceType = ResourceTypes.User;
 
@@ -47,15 +43,15 @@ export class RefreshTokenAuthCommand extends BaseCommand<
 @CommandHandler(RefreshTokenAuthCommand)
 export class RefreshTokenAuthCommandHandler implements ICommandHandler<RefreshTokenAuthCommand> {
   constructor(
-    private readonly userService: UserService,
-    private readonly sessionService: SessionService,
-    private readonly tokenService: TokenService,
+    private readonly userFacade: UserFacade,
+    private readonly sessionFacade: SessionFacade,
+    private readonly tokenProvider: TokenProvider,
     private readonly txManager: TransactionManager,
   ) {}
 
   async execute(command: IRefreshTokenAuthCommand) {
     return await this.txManager.run(async () => {
-      const sessionResult = await this.sessionService.rotate(command.data.refreshToken);
+      const sessionResult = await this.sessionFacade.rotate(command.data.refreshToken);
       if (sessionResult.isErr()) {
         return matchError(sessionResult.error, {
           InvalidRefreshToken: (e) => err(e),
@@ -66,29 +62,26 @@ export class RefreshTokenAuthCommandHandler implements ICommandHandler<RefreshTo
       }
 
       const sessionOkResult = sessionResult.value;
-      if (sessionOkResult.status === 'failed') {
-        return ok(sessionOkResult);
+      if (sessionOkResult.type === 'revoked') {
+        return typedOk('revoked', { reason: 'TokenReuseDetected' });
       }
 
-      const user = await this.userService.getOneById(sessionOkResult.data.session.userId);
+      const user = await this.userFacade.getOneById(sessionOkResult.session.userId);
       if (user.isErr())
         return matchError(user.error, {
           UserNotFound: () => err(new InvalidRefreshTokenError()),
         });
 
-      const accessToken = this.tokenService.generateAccessToken({
+      const accessToken = this.tokenProvider.generateAccessToken({
         sub: user.value.id,
         email: user.value.email,
         role: user.value.role,
-        sessionId: sessionOkResult.data.session.id,
+        sessionId: sessionOkResult.session.id,
       });
 
-      return ok({
-        status: 'success' as const,
-        data: {
-          accessToken: accessToken,
-          refreshToken: sessionOkResult.data.refreshToken,
-        },
+      return typedOk('rotated', {
+        accessToken: accessToken,
+        refreshToken: sessionOkResult.refreshToken,
       });
     });
   }

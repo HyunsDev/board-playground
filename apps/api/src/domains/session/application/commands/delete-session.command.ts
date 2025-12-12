@@ -2,16 +2,16 @@ import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
+import { HandlerResult } from '@workspace/backend-common';
+
 import { SESSION_REPOSITORY } from '../../session.constants';
 
 import { CurrentSessionCannotBeDeletedError } from '@/domains/session/domain/session.domain-errors';
 import { SessionRepositoryPort } from '@/domains/session/domain/session.repository.port';
-import { TransactionManager } from '@/infra/database/transaction.manager';
+import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
-import { DomainCodes } from '@/shared/codes/domain.codes';
 import { ResourceTypes } from '@/shared/codes/resource-type.codes';
-import { HandlerResult } from '@/shared/types/handler-result';
 
 type IDeleteSessionCommand = ICommand<{
   sessionId: string;
@@ -24,7 +24,6 @@ export class DeleteSessionCommand extends BaseCommand<
   HandlerResult<DeleteSessionCommandHandler>,
   void
 > {
-  readonly domain = DomainCodes.Session;
   readonly code = CommandCodes.Session.Delete;
   readonly resourceType = ResourceTypes.Session;
 

@@ -1,18 +1,18 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
+import { HandlerResult } from '@workspace/backend-common';
 import { DEVICE_PLATFORM } from '@workspace/contract';
 
-import { SessionService } from '@/domains/session/application/services/session.service';
-import { UserService } from '@/domains/user/application/services/user.service';
-import { TransactionManager } from '@/infra/database/transaction.manager';
+import { SessionFacade } from '@/domains/session/application/facades/session.facade';
+import { UserFacade } from '@/domains/user/application/facades/user.facade';
+import { TransactionManager } from '@/infra/prisma/transaction.manager';
 import { InvalidCredentialsError } from '@/infra/security/domain/security.domain-errors';
-import { TokenService } from '@/infra/security/services/token.service';
+import { PasswordProvider } from '@/infra/security/providers/password.provider';
+import { TokenProvider } from '@/infra/security/providers/token.provider';
 import { BaseCommand, ICommand } from '@/shared/base';
 import { CommandCodes } from '@/shared/codes/command.codes';
-import { DomainCodes } from '@/shared/codes/domain.codes';
 import { ResourceTypes } from '@/shared/codes/resource-type.codes';
-import { HandlerResult } from '@/shared/types/handler-result';
 import { AuthTokens } from '@/shared/types/tokens';
 import { matchError } from '@/shared/utils/match-error.utils';
 
@@ -28,7 +28,6 @@ export class LoginAuthCommand extends BaseCommand<
   HandlerResult<LoginAuthCommandHandler>,
   AuthTokens
 > {
-  readonly domain = DomainCodes.Auth;
   readonly code = CommandCodes.Auth.Login;
   readonly resourceType = ResourceTypes.User;
 
@@ -40,15 +39,16 @@ export class LoginAuthCommand extends BaseCommand<
 @CommandHandler(LoginAuthCommand)
 export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand> {
   constructor(
-    private readonly userService: UserService,
-    private readonly sessionService: SessionService,
-    private readonly tokenService: TokenService,
+    private readonly userFacade: UserFacade,
+    private readonly sessionFacade: SessionFacade,
+    private readonly tokenProvider: TokenProvider,
+    private readonly passwordProvider: PasswordProvider,
     private readonly txManager: TransactionManager,
   ) {}
 
   async execute(command: ILoginAuthCommand) {
     return await this.txManager.run(async () => {
-      const userResult = await this.userService.getOneByEmail(command.data.email);
+      const userResult = await this.userFacade.getOneByEmail(command.data.email);
       if (userResult.isErr()) {
         return matchError(userResult.error, {
           UserNotFound: () => err(new InvalidCredentialsError()),
@@ -56,10 +56,17 @@ export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand
       }
       const user = userResult.value;
 
-      const validResult = await user.password.compare(command.data.password);
-      if (validResult.isErr()) return validResult;
+      if (!user.password) {
+        return err(new InvalidCredentialsError());
+      }
 
-      const sessionResult = await this.sessionService.create({
+      const validResult = await this.passwordProvider.compare(
+        command.data.password,
+        user.password.hashedValue,
+      );
+      if (!validResult) return err(new InvalidCredentialsError());
+
+      const sessionResult = await this.sessionFacade.create({
         userId: user.id,
         userAgent: command.data.userAgent,
         ipAddress: command.data.ipAddress,
@@ -69,7 +76,7 @@ export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand
         return err(sessionResult.error);
       }
       const { session, refreshToken } = sessionResult.value;
-      const accessToken = this.tokenService.generateAccessToken({
+      const accessToken = this.tokenProvider.generateAccessToken({
         sub: user.id,
         sessionId: session.id,
         email: user.email,

@@ -2,7 +2,7 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
-import { Prisma } from '@workspace/db'; // 또는 @prisma/client
+import { Prisma } from '@workspace/database';
 
 import { Mapper } from './base.mapper';
 import { LoggerPort } from '../../logger/logger.port';
@@ -15,8 +15,8 @@ import {
   EntityNotFoundError,
 } from '../error/common.domain-errors';
 
-import { DatabaseService } from '@/infra/database/database.service';
-import { DomainEventDispatcher } from '@/infra/database/domain-event.dispatcher';
+import { DomainEventPublisher } from '@/infra/domain-event/domain-event.publisher';
+import { PrismaService } from '@/infra/prisma/prisma.service';
 
 export abstract class BaseRepository<
   Aggregate extends AggregateRoot<any>,
@@ -26,14 +26,14 @@ export abstract class BaseRepository<
   protected abstract get delegate(): any;
 
   constructor(
-    protected readonly prisma: DatabaseService,
+    protected readonly prisma: PrismaService,
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly mapper: Mapper<Aggregate, DbModel>,
-    protected readonly eventDispatcher: DomainEventDispatcher,
+    protected readonly eventDispatcher: DomainEventPublisher,
     protected readonly logger: LoggerPort,
   ) {}
 
-  protected get client(): Prisma.TransactionClient | DatabaseService {
+  protected get client(): Prisma.TransactionClient | PrismaService {
     if (this.txHost.isTransactionActive()) {
       return this.txHost.tx; // 트랜잭션 클라이언트 사용
     }
@@ -136,6 +136,6 @@ export abstract class BaseRepository<
 
   protected async publishEvents(entity: Aggregate): Promise<void> {
     const events = entity.pullEvents();
-    void (await this.eventDispatcher.publishEvents(events));
+    void (await this.eventDispatcher.publishMany(events));
   }
 }

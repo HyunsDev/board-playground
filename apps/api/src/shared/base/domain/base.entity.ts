@@ -18,17 +18,13 @@ export abstract class Entity<EntityProps> {
   protected _updatedAt: Date;
 
   constructor({ id, props, createdAt, updatedAt }: CreateEntityProps<EntityProps>) {
-    this.setId(id);
+    this._id = id;
     const now = new Date();
     this._createdAt = createdAt || now;
     this._updatedAt = updatedAt || now;
     this.props = props;
 
     this.validate();
-  }
-
-  private setId(id: string): void {
-    this._id = id;
   }
 
   get id(): string {

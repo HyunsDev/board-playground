@@ -1,22 +1,16 @@
 import { Module } from '@nestjs/common';
 
-import { CoreModule } from './core/core.module';
 import { AuthModule } from './domains/auth/auth.module';
 import { SessionModule } from './domains/session/session.module';
 import { UserModule } from './domains/user/user.module';
-import { ContextModule } from './infra/context/context.module';
-import { DatabaseModule } from './infra/database/database.module';
+import { CoreModule } from './infra/core.module';
 import { DevtoolsModule } from './infra/devtools/devtools.module';
-import { CoreLoggerModule } from './infra/logger/core-logger.module';
 import { SecurityModule } from './infra/security/security.module';
 
 @Module({
   imports: [
     CoreModule,
-    ContextModule,
-    DatabaseModule,
     SecurityModule,
-    CoreLoggerModule,
     UserModule,
     SessionModule,
     AuthModule,

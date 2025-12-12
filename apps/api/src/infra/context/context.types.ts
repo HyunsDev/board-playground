@@ -1,7 +1,7 @@
 import { ClsStore as NestClsStore } from 'nestjs-cls';
 
 import { UserRole } from '@workspace/contract';
-import { Prisma } from '@workspace/db';
+import { Prisma } from '@workspace/database';
 
 import { CreateMessageMetadata } from '@/shared/base';
 import { TriggerCode } from '@/shared/codes/trigger.codes';

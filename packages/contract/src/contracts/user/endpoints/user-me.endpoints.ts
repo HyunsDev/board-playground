@@ -1,17 +1,18 @@
 import z from 'zod';
 
-import { UserForMeDtoSchema } from '../user.dto';
+import { UserPrivateProfileDtoSchema } from '../user.dto';
 
-import { c, toApiErrorResponses } from '@/common';
 import { ACCESS } from '@/common/access';
 import { ApiErrors } from '@/contracts/api-errors';
+import { c } from '@/internal/c';
+import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 
 export const getUserMe = c.query({
   method: 'GET',
   path: '/me',
   responses: {
     200: z.object({
-      me: UserForMeDtoSchema,
+      me: UserPrivateProfileDtoSchema,
     }),
   },
   metadata: {
@@ -28,7 +29,7 @@ export const updateUserMeProfile = c.mutation({
   }),
   responses: {
     200: z.object({
-      me: UserForMeDtoSchema,
+      me: UserPrivateProfileDtoSchema,
     }),
   },
   metadata: {
@@ -43,7 +44,7 @@ export const updateUserMeAvatar = c.mutation({
   contentType: 'multipart/form-data',
   responses: {
     200: z.object({
-      me: UserForMeDtoSchema,
+      me: UserPrivateProfileDtoSchema,
     }),
     ...toApiErrorResponses([ApiErrors.User.InvalidProfileImage]),
   },
@@ -60,7 +61,7 @@ export const updateUserMeUsername = c.mutation({
   }),
   responses: {
     200: z.object({
-      me: UserForMeDtoSchema,
+      me: UserPrivateProfileDtoSchema,
     }),
   },
   metadata: {
