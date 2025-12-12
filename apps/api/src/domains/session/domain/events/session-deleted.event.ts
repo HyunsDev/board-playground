@@ -2,7 +2,7 @@ import { AggregateCodeEnum, defineEventCode } from '@workspace/domain';
 
 import { BaseDomainEvent, BaseIDomainEvent } from '@/shared/base';
 
-export type ISessionDeletedEvent = BaseIDomainEvent<{
+type ISessionDeletedEvent = BaseIDomainEvent<{
   userId: string;
   sessionId: string;
   sessionName: string;

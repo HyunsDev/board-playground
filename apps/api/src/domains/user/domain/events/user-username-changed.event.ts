@@ -2,7 +2,7 @@ import { AggregateCodeEnum, defineEventCode } from '@workspace/domain';
 
 import { BaseIDomainEvent, BaseDomainEvent } from '@/shared/base';
 
-export type IUserNameChangedEvent = BaseIDomainEvent<{
+type IUserNameChangedEvent = BaseIDomainEvent<{
   userId: string;
   oldUsername: string;
   newUsername: string;

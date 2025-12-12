@@ -2,7 +2,7 @@ import { defineEventCode, AggregateCodeEnum } from '@workspace/domain';
 
 import { BaseIDomainEvent, BaseDomainEvent } from '@/shared/base';
 
-export type ISessionRefreshedEvent = BaseIDomainEvent<{
+type ISessionRefreshedEvent = BaseIDomainEvent<{
   userId: string;
   sessionId: string;
   newRefreshTokenId: string;

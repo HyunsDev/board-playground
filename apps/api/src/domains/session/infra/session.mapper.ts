@@ -19,6 +19,7 @@ export class SessionMapper extends BaseMapper<SessionEntity, Session> {
     },
   ): SessionEntity {
     const props: SessionProps = {
+      id: record.id,
       userId: record.userId,
       name: record.name,
       userAgent: record.userAgent,
@@ -37,7 +38,7 @@ export class SessionMapper extends BaseMapper<SessionEntity, Session> {
       refreshTokens:
         record.refreshTokens?.map((token) => this.refreshTokenMapper.toDomain(token)) ?? [],
     };
-    return SessionEntity.reconstruct(props, record.id);
+    return SessionEntity.reconstruct(props);
   }
 
   toPersistence(entity: SessionEntity): Session {

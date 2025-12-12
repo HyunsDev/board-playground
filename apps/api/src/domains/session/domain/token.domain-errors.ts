@@ -1,12 +1,4 @@
-import { BaseNotFoundError, BaseBadRequestError } from '@workspace/backend-ddd';
-
-export class RefreshTokenNotFoundError extends BaseNotFoundError<'RefreshTokenNotFound'> {
-  public readonly code = 'RefreshTokenNotFound';
-  public readonly scope = 'private';
-  constructor() {
-    super('Refresh token not found');
-  }
-}
+import { BaseBadRequestError } from '@workspace/backend-ddd';
 
 export class InvalidRefreshTokenError extends BaseBadRequestError<'InvalidRefreshToken'> {
   public readonly code = 'InvalidRefreshToken';
@@ -21,14 +13,6 @@ export class TokenReuseDetectedError extends BaseBadRequestError<'TokenReuseDete
   public readonly scope = 'public';
   constructor() {
     super('Token reuse detected');
-  }
-}
-
-export class RefreshTokenConflictError extends BaseBadRequestError<'RefreshTokenConflict'> {
-  public readonly code = 'RefreshTokenConflict';
-  public readonly scope = 'public';
-  constructor() {
-    super('Refresh token conflict occurred');
   }
 }
 

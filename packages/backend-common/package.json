@@ -26,9 +26,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@workspace/common": "workspace:*",
-    "neverthrow": "^8.2.0",
-    "zod": "^3"
+    "@workspace/common": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",

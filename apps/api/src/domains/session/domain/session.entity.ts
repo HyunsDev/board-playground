@@ -13,9 +13,9 @@ import { RefreshTokenEntity } from './refresh-token.entity';
 import { SessionClosedError, SessionRevokedError } from './session.domain-errors';
 import { InvalidRefreshTokenError } from './token.domain-errors';
 
-import { BaseAggregateRoot } from '@/shared/base';
+import { BaseAggregateRoot, BaseEntityProps } from '@/shared/base';
 
-export interface SessionProps {
+export interface SessionProps extends BaseEntityProps {
   userId: string;
   name: string;
   userAgent: string;
@@ -44,9 +44,9 @@ export interface CreateSessionProps {
 }
 
 export class SessionEntity extends BaseAggregateRoot<SessionProps> {
-  private constructor(props: SessionProps, id?: string) {
+  private constructor(props: SessionProps) {
     super({
-      id: id || uuidv7(),
+      id: props.id || uuidv7(),
       props,
     });
   }
@@ -55,6 +55,7 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps> {
     const id = uuidv7();
     const userAgentResult = new UAParser(createProps.userAgent).getResult();
     const props: SessionProps = {
+      id,
       status: SESSION_STATUS.ACTIVE,
       userId: createProps.userId,
       name: `${userAgentResult.os.toString()} - ${userAgentResult.browser.toString()}`,
@@ -78,7 +79,7 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps> {
         }),
       ],
     };
-    const session = new SessionEntity(props, id);
+    const session = new SessionEntity(props);
 
     session.addEvent(
       new SessionCreatedEvent({
@@ -189,8 +190,8 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps> {
     this.props.revokedAt = new Date();
   }
 
-  static reconstruct(props: SessionProps, id: string): SessionEntity {
-    return new SessionEntity(props, id);
+  static reconstruct(props: SessionProps): SessionEntity {
+    return new SessionEntity(props);
   }
 
   public validate() {}

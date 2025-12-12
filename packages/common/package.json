@@ -33,7 +33,7 @@
     "@types/node": "^22.10.7",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "ts-node": "^10.9.2",
+    "source-map-support": "^0.5.21",
     "tsup": "^8.0.0",
     "typescript": "5.5.4"
   },

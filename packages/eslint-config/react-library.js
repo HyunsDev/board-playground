@@ -30,5 +30,3 @@ export const libraryConfig = [
     ignores: ['.*.js', 'node_modules/', 'dist/'],
   },
 ];
-
-export default libraryConfig;

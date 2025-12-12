@@ -119,9 +119,6 @@ importers:
       pino:
         specifier: ^10.1.0
         version: 10.1.0
-      pino-http:
-        specifier: ^11.0.0
-        version: 11.0.0
       reflect-metadata:
         specifier: ^0.2.0
         version: 0.2.2

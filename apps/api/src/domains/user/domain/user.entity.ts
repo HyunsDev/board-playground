@@ -8,9 +8,9 @@ import { UserUsernameChangedEvent } from './events/user-username-changed.event';
 import { UserPasswordVO } from './user-password.vo';
 import { UserAdminCannotBeDeletedError } from './user.domain-errors';
 
-import { BaseAggregateRoot } from '@/shared/base';
+import { BaseAggregateRoot, BaseEntityProps } from '@/shared/base';
 
-export interface UserProps {
+export interface UserProps extends BaseEntityProps {
   username: string;
   nickname: string;
   email: string;
@@ -21,8 +21,6 @@ export interface UserProps {
   adminMemo: string | null;
   password: UserPasswordVO | null;
   lastActiveAt: Date;
-  createdAt: Date;
-  updatedAt: Date;
   deletedAt: Date | null;
 }
 
@@ -34,9 +32,9 @@ export interface CreateUserProps {
 }
 
 export class UserEntity extends BaseAggregateRoot<UserProps> {
-  private constructor(props: UserProps, id?: string) {
+  private constructor(props: UserProps) {
     super({
-      id: id || uuidv7(),
+      id: props.id || uuidv7(),
       props,
     });
   }
@@ -64,6 +62,7 @@ export class UserEntity extends BaseAggregateRoot<UserProps> {
   public static create(createProps: CreateUserProps): UserEntity {
     const id = uuidv7();
     const props: UserProps = {
+      id,
       username: createProps.username,
       nickname: createProps.nickname,
       email: createProps.email,
@@ -81,7 +80,7 @@ export class UserEntity extends BaseAggregateRoot<UserProps> {
       deletedAt: null,
     };
 
-    const user = new UserEntity(props, id);
+    const user = new UserEntity(props);
 
     user.addEvent(
       new UserCreatedEvent({
@@ -125,8 +124,8 @@ export class UserEntity extends BaseAggregateRoot<UserProps> {
     return ok();
   }
 
-  static reconstruct(props: UserProps, id: string): UserEntity {
-    return new UserEntity(props, id);
+  static reconstruct(props: UserProps): UserEntity {
+    return new UserEntity(props);
   }
 
   public validate(): void {}
