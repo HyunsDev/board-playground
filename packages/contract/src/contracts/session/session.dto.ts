@@ -21,5 +21,19 @@ export const SessionBaseDtoSchema = z.object({
 });
 export type SessionBaseDto = z.infer<typeof SessionBaseDtoSchema>;
 
-export const SessionDtoSchema = SessionBaseDtoSchema;
+export const SessionDtoSchema = SessionBaseDtoSchema.pick({
+  id: true,
+  userId: true,
+  name: true,
+  os: true,
+  device: true,
+  browser: true,
+  platform: true,
+  lastRefreshedAt: true,
+  expiresAt: true,
+  createdAt: true,
+  closedAt: true,
+  revokedAt: true,
+  status: true,
+});
 export type SessionDto = z.infer<typeof SessionDtoSchema>;

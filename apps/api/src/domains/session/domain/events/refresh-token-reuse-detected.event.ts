@@ -1,15 +1,15 @@
-import { BaseDomainEvent, IDomainEvent } from '@/shared/base';
-import { DomainEventCodes } from '@/shared/codes/domain-event.codes';
-import { DomainCodes } from '@/shared/codes/domain.codes';
+import { AggregateCodeEnum, defineEventCode } from '@workspace/domain';
 
-export type IRefreshTokenReuseDetectedEvent = IDomainEvent<{
+import { BaseDomainEvent, BaseIDomainEvent } from '@/shared/base';
+
+type IRefreshTokenReuseDetectedEvent = BaseIDomainEvent<{
   userId: string;
   sessionId: string;
   reusedTokenId: string;
 }>;
 export class RefreshTokenReuseDetectedEvent extends BaseDomainEvent<IRefreshTokenReuseDetectedEvent> {
-  public readonly code = DomainEventCodes.Session.RefreshTokenReuseDetected;
-  public readonly resourceType = DomainCodes.Session;
+  public readonly code = defineEventCode('account:session:evt:refresh_token_reuse_detected');
+  public readonly resourceType = AggregateCodeEnum.Account.Session;
 
   constructor(
     data: IRefreshTokenReuseDetectedEvent['data'],

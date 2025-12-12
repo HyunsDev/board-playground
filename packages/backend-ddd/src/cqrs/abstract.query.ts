@@ -2,18 +2,21 @@ import { Query } from '@nestjs/cqrs';
 import { v7 as uuidv7 } from 'uuid';
 
 import { DomainError, DomainResult } from '../error';
-import { AbstractCreateMessageMetadata, AbstractMessageMetadata } from './message-metadata.type';
+import {
+  AbstractCreateMessageMetadata,
+  AbstractMessageMetadata,
+} from './abstract-message-metadata.type';
 
 export type AbstractIQuery<CausationCodeType extends string, T> = {
   readonly data: T;
   readonly metadata: AbstractCreateMessageMetadata<CausationCodeType>;
 };
 
-export type AbstractPaginatedQueryProps<CausationCodeType extends string, T> = AbstractIQuery<
+export type AbstractIPaginatedQuery<CausationCodeType extends string, T> = AbstractIQuery<
   CausationCodeType,
   T & {
     page: number;
-    take: number;
+    limit: number;
   }
 >;
 
@@ -25,15 +28,15 @@ export type AbstractPaginatedQueryProps<CausationCodeType extends string, T> = A
  * @template O - 쿼리 핸들러가 성공적으로 처리했을 때 반환하는 값의 타입
  */
 export abstract class AbstractQuery<
-  QueryCodeType extends CausationCodeType,
+  QueryCodeType extends string,
   QueryResourceCodeType extends string,
   CausationCodeType extends string,
   D extends AbstractIQuery<CausationCodeType, unknown>,
   R extends DomainResult<O, DomainError>,
   O,
 > extends Query<R> {
-  public abstract readonly code: QueryCodeType;
-  public abstract readonly resourceType: QueryResourceCodeType;
+  abstract readonly code: QueryCodeType;
+  abstract readonly resourceType: QueryResourceCodeType;
 
   readonly id: string;
   readonly resourceId: string | null;
@@ -59,7 +62,7 @@ export abstract class AbstractQuery<
     };
   }
 
-  public get streamId(): string {
+  get streamId(): string {
     return `${this.resourceType}:${this.resourceId}`;
   }
 }

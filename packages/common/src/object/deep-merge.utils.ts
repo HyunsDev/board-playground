@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 // 두 타입을 Deep Merge 하는 유틸리티 타입
 type DeepMergeTwo<T, U> = T extends object
   ? U extends object

@@ -1,4 +1,4 @@
-import { nestJsConfig } from '@workspace/eslint-config/nest-js';
+import { commonLibraryConfig } from '@workspace/eslint-config/common-library';
 
 /** @type {import("eslint").Linter.Config} */
-export default nestJsConfig;
+export default commonLibraryConfig;

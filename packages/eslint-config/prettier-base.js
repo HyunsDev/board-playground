@@ -10,6 +10,7 @@ const config = {
   tabWidth: 2,
   arrowParens: 'always',
   bracketSpacing: true,
+  endOfLine: 'lf',
 };
 
 export default config;

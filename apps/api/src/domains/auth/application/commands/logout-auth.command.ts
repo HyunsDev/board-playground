@@ -2,14 +2,13 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { TransactionManager } from '@workspace/backend-core';
+import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
-import { TransactionManager } from '@/infra/prisma/transaction.manager';
-import { BaseCommand, ICommand } from '@/shared/base';
-import { CommandCodes } from '@/shared/codes/command.codes';
-import { ResourceTypes } from '@/shared/codes/resource-type.codes';
+import { BaseCommand, BaseICommand } from '@/shared/base';
 
-type ILogoutAuthCommand = ICommand<{
+type ILogoutAuthCommand = BaseICommand<{
   refreshToken: string;
 }>;
 export class LogoutAuthCommand extends BaseCommand<
@@ -17,8 +16,8 @@ export class LogoutAuthCommand extends BaseCommand<
   HandlerResult<LogoutAuthCommandHandler>,
   void
 > {
-  readonly code = CommandCodes.Auth.Logout;
-  readonly resourceType = ResourceTypes.User;
+  readonly code = defineCommandCode('account:auth:cmd:logout');
+  readonly resourceType = AggregateCodeEnum.Account.User;
 
   constructor(data: ILogoutAuthCommand['data'], metadata: ILogoutAuthCommand['metadata']) {
     super(null, data, metadata);

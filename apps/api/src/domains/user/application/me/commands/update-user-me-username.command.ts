@@ -1,18 +1,15 @@
-import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
+import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
-import { USER_REPOSITORY } from '@/domains/user/user.constants';
-import { BaseCommand, ICommand, UnexpectedDomainErrorException } from '@/shared/base';
-import { CommandCodes } from '@/shared/codes/command.codes';
-import { DomainCodes } from '@/shared/codes/domain.codes';
-import { matchError } from '@/shared/utils/match-error.utils';
+import { BaseICommand, BaseCommand } from '@/shared/base';
 
-type IUpdateUserMeUsernameCommand = ICommand<{
+type IUpdateUserMeUsernameCommand = BaseICommand<{
   userId: string;
   newUsername: string;
 }>;
@@ -22,8 +19,8 @@ export class UpdateUserMeUsernameCommand extends BaseCommand<
   HandlerResult<UpdateUserMeUsernameCommandHandler>,
   UserEntity
 > {
-  readonly code = CommandCodes.User.UpdateMeUsername;
-  readonly resourceType = DomainCodes.User;
+  readonly code = defineCommandCode('account:user:cmd:update_me_username');
+  readonly resourceType = AggregateCodeEnum.Account.User;
 
   constructor(
     data: IUpdateUserMeUsernameCommand['data'],
@@ -37,10 +34,7 @@ export class UpdateUserMeUsernameCommand extends BaseCommand<
 export class UpdateUserMeUsernameCommandHandler
   implements ICommandHandler<UpdateUserMeUsernameCommand>
 {
-  constructor(
-    @Inject(USER_REPOSITORY)
-    private readonly userRepo: UserRepositoryPort,
-  ) {}
+  constructor(private readonly userRepo: UserRepositoryPort) {}
 
   async execute({ data }: IUpdateUserMeUsernameCommand) {
     const userResult = await this.userRepo.getOneById(data.userId);

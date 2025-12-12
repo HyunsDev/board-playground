@@ -1,15 +1,15 @@
-import { BaseDomainEvent, IDomainEvent } from '@/shared/base';
-import { DomainEventCodes } from '@/shared/codes/domain-event.codes';
-import { ResourceTypes } from '@/shared/codes/resource-type.codes';
+import { AggregateCodeEnum, defineEventCode } from '@workspace/domain';
 
-export type ISessionCreatedEvent = IDomainEvent<{
+import { BaseDomainEvent, BaseIDomainEvent } from '@/shared/base';
+
+type ISessionCreatedEvent = BaseIDomainEvent<{
   userId: string;
   sessionId: string;
   sessionName: string;
 }>;
 export class SessionCreatedEvent extends BaseDomainEvent<ISessionCreatedEvent> {
-  public readonly code = DomainEventCodes.Session.Created;
-  public readonly resourceType = ResourceTypes.Session;
+  public readonly code = defineEventCode('account:session:evt:created');
+  public readonly resourceType = AggregateCodeEnum.Account.Session;
 
   constructor(data: ISessionCreatedEvent['data'], metadata?: ISessionCreatedEvent['metadata']) {
     super(data.sessionId, data, metadata);

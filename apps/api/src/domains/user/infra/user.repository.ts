@@ -3,6 +3,14 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
+import { BaseRepository, PrismaService, ContextService } from '@workspace/backend-core';
+import {
+  DomainEventPublisher,
+  DomainResult,
+  matchError,
+  UnexpectedDomainErrorException,
+} from '@workspace/backend-ddd';
+import { createPaginatedResult, PaginatedResult } from '@workspace/common';
 import { Prisma, PrismaClient, User } from '@workspace/database';
 
 import { UserMapper } from './user.mapper';
@@ -13,14 +21,6 @@ import {
 } from '../domain/user.domain-errors';
 import { UserEntity } from '../domain/user.entity';
 import { UserRepositoryPort } from '../domain/user.repository.port';
-
-import { ContextService } from '@/infra/context/context.service';
-import { DomainEventPublisher } from '@/infra/domain-event/domain-event.publisher';
-import { PrismaService } from '@/infra/prisma/prisma.service';
-import { PaginatedResult, UnexpectedDomainErrorException } from '@/shared/base';
-import { BaseRepository } from '@/shared/base/infra/base.repository';
-import { DomainResult } from '@/shared/types/result.type';
-import { matchError } from '@/shared/utils/match-error.utils';
 
 @Injectable()
 export class UserRepository extends BaseRepository<UserEntity, User> implements UserRepositoryPort {
@@ -97,15 +97,11 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     });
     const total = await this.delegate.count({ where: whereClause });
 
-    return {
+    return createPaginatedResult({
       items: this.mapper.toDomainMany(users),
-      meta: {
-        total,
-        page: params.page,
-        take: params.take,
-        totalPages: Math.ceil(total / params.take),
-      },
-    };
+      totalItems: total,
+      options: { page: params.page, limit: params.take },
+    });
   }
 
   async count(): Promise<number> {
@@ -136,14 +132,14 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
       (error) =>
         matchError(error, {
           EntityNotFound: () => err(new UserNotFoundError()),
-          EntityConflict: ({ details }) => {
-            if (details?.conflicts.some((conflict) => conflict.field === 'email')) {
+          EntityConflict: (e) => {
+            if (e.details?.conflicts.some((conflict) => conflict.field === 'email')) {
               return err(new UserEmailAlreadyExistsError());
             }
-            if (details?.conflicts.some((conflict) => conflict.field === 'username')) {
+            if (e.details?.conflicts.some((conflict) => conflict.field === 'username')) {
               return err(new UserUsernameAlreadyExistsError());
             }
-            throw new UnexpectedDomainErrorException(error);
+            throw new UnexpectedDomainErrorException(e);
           },
         }),
     );

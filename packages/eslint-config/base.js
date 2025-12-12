@@ -13,7 +13,6 @@ import eslintPluginUnusedImports from 'eslint-plugin-unused-imports';
  * */
 export const config = [
   js.configs.recommended,
-  eslintConfigPrettier,
   ...tseslint.configs.recommended,
   {
     plugins: {
@@ -59,12 +58,17 @@ export const config = [
           ],
           pathGroups: [
             {
+              pattern: 'react',
+              group: 'external',
+              position: 'before',
+            },
+            {
               pattern: '@workspace/**',
               group: 'internal',
-              position: 'after',
+              position: 'before',
             },
           ],
-          pathGroupsExcludedImportTypes: ['builtin'],
+          pathGroupsExcludedImportTypes: ['builtin', 'react'],
           'newlines-between': 'always',
           alphabetize: { order: 'asc', caseInsensitive: true },
         },
@@ -89,7 +93,8 @@ export const config = [
       ],
     },
   },
+  eslintConfigPrettier,
   {
-    ignores: ['dist/**'],
+    ignores: ['dist/**', '.next/**', 'coverage/**'],
   },
 ];

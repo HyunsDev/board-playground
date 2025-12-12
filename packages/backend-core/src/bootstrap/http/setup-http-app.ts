@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 
-import { httpConfig, HttpConfig } from '@/config';
+import { httpConfig, HttpConfig } from '@/modules/config';
 
 export interface BootstrapOptions {
   enableCors?: boolean;
@@ -21,6 +21,7 @@ export function setupHttpApp(app: INestApplication, options: BootstrapOptions = 
 
   // Infrastructure Settings
   // 프록시(로드밸런서) 뒤에서 클라이언트 IP 식별
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (app as any).set('trust proxy', true);
 
   // CORS

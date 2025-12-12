@@ -1,9 +1,10 @@
 import z from 'zod';
 
+import { withPagination, paginatedResultSchemaOf } from '@workspace/common';
+
 import { UserAdminDtoSchema } from '../user.dto';
 import { UserRole, UserStatus } from '../user.enums';
 
-import { paginatedQueryOf, paginatedResponseOf } from '@/common';
 import { ACCESS } from '@/common/access';
 import { ApiErrors } from '@/contracts/api-errors';
 import { c } from '@/internal/c';
@@ -27,7 +28,7 @@ export const getUserForAdmin = c.query({
 export const queryUsersForAdmin = c.query({
   method: 'GET',
   path: '/admin/users',
-  query: paginatedQueryOf(
+  query: withPagination(
     z.object({
       userId: z.string().uuid().optional(),
       email: z.string().email().optional(),
@@ -38,7 +39,7 @@ export const queryUsersForAdmin = c.query({
     }),
   ),
   responses: {
-    200: paginatedResponseOf(UserAdminDtoSchema),
+    200: paginatedResultSchemaOf(UserAdminDtoSchema),
   },
   metadata: {
     access: ACCESS.admin,

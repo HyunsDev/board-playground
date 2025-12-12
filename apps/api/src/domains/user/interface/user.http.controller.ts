@@ -2,16 +2,13 @@ import { Controller } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { contract, ApiErrors, PaginationMeta } from '@workspace/contract';
+import { ContextService } from '@workspace/backend-core';
+import { apiOk, matchPublicError, apiErr } from '@workspace/backend-ddd';
+import { contract, ApiErrors } from '@workspace/contract';
 
 import { UserDtoMapper } from './user.dto-mapper';
 import { GetUserQuery } from '../application/public/queries/get-user.query';
 import { SearchUserQuery } from '../application/public/queries/search-user.query';
-import { UserEntity } from '../domain/user.entity';
-
-import { ContextService } from '@/infra/context/context.service';
-import { apiErr, apiOk } from '@/shared/base';
-import { matchPublicError } from '@/shared/utils/match-error.utils';
 
 @Controller()
 export class UserHttpController {
@@ -46,15 +43,14 @@ export class UserHttpController {
           {
             nickname: query.nickname,
             page: query.page,
-            take: query.take,
+            limit: query.limit,
           },
           this.contextService.getMessageMetadata(),
         ),
       );
 
       return result.match(
-        ({ items, meta }: { items: UserEntity[]; meta: PaginationMeta }) =>
-          apiOk(200, this.dtoMapper.toPaginatedPublicProfileDto(items, meta)),
+        (data) => apiOk(200, this.dtoMapper.toPaginatedPublicProfileDto(data.items, data.meta)),
         (error) => matchPublicError(error, {}),
       );
     });

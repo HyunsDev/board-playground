@@ -11,6 +11,7 @@ import { BaseMapper } from '@/shared/base';
 export class UserMapper extends BaseMapper<UserEntity, User> {
   toDomain(record: User): UserEntity {
     const props: UserProps = {
+      id: record.id,
       username: record.username,
       nickname: record.nickname,
       email: record.email,
@@ -25,7 +26,7 @@ export class UserMapper extends BaseMapper<UserEntity, User> {
       updatedAt: record.updatedAt,
       deletedAt: record.deletedAt,
     };
-    return UserEntity.reconstruct(props, record.id);
+    return UserEntity.reconstruct(props);
   }
 
   toPersistence(entity: UserEntity): User {

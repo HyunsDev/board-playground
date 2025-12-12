@@ -24,7 +24,13 @@
         "REFRESH_TOKEN_SECRET"
       ]
     },
-    "lint": {},
+    "lint": {
+      "cache": false,
+      "outputs": []
+    },
+    "typecheck": {
+      "outputs": []
+    },
     "test": {},
     "test:e2e": {}
   }

@@ -2,19 +2,18 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { AccessTokenProvider, TransactionManager } from '@workspace/backend-core';
+import { ValidationError } from '@workspace/backend-ddd';
 import { DEVICE_PLATFORM, passwordSchema } from '@workspace/contract';
+import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
-import { TransactionManager } from '@/infra/prisma/transaction.manager';
-import { PasswordProvider } from '@/infra/security/providers/password.provider';
-import { TokenProvider } from '@/infra/security/providers/token.provider';
-import { BaseCommand, ICommand, ValidationError } from '@/shared/base';
-import { CommandCodes } from '@/shared/codes/command.codes';
-import { ResourceTypes } from '@/shared/codes/resource-type.codes';
+import { PasswordProvider } from '@/infra/crypto';
+import { BaseCommand, BaseICommand } from '@/shared/base';
 import { AuthTokens } from '@/shared/types/tokens';
 
-type IRegisterAuthCommand = ICommand<{
+type IRegisterAuthCommand = BaseICommand<{
   email: string;
   username: string;
   nickname: string;
@@ -28,8 +27,8 @@ export class RegisterAuthCommand extends BaseCommand<
   HandlerResult<RegisterAuthCommandHandler>,
   AuthTokens
 > {
-  readonly code = CommandCodes.Auth.Register;
-  readonly resourceType = ResourceTypes.User;
+  readonly code = defineCommandCode('account:auth:cmd:register');
+  readonly resourceType = AggregateCodeEnum.Account.User;
 
   constructor(data: IRegisterAuthCommand['data'], metadata: IRegisterAuthCommand['metadata']) {
     super(null, data, metadata);
@@ -43,7 +42,7 @@ export class RegisterAuthCommandHandler
   constructor(
     private readonly userFacade: UserFacade,
     private readonly sessionFacade: SessionFacade,
-    private readonly tokenProvider: TokenProvider,
+    private readonly accessTokenProvider: AccessTokenProvider,
     private readonly passwordProvider: PasswordProvider,
     private readonly txManager: TransactionManager,
   ) {}
@@ -82,7 +81,7 @@ export class RegisterAuthCommandHandler
       }
       const { session, refreshToken } = sessionResult.value;
 
-      const accessToken = await this.tokenProvider.generateAccessToken({
+      const accessToken = this.accessTokenProvider.generateAccessToken({
         sub: createUserResult.value.id,
         sessionId: session.id,
         email: createUserResult.value.email,

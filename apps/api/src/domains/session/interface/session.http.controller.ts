@@ -2,18 +2,15 @@ import { Controller } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
+import { ContextService, Token } from '@workspace/backend-core';
+import { apiOk, matchError, apiErr, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
-import { TokenPayload } from '@workspace/contract';
+import { TokenPayload } from '@workspace/domain';
 
 import { SessionDtoMapper } from './session.dto-mapper';
 import { DeleteSessionCommand } from '../application/commands/delete-session.command';
 import { GetSessionQuery } from '../application/queries/get-session.query';
 import { ListSessionsQuery } from '../application/queries/list-sessions.query';
-
-import { ContextService } from '@/infra/context/context.service';
-import { Token } from '@/infra/security/decorators/token.decorator';
-import { apiErr, apiOk, UnexpectedDomainErrorException } from '@/shared/base';
-import { matchError } from '@/shared/utils/match-error.utils';
 
 @Controller()
 export class SessionHttpController {

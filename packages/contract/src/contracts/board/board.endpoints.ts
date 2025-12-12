@@ -1,8 +1,9 @@
 import z from 'zod';
 
+import { withPagination, paginatedResultSchemaOf } from '@workspace/common';
+
 import { BoardDtoSchema, CreateBoardDtoSchema, UpdateBoardDtoSchema } from './board.dto';
 
-import { paginatedQueryOf, paginatedResponseOf } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';
 import { USER_ROLE } from '@/contracts/user/user.enums';
 import { c } from '@/internal/c';
@@ -28,13 +29,13 @@ export const getBoard = c.query({
 export const searchBoards = c.query({
   method: 'GET',
   path: '/boards',
-  query: paginatedQueryOf(
+  query: withPagination(
     z.object({
       q: z.string().min(1).max(50).optional(),
     }),
   ),
   responses: {
-    200: paginatedResponseOf(BoardDtoSchema),
+    200: paginatedResultSchemaOf(BoardDtoSchema),
   },
   metadata: {
     roles: [USER_ROLE.USER, USER_ROLE.ADMIN],

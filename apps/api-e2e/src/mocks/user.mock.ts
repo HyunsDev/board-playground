@@ -94,7 +94,7 @@ export class TestUser {
       avatarUrl: this._serverState.avatarUrl ?? null,
       role: this._serverState.role ?? 'USER',
       status: this._serverState.status ?? 'ACTIVE',
-      lastActiveAt: this._serverState.lastActiveAt ? expect.any(String) : null,
+      lastActiveAt: expect.any(String),
       createdAt: expect.any(String),
       deletedAt: this._serverState.deletedAt ? expect.any(String) : null,
       ...overrides,

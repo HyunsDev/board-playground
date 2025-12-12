@@ -1,13 +1,16 @@
 import { IEvent } from '@nestjs/cqrs';
 import { v7 as uuidv7 } from 'uuid';
 
-import { AbstractCreateMessageMetadata, AbstractMessageMetadata } from './message-metadata.type';
+import {
+  AbstractCreateMessageMetadata,
+  AbstractMessageMetadata,
+} from './abstract-message-metadata.type';
 
-export interface IAbstractDomainEvent<CausationCodeType extends string, Data> extends IEvent {
+export interface AbstractIDomainEvent<CausationCodeType extends string, Data> extends IEvent {
   readonly data: Data;
   readonly metadata: AbstractCreateMessageMetadata<CausationCodeType>;
   deriveMetadata(
-    this: IAbstractDomainEvent<CausationCodeType, Data>,
+    this: AbstractIDomainEvent<CausationCodeType, Data>,
     overrides?: Partial<AbstractCreateMessageMetadata<CausationCodeType>>,
   ): AbstractCreateMessageMetadata<CausationCodeType>;
 }
@@ -16,18 +19,18 @@ export abstract class AbstractDomainEvent<
   DomainEventCodeType extends CausationCodeType,
   AggregateCodeType extends string,
   CausationCodeType extends string,
-  D extends IAbstractDomainEvent<CausationCodeType, unknown> = IAbstractDomainEvent<
+  D extends AbstractIDomainEvent<CausationCodeType, unknown> = AbstractIDomainEvent<
     CausationCodeType,
     unknown
   >,
 > {
-  public abstract readonly code: DomainEventCodeType;
-  public abstract readonly resourceType: AggregateCodeType;
+  abstract readonly code: DomainEventCodeType;
+  abstract readonly resourceType: AggregateCodeType;
 
-  public readonly id: string;
-  public readonly resourceId: string | null;
-  public readonly data: D['data'];
-  public metadata: AbstractMessageMetadata<CausationCodeType>;
+  readonly id: string;
+  readonly resourceId: string | null;
+  readonly data: D['data'];
+  metadata: AbstractMessageMetadata<CausationCodeType>;
 
   constructor(
     resourceId: string | null,
@@ -47,7 +50,7 @@ export abstract class AbstractDomainEvent<
     };
   }
 
-  public setMetadata(metadata: AbstractCreateMessageMetadata<CausationCodeType>): void {
+  setMetadata(metadata: AbstractCreateMessageMetadata<CausationCodeType>): void {
     this.metadata = {
       ...this.metadata,
       ...metadata,
@@ -55,7 +58,7 @@ export abstract class AbstractDomainEvent<
     };
   }
 
-  public deriveMetadata(
+  deriveMetadata(
     overrides?: Partial<AbstractCreateMessageMetadata<CausationCodeType>>,
   ): AbstractCreateMessageMetadata<CausationCodeType> {
     return {
@@ -68,7 +71,7 @@ export abstract class AbstractDomainEvent<
   }
 
   /** Stream Key: "resourceType:resourceId" (예: "user:19a764ab-22db-42f4-a64f-3a9dc992a4d4") */
-  public get streamId(): string {
+  get streamId(): string {
     return `${this.resourceType}:${this.resourceId}`;
   }
 }

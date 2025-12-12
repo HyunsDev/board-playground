@@ -1,5 +1,6 @@
 import globals from 'globals';
 import { config as baseConfig } from './base.js';
+import functional from 'eslint-plugin-functional';
 
 /**
  * A custom ESLint configuration for Nest.js.
@@ -14,7 +15,7 @@ export const nestJsConfig = [
         ...globals.node,
         ...globals.jest,
       },
-      sourceType: 'commonjs',
+      sourceType: 'module',
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
@@ -22,9 +23,23 @@ export const nestJsConfig = [
     },
   },
   {
+    plugins: {
+      functional,
+    },
+    rules: {
+      'functional/no-expression-statements': [
+        'error',
+        {
+          ignoreVoid: true,
+          ignoreCodePattern: ['^this\\..+ = [\\s\\S]+$', '^void [\\s\\S]+$'],
+        },
+      ],
+    },
+  },
+  {
     rules: {
       '@typescript-eslint/only-throw-error': 'error',
-      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
     },

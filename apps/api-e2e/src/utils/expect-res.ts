@@ -1,14 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect } from '@jest/globals';
 
-import { ApiError, ApiResponse } from '@workspace/contract';
+import { ApiError, ApiResponse } from '@workspace/common';
 
-export type SuccessBody<T> = T extends { status: number; body: infer B }
+type SuccessBody<T> = T extends { status: number; body: infer B }
   ? `${T['status']}` extends `2${string}` // status를 문자열로 바꿔 "2"로 시작하는지 확인
     ? B
     : never
   : never;
 
-export interface JestMatcher {
+interface JestMatcher {
   asymmetricMatch(other: unknown): boolean;
   [key: string]: any;
 }

@@ -2,15 +2,12 @@ import { Controller } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
+import { ContextService, Roles } from '@workspace/backend-core';
+import { apiOk, matchError, apiErr } from '@workspace/backend-ddd';
 import { contract, ApiErrors, USER_ROLE } from '@workspace/contract';
 
 import { UserDtoMapper } from './user.dto-mapper';
 import { GetUserForAdminQuery } from '../application/admin/queries/get-user-for-admin.query';
-
-import { ContextService } from '@/infra/context/context.service';
-import { Roles } from '@/infra/security/decorators/roles.decorator';
-import { apiErr, apiOk } from '@/shared/base';
-import { matchError } from '@/shared/utils/match-error.utils';
 
 @Controller()
 @Roles(USER_ROLE.ADMIN)

@@ -1,4 +1,4 @@
-import { PaginatedResult, PaginationMetadata } from '@workspace/common';
+import { createPaginatedResult, PaginatedResult, PaginationMetadata } from '@workspace/common';
 
 import { AbstractEntity } from '@/blocks';
 
@@ -18,9 +18,10 @@ export abstract class AbstractDtoMapper<E extends AbstractEntity<unknown>> {
     mapFn: (entity: E) => Dto,
   ): PaginatedResult<Dto> {
     const items = this.mapMany(entities, mapFn);
-    return {
+    return createPaginatedResult({
       items,
-      meta,
-    };
+      totalItems: meta.totalItems,
+      options: { page: meta.page, limit: meta.limit },
+    });
   }
 }

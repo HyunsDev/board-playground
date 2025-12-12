@@ -1,8 +1,9 @@
 import z from 'zod';
 
+import { withPagination, paginatedResultSchemaOf } from '@workspace/common';
+
 import { UserPublicProfileDtoSchema } from '../user.dto';
 
-import { paginatedQueryOf, paginatedResponseOf } from '@/common';
 import { ACCESS } from '@/common/access';
 import { ApiErrors } from '@/contracts/api-errors';
 import { c } from '@/internal/c';
@@ -28,13 +29,13 @@ export const getUser = c.query({
 export const searchUsers = c.query({
   method: 'GET',
   path: '/users',
-  query: paginatedQueryOf(
+  query: withPagination(
     z.object({
       nickname: z.string().min(1).max(20).optional(),
     }),
   ),
   responses: {
-    200: paginatedResponseOf(UserPublicProfileDtoSchema),
+    200: paginatedResultSchemaOf(UserPublicProfileDtoSchema),
   },
   metadata: {
     access: ACCESS.signedIn,

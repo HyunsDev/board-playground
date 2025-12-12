@@ -1,4 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
+import 'dotenv/config';
 
 import { performance } from 'perf_hooks';
 

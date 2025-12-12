@@ -2,26 +2,27 @@ import { Inject, Injectable } from '@nestjs/common';
 import dayjs from 'dayjs';
 import { err, ok } from 'neverthrow';
 
+import {
+  matchError,
+  matchType,
+  typedOk,
+  UnexpectedDomainErrorException,
+} from '@workspace/backend-ddd';
 import { DevicePlatform } from '@workspace/contract';
 
 import { SessionEntity } from '../../domain/session.entity';
 import { SessionRepositoryPort } from '../../domain/session.repository.port';
-import { SESSION_REPOSITORY } from '../../session.constants';
 
-import { TokenConfig, tokenConfig } from '@/infra/config/configs/token.config';
-import { TokenProvider } from '@/infra/security/providers/token.provider';
-import { UnexpectedDomainErrorException } from '@/shared/base';
-import { matchError } from '@/shared/utils/match-error.utils';
-import { matchType, typedOk } from '@/shared/utils/typed-ok.utils';
+import { RefreshTokenConfig, refreshTokenConfig } from '@/core/configs/refresh-token.config';
+import { RefreshTokenProvider } from '@/infra/crypto';
 
 @Injectable()
 export class SessionFacade {
   constructor(
-    @Inject(SESSION_REPOSITORY)
     private readonly sessionRepo: SessionRepositoryPort,
-    private readonly tokenProvider: TokenProvider,
-    @Inject(tokenConfig.KEY)
-    private readonly tokenConfig: TokenConfig,
+    private readonly refreshTokenProvider: RefreshTokenProvider,
+    @Inject(refreshTokenConfig.KEY)
+    private readonly tokenConfig: RefreshTokenConfig,
   ) {}
 
   async getOneById(id: string) {
@@ -39,7 +40,7 @@ export class SessionFacade {
     platform: DevicePlatform;
     ipAddress: string;
   }) {
-    const refreshTokenSet = this.tokenProvider.generateRefreshToken();
+    const refreshTokenSet = this.refreshTokenProvider.generateRefreshToken();
     const session = SessionEntity.create({
       userId: props.userId,
       userAgent: props.userAgent,
@@ -59,12 +60,12 @@ export class SessionFacade {
   }
 
   async rotate(currentRefreshToken: string) {
-    const hashedRefreshToken = this.tokenProvider.hashRefreshToken(currentRefreshToken);
+    const hashedRefreshToken = this.refreshTokenProvider.hashRefreshToken(currentRefreshToken);
     const sessionResult = await this.sessionRepo.getOneByHashedRefreshToken(hashedRefreshToken);
     if (sessionResult.isErr()) return sessionResult;
     let session = sessionResult.value;
 
-    const refreshTokenSet = this.tokenProvider.generateRefreshToken();
+    const refreshTokenSet = this.refreshTokenProvider.generateRefreshToken();
     const rotateResult = session.rotateRefreshToken({
       currentTokenHash: hashedRefreshToken,
       newTokenHash: refreshTokenSet.refreshTokenHash,
@@ -96,7 +97,7 @@ export class SessionFacade {
   }
 
   async close(currentRefreshToken: string) {
-    const hashedRefreshToken = this.tokenProvider.hashRefreshToken(currentRefreshToken);
+    const hashedRefreshToken = this.refreshTokenProvider.hashRefreshToken(currentRefreshToken);
     const sessionResult = await this.sessionRepo.getOneByHashedRefreshToken(hashedRefreshToken);
     if (sessionResult.isErr()) return sessionResult;
     const session = sessionResult.value;

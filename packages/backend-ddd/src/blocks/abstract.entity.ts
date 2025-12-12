@@ -49,7 +49,7 @@ export abstract class AbstractEntity<TProps> {
     return Object.freeze(propsCopy);
   }
 
-  public equals(object?: AbstractEntity<TProps>): boolean {
+  equals(object?: AbstractEntity<TProps>): boolean {
     if (object === null || object === undefined) {
       return false;
     }
@@ -66,5 +66,5 @@ export abstract class AbstractEntity<TProps> {
     return entity instanceof AbstractEntity;
   }
 
-  public abstract validate(): void;
+  abstract validate(): void;
 }

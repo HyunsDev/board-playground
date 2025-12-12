@@ -3,22 +3,42 @@
   "version": "0.0.0",
   "private": true,
   "description": "",
-  "author": "",
   "license": "UNLICENSED",
+  "author": "",
   "scripts": {
-    "dev": "turbo run dev dev:check --concurrency=20",
     "build": "turbo run build",
+    "clean": "pnpm -w dlx rimraf \"node_modules\" \"packages/**/node_modules\" \"packages/**/dist\"",
+    "depcruise": "pnpm exec depcruise apps packages --include-only \"^(apps|packages)/\"",
+    "dependency-graph": "depcruise apps packages --include-only \"^(apps|packages)/\" --exclude \"(/dist/|/\\.next/|/coverage/|/src/generated/|/node_modules/)\" --output-type dot | dot -T svg > dependency-graph.svg",
+    "dev": "turbo run dev dev:check --concurrency=20",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "format:pkg": "pnpm exec sort-package-json \"**/package.json\" \"!**/node_modules/**\"",
+    "knip": "knip --config knip.json",
+    "lint": "turbo run lint",
+    "prepare": "husky",
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "clean": "pnpm -w dlx rimraf \"node_modules\" \"packages/**/node_modules\" \"packages/**/dist\""
+    "typecheck": "turbo run typecheck"
+  },
+  "lint-staged": {
+    "**/package.json": [
+      "sort-package-json",
+      "prettier --write"
+    ]
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "prettier": "^3.2.5",
+    "dependency-cruiser": "^17.3.2",
     "eslint": "^9.31.0",
+    "husky": "^9.1.7",
+    "knip": "^5.73.3",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.2.5",
+    "rimraf": "^6.1.2",
+    "sort-package-json": "^3.5.1",
     "turbo": "^2.6.3"
   },
   "packageManager": "pnpm@8.15.5",

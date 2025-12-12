@@ -1,0 +1,19 @@
+{
+  "sortOrder": [
+    "name",
+    "version",
+    "private",
+    "packageManager",
+    "description",
+    "keywords",
+    "author",
+    "license",
+    "type",
+    "scripts",
+    "dependencies",
+    "devDependencies",
+    "peerDependencies",
+    "optionalDependencies",
+    "engines"
+  ]
+}

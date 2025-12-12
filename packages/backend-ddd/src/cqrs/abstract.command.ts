@@ -2,7 +2,10 @@ import { Command } from '@nestjs/cqrs';
 import { v7 as uuidv7 } from 'uuid';
 
 import { DomainError, DomainResult } from '../error';
-import { AbstractCreateMessageMetadata, AbstractMessageMetadata } from './message-metadata.type';
+import {
+  AbstractCreateMessageMetadata,
+  AbstractMessageMetadata,
+} from './abstract-message-metadata.type';
 
 export type AbstractICommand<CausationCodeType extends string, T> = {
   readonly data: T;
@@ -28,11 +31,11 @@ export abstract class AbstractCommand<
   R extends DomainResult<O, DomainError>,
   O,
 > extends Command<R> {
-  public abstract readonly code: CommandCodeType;
-  public abstract readonly resourceType: ResourceCodeType;
+  abstract readonly code: CommandCodeType;
+  abstract readonly resourceType: ResourceCodeType;
 
   readonly id: string;
-  public readonly resourceId: string | null;
+  readonly resourceId: string | null;
   readonly data: D['data'];
   readonly metadata: AbstractMessageMetadata<CausationCodeType>;
 
@@ -55,7 +58,7 @@ export abstract class AbstractCommand<
     };
   }
 
-  public deriveMetadata(
+  deriveMetadata(
     overrides?: Partial<AbstractCreateMessageMetadata<CausationCodeType>>,
   ): AbstractCreateMessageMetadata<CausationCodeType> {
     return {
@@ -67,7 +70,7 @@ export abstract class AbstractCommand<
     };
   }
 
-  public get streamId(): string {
+  get streamId(): string {
     return `${this.resourceType}:${this.resourceId}`;
   }
 }

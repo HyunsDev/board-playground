@@ -1,18 +1,15 @@
-import { Inject } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserNotFoundError } from '@/domains/user/domain/user.domain-errors';
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
-import { USER_REPOSITORY } from '@/domains/user/user.constants';
-import { BaseQuery, IQuery } from '@/shared/base';
-import { DomainCodes } from '@/shared/codes/domain.codes';
-import { QueryCodes } from '@/shared/codes/query.codes';
+import { BaseQuery, BaseIQuery } from '@/shared/base';
 
-type IGetUserMeQuery = IQuery<{
+type IGetUserMeQuery = BaseIQuery<{
   userId: string;
 }>;
 
@@ -21,8 +18,8 @@ export class GetUserQuery extends BaseQuery<
   HandlerResult<GetUserQueryHandler>,
   UserEntity
 > {
-  readonly code = QueryCodes.User.Get;
-  readonly resourceType = DomainCodes.User;
+  readonly code = defineQueryCode('account:user:qry:get');
+  readonly resourceType = DomainCodeEnums.Account.User;
 
   constructor(data: IGetUserMeQuery['data'], metadata: IGetUserMeQuery['metadata']) {
     super(data.userId, data, metadata);
@@ -31,10 +28,7 @@ export class GetUserQuery extends BaseQuery<
 
 @QueryHandler(GetUserQuery)
 export class GetUserQueryHandler implements IQueryHandler<GetUserQuery> {
-  constructor(
-    @Inject(USER_REPOSITORY)
-    private readonly userRepo: UserRepositoryPort,
-  ) {}
+  constructor(private readonly userRepo: UserRepositoryPort) {}
 
   async execute({ data }: IGetUserMeQuery) {
     const user = await this.userRepo.findOneById(data.userId);

@@ -1,19 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ValidationDetails } from '@workspace/common';
 
 import {
-  AbstractAccessDeniedError,
-  AbstractBadRequestError,
-  AbstractConflictError,
-  AbstractNotFoundError,
-  AbstractValidationError,
-} from './abstract.domain-errors';
+  BaseAccessDeniedError,
+  BaseBadRequestError,
+  BaseConflictError,
+  BaseNotFoundError,
+  BaseValidationError,
+} from './base.domain-errors';
 
-export class EntityNotFoundError extends AbstractNotFoundError<
+export class EntityNotFoundError extends BaseNotFoundError<
   'EntityNotFound',
   EntityNotFoundErrorDetails
 > {
-  public readonly code = 'EntityNotFound';
-  public readonly scope = 'private';
+  readonly code = 'EntityNotFound';
+  readonly scope = 'private';
   constructor(details: EntityNotFoundErrorDetails) {
     super(`Entity ${details.entityName} not found`, details);
   }
@@ -32,12 +33,12 @@ export interface EntityConflictErrorDetails {
   entityName?: string;
   conflicts: EntityConflictInfo[];
 }
-export class EntityConflictError extends AbstractConflictError<
+export class EntityConflictError extends BaseConflictError<
   'EntityConflict',
   EntityConflictErrorDetails
 > {
-  public readonly code = 'EntityConflict';
-  public readonly scope = 'private';
+  readonly code = 'EntityConflict';
+  readonly scope = 'private';
   constructor(details: EntityConflictErrorDetails) {
     super(`Entity ${details.entityName} has conflicts`, details);
   }
@@ -46,41 +47,41 @@ export class EntityConflictError extends AbstractConflictError<
 /**
  * 주의: 사용자 Request Validation의 에러는 ts-rest가 이 클래스가 아닌 RequestValidationError 클래스를 던집니다.
  */
-export class ValidationError extends AbstractValidationError<'ValidationError', ValidationDetails> {
-  public readonly code = 'ValidationError';
-  public readonly scope = 'public';
+export class ValidationError extends BaseValidationError<'ValidationError', ValidationDetails> {
+  readonly code = 'ValidationError';
+  readonly scope = 'public';
   constructor(details?: ValidationDetails) {
     super('A validation error occurred', details);
   }
 }
 
-export class AccessDeniedError extends AbstractAccessDeniedError<'AccessDenied'> {
-  public readonly code = 'AccessDenied';
-  public readonly scope = 'public';
+export class AccessDeniedError extends BaseAccessDeniedError<'AccessDenied'> {
+  readonly code = 'AccessDenied';
+  readonly scope = 'public';
   constructor() {
     super('Access denied');
   }
 }
 
-export class InvalidAccessTokenError extends AbstractBadRequestError<'InvalidAccessToken'> {
-  public readonly code = 'InvalidAccessToken';
-  public readonly scope = 'public';
+export class InvalidAccessTokenError extends BaseBadRequestError<'InvalidAccessToken'> {
+  readonly code = 'InvalidAccessToken';
+  readonly scope = 'public';
   constructor() {
     super('Invalid access token');
   }
 }
 
-export class ExpiredTokenError extends AbstractBadRequestError<'ExpiredToken'> {
-  public readonly code = 'ExpiredToken';
-  public readonly scope = 'public';
+export class ExpiredTokenError extends BaseBadRequestError<'ExpiredToken'> {
+  readonly code = 'ExpiredToken';
+  readonly scope = 'public';
   constructor() {
     super('Token expired');
   }
 }
 
-export class MissingTokenError extends AbstractBadRequestError<'MissingToken'> {
-  public readonly code = 'MissingToken';
-  public readonly scope = 'public';
+export class MissingTokenError extends BaseBadRequestError<'MissingToken'> {
+  readonly code = 'MissingToken';
+  readonly scope = 'public';
   constructor() {
     super('Missing token');
   }

@@ -59,5 +59,19 @@ export const UserPrivateProfileDtoSchema = UserBaseDtoSchema.pick({
 });
 export type UserPrivateProfileDto = z.infer<typeof UserPrivateProfileDtoSchema>;
 
-export const UserAdminDtoSchema = UserBaseDtoSchema;
+export const UserAdminDtoSchema = UserBaseDtoSchema.pick({
+  id: true,
+  email: true,
+  username: true,
+  nickname: true,
+  bio: true,
+  avatarUrl: true,
+  role: true,
+  status: true,
+  lastActiveAt: true,
+  createdAt: true,
+  updatedAt: true,
+  deletedAt: true,
+  adminMemo: true,
+});
 export type UserAdminDto = z.infer<typeof UserAdminDtoSchema>;

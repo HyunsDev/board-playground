@@ -4,6 +4,11 @@ import { nestJsConfig } from '@workspace/eslint-config/nest-js';
 export default [
   ...nestJsConfig,
   {
+    rules: {
+      'functional/no-expression-statements': ['off'],
+    },
+  },
+  {
     ignores: ['.prettierrc.mjs', 'eslint.config.mjs'],
   },
 ];

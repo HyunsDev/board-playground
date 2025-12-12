@@ -3,20 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
-  "scripts": {
-    "dev": "tsup --watch",
-    "build": "tsup",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\""
-  },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "./dist/**"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -24,20 +10,31 @@
       "require": "./dist/index.cjs"
     }
   },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist/**"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
   "dependencies": {
-    "@workspace/common": "workspace:*",
-    "@nestjs/mapped-types": "*",
     "@ts-rest/core": "^3.52.1",
+    "@workspace/common": "workspace:*",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "ts-loader": "^9.4.3",
-    "ts-node": "^10.9.2",
-    "tsc-alias": "^1.8.16",
-    "typescript": "5.5.4",
-    "tsup": "^8.0.0"
+    "tsup": "^8.0.0",
+    "typescript": "5.5.4"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

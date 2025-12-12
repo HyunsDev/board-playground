@@ -1,11 +1,13 @@
 import { err, ok } from 'neverthrow';
 import { v7 } from 'uuid';
 
+import { ExpiredTokenError } from '@workspace/backend-ddd';
+
 import { TokenReuseDetectedError } from './token.domain-errors';
 
-import { Entity, ExpiredTokenError } from '@/shared/base';
+import { BaseEntity, BaseEntityProps } from '@/shared/base';
 
-export interface RefreshTokenProps {
+export interface RefreshTokenProps extends BaseEntityProps {
   id: string;
   hashedToken: string;
   isUsed: boolean;
@@ -22,10 +24,10 @@ export interface CreateRefreshTokenProps {
   sessionId: string;
 }
 
-export class RefreshTokenEntity extends Entity<RefreshTokenProps> {
-  private constructor(props: RefreshTokenProps, id?: string) {
+export class RefreshTokenEntity extends BaseEntity<RefreshTokenProps> {
+  private constructor(props: RefreshTokenProps) {
     super({
-      id: id || props.id,
+      id: props.id || v7(),
       props,
     });
   }
@@ -41,7 +43,7 @@ export class RefreshTokenEntity extends Entity<RefreshTokenProps> {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    const token = new RefreshTokenEntity(props, id);
+    const token = new RefreshTokenEntity(props);
     return token;
   }
 
@@ -65,8 +67,8 @@ export class RefreshTokenEntity extends Entity<RefreshTokenProps> {
     return this.props.expiresAt <= new Date();
   }
 
-  static reconstruct(props: RefreshTokenProps, id: string): RefreshTokenEntity {
-    return new RefreshTokenEntity(props, id);
+  static reconstruct(props: RefreshTokenProps): RefreshTokenEntity {
+    return new RefreshTokenEntity(props);
   }
 
   public validate(): void {}

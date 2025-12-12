@@ -6,7 +6,7 @@ export interface DomainPrimitive<T extends Primitives | Date> {
 
 type ValueObjectProps<T> = T extends Primitives | Date ? DomainPrimitive<T> : T;
 
-export abstract class ValueObject<T> {
+export abstract class AbstractValueObject<T> {
   protected readonly props: ValueObjectProps<T>;
 
   constructor(props: ValueObjectProps<T>) {
@@ -20,7 +20,7 @@ export abstract class ValueObject<T> {
    * 재귀적으로 Value Object의 동등성을 비교합니다.
    * JSON.stringify보다 안전하고 정확합니다.
    */
-  public equals(vo?: ValueObject<T>): boolean {
+  equals(vo?: AbstractValueObject<T>): boolean {
     if (vo === null || vo === undefined) {
       return false;
     }
@@ -34,7 +34,7 @@ export abstract class ValueObject<T> {
    * 원시 값(Primitive)을 반환하거나, 객체를 그대로 반환합니다.
    * 불변성을 위해 객체인 경우 Object.freeze 처리가 된 상태가 권장됩니다.
    */
-  public unpack(): T {
+  unpack(): T {
     if (this.isDomainPrimitive(this.props)) {
       return this.props.value as unknown as T; // Type assertion needed for conditional types
     }
@@ -51,6 +51,7 @@ export abstract class ValueObject<T> {
   /**
    * 객체 및 배열, Date, 다른 ValueObject에 대한 재귀적 비교
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private shallowEqual(objA: any, objB: any): boolean {
     if (objA === objB) return true;
 
@@ -64,7 +65,7 @@ export abstract class ValueObject<T> {
     }
 
     // 다른 Value Object인 경우 재귀 호출
-    if (objA instanceof ValueObject && objB instanceof ValueObject) {
+    if (objA instanceof AbstractValueObject && objB instanceof AbstractValueObject) {
       return objA.equals(objB);
     }
 

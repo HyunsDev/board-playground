@@ -19,7 +19,7 @@ import { type ErrorHttpStatusCode } from '@ts-rest/core';
 export interface ApiError<
   S extends ErrorHttpStatusCode = ErrorHttpStatusCode,
   C extends string = string,
-  T = any,
+  T = unknown,
 > {
   status: S;
   code: C;

@@ -5,12 +5,14 @@ import { DeleteSessionCommandHandler } from './application/commands/delete-sessi
 import { SessionFacade } from './application/facades/session.facade';
 import { GetSessionQueryHandler } from './application/queries/get-session.query';
 import { ListSessionsQueryHandler } from './application/queries/list-sessions.query';
+import { SessionRepositoryPort } from './domain/session.repository.port';
 import { RefreshTokenMapper } from './infra/refresh-token.mapper';
 import { SessionMapper } from './infra/session.mapper';
 import { SessionRepository } from './infra/session.repository';
 import { SessionDtoMapper } from './interface/session.dto-mapper';
 import { SessionHttpController } from './interface/session.http.controller';
-import { SESSION_REPOSITORY } from './session.constants';
+
+import { CryptoModule } from '@/infra/crypto';
 
 const httpControllers = [SessionHttpController];
 const commandHandlers: Provider[] = [DeleteSessionCommandHandler];
@@ -19,13 +21,13 @@ const services: Provider[] = [SessionFacade];
 const mappers: Provider[] = [SessionMapper, SessionDtoMapper, RefreshTokenMapper];
 const repositories: Provider[] = [
   {
-    provide: SESSION_REPOSITORY,
+    provide: SessionRepositoryPort,
     useClass: SessionRepository,
   },
 ];
 
 @Module({
-  imports: [CqrsModule],
+  imports: [CqrsModule, CryptoModule],
   providers: [
     Logger,
     ...commandHandlers,

@@ -7,7 +7,7 @@ import type { ErrorHttpStatusCode, HTTPStatusCode, SuccessfulHttpStatusCode } fr
  *
  * @param S - HTTP 성공 상태 코드 ({@link SuccessfulHttpStatusCode})
  */
-export interface ApiOkResponse<S = SuccessfulHttpStatusCode, T = any> {
+export interface ApiOkResponse<S = SuccessfulHttpStatusCode, T = unknown> {
   status: S;
   body: T;
 }
