@@ -3,7 +3,7 @@ import { AbstractEntity } from './abstract.entity';
 import { AbstractDomainEvent, AbstractIDomainEvent } from '@/cqrs/abstract.domain-event';
 
 export abstract class AbstractAggregateRoot<
-  DomainEvent extends AbstractDomainEvent<
+  TDomainEvent extends AbstractDomainEvent<
     string,
     string,
     string,
@@ -11,13 +11,13 @@ export abstract class AbstractAggregateRoot<
   >,
   TProps,
 > extends AbstractEntity<TProps> {
-  private _domainEvents: DomainEvent[] = [];
+  private _domainEvents: TDomainEvent[] = [];
 
-  get domainEvents(): DomainEvent[] {
+  get domainEvents(): TDomainEvent[] {
     return this._domainEvents;
   }
 
-  protected addEvent(domainEvent: DomainEvent): void {
+  protected addEvent(domainEvent: TDomainEvent): void {
     this._domainEvents = [...this._domainEvents, domainEvent];
   }
 
@@ -25,7 +25,7 @@ export abstract class AbstractAggregateRoot<
     this._domainEvents = [];
   }
 
-  public pullEvents(): DomainEvent[] {
+  public pullEvents(): TDomainEvent[] {
     const events = [...this._domainEvents];
     this.clearEvents();
     return events;
