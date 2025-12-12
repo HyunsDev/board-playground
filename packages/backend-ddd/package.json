@@ -39,9 +39,6 @@
     "tsc-alias": "^1.8.16",
     "typescript": "5.5.4"
   },
-  "engines": {
-    "node": ">=18"
-  },
   "publishConfig": {
     "access": "public"
   }
