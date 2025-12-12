@@ -31,6 +31,7 @@ type ValidateCode<
 export type CommandCode<T extends string> = T & ValidateCode<T, 'cmd'>;
 export type QueryCode<T extends string> = T & ValidateCode<T, 'qry'>;
 export type EventCode<T extends string> = T & ValidateCode<T, 'evt'>;
+export type CausationCode<T extends string> = T & ValidateCode<T, 'cmd' | 'evt' | 'trg'>;
 
 // ---------------------------------------------------------------------------
 // 2. Definition Utilities
