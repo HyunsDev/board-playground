@@ -3,12 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
-  "type": "module",
   "sideEffects": false,
-  "scripts": {
-    "dev": "tsup --watch",
-    "build": "tsup",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\""
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -16,15 +18,10 @@
   "files": [
     "dist/**"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\""
   },
   "dependencies": {
     "@ts-rest/core": "^3.52.1",
@@ -38,5 +35,8 @@
     "ts-node": "^10.9.2",
     "tsup": "^8.0.0",
     "typescript": "5.5.4"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

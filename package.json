@@ -3,22 +3,33 @@
   "version": "0.0.0",
   "private": true,
   "description": "",
-  "author": "",
   "license": "UNLICENSED",
+  "author": "",
   "scripts": {
-    "dev": "turbo run dev dev:check --concurrency=20",
     "build": "turbo run build",
-    "test": "turbo run test",
-    "test:e2e": "turbo run test:e2e",
-    "lint": "turbo run lint",
+    "clean": "pnpm -w dlx rimraf \"node_modules\" \"packages/**/node_modules\" \"packages/**/dist\"",
+    "dev": "turbo run dev dev:check --concurrency=20",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "clean": "pnpm -w dlx rimraf \"node_modules\" \"packages/**/node_modules\" \"packages/**/dist\""
+    "format:pkg": "pnpm exec sort-package-json \"**/package.json\" \"!**/node_modules/**\"",
+    "lint": "turbo run lint",
+    "prepare": "husky",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e"
+  },
+  "lint-staged": {
+    "**/package.json": [
+      "sort-package-json",
+      "prettier --write"
+    ]
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "prettier": "^3.2.5",
     "eslint": "^9.31.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.2.5",
+    "sort-package-json": "^3.5.1",
     "turbo": "^2.6.3"
   },
   "packageManager": "pnpm@8.15.5",

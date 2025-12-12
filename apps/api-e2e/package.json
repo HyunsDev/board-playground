@@ -3,20 +3,20 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "test": "jest",
-    "test:watch": "jest --watch",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\""
+    "test:watch": "jest --watch"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",
     "@jest/globals": "^29.7.0",
     "@prisma/client": "^6.19.0",
     "@ts-rest/core": "^3.52.1",
-    "@workspace/domain": "workspace:*",
     "@workspace/common": "workspace:*",
     "@workspace/contract": "workspace:*",
     "@workspace/database": "workspace:*",
+    "@workspace/domain": "workspace:*",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/jest-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",

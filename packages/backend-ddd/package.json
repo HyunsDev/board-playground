@@ -3,14 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist/**"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -21,10 +13,15 @@
       "require": "./dist/*.js"
     }
   },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
   "scripts": {
+    "build": "pnpm clean && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "clean": "rimraf dist *.tsbuildinfo",
     "dev": "tsc -p tsconfig.build.json -w & tsc-alias -p tsconfig.build.json -w",
-    "build": "pnpm clean && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "lint": "eslint \"{src,test}/**/*.ts\""
   },
   "dependencies": {
@@ -43,5 +40,8 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
