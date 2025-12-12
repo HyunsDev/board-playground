@@ -1,4 +1,4 @@
-import { DomainErrorScope } from './error.types';
+export type DomainErrorScope = 'public' | 'private';
 
 /**
  * 비즈니스 로직에 의해서 발생하는 오류

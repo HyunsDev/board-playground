@@ -3,8 +3,6 @@ import { Result as NeverthrowResult } from 'neverthrow';
 import { DomainError } from './base.domain-errors';
 import { SystemException } from './base.system-exception';
 
-export type DomainErrorScope = 'public' | 'private';
-
 export type Failure = DomainError | SystemException;
 
 export type PublicDomainError = DomainError & { scope: 'public' };
