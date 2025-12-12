@@ -6,7 +6,7 @@ export interface DomainPrimitive<T extends Primitives | Date> {
 
 type ValueObjectProps<T> = T extends Primitives | Date ? DomainPrimitive<T> : T;
 
-export abstract class ValueObject<T> {
+export abstract class AbstractValueObject<T> {
   protected readonly props: ValueObjectProps<T>;
 
   constructor(props: ValueObjectProps<T>) {
@@ -20,7 +20,7 @@ export abstract class ValueObject<T> {
    * 재귀적으로 Value Object의 동등성을 비교합니다.
    * JSON.stringify보다 안전하고 정확합니다.
    */
-  public equals(vo?: ValueObject<T>): boolean {
+  public equals(vo?: AbstractValueObject<T>): boolean {
     if (vo === null || vo === undefined) {
       return false;
     }
@@ -64,7 +64,7 @@ export abstract class ValueObject<T> {
     }
 
     // 다른 Value Object인 경우 재귀 호출
-    if (objA instanceof ValueObject && objB instanceof ValueObject) {
+    if (objA instanceof AbstractValueObject && objB instanceof AbstractValueObject) {
       return objA.equals(objB);
     }
 

@@ -12,7 +12,7 @@ export type AbstractIQuery<CausationCodeType extends string, T> = {
   readonly metadata: AbstractCreateMessageMetadata<CausationCodeType>;
 };
 
-export type AbstractPaginatedQueryProps<CausationCodeType extends string, T> = AbstractIQuery<
+export type AbstractIPaginatedQuery<CausationCodeType extends string, T> = AbstractIQuery<
   CausationCodeType,
   T & {
     page: number;

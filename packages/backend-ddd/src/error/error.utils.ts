@@ -1,4 +1,4 @@
-import { DomainError } from './abstract.domain-errors';
+import { DomainError } from './base.domain-errors';
 import { InvariantViolationException } from './common.system-exceptions';
 import { PublicDomainError } from './error.types';
 

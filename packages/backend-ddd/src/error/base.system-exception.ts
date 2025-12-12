@@ -19,7 +19,7 @@ export abstract class SystemException<
   }
 }
 
-export abstract class AbstractInternalServerException<
+export abstract class BaseInternalServerException<
   Code extends string = string,
   Details = unknown,
 > extends SystemException<Code, Details> {}

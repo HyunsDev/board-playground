@@ -6,11 +6,11 @@ import {
   AbstractMessageMetadata,
 } from './abstract-message-metadata.type';
 
-export interface IAbstractDomainEvent<CausationCodeType extends string, Data> extends IEvent {
+export interface AbstractIDomainEvent<CausationCodeType extends string, Data> extends IEvent {
   readonly data: Data;
   readonly metadata: AbstractCreateMessageMetadata<CausationCodeType>;
   deriveMetadata(
-    this: IAbstractDomainEvent<CausationCodeType, Data>,
+    this: AbstractIDomainEvent<CausationCodeType, Data>,
     overrides?: Partial<AbstractCreateMessageMetadata<CausationCodeType>>,
   ): AbstractCreateMessageMetadata<CausationCodeType>;
 }
@@ -19,7 +19,7 @@ export abstract class AbstractDomainEvent<
   DomainEventCodeType extends CausationCodeType,
   AggregateCodeType extends string,
   CausationCodeType extends string,
-  D extends IAbstractDomainEvent<CausationCodeType, unknown> = IAbstractDomainEvent<
+  D extends AbstractIDomainEvent<CausationCodeType, unknown> = AbstractIDomainEvent<
     CausationCodeType,
     unknown
   >,

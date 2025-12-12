@@ -16,32 +16,32 @@ export abstract class DomainError<Code extends string = string, Details = unknow
   }
 }
 
-export abstract class AbstractNotFoundError<
+export abstract class BaseNotFoundError<
   Code extends string = string,
   Details = unknown,
 > extends DomainError<Code, Details> {}
 
-export abstract class AbstractConflictError<
+export abstract class BaseConflictError<
   Code extends string = string,
   Details = unknown,
 > extends DomainError<Code, Details> {}
 
-export abstract class AbstractAccessDeniedError<
+export abstract class BaseAccessDeniedError<
   Code extends string = string,
   Details = unknown,
 > extends DomainError<Code, Details> {}
 
-export abstract class AbstractUnauthorizedError<
+export abstract class BaseUnauthorizedError<
   Code extends string = string,
   Details = unknown,
 > extends DomainError<Code, Details> {}
 
-export abstract class AbstractValidationError<
+export abstract class BaseValidationError<
   Code extends string = string,
   Details = unknown,
 > extends DomainError<Code, Details> {}
 
-export abstract class AbstractBadRequestError<
+export abstract class BaseBadRequestError<
   Code extends string = string,
   Details = unknown,
 > extends DomainError<Code, Details> {}

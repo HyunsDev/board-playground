@@ -68,6 +68,9 @@ importers:
       '@workspace/backend-common':
         specifier: workspace:*
         version: link:../../packages/backend-common
+      '@workspace/backend-core':
+        specifier: workspace:*
+        version: link:../../packages/backend-core
       '@workspace/backend-ddd':
         specifier: workspace:*
         version: link:../../packages/backend-ddd
