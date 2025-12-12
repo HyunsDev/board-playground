@@ -1,4 +1,4 @@
-import z from 'zod';
+import { z } from 'zod';
 
 import { ManagerRole } from './manager.enums';
 
@@ -6,11 +6,11 @@ import { BoardDtoSchema } from '@/contracts/board';
 import { UserSummaryDtoSchema } from '@/contracts/user';
 
 export const ManagerDtoSchema = z.object({
-  id: z.string().uuid(),
-  boardId: z.string().uuid(),
-  userId: z.string().uuid(),
+  id: z.uuid(),
+  boardId: z.uuid(),
+  userId: z.uuid(),
   role: ManagerRole,
-  createdAt: z.string().datetime(),
+  createdAt: z.iso.datetime(),
 });
 export type ManagerDto = z.infer<typeof ManagerDtoSchema>;
 

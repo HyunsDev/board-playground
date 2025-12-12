@@ -1,0 +1,19 @@
+{
+  "versionGroups": [
+    {
+      "label": "내부 패키지 의존성은 workspace:* 사용",
+      "packages": [
+        "**"
+      ],
+      "dependencies": [
+        "@workspace/*"
+      ],
+      "dependencyTypes": [
+        "dev",
+        "prod",
+        "peer"
+      ],
+      "pinVersion": "workspace:*"
+    }
+  ]
+}

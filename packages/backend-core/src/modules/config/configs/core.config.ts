@@ -2,8 +2,8 @@ import { ConfigType, registerAs } from '@nestjs/config';
 import { z } from 'zod';
 
 export const coreConfigSchema = z.object({
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  DATABASE_URL: z.string().url(),
+  NODE_ENV: z.enum(['development', 'production', 'test']).prefault('development'),
+  DATABASE_URL: z.url(),
 });
 
 export const coreConfig = registerAs('core', () => {

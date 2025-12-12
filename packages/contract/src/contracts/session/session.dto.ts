@@ -12,11 +12,11 @@ export const SessionBaseDtoSchema = z.object({
   device: z.string(),
   browser: z.string(),
   platform: DevicePlatform,
-  lastRefreshedAt: z.string().datetime(),
-  expiresAt: z.string().datetime(),
-  createdAt: z.string().datetime(),
-  closedAt: z.string().datetime().nullable(),
-  revokedAt: z.string().datetime().nullable(),
+  lastRefreshedAt: z.iso.datetime(),
+  expiresAt: z.iso.datetime(),
+  createdAt: z.iso.datetime(),
+  closedAt: z.iso.datetime().nullable(),
+  revokedAt: z.iso.datetime().nullable(),
   status: SessionStatus,
 });
 export type SessionBaseDto = z.infer<typeof SessionBaseDtoSchema>;

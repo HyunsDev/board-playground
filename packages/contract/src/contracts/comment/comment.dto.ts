@@ -1,4 +1,4 @@
-import z from 'zod';
+import { z } from 'zod';
 
 import { ID } from '@/common';
 
@@ -11,7 +11,7 @@ export const CommandDtoSchema = z.object({
   depth: z.number().min(0).max(2),
   content: z.string().min(1).max(500),
   isEdited: z.boolean(),
-  createdAt: z.string().datetime(),
+  createdAt: z.iso.datetime(),
 });
 export type CommandDto = z.infer<typeof CommandDtoSchema>;
 

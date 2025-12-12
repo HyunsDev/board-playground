@@ -60,6 +60,7 @@ export class TestClient {
     }
 
     // 2. 인증 정보 저장
+
     this.setAuthFromResponse(regRes.body);
 
     // 3. 내 정보 조회하여 User 객체 동기화 (ID 등 확보)

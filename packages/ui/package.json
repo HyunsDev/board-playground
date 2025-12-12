@@ -10,20 +10,18 @@
     "generate:component": "turbo gen react-component",
     "lint": "eslint . --max-warnings 0"
   },
-  "dependencies": {},
   "devDependencies": {
-    "@types/node": "^22.15.3",
+    "@types/node": "^24.10.3",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "eslint": "^9.31.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "typescript": "5.8.2"
+    "eslint": "^9.39.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
   },
   "peerDependencies": {
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
   }
 }

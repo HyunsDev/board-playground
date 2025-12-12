@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker/.';
+import { faker } from '@faker-js/faker';
 import { beforeAll, describe, it } from '@jest/globals';
 
 import { ApiErrors } from '@workspace/contract';
