@@ -1,7 +1,7 @@
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
-import { PrismaClient, Prisma } from '@workspace/database';
+
 import {
   AbstractAggregateRoot,
   AbstractMapper,
@@ -11,12 +11,25 @@ import {
   DomainResult,
   DomainEventPublisher,
   LoggerPort,
+  AbstractDomainEvent,
+  AbstractIDomainEvent,
 } from '@workspace/backend-ddd';
+import { PrismaClient, Prisma } from '@workspace/database';
 
-export abstract class PrismaBaseRepository<
-  TAggregate extends AbstractAggregateRoot<any, any>,
+type AbstractCrudDelegate<R> = {
+  findUnique(args: any): Promise<R | null>;
+  create(args: any): Promise<R>;
+  update(args: any): Promise<R>;
+  delete(args: any): Promise<R>;
+};
+
+export abstract class BaseRepository<
+  TAggregate extends AbstractAggregateRoot<
+    AbstractDomainEvent<string, string, string, AbstractIDomainEvent<string, unknown>>,
+    unknown
+  >,
   TDbModel extends { id: string },
-  TDelegate extends { findUnique: any; create: any; update: any; delete: any }, // Prisma Delegate 추상화
+  TDelegate extends AbstractCrudDelegate<TDbModel>,
 > implements RepositoryPort<TAggregate>
 {
   protected abstract get delegate(): TDelegate;
