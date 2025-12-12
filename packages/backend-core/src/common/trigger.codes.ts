@@ -1,4 +1,4 @@
-import type { IsStrictSnakeCase } from '@workspace/common';
+import type { ExtractEnumValues, IsStrictSnakeCase } from '@workspace/common';
 import type { MessageType } from '@workspace/domain/src/codes/define-message-code-enum.utils';
 import type { DomainCodeEnums } from '@workspace/domain/src/codes/domain-code.enums';
 
@@ -41,4 +41,4 @@ export const TriggerCodeEnum = {
 } as const;
 
 export type TriggerCodeEnum = typeof TriggerCodeEnum;
-export type TriggerCode = ValidateTriggerCode<Extract<keyof TriggerCodeEnum, string>>;
+export type TriggerCode = ValidateTriggerCode<ExtractEnumValues<TriggerCodeEnum>>;
