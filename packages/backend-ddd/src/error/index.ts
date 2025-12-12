@@ -4,4 +4,4 @@ export * from './domain-exception';
 export * from './base.system-exception';
 export * from './common.system-exceptions';
 export * from './error.types';
-export * from './error.utils';
+export * from './utils';
