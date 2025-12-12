@@ -1,13 +1,12 @@
 import globals from 'globals';
 import { config as baseConfig } from './base.js';
-import functional from 'eslint-plugin-functional';
 
 /**
- * A custom ESLint configuration for Nest.js.
+ * A custom ESLint configuration for NestJS specific libraries.
  *
  * @type {import("eslint").Linter.Config[]}
- * */
-export const nestJsConfig = [
+ */
+export const nestLibraryConfig = [
   ...baseConfig,
   {
     languageOptions: {
@@ -23,25 +22,18 @@ export const nestJsConfig = [
     },
   },
   {
-    plugins: {
-      functional,
-    },
-    rules: {
-      'functional/no-expression-statements': [
-        'error',
-        {
-          ignoreVoid: true,
-          ignoreCodePattern: ['^this\\..+ = [\\s\\S]+$', '^void [\\s\\S]+$'],
-        },
-      ],
-    },
-  },
-  {
     rules: {
       '@typescript-eslint/only-throw-error': 'error',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/explicit-member-accessibility': [
+        'warn',
+        { accessibility: 'no-public' }, // public은 생략, private/protected는 명시
+      ],
     },
+  },
+  {
+    ignores: ['dist/', 'node_modules/'],
   },
 ];
