@@ -1,7 +1,7 @@
 {
   "versionGroups": [
     {
-      "label": "내부 패키지 의존성은 workspace:* 사용 (내 버전은 건드리지 않음)",
+      "label": "내부 패키지 의존성은 workspace:* 사용",
       "packages": [
         "**"
       ],
