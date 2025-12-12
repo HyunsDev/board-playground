@@ -2,7 +2,10 @@ import { Query } from '@nestjs/cqrs';
 import { v7 as uuidv7 } from 'uuid';
 
 import { DomainError, DomainResult } from '../error';
-import { AbstractCreateMessageMetadata, AbstractMessageMetadata } from './message-metadata.type';
+import {
+  AbstractCreateMessageMetadata,
+  AbstractMessageMetadata,
+} from './abstract-message-metadata.type';
 
 export type AbstractIQuery<CausationCodeType extends string, T> = {
   readonly data: T;
