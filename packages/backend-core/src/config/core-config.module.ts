@@ -1,11 +1,9 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { ConfigModule, registerAs } from '@nestjs/config';
+import { ConfigFactory, ConfigModule } from '@nestjs/config';
 import { z } from 'zod';
 
 import { coreConfig, coreConfigSchema } from './configs/core.config';
 import { httpConfig, httpConfigSchema } from './configs/http.config';
-
-type RegisterAsReturnType = ReturnType<typeof registerAs>;
 
 export interface CoreConfigOptions {
   /**
@@ -18,7 +16,7 @@ export interface CoreConfigOptions {
    * 앱 별로 추가적인 환경변수가 있다면 병합하여 검증
    * 예: JWT Secret 등
    */
-  extraLoad?: RegisterAsReturnType[];
+  extraLoad?: ConfigFactory[];
 
   /**
    * validate 함수에서 호출할 추가 Zod 스키마
@@ -32,7 +30,7 @@ export class CoreConfigModule {
     const { isHttp = false, extraLoad = [], extraSchemas = [] } = options;
 
     // 1. 로드할 Config Factory 결정
-    const load: (() => any)[] = [coreConfig, ...extraLoad];
+    const load: ConfigFactory[] = [coreConfig, ...extraLoad];
     if (isHttp) {
       load.push(httpConfig);
     }
