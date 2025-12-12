@@ -1,4 +1,4 @@
-import z from 'zod';
+import { z } from 'zod';
 
 import { registerAuthReqDto } from './auth.dto';
 import { ApiErrors } from '../api-errors';
@@ -47,7 +47,7 @@ export const loginAuth = c.mutation({
   method: 'POST',
   path: '/auth/login',
   body: z.object({
-    email: z.string().email(),
+    email: z.email(),
     password: passwordSchema,
   }),
   responses: {

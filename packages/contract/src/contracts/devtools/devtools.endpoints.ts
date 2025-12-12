@@ -1,4 +1,4 @@
-import z from 'zod';
+import { z } from 'zod';
 
 import { ApiErrors } from '../api-errors';
 
@@ -10,7 +10,7 @@ export const forceRegisterForDev = c.mutation({
   method: 'POST',
   path: '/_devtools/force-register',
   body: z.object({
-    email: z.string().email(),
+    email: z.email(),
     username: z.string().min(3).max(30),
     nickname: z.string().min(2).max(20),
   }),
@@ -33,7 +33,7 @@ export const forceLoginForDev = c.mutation({
   method: 'POST',
   path: '/_devtools/force-login',
   body: z.object({
-    email: z.string().email(),
+    email: z.email(),
   }),
   responses: {
     200: z.object({

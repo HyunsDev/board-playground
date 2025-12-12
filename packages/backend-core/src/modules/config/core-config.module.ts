@@ -21,7 +21,7 @@ export interface CoreConfigOptions {
   /**
    * validate 함수에서 호출할 추가 Zod 스키마
    */
-  extraSchemas?: z.ZodTypeAny[];
+  extraSchemas?: z.ZodType[];
 }
 
 @Module({})
@@ -45,7 +45,7 @@ export class CoreConfigModule {
     }
 
     // 사용자 정의 스키마(JWT 등)가 있으면 intersection으로 병합
-    let finalSchema: z.ZodTypeAny = mergedSchema;
+    let finalSchema: z.ZodType = mergedSchema;
     if (extraSchemas.length > 0) {
       finalSchema = extraSchemas.reduce((acc, schema) => acc.and(schema), mergedSchema);
     }
@@ -62,7 +62,7 @@ export class CoreConfigModule {
               console.error('❌ [Config] Invalid environment variables:', result.error.format());
               throw new Error('Invalid environment variables');
             }
-            return result.data;
+            return result.data as Record<string, unknown>;
           },
           envFilePath: ['.env.local', '.env'],
         }),

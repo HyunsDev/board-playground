@@ -30,17 +30,17 @@ export const toApiErrorResponses = <const T extends readonly ApiError[]>(excepti
       acc[status].push(toApiErrorResponse(ex));
       return acc;
     },
-    {} as Record<number, z.ZodTypeAny[]>,
+    {} as Record<number, z.ZodType[]>,
   );
 
-  const responses: Record<number, z.ZodTypeAny> = {};
+  const responses: Record<number, z.ZodType> = {};
 
   Object.entries(grouped).forEach(([statusStr, schemas]) => {
     const status = Number(statusStr);
     if (schemas.length === 1) {
-      responses[status] = schemas[0] as z.ZodTypeAny;
+      responses[status] = schemas[0] as z.ZodType;
     } else {
-      responses[status] = z.union(schemas as [z.ZodTypeAny, z.ZodTypeAny, ...z.ZodTypeAny[]]);
+      responses[status] = z.union(schemas as [z.ZodType, z.ZodType, ...z.ZodType[]]);
     }
   });
   return responses as unknown as ErrorResponseMap<T[number]>;

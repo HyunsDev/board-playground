@@ -6,7 +6,7 @@ export const httpConfigSchema = z.object({
   COOKIE_SECRET: z.string().min(32),
 
   JWT_ACCESS_SECRET: z.string().min(32),
-  JWT_ACCESS_EXPIRATION_TIME: z.string().default('15m'),
+  JWT_ACCESS_EXPIRATION_TIME: z.string().prefault('15m'),
 });
 
 export const httpConfig = registerAs('http', () => {

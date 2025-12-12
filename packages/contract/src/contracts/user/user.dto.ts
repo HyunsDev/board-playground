@@ -6,18 +6,18 @@ import { ID } from '@/common';
 
 export const UserBaseDtoSchema = z.object({
   id: ID,
-  email: z.string().email(),
+  email: z.email(),
   username: z.string().min(3).max(30),
   nickname: z.string().min(2).max(20),
   bio: z.string().max(160).nullable(),
-  avatarUrl: z.string().url().nullable(),
+  avatarUrl: z.url().nullable(),
   role: UserRole,
   status: UserStatus,
 
-  lastActiveAt: z.string().datetime(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  deletedAt: z.string().datetime().nullable(),
+  lastActiveAt: z.iso.datetime(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
+  deletedAt: z.iso.datetime().nullable(),
   adminMemo: z.string().max(500).nullable(),
 });
 export type UserBaseDto = z.infer<typeof UserBaseDtoSchema>;

@@ -1,11 +1,11 @@
-import z from 'zod';
+import { z } from 'zod';
 
 import { UserRoleSchema } from './user-role.schema';
 
 export const TokenPayloadSchema = z.object({
-  sub: z.string().uuid(),
+  sub: z.uuid(),
   role: UserRoleSchema,
-  email: z.string().email(),
+  email: z.email(),
   sessionId: z.string(),
 });
 

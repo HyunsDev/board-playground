@@ -13,7 +13,7 @@
     "@faker-js/faker": "^9.9.0",
     "@jest/globals": "^30.2.0",
     "@prisma/client": "^6.19.1",
-    "@ts-rest/core": "^3.52.1",
+    "@ts-rest/core": "3.53.0-rc.1",
     "@types/node": "^24.10.3",
     "@workspace/common": "workspace:*",
     "@workspace/contract": "workspace:*",
@@ -27,6 +27,6 @@
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "zod": "^3.25.76"
+    "zod": "^4.1.13"
   }
 }

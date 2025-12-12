@@ -1,4 +1,4 @@
-import z from 'zod';
+import { z } from 'zod';
 
 import {
   type PaginatedResult,
@@ -14,14 +14,14 @@ import {
 /**
  * 기존 검색 스키마(DTO)에 페이지네이션 옵션(page, limit)을 추가합니다.
  */
-export const withPagination = <T extends z.ZodTypeAny>(schema: T) => {
+export const withPagination = <T extends z.ZodType>(schema: T) => {
   return schema.and(paginationOptionsSchema);
 };
 
 /**
  * 아이템 스키마를 받아 PaginatedResult 형태의 응답 스키마를 생성합니다.
  */
-export const paginatedResultSchemaOf = <T extends z.ZodTypeAny>(itemSchema: T) => {
+export const paginatedResultSchemaOf = <T extends z.ZodType>(itemSchema: T) => {
   return z.object({
     items: z.array(itemSchema),
     meta: paginationMetadataSchema,
