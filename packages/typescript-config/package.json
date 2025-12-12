@@ -3,6 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
+  "devDependencies": {
+    "next": "^15"
+  },
+  "peerDependencies": {
+    "next": "^15"
+  },
   "publishConfig": {
     "access": "public"
   }
