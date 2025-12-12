@@ -13,7 +13,9 @@ import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 export const getUserForAdmin = c.query({
   method: 'GET',
   path: '/admin/users/:userId',
-  pathParams: c.type<{ userId: string }>(),
+  pathParams: z.object({
+    userId: z.string().uuid(),
+  }),
   responses: {
     200: z.object({
       user: UserAdminDtoSchema,

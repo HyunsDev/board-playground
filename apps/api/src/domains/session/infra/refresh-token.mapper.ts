@@ -18,7 +18,7 @@ export class RefreshTokenMapper extends BaseMapper<RefreshTokenEntity, RefreshTo
       expiresAt: record.expiresAt,
       isUsed: record.isUsed,
     };
-    return RefreshTokenEntity.reconstruct(props, record.id);
+    return RefreshTokenEntity.reconstruct(props);
   }
   toPersistence(entity: RefreshTokenEntity): RefreshToken {
     const props = entity.getProps();
