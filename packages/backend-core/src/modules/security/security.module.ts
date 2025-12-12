@@ -8,7 +8,7 @@ import { RolesGuard } from './guards/roles.guard';
 import { AccessTokenProvider } from './providers/access-token.provider';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
-import { HttpConfig, httpConfig } from '@/config';
+import { HttpConfig, httpConfig } from '@/modules/config';
 
 const globalAuthGuard: Provider[] = [
   {

@@ -9,7 +9,7 @@ import { MessageCausationInterceptor } from './message-causation.interceptor';
 import { TransactionManager } from './transaction.manager';
 import { PrismaService } from '../database/prisma.service';
 
-import { DatabaseModule } from '@/database/database.module';
+import { DatabaseModule } from '@/modules/database/database.module';
 
 @Global()
 @Module({

@@ -6,7 +6,7 @@ import { UserRole } from '@workspace/database';
 
 import { ROLES_KEY } from '../decorators/roles.decorator';
 
-import { ContextService } from '@/context';
+import { ContextService } from '@/modules/context';
 
 @Injectable()
 export class RolesGuard implements CanActivate {

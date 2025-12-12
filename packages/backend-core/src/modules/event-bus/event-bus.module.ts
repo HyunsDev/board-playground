@@ -5,7 +5,7 @@ import { DomainEventPublisher } from '@workspace/backend-ddd';
 
 import { NestJSDomainEventPublisher } from './domain-event.publisher';
 
-import { CoreContextModule } from '@/context/context.module';
+import { CoreContextModule } from '@/modules/context/context.module';
 
 @Global()
 @Module({

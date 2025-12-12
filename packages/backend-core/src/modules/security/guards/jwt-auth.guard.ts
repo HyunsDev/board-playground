@@ -13,7 +13,7 @@ import { TokenPayload, TokenPayloadSchema } from '@workspace/domain';
 
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
-import { ContextService } from '@/context';
+import { ContextService } from '@/modules/context';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {

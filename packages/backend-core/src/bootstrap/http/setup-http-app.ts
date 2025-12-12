@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 
-import { httpConfig, HttpConfig } from '@/config';
+import { httpConfig, HttpConfig } from '@/modules/config';
 
 export interface BootstrapOptions {
   enableCors?: boolean;

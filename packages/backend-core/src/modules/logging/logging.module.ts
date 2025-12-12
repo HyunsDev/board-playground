@@ -9,8 +9,8 @@ import { createDevLoggerStream } from './config/pino-pretty.config';
 import { CqrsInstrumentation } from './cqrs.instrumentation';
 import { ContextService } from '../context/context.service';
 
-import { CoreConfig, coreConfig } from '@/config';
-import { CoreContextModule } from '@/context/context.module';
+import { CoreConfig, coreConfig } from '@/modules/config';
+import { CoreContextModule } from '@/modules/context/context.module';
 
 @Module({
   imports: [
