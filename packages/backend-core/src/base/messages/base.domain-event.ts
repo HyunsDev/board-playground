@@ -1,7 +1,7 @@
 import { AbstractDomainEvent, AbstractDomainEventProps } from '@workspace/backend-ddd';
 import { CausationCode, DomainCode, EventCode } from '@workspace/domain';
 
-export type BaseDomainEventProps<T> = AbstractDomainEventProps<CausationCode, DomainCode, T>;
+export type BaseDomainEventProps<T> = AbstractDomainEventProps<T>;
 
 /**
  * BaseDomainEvent는 모든 도메인 이벤트의 공통 속성과 동작을 정의하는 추상 클래스입니다.

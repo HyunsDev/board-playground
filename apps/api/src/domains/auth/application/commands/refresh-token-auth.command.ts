@@ -2,8 +2,8 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
-import { AccessTokenProvider, TransactionManager } from '@workspace/backend-core';
-import { BaseICommand, BaseCommand } from '@workspace/backend-core';
+import { AccessTokenProvider, DeriveMetadata, TransactionManager } from '@workspace/backend-core';
+import { BaseCommandProps, BaseCommand } from '@workspace/backend-core';
 import { TypedData, matchError, typedOk } from '@workspace/backend-ddd';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
@@ -12,7 +12,7 @@ import { InvalidRefreshTokenError } from '@/domains/session/domain/token.domain-
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { AuthTokens } from '@/shared/types/tokens';
 
-type IRefreshTokenAuthCommand = BaseICommand<{
+type IRefreshTokenAuthCommand = BaseCommandProps<{
   refreshToken: string;
 }>;
 
@@ -27,16 +27,13 @@ type RefreshTokenAuthCommandResult =
 
 export class RefreshTokenAuthCommand extends BaseCommand<
   IRefreshTokenAuthCommand,
-  HandlerResult<RefreshTokenAuthCommandHandler>,
-  RefreshTokenAuthCommandResult
+  RefreshTokenAuthCommandResult,
+  HandlerResult<RefreshTokenAuthCommandHandler>
 > {
-  readonly code = defineCommandCode('account:auth:cmd:refresh_token');
+  static readonly code = defineCommandCode('account:auth:cmd:refresh_token');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(
-    data: IRefreshTokenAuthCommand['data'],
-    metadata: IRefreshTokenAuthCommand['metadata'],
-  ) {
+  constructor(data: IRefreshTokenAuthCommand['data'], metadata: DeriveMetadata) {
     super(null, data, metadata);
   }
 }

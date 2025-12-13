@@ -1,17 +1,17 @@
-import { BaseDomainEvent, BaseIDomainEvent } from '@workspace/backend-core';
+import { BaseDomainEvent, BaseDomainEventProps, DeriveMetadata } from '@workspace/backend-core';
 import { defineEventCode, AggregateCodeEnum } from '@workspace/domain';
 
-type ISessionRefreshedEvent = BaseIDomainEvent<{
+type ISessionRefreshedEvent = BaseDomainEventProps<{
   userId: string;
   sessionId: string;
   newRefreshTokenId: string;
 }>;
 
 export class SessionRefreshedEvent extends BaseDomainEvent<ISessionRefreshedEvent> {
-  public readonly code = defineEventCode('account:session:evt:refreshed');
+  public static readonly code = defineEventCode('account:session:evt:refreshed');
   public readonly resourceType = AggregateCodeEnum.Account.Session;
 
-  constructor(data: ISessionRefreshedEvent['data'], metadata?: ISessionRefreshedEvent['metadata']) {
+  constructor(data: ISessionRefreshedEvent['data'], metadata?: DeriveMetadata) {
     super(data.sessionId, data, metadata);
   }
 }

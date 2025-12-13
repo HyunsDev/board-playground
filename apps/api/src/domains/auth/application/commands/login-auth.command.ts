@@ -2,8 +2,8 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
-import { AccessTokenProvider, TransactionManager } from '@workspace/backend-core';
-import { BaseCommand, BaseICommand } from '@workspace/backend-core';
+import { AccessTokenProvider, DeriveMetadata, TransactionManager } from '@workspace/backend-core';
+import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { matchError } from '@workspace/backend-ddd';
 import { DEVICE_PLATFORM } from '@workspace/contract';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
@@ -15,7 +15,7 @@ import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { PasswordProvider } from '@/infra/crypto';
 import { AuthTokens } from '@/shared/types/tokens';
 
-type ILoginAuthCommand = BaseICommand<{
+type ILoginAuthCommand = BaseCommandProps<{
   email: string;
   password: string;
   ipAddress: string;
@@ -24,13 +24,13 @@ type ILoginAuthCommand = BaseICommand<{
 
 export class LoginAuthCommand extends BaseCommand<
   ILoginAuthCommand,
-  HandlerResult<LoginAuthCommandHandler>,
-  AuthTokens
+  AuthTokens,
+  HandlerResult<LoginAuthCommandHandler>
 > {
-  readonly code = defineCommandCode('account:auth:cmd:login');
+  static readonly code = defineCommandCode('account:auth:cmd:login');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: ILoginAuthCommand['data'], metadata: ILoginAuthCommand['metadata']) {
+  constructor(data: ILoginAuthCommand['data'], metadata: DeriveMetadata) {
     super(null, data, metadata);
   }
 }

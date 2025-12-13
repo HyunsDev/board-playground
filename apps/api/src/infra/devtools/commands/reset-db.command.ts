@@ -3,21 +3,21 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
-import { PrismaService } from '@workspace/backend-core';
-import { BaseCommand, BaseICommand } from '@workspace/backend-core';
+import { DeriveMetadata, PrismaService } from '@workspace/backend-core';
+import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
-type ResetDbCommandProps = BaseICommand<void>;
+type ResetDbCommandProps = BaseCommandProps<void>;
 
 export class ResetDBCommand extends BaseCommand<
   ResetDbCommandProps,
-  HandlerResult<ResetDBCommandHandler>,
-  void
+  void,
+  HandlerResult<ResetDBCommandHandler>
 > {
-  readonly code = defineCommandCode('system:devtools:cmd:reset_db');
+  static readonly code = defineCommandCode('system:devtools:cmd:reset_db');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: ResetDbCommandProps['data'], metadata: ResetDbCommandProps['metadata']) {
+  constructor(data: ResetDbCommandProps['data'], metadata: DeriveMetadata) {
     super(null, data, metadata);
   }
 }

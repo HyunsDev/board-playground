@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import {
   AbstractCreateMessageMetadata,
+  AbstractDrivenMessageMetadata,
   AbstractMessageMetadata,
 } from '../abstract-message-metadata.type';
 import { RESULT_TYPE_SYMBOL } from '../message.constant';
@@ -27,23 +28,15 @@ const MessageMetadataSchema = z.object({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructor<T = any> = new (...args: any[]) => T;
 
-export type AbstractMessageProps<
-  CausationCodeType extends string = string,
-  ResourceCodeType extends string = string,
-  T = unknown,
-> = {
+export type AbstractMessageProps<T = unknown> = {
   readonly data: T;
-  readonly metadata: AbstractMessageMetadata<CausationCodeType, ResourceCodeType>;
 };
 
 export abstract class AbstractMessage<
   CausationCodeType extends string = string,
   ResourceCodeType extends string = string,
   MessageCodeType extends CausationCodeType = CausationCodeType,
-  TProps extends AbstractMessageProps<CausationCodeType, ResourceCodeType> = AbstractMessageProps<
-    CausationCodeType,
-    ResourceCodeType
-  >,
+  TProps extends AbstractMessageProps = AbstractMessageProps,
   TOk = unknown,
   TRes extends DomainResult<TOk, DomainError> | void = void,
 > {
@@ -80,14 +73,17 @@ export abstract class AbstractMessage<
   constructor(
     resourceId: string | null,
     data: TProps['data'],
-    metadata:
-      | AbstractMessageMetadata<CausationCodeType, ResourceCodeType>
-      | AbstractCreateMessageMetadata<CausationCodeType, ResourceCodeType>,
-    id: string | null = null,
+    metadata?: AbstractCreateMessageMetadata<CausationCodeType, ResourceCodeType>,
+    id?: string | null,
   ) {
-    const { correlationId, causationId, causationType, userId } = metadata;
-    const createdAt = 'createdAt' in metadata ? metadata.createdAt : null;
-    const metadataResourceId = 'resourceId' in metadata ? metadata.resourceId : undefined;
+    const {
+      correlationId,
+      causationId,
+      causationType,
+      userId,
+      createdAt,
+      resourceId: metadataResourceId,
+    } = metadata || {};
 
     this._id = id ?? uuidv7();
     this._data = data;
@@ -163,7 +159,7 @@ export abstract class AbstractMessage<
   }
 
   updateMetadata(
-    metadata: Partial<AbstractCreateMessageMetadata<CausationCodeType, ResourceCodeType>>,
+    metadata: Partial<AbstractDrivenMessageMetadata<CausationCodeType, ResourceCodeType>>,
   ): void {
     this._metadata = {
       ...this._metadata,
@@ -173,8 +169,8 @@ export abstract class AbstractMessage<
   }
 
   deriveMetadata(
-    overrides?: Partial<AbstractCreateMessageMetadata<CausationCodeType, ResourceCodeType>>,
-  ): AbstractCreateMessageMetadata<CausationCodeType, ResourceCodeType> {
+    overrides?: Partial<AbstractDrivenMessageMetadata<CausationCodeType, ResourceCodeType>>,
+  ): AbstractDrivenMessageMetadata<CausationCodeType, ResourceCodeType> {
     return {
       correlationId: this._metadata.correlationId, // 뿌리 유지
       causationId: this._id,

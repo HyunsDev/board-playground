@@ -9,7 +9,9 @@ import {
 } from '@workspace/backend-ddd';
 import { CausationCode, CommandCode, DomainCode } from '@workspace/domain';
 
-export type BaseCommandProps<T> = AbstractCommandProps<CausationCode, DomainCode, T>;
+import { CreateMessageMetadata } from './message-metadata';
+
+export type BaseCommandProps<T> = AbstractCommandProps<T>;
 
 /**
  * BaseCommand는 모든 커맨드의 공통 속성과 동작을 정의하는 추상 클래스입니다.
@@ -28,4 +30,13 @@ export abstract class BaseCommand<
 {
   static readonly code: CommandCode;
   declare [RESULT_TYPE_SYMBOL]: TRes;
+
+  constructor(
+    resourceId: string | null,
+    data: TProps['data'],
+    metadata: CreateMessageMetadata,
+    id?: string | null,
+  ) {
+    super(resourceId, data, metadata, id);
+  }
 }

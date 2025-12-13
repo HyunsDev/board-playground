@@ -2,26 +2,26 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
-import { BaseQuery, BaseIQuery } from '@workspace/backend-core';
+import { BaseQuery, BaseQueryProps, DeriveMetadata } from '@workspace/backend-core';
 import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { SessionEntity } from '../../domain/session.entity';
 
 import { SessionRepositoryPort } from '@/domains/session/domain/session.repository.port';
 
-type ISessionsQuery = BaseIQuery<{
+type ISessionsQuery = BaseQueryProps<{
   userId: string;
 }>;
 
 export class ListSessionsQuery extends BaseQuery<
   ISessionsQuery,
-  HandlerResult<ListSessionsQueryHandler>,
-  SessionEntity[]
+  SessionEntity[],
+  HandlerResult<ListSessionsQueryHandler>
 > {
-  readonly code = defineQueryCode('account:session:qry:list');
+  static readonly code = defineQueryCode('account:session:qry:list');
   readonly resourceType = DomainCodeEnums.Account.Session;
 
-  constructor(data: ISessionsQuery['data'], metadata: ISessionsQuery['metadata']) {
+  constructor(data: ISessionsQuery['data'], metadata: DeriveMetadata) {
     super(data.userId, data, metadata);
   }
 }

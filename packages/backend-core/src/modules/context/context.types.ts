@@ -1,8 +1,8 @@
 import { ClsStore } from 'nestjs-cls';
 
-import { AbstractCreateMessageMetadata } from '@workspace/backend-ddd';
+import { AbstractDrivenMessageMetadata } from '@workspace/backend-ddd';
 import { Prisma } from '@workspace/database';
-import { CausationCode, UserRole } from '@workspace/domain';
+import { CausationCode, DomainCode, UserRole } from '@workspace/domain';
 
 export interface ClientContext {
   ipAddress: string;
@@ -17,7 +17,7 @@ export interface TokenContext {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type MessageMetadataContext = AbstractCreateMessageMetadata<CausationCode<any>>;
+export type MessageMetadataContext = AbstractDrivenMessageMetadata<CausationCode<any>, DomainCode>;
 
 export interface AppContext extends ClsStore {
   requestId: string;

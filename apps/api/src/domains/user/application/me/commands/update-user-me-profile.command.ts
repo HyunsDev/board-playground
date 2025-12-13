@@ -2,12 +2,12 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
-import { BaseCommand, BaseICommand } from '@workspace/backend-core';
+import { BaseCommand, BaseCommandProps, DeriveMetadata } from '@workspace/backend-core';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
-type IUpdateUserMeProfileCommand = BaseICommand<{
+type IUpdateUserMeProfileCommand = BaseCommandProps<{
   userId: string;
   nickname?: string;
   bio?: string | null;
@@ -15,16 +15,13 @@ type IUpdateUserMeProfileCommand = BaseICommand<{
 
 export class UpdateUserMeProfileCommand extends BaseCommand<
   IUpdateUserMeProfileCommand,
-  HandlerResult<UpdateUserMeProfileCommandHandler>,
-  UserEntity
+  UserEntity,
+  HandlerResult<UpdateUserMeProfileCommandHandler>
 > {
-  readonly code = defineCommandCode('account:user:cmd:update_me_profile');
+  static readonly code = defineCommandCode('account:user:cmd:update_me_profile');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(
-    data: IUpdateUserMeProfileCommand['data'],
-    metadata: IUpdateUserMeProfileCommand['metadata'],
-  ) {
+  constructor(data: IUpdateUserMeProfileCommand['data'], metadata: DeriveMetadata) {
     super(data.userId, data, metadata);
   }
 }

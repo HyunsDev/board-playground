@@ -11,12 +11,10 @@ import {
 import { PaginationQuery } from '@workspace/common';
 import { CausationCode, DomainCode, QueryCode } from '@workspace/domain';
 
-export type BaseQueryProps<T> = AbstractQueryProps<CausationCode, DomainCode, T>;
-export type BasePaginatedQueryProps<T> = AbstractPaginatedQueryProps<
-  CausationCode,
-  DomainCode,
-  PaginationQuery<T>
->;
+import { CreateMessageMetadata } from './message-metadata';
+
+export type BaseQueryProps<T> = AbstractQueryProps<T>;
+export type BasePaginatedQueryProps<T> = AbstractPaginatedQueryProps<PaginationQuery<T>>;
 
 /**
  * BaseQuery는 모든 쿼리의 공통 속성과 동작을 정의하는 추상 클래스입니다.
@@ -35,4 +33,13 @@ export abstract class BaseQuery<
 {
   static readonly code: QueryCode;
   declare [RESULT_TYPE_SYMBOL]: TRes;
+
+  constructor(
+    resourceId: string | null,
+    data: TProps['data'],
+    metadata?: CreateMessageMetadata,
+    id?: string | null,
+  ) {
+    super(resourceId, data, metadata, id);
+  }
 }

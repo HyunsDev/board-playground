@@ -2,15 +2,15 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
-import { AccessTokenProvider } from '@workspace/backend-core';
-import { BaseCommand, BaseICommand } from '@workspace/backend-core';
+import { AccessTokenProvider, DeriveMetadata } from '@workspace/backend-core';
+import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { AuthTokens } from '@/shared/types/tokens';
 
-type ForceRegisterCommandProps = BaseICommand<{
+type ForceRegisterCommandProps = BaseCommandProps<{
   email: string;
   username: string;
   nickname: string;
@@ -18,16 +18,13 @@ type ForceRegisterCommandProps = BaseICommand<{
 
 export class ForceRegisterCommand extends BaseCommand<
   ForceRegisterCommandProps,
-  HandlerResult<ForceRegisterCommandHandler>,
-  AuthTokens
+  AuthTokens,
+  HandlerResult<ForceRegisterCommandHandler>
 > {
-  readonly code = defineCommandCode('system:devtools:cmd:force_register');
+  static readonly code = defineCommandCode('system:devtools:cmd:force_register');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(
-    data: ForceRegisterCommandProps['data'],
-    metadata: ForceRegisterCommandProps['metadata'],
-  ) {
+  constructor(data: ForceRegisterCommandProps['data'], metadata: DeriveMetadata) {
     super(null, data, metadata);
   }
 }

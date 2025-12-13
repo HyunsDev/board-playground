@@ -20,10 +20,23 @@ export type AbstractMessageMetadata<
   readonly userId: string | null;
 };
 
-export type AbstractCreateMessageMetadata<
+export type AbstractDrivenMessageMetadata<
   CausationCodeType extends string = string,
   ResourceCodeType extends string = string,
 > = Omit<
   AbstractMessageMetadata<CausationCodeType, ResourceCodeType>,
   'createdAt' | 'resourceId' | 'resourceType'
 >;
+
+export type AbstractCreateMessageMetadata<
+  CausationCodeType extends string = string,
+  ResourceCodeType extends string = string,
+> = {
+  readonly createdAt?: number | null;
+  readonly correlationId: string | null;
+  readonly causationType: CausationCodeType | null;
+  readonly causationId: string | null;
+  readonly resourceType?: ResourceCodeType | null;
+  readonly resourceId?: string | null;
+  readonly userId: string | null;
+};

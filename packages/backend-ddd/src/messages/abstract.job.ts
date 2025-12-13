@@ -1,22 +1,15 @@
 import z from 'zod';
 
-import { AbstractCreateMessageMetadata } from './abstract-message-metadata.type';
+import { AbstractDrivenMessageMetadata } from './abstract-message-metadata.type';
 import { AbstractMessage, AbstractMessageProps } from './internal/abstract.message';
 
-export type AbstractJobProps<
-  CausationCodeType extends string = string,
-  ResourceCodeType extends string = string,
-  T = unknown,
-> = AbstractMessageProps<CausationCodeType, ResourceCodeType, T>;
+export type AbstractJobProps<T = unknown> = AbstractMessageProps<T>;
 
 export abstract class AbstractJob<
   CausationCodeType extends string = string,
   ResourceCodeType extends string = string,
   JobCodeType extends CausationCodeType = CausationCodeType,
-  TProps extends AbstractJobProps<CausationCodeType, ResourceCodeType> = AbstractJobProps<
-    CausationCodeType,
-    ResourceCodeType
-  >,
+  TProps extends AbstractJobProps = AbstractJobProps,
   TOptions = void,
 > extends AbstractMessage<CausationCodeType, ResourceCodeType, JobCodeType, TProps, unknown, void> {
   abstract readonly queueName: string;
@@ -27,7 +20,7 @@ export abstract class AbstractJob<
   constructor(
     resourceId: string | null,
     data: TProps['data'],
-    metadata: AbstractCreateMessageMetadata<CausationCodeType, ResourceCodeType>,
+    metadata: AbstractDrivenMessageMetadata<CausationCodeType, ResourceCodeType>,
     options?: TOptions,
   ) {
     super(resourceId, data, metadata);

@@ -3,7 +3,7 @@ import { JobsOptions } from 'bullmq';
 import { AbstractJobProps, AbstractJob } from '@workspace/backend-ddd';
 import { CausationCode, DomainCode, JobCode } from '@workspace/domain';
 
-export type BaseJobProps<T> = AbstractJobProps<CausationCode, DomainCode, T>;
+export type BaseJobProps<T> = AbstractJobProps<T>;
 
 export abstract class BaseJob<TProps extends BaseJobProps<unknown>> extends AbstractJob<
   CausationCode,

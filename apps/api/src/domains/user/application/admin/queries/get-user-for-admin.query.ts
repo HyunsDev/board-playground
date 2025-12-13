@@ -1,24 +1,24 @@
 import { QueryHandler } from '@nestjs/cqrs';
 
 import { HandlerResult } from '@workspace/backend-common';
-import { BaseQuery, BaseIQuery } from '@workspace/backend-core';
+import { BaseQuery, BaseQueryProps, DeriveMetadata } from '@workspace/backend-core';
 import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserEntity } from '../../../domain/user.entity';
 import { UserRepositoryPort } from '../../../domain/user.repository.port';
 
-type IGetUserForAdminQuery = BaseIQuery<{
+type IGetUserForAdminQuery = BaseQueryProps<{
   userId: string;
 }>;
 export class GetUserForAdminQuery extends BaseQuery<
   IGetUserForAdminQuery,
-  HandlerResult<GetUserForAdminQueryHandler>,
-  UserEntity
+  UserEntity,
+  HandlerResult<GetUserForAdminQueryHandler>
 > {
-  readonly code = defineQueryCode('account:user:qry:get_for_admin');
+  static readonly code = defineQueryCode('account:user:qry:get_for_admin');
   readonly resourceType = DomainCodeEnums.Account.User;
 
-  constructor(data: IGetUserForAdminQuery['data'], metadata: IGetUserForAdminQuery['metadata']) {
+  constructor(data: IGetUserForAdminQuery['data'], metadata: DeriveMetadata) {
     super(data.userId, data, metadata);
   }
 }

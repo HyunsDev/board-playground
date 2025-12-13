@@ -1,7 +1,7 @@
-import { BaseDomainEvent, BaseIDomainEvent } from '@workspace/backend-core';
+import { BaseDomainEvent, BaseDomainEventProps, DeriveMetadata } from '@workspace/backend-core';
 import { AggregateCodeEnum, defineEventCode } from '@workspace/domain';
 
-type IUserCreatedEvent = BaseIDomainEvent<{
+type IUserCreatedEvent = BaseDomainEventProps<{
   userId: string;
   email: string;
   username: string;
@@ -9,10 +9,10 @@ type IUserCreatedEvent = BaseIDomainEvent<{
 }>;
 
 export class UserCreatedEvent extends BaseDomainEvent<IUserCreatedEvent> {
-  readonly code = defineEventCode('account:user:evt:created');
+  static readonly code = defineEventCode('account:user:evt:created');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: IUserCreatedEvent['data'], metadata?: IUserCreatedEvent['metadata']) {
+  constructor(data: IUserCreatedEvent['data'], metadata?: DeriveMetadata) {
     super(data.userId, data, metadata);
   }
 }
