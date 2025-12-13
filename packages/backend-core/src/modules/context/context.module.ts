@@ -1,8 +1,8 @@
-import { Global, Module } from '@nestjs/common'; // 👈 Global 임포트 확인
+import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
-import { ClsModule } from 'nestjs-cls';
+import { ClsModule, ClsPlugin } from 'nestjs-cls';
 
 import { ContextService } from './context.service';
 import { MessageCausationInterceptor } from './message-causation.interceptor';
@@ -11,31 +11,56 @@ import { PrismaService } from '../database/prisma.service';
 
 import { DatabaseModule } from '@/modules/database/database.module';
 
+export interface CoreContextModuleOptions {
+  enableDatabase?: boolean;
+}
+
 @Global()
-@Module({
-  imports: [
-    DatabaseModule,
-    ClsModule.forRoot({
-      global: true,
-      middleware: { mount: false },
-      plugins: [
+@Module({})
+export class CoreContextModule {
+  static forRoot(options: CoreContextModuleOptions = {}): DynamicModule {
+    const { enableDatabase = true } = options;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const imports: any[] = [];
+    const clsPlugins: ClsPlugin[] = [];
+    const providers: Provider[] = [
+      ContextService,
+      {
+        provide: APP_INTERCEPTOR,
+        useClass: MessageCausationInterceptor,
+      },
+    ];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const exports: any[] = [ContextService, ClsModule];
+
+    if (enableDatabase) {
+      imports.push(DatabaseModule);
+      clsPlugins.push(
         new ClsPluginTransactional({
           imports: [DatabaseModule],
           adapter: new TransactionalAdapterPrisma({
             prismaInjectionToken: PrismaService,
           }),
         }),
-      ],
-    }),
-  ],
-  providers: [
-    ContextService,
-    TransactionManager,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: MessageCausationInterceptor,
-    },
-  ],
-  exports: [ContextService, ClsModule, TransactionManager],
-})
-export class CoreContextModule {}
+      );
+      providers.push(TransactionManager);
+      exports.push(TransactionManager);
+    }
+
+    imports.push(
+      ClsModule.forRoot({
+        global: true,
+        middleware: { mount: false },
+        plugins: clsPlugins,
+      }),
+    );
+
+    return {
+      module: CoreContextModule,
+      imports,
+      providers,
+      exports,
+    };
+  }
+}

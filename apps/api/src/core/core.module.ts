@@ -23,7 +23,7 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
     }),
     CqrsModule.forRoot(),
     DatabaseModule,
-    HttpContextModule,
+    HttpContextModule.forRoot(),
     EventBusModule,
     LoggingModule,
     SecurityModule.forRoot({
