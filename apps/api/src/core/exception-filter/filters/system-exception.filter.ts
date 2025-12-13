@@ -1,8 +1,11 @@
 import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
-import { SystemException, matchError, apiErr, GlobalSystemException } from '@workspace/backend-ddd';
+import { CoreSystemException } from '@workspace/backend-core';
+import { SystemException, matchError, apiErr, DDDSystemException } from '@workspace/backend-ddd';
 import { ApiErrors } from '@workspace/contract';
+
+type GlobalSystemException = DDDSystemException | CoreSystemException;
 
 @Catch(SystemException)
 export class SystemExceptionFilter implements ExceptionFilter<SystemException> {
@@ -34,6 +37,14 @@ export class SystemExceptionFilter implements ExceptionFilter<SystemException> {
         InvariantViolation: (err) => {
           this.logger.error(`Invariant violation: ${err.message}`, exception?.stack);
           return apiErr(ApiErrors.Common.InternalServerError, {});
+        },
+        CacheInfrastructureError: (err) => {
+          this.logger.error(
+            `Cache infrastructure error: ${err.details?.key}`,
+            exception?.stack,
+            JSON.stringify(err.details?.originalError),
+          );
+          return apiErr(ApiErrors.Common.InternalServerError);
         },
       });
 

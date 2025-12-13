@@ -40,7 +40,7 @@ export class InvariantViolationException extends BaseInternalServerException<
   }
 }
 
-export type GlobalSystemException =
+export type DDDSystemException =
   | InternalServerErrorException
   | UnexpectedDomainErrorException
   | InvariantViolationException;
