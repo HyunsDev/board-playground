@@ -68,11 +68,15 @@ export class JobDispatcher implements JobDispatcherPort {
       Array.from(jobsByQueue.entries()).map(async ([queueName, jobs]) => {
         const queue = this.getQueue(queueName);
 
-        const bulkJobs = jobs.map((job) => ({
-          name: job.code,
-          data: job.data,
-          opts: job.options,
-        }));
+        const bulkJobs = jobs.map((job) => {
+          const jobPlain = job.toPlain();
+
+          return {
+            name: job.code,
+            data: jobPlain,
+            opts: job.options,
+          };
+        });
 
         return queue.addBulk(bulkJobs);
       }),
