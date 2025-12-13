@@ -19,10 +19,10 @@ export abstract class JobProcessor extends WorkerHost {
     super();
     // 핸들러 매핑 초기화
     for (const handler of handlers) {
-      if (this.handlers.has(handler.jobCode)) {
-        this.logger.warn(`Duplicate handler found for jobCode: ${handler.jobCode}`);
+      if (this.handlers.has(handler.JobClass.code)) {
+        this.logger.warn(`Duplicate handler found for jobCode: ${handler.JobClass.code}`);
       }
-      this.handlers.set(handler.jobCode, handler);
+      this.handlers.set(handler.JobClass.code, handler);
     }
   }
 

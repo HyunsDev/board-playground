@@ -2,7 +2,9 @@ import { AbstractMessageMetadata } from './abstract-message-metadata.type';
 import { AbstractJob, AbstractJobProps } from './abstract.job';
 
 export interface IJobConstructor<T extends AbstractJob> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   new (...args: any[]): T;
+  code: T['code'];
   fromPlain(plain: {
     id: string;
     code: string;
