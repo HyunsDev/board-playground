@@ -37,7 +37,10 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
     ExceptionFilterModule,
     HealthModule.forRoot({
       exposeHttp: true,
-      checkDatabase: true,
+      check: {
+        prisma: true,
+        redis: true,
+      },
     }),
   ],
   exports: [HttpContextModule, DatabaseModule, EventBusModule, LoggingModule, SecurityModule],
