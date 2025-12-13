@@ -49,7 +49,7 @@ export abstract class AbstractMessage<
 > {
   declare readonly [RESULT_TYPE_SYMBOL]: TRes;
 
-  abstract readonly code: MessageCodeType;
+  static readonly code: string;
   protected abstract readonly resourceType: ResourceCodeType;
 
   protected _id: string;
@@ -72,6 +72,9 @@ export abstract class AbstractMessage<
       ...this._metadata,
       resourceType: this.resourceType,
     };
+  }
+  get code(): MessageCodeType {
+    return (this.constructor as typeof AbstractMessage).code as MessageCodeType;
   }
 
   constructor(
