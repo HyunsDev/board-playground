@@ -23,12 +23,14 @@ type MessageCode<
     : never // ❌ 케이스가 틀림
   : `${DomainCode}:${M}:${string}`;
 
-export type CommandCode<T extends string> = MessageCode<T, 'cmd'>;
-export type QueryCode<T extends string> = MessageCode<T, 'qry'>;
-export type EventCode<T extends string> = MessageCode<T, 'evt'>;
-export type JobCode<T extends string> = MessageCode<T, 'job'>;
-export type CausationCode<T extends string> = MessageCode<T, 'cmd' | 'evt' | 'job' | 'trg'>;
-
+export type CommandCode<T extends string = string> = MessageCode<T, 'cmd'>;
+export type QueryCode<T extends string = string> = MessageCode<T, 'qry'>;
+export type EventCode<T extends string = string> = MessageCode<T, 'evt'>;
+export type JobCode<T extends string = string> = MessageCode<T, 'job'>;
+export type CausationCode<T extends string = string> = MessageCode<
+  T,
+  'cmd' | 'evt' | 'job' | 'trg'
+>;
 // ---------------------------------------------------------------------------
 // 2. Definition Utilities
 // ---------------------------------------------------------------------------
