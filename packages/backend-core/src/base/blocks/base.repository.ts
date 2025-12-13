@@ -11,10 +11,10 @@ import {
   DomainResult,
   DomainEventPublisherPort,
   LoggerPort,
-  AbstractDomainEvent,
-  AbstractIDomainEvent,
 } from '@workspace/backend-ddd';
 import { PrismaClient, Prisma } from '@workspace/database';
+
+import { BaseDomainEvent, BaseDomainEventProps } from '../messages';
 
 type AbstractCrudDelegate<R> = {
   findUnique(args: unknown): Promise<R | null>;
@@ -24,10 +24,8 @@ type AbstractCrudDelegate<R> = {
 };
 
 export abstract class BaseRepository<
-  TAggregate extends AbstractAggregateRoot<
-    AbstractDomainEvent<string, string, string, AbstractIDomainEvent<string, unknown>>,
-    unknown
-  >,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  TAggregate extends AbstractAggregateRoot<BaseDomainEvent<BaseDomainEventProps<any>>, unknown>,
   TDbModel extends { id: string },
 > implements RepositoryPort<TAggregate> {
   protected abstract get delegate(): AbstractCrudDelegate<TDbModel>;
