@@ -5,11 +5,13 @@ import { HealthCheck, HealthCheckService, PrismaHealthIndicator } from '@nestjs/
 import { PrismaService } from '../database';
 import { HEALTH_OPTIONS, HealthModuleOptions } from './health.interface';
 import { Public } from '../security';
+import { CacheHealthIndicator } from './indicators/cache.indicator';
 
 @Controller('health')
 export class HealthController {
   constructor(
     private health: HealthCheckService,
+    private cacheHealth: CacheHealthIndicator,
     private prismaHealth: PrismaHealthIndicator,
     private prismaService: PrismaService,
     @Inject(HEALTH_OPTIONS)
@@ -22,8 +24,12 @@ export class HealthController {
   readiness() {
     const indicators = [];
 
-    if (this.options.checkDatabase) {
+    if (this.options?.check?.prisma) {
       indicators.push(() => this.prismaHealth.pingCheck('database', this.prismaService));
+    }
+
+    if (this.options?.check?.redis) {
+      indicators.push(() => this.cacheHealth.isHealthy('cache'));
     }
 
     return this.health.check(indicators);
