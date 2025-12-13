@@ -4,18 +4,18 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { TokenPayload } from '@workspace/domain';
 
-import { HttpConfig, httpConfig } from '@/modules/config';
+import { AccessTokenConfig, accessTokenConfig } from '@/modules/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
-    @Inject(httpConfig.KEY)
-    readonly httpConfig: HttpConfig,
+    @Inject(accessTokenConfig.KEY)
+    readonly accessTokenConfig: AccessTokenConfig,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: httpConfig.jwtAccessSecret,
+      secretOrKey: accessTokenConfig.jwtAccessSecret,
     });
   }
 

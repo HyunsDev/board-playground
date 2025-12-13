@@ -18,7 +18,6 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
 @Module({
   imports: [
     CoreConfigModule.forRoot({
-      isHttp: true,
       extraLoad: [refreshTokenConfig],
     }),
     CqrsModule.forRoot(),

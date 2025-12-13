@@ -8,7 +8,7 @@ import { RolesGuard } from './guards/roles.guard';
 import { AccessTokenProvider } from './providers/access-token.provider';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
-import { HttpConfig, httpConfig } from '@/modules/config';
+import { AccessTokenConfig, accessTokenConfig } from '@/modules/config';
 
 const globalAuthGuard: Provider[] = [
   {
@@ -44,8 +44,8 @@ export class SecurityModule {
       imports: [
         PassportModule,
         JwtModule.registerAsync({
-          inject: [httpConfig.KEY],
-          useFactory: (config: HttpConfig) => ({
+          inject: [accessTokenConfig.KEY],
+          useFactory: (config: AccessTokenConfig) => ({
             secret: config.jwtAccessSecret,
             signOptions: {
               expiresIn: config.jwtAccessExpirationTime,
