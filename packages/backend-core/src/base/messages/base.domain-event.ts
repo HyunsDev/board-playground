@@ -10,4 +10,6 @@ export type BaseDomainEventProps<T> = AbstractDomainEventProps<CausationCode, Do
  */
 export abstract class BaseDomainEvent<
   TProps extends BaseDomainEventProps<unknown>,
-> extends AbstractDomainEvent<CausationCode, DomainCode, EventCode, TProps> {}
+> extends AbstractDomainEvent<CausationCode, DomainCode, EventCode, TProps> {
+  static readonly code: EventCode;
+}

@@ -33,5 +33,6 @@ export abstract class BaseQuery<
   extends AbstractQuery<CausationCode, DomainCode, QueryCode, TProps, TOk, TRes>
   implements Query<TRes>
 {
+  static readonly code: QueryCode;
   declare [RESULT_TYPE_SYMBOL]: TRes;
 }

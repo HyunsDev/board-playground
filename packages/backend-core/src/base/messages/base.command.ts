@@ -26,5 +26,6 @@ export abstract class BaseCommand<
   extends AbstractCommand<CausationCode, DomainCode, CommandCode, TProps, TOk, TRes>
   implements Command<TRes>
 {
+  static readonly code: CommandCode;
   declare [RESULT_TYPE_SYMBOL]: TRes;
 }

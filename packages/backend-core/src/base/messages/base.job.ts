@@ -12,6 +12,8 @@ export abstract class BaseJob<TProps extends BaseJobProps<unknown>> extends Abst
   TProps,
   JobsOptions
 > {
+  static readonly code: JobCode;
+
   get options(): JobsOptions {
     return {
       jobId: this.id,

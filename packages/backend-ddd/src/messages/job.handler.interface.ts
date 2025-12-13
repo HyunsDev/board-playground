@@ -15,7 +15,6 @@ export interface IJobHandler<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TJob extends AbstractJob<string, string, string, AbstractJobProps<string, string, any>, any>,
 > {
-  jobCode: TJob['code'];
   readonly JobClass: IJobConstructor<TJob>;
   execute(job: TJob): Promise<void>;
 }
