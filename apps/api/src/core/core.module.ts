@@ -9,6 +9,11 @@ import {
   LoggingModule,
   SecurityModule,
   HealthModule,
+  CacheModule,
+  accessTokenConfig,
+  httpConfig,
+  prismaConfig,
+  redisConfig,
 } from '@workspace/backend-core';
 
 import { refreshTokenConfig } from './configs/refresh-token.config';
@@ -18,10 +23,11 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
 @Module({
   imports: [
     CoreConfigModule.forRoot({
-      extraLoad: [refreshTokenConfig],
+      extraLoad: [httpConfig, prismaConfig, accessTokenConfig, redisConfig, refreshTokenConfig],
     }),
     CqrsModule.forRoot(),
     DatabaseModule,
+    CacheModule,
     HttpContextModule.forRoot(),
     EventBusModule,
     LoggingModule,
