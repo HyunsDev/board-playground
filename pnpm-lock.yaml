@@ -481,6 +481,9 @@ importers:
       '@workspace/common':
         specifier: workspace:*
         version: link:../common
+      bullmq:
+        specifier: ^5.66.0
+        version: 5.66.0
       neverthrow:
         specifier: ^8.2.0
         version: 8.2.0
@@ -8032,6 +8035,7 @@ snapshots:
       '@keyv/redis': 5.1.5(keyv@5.5.5)
       '@nestjs-cls/transactional': 3.1.1(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(nestjs-cls@6.1.0(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs-cls/transactional-adapter-prisma': 1.3.1(@nestjs-cls/transactional@3.1.1(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(nestjs-cls@6.1.0(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(@prisma/client@6.19.1(prisma@6.19.1(typescript@5.9.3))(typescript@5.9.3))(nestjs-cls@6.1.0(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2))(prisma@6.19.1(typescript@5.9.3))
+      '@nestjs/bullmq': 11.0.4(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(bullmq@5.66.0)
       '@nestjs/cache-manager': 3.0.1(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(cache-manager@7.2.7)(keyv@5.5.5)(rxjs@7.8.2)
       '@nestjs/common': 11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/config': 4.0.2(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(rxjs@7.8.2)
@@ -8045,6 +8049,7 @@ snapshots:
       '@workspace/common': link:packages/common
       '@workspace/database': link:packages/database
       '@workspace/domain': link:packages/domain
+      bullmq: 5.66.0
       cache-manager: 7.2.7
       cache-manager-redis-yet: 5.1.5
       chalk: 5.6.2

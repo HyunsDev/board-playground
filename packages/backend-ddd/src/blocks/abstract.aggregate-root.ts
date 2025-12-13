@@ -1,6 +1,6 @@
 import { AbstractEntity } from './abstract.entity';
 
-import { AbstractDomainEvent, AbstractIDomainEvent } from '@/cqrs/abstract.domain-event';
+import { AbstractDomainEvent, AbstractIDomainEvent } from '@/messages/abstract.domain-event';
 
 export abstract class AbstractAggregateRoot<
   TDomainEvent extends AbstractDomainEvent<
