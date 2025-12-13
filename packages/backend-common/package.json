@@ -26,7 +26,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@workspace/common": "workspace:*"
+    "@workspace/common": "workspace:*",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@types/node": "^24.10.3",
