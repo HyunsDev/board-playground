@@ -2,12 +2,11 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { BaseCommand, BaseICommand } from '@workspace/backend-core';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
-import { BaseCommand, BaseICommand } from '@/shared/base';
-
 type IUpdateUserMeProfileCommand = BaseICommand<{
   userId: string;
   nickname?: string;
@@ -31,9 +30,7 @@ export class UpdateUserMeProfileCommand extends BaseCommand<
 }
 
 @CommandHandler(UpdateUserMeProfileCommand)
-export class UpdateUserMeProfileCommandHandler
-  implements ICommandHandler<UpdateUserMeProfileCommand>
-{
+export class UpdateUserMeProfileCommandHandler implements ICommandHandler<UpdateUserMeProfileCommand> {
   constructor(private readonly userRepo: UserRepositoryPort) {}
 
   async execute({ data }: IUpdateUserMeProfileCommand) {

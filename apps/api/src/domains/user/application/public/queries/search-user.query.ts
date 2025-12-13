@@ -2,12 +2,12 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { BaseIPaginatedQuery, BaseQuery } from '@workspace/backend-core';
 import { PaginatedResult } from '@workspace/common';
 import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
-import { BaseIPaginatedQuery, BaseQuery } from '@/shared/base';
 
 type ISearchUserQuery = BaseIPaginatedQuery<{
   nickname?: string;

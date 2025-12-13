@@ -3,11 +3,11 @@ import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
 import { AccessTokenProvider } from '@workspace/backend-core';
+import { BaseCommand, BaseICommand } from '@workspace/backend-core';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
-import { BaseCommand, BaseICommand } from '@/shared/base';
 import { AuthTokens } from '@/shared/types/tokens';
 
 type IForceLoginCommand = BaseICommand<{

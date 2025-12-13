@@ -3,13 +3,13 @@ import { err } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
 import { AccessTokenProvider, TransactionManager } from '@workspace/backend-core';
+import { BaseICommand, BaseCommand } from '@workspace/backend-core';
 import { TypedData, matchError, typedOk } from '@workspace/backend-ddd';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import { InvalidRefreshTokenError } from '@/domains/session/domain/token.domain-errors';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
-import { BaseICommand, BaseCommand } from '@/shared/base';
 import { AuthTokens } from '@/shared/types/tokens';
 
 type IRefreshTokenAuthCommand = BaseICommand<{

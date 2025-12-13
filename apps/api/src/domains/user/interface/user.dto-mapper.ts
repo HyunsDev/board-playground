@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
+import { BaseDtoMapper } from '@workspace/backend-core';
 import { PaginationMetadata } from '@workspace/common';
 import {
   UserPublicProfileDto,
@@ -10,7 +11,6 @@ import {
 
 import { UserEntity } from '../domain/user.entity';
 
-import { BaseDtoMapper } from '@/shared/base';
 
 @Injectable()
 export class UserDtoMapper extends BaseDtoMapper<UserEntity> {

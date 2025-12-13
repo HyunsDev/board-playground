@@ -2,11 +2,11 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { BaseIQuery, BaseQuery } from '@workspace/backend-core';
 import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { UserUsernameAlreadyExistsError } from '@/domains/user/domain/user.domain-errors';
-import { BaseIQuery, BaseQuery } from '@/shared/base';
 
 type ICheckUsernameAvailableQuery = BaseIQuery<{
   username: string;
@@ -29,9 +29,7 @@ export class CheckUsernameAvailableQuery extends BaseQuery<
 }
 
 @QueryHandler(CheckUsernameAvailableQuery)
-export class CheckUsernameAvailableQueryHandler
-  implements IQueryHandler<CheckUsernameAvailableQuery>
-{
+export class CheckUsernameAvailableQueryHandler implements IQueryHandler<CheckUsernameAvailableQuery> {
   constructor(private readonly userFacade: UserFacade) {}
 
   async execute({ data }: ICheckUsernameAvailableQuery) {

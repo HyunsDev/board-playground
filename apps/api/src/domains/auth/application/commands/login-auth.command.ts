@@ -3,6 +3,7 @@ import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
 import { AccessTokenProvider, TransactionManager } from '@workspace/backend-core';
+import { BaseCommand, BaseICommand } from '@workspace/backend-core';
 import { matchError } from '@workspace/backend-ddd';
 import { DEVICE_PLATFORM } from '@workspace/contract';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
@@ -12,7 +13,6 @@ import { InvalidCredentialsError } from '../../auth.domain-error';
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { PasswordProvider } from '@/infra/crypto';
-import { BaseCommand, BaseICommand } from '@/shared/base';
 import { AuthTokens } from '@/shared/types/tokens';
 
 type ILoginAuthCommand = BaseICommand<{

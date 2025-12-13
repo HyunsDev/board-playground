@@ -3,10 +3,10 @@ import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
 import { TransactionManager } from '@workspace/backend-core';
+import { BaseCommand, BaseICommand } from '@workspace/backend-core';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
-import { BaseCommand, BaseICommand } from '@/shared/base';
 
 type ILogoutAuthCommand = BaseICommand<{
   refreshToken: string;

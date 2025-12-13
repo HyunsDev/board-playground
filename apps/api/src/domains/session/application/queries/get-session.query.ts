@@ -2,13 +2,12 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { BaseIQuery, BaseQuery } from '@workspace/backend-core';
 import { matchError } from '@workspace/backend-ddd';
 import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { SessionEntity } from '../../domain/session.entity';
 import { SessionRepositoryPort } from '../../domain/session.repository.port';
-
-import { BaseIQuery, BaseQuery } from '@/shared/base';
 
 type ISessionQuery = BaseIQuery<{
   userId: string;

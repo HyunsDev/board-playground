@@ -1,14 +1,13 @@
 import { err, ok } from 'neverthrow';
 import { v7 as uuidv7 } from 'uuid';
 
+import { BaseAggregateRoot, BaseEntityProps } from '@workspace/backend-core';
 import { USER_ROLE, USER_STATUS, UserRole, UserStatus } from '@workspace/contract';
 
 import { UserCreatedEvent } from './events/user-created.event';
 import { UserUsernameChangedEvent } from './events/user-username-changed.event';
 import { UserPasswordVO } from './user-password.vo';
 import { UserAdminCannotBeDeletedError } from './user.domain-errors';
-
-import { BaseAggregateRoot, BaseEntityProps } from '@/shared/base';
 
 export interface UserProps extends BaseEntityProps {
   username: string;

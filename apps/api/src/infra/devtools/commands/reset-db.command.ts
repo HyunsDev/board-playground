@@ -4,9 +4,8 @@ import { ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
 import { PrismaService } from '@workspace/backend-core';
+import { BaseCommand, BaseICommand } from '@workspace/backend-core';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
-
-import { BaseCommand, BaseICommand } from '@/shared/base';
 
 type ResetDbCommandProps = BaseICommand<void>;
 

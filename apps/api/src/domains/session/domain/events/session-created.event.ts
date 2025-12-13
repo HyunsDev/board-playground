@@ -1,6 +1,5 @@
+import { BaseDomainEvent, BaseIDomainEvent } from '@workspace/backend-core';
 import { AggregateCodeEnum, defineEventCode } from '@workspace/domain';
-
-import { BaseDomainEvent, BaseIDomainEvent } from '@/shared/base';
 
 type ISessionCreatedEvent = BaseIDomainEvent<{
   userId: string;

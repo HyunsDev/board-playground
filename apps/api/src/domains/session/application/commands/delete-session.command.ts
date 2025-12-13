@@ -3,12 +3,12 @@ import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
 import { TransactionManager } from '@workspace/backend-core';
+import { BaseCommand, BaseICommand } from '@workspace/backend-core';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
 import { CurrentSessionCannotBeDeletedError } from '../../domain/session.domain-errors';
 
 import { SessionRepositoryPort } from '@/domains/session/domain/session.repository.port';
-import { BaseCommand, BaseICommand } from '@/shared/base';
 
 type IDeleteSessionCommand = BaseICommand<{
   sessionId: string;

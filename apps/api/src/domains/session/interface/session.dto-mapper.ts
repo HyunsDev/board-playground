@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
+import { BaseDtoMapper } from '@workspace/backend-core';
 import { SessionDto } from '@workspace/contract';
 
 import { SessionEntity } from '../domain/session.entity';
 
-import { BaseDtoMapper } from '@/shared/base';
 
 @Injectable()
 export class SessionDtoMapper extends BaseDtoMapper<SessionEntity> {

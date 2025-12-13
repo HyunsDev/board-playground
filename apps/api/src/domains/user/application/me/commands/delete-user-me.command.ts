@@ -2,11 +2,11 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { BaseCommand, BaseICommand } from '@workspace/backend-core';
 import { matchError } from '@workspace/backend-ddd';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
-import { BaseCommand, BaseICommand } from '@/shared/base';
 
 type IDeleteUserMeCommand = BaseICommand<{
   userId: string;
