@@ -1,12 +1,12 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 
-import { DomainEventPublisher, AbstractDomainEvent } from '@workspace/backend-ddd';
+import { DomainEventPublisherPort, AbstractDomainEvent } from '@workspace/backend-ddd';
 
 import { ContextService } from '../context/context.service';
 
 @Injectable({ scope: Scope.REQUEST }) // 요청(트랜잭션) 단위로 상태를 유지해야 하므로 REQUEST 스코프 필수
-export class NestJSDomainEventPublisher implements DomainEventPublisher {
+export class NestJSDomainEventPublisher implements DomainEventPublisherPort {
   private events: AbstractDomainEvent<string, string, string>[] = [];
 
   constructor(

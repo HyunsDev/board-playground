@@ -9,7 +9,7 @@ import {
   EntityNotFoundError,
   EntityConflictError,
   DomainResult,
-  DomainEventPublisher,
+  DomainEventPublisherPort,
   LoggerPort,
   AbstractDomainEvent,
   AbstractIDomainEvent,
@@ -29,15 +29,14 @@ export abstract class BaseRepository<
     unknown
   >,
   TDbModel extends { id: string },
-> implements RepositoryPort<TAggregate>
-{
+> implements RepositoryPort<TAggregate> {
   protected abstract get delegate(): AbstractCrudDelegate<TDbModel>;
 
   constructor(
     protected readonly prisma: PrismaClient,
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly mapper: AbstractMapper<TAggregate, TDbModel>,
-    protected readonly eventDispatcher: DomainEventPublisher,
+    protected readonly eventDispatcher: DomainEventPublisherPort,
     protected readonly logger: LoggerPort,
   ) {}
 

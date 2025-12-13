@@ -5,7 +5,7 @@ import { err, ok } from 'neverthrow';
 
 import { BaseRepository, PrismaService, ContextService } from '@workspace/backend-core';
 import {
-  DomainEventPublisher,
+  DomainEventPublisherPort,
   DomainResult,
   matchError,
   UnexpectedDomainErrorException,
@@ -29,7 +29,7 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly context: ContextService,
     protected readonly mapper: UserMapper,
-    protected readonly eventDispatcher: DomainEventPublisher,
+    protected readonly eventDispatcher: DomainEventPublisherPort,
   ) {
     super(prisma, txHost, mapper, eventDispatcher, new Logger(UserRepository.name));
   }

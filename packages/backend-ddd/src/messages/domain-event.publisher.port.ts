@@ -1,6 +1,6 @@
 import { AbstractDomainEvent } from './abstract.domain-event';
 
-export abstract class DomainEventPublisher {
+export abstract class DomainEventPublisherPort {
   abstract publish(event: AbstractDomainEvent<string, string, string>): Promise<void>;
   abstract publishMany(events: AbstractDomainEvent<string, string, string>[]): Promise<void>;
   abstract clear(): void;
