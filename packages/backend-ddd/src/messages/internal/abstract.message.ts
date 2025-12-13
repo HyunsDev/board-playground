@@ -33,7 +33,7 @@ export type AbstractMessageProps<
   T = unknown,
 > = {
   readonly data: T;
-  readonly metadata: AbstractCreateMessageMetadata<CausationCodeType, ResourceCodeType>;
+  readonly metadata: AbstractMessageMetadata<CausationCodeType, ResourceCodeType>;
 };
 
 export abstract class AbstractMessage<
@@ -77,19 +77,24 @@ export abstract class AbstractMessage<
   constructor(
     resourceId: string | null,
     data: TProps['data'],
-    createMetadata: AbstractCreateMessageMetadata<CausationCodeType, ResourceCodeType>,
+    metadata:
+      | AbstractMessageMetadata<CausationCodeType, ResourceCodeType>
+      | AbstractCreateMessageMetadata<CausationCodeType, ResourceCodeType>,
+    id: string | null = null,
   ) {
-    const { correlationId, causationId, causationType, userId } = createMetadata;
+    const { correlationId, causationId, causationType, userId } = metadata;
+    const createdAt = 'createdAt' in metadata ? metadata.createdAt : null;
+    const metadataResourceId = 'resourceId' in metadata ? metadata.resourceId : undefined;
 
-    this._id = uuidv7();
+    this._id = id ?? uuidv7();
     this._data = data;
     this._metadata = {
       correlationId: correlationId || null,
       causationId: causationId || null,
       causationType: causationType || null,
-      resourceId: resourceId,
-      userId: userId || null,
-      createdAt: Date.now(),
+      resourceId: metadataResourceId ?? resourceId,
+      userId: userId ?? null,
+      createdAt: createdAt ?? Date.now(),
     };
   }
 
@@ -102,62 +107,56 @@ export abstract class AbstractMessage<
     };
   }
 
-  static fromPlain<
-    CausationCodeType extends string,
-    ResourceCodeType extends string,
-    MessageCodeType extends CausationCodeType,
-    I extends AbstractMessageProps<CausationCodeType, ResourceCodeType>,
-    M extends AbstractMessage<CausationCodeType, ResourceCodeType, MessageCodeType, I>,
-  >(
-    this: Constructor<M>,
+  static fromPlain<M extends AbstractMessage>(
+    this: Constructor<M>, // 'this'는 생성자(클래스 자체)를 가리킴
     plain: {
       id: string;
       code: string;
       data: unknown;
       metadata: AbstractMessageMetadata;
     },
-  ): AbstractMessage<CausationCodeType, ResourceCodeType, MessageCodeType, I> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    const message = Object.create(this.prototype) as M;
-
-    // Code 유효성 검사
-    if (plain.code !== message.code) {
-      throw new MessageCodeMismatchException(message.code, plain.code);
+  ): M {
+    // 1. ID 유효성 검사 (생성 전에 수행하여 비용 절약)
+    const idResult = z.string().safeParse(plain.id);
+    if (!idResult.success) {
+      throw new InvalidMessageException(idResult.error.issues);
     }
 
-    // ID 유효성 검사
-    const IdCheckResult = z.string().safeParse(plain.id);
-    if (!IdCheckResult.success) {
-      throw new InvalidMessageException(IdCheckResult.error.issues);
+    // 2. Metadata 유효성 검사
+    const metadataResult = MessageMetadataSchema.safeParse(plain.metadata);
+    if (!metadataResult.success) {
+      throw new InvalidMessageException(metadataResult.error.issues);
+    }
+    const validatedMetadata = metadataResult.data;
+
+    // 3. 인스턴스 생성 (Constructor 활용)
+    // 생성자를 통해 _id, _metadata, _data가 안전하게 초기화됨
+    const instance = new this(
+      validatedMetadata.resourceId,
+      plain.data,
+      validatedMetadata,
+      idResult.data,
+    );
+
+    // 4. Code 일치 여부 검사
+    // 인스턴스가 생성되었으므로 필드/Getter 상관없이 code 접근 가능
+    if (instance.code !== plain.code) {
+      throw new MessageCodeMismatchException(instance.code, plain.code);
     }
 
-    const { schema } = message;
-    if (schema) {
-      const parseResult = schema.safeParse(plain.data);
-      if (!parseResult.success) {
-        throw new InvalidMessageException(parseResult.error.issues);
+    // 5. Data(Schema) 유효성 검사 및 데이터 정제
+    if (instance.schema) {
+      const dataResult = instance.schema.safeParse(plain.data);
+      if (!dataResult.success) {
+        throw new InvalidMessageException(dataResult.error.issues);
       }
-      plain.data = parseResult.data;
+
+      // Zod가 데이터를 변환(transform)했을 수 있으므로 정제된 데이터로 교체
+      // 같은 클래스 내부이므로 protected 필드인 _data에 접근 가능
+      instance._data = dataResult.data;
     }
 
-    const metadataParseResult = MessageMetadataSchema.safeParse(plain.metadata);
-    if (!metadataParseResult.success) {
-      throw new InvalidMessageException(metadataParseResult.error.issues);
-    }
-    plain.metadata = metadataParseResult.data;
-
-    message._id = plain.id;
-    message._data = plain.data;
-    message._metadata = {
-      correlationId: plain.metadata.correlationId,
-      causationId: plain.metadata.causationId,
-      causationType: plain.metadata.causationType as CausationCodeType,
-      resourceId: plain.metadata.resourceId,
-      userId: plain.metadata.userId,
-      createdAt: plain.metadata.createdAt,
-    };
-
-    return message;
+    return instance;
   }
 
   updateMetadata(
