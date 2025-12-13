@@ -40,7 +40,7 @@ export class NestJSDomainEventPublisher implements DomainEventPublisherPort {
 
     // 2. 모든 이벤트에 메타데이터 주입 (Causation 추적용)
     if (metadata) {
-      this.events.forEach((event) => event.setMetadata(metadata));
+      this.events.forEach((event) => event.updateMetadata(metadata));
     }
 
     // 3. 실제 발행 (NestJS CQRS EventBus)

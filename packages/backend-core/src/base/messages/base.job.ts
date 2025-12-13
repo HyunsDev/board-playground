@@ -1,3 +1,5 @@
+import { JobsOptions } from 'bullmq';
+
 import { AbstractJobProps, AbstractJob } from '@workspace/backend-ddd';
 import { CausationCode, DomainCode, JobCode } from '@workspace/domain';
 
@@ -7,5 +9,13 @@ export abstract class BaseJob<TProps extends BaseJobProps<unknown>> extends Abst
   CausationCode,
   DomainCode,
   JobCode,
-  TProps
-> {}
+  TProps,
+  JobsOptions
+> {
+  get options(): JobsOptions {
+    return {
+      jobId: this.id,
+      ...this._options,
+    };
+  }
+}

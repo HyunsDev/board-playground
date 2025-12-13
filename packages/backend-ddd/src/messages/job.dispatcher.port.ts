@@ -1,8 +1,14 @@
-import { AbstractJob } from './abstract.job';
+import { AbstractJob, AbstractJobProps } from './abstract.job';
 
 export abstract class JobDispatcherPort {
-  abstract dispatch(job: AbstractJob): Promise<void>;
-  abstract dispatchMany(jobs: AbstractJob[]): Promise<void>;
+  abstract dispatch(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    job: AbstractJob<string, string, string, AbstractJobProps<any>, unknown>,
+  ): Promise<void>;
+  abstract dispatchMany(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    jobs: AbstractJob<string, string, string, AbstractJobProps<any>, unknown>[],
+  ): Promise<void>;
   abstract clear(): void;
   abstract flush(): Promise<void>;
 }

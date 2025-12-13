@@ -21,7 +21,8 @@ export abstract class AbstractJob<
 > extends AbstractMessage<CausationCodeType, ResourceCodeType, JobCodeType, TProps, unknown, void> {
   abstract readonly queueName: string;
   abstract override get schema(): z.ZodType<TProps['data']>;
-  readonly options?: TOptions;
+
+  protected readonly _options?: TOptions;
 
   constructor(
     resourceId: string | null,
@@ -30,6 +31,8 @@ export abstract class AbstractJob<
     options?: TOptions,
   ) {
     super(resourceId, data, metadata);
-    this.options = options;
+    this._options = options;
   }
+
+  abstract get options(): TOptions;
 }

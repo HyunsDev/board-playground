@@ -1,20 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { getQueueToken } from '@nestjs/bullmq';
 import { Injectable, Scope } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { Queue } from 'bullmq';
 
-import {
-  JobDispatcherPort,
-  AbstractJob,
-  InternalServerErrorException,
-} from '@workspace/backend-ddd';
+import { JobDispatcherPort, InternalServerErrorException } from '@workspace/backend-ddd';
 
 import { ContextService } from '../context/context.service';
 
+import { BaseJob, BaseJobProps } from '@/base';
+
 @Injectable({ scope: Scope.REQUEST }) // 요청(트랜잭션) 단위로 상태를 유지해야 하므로 REQUEST 스코프 필수
 export class JobDispatcher implements JobDispatcherPort {
-  private jobs: AbstractJob<string, string, string, string>[] = [];
+  private jobs: BaseJob<BaseJobProps<unknown>>[] = [];
   private queues = new Map<string, Queue>();
 
   constructor(
@@ -22,7 +19,7 @@ export class JobDispatcher implements JobDispatcherPort {
     private readonly contextService: ContextService,
   ) {}
 
-  async dispatch(job: AbstractJob<string, string, string, string>): Promise<void> {
+  async dispatch(job: BaseJob<BaseJobProps<unknown>>): Promise<void> {
     this.jobs.push(job);
     // 트랜잭션이 활성화되어 있지 않다면 즉시 발행
     if (!this.contextService.isTransactionActive()) {
@@ -30,7 +27,7 @@ export class JobDispatcher implements JobDispatcherPort {
     }
   }
 
-  async dispatchMany(jobs: AbstractJob<string, string, string, string>[]): Promise<void> {
+  async dispatchMany(jobs: BaseJob<BaseJobProps<unknown>>[]): Promise<void> {
     this.jobs.push(...jobs);
     if (!this.contextService.isTransactionActive()) {
       await this.flush();
@@ -48,11 +45,11 @@ export class JobDispatcher implements JobDispatcherPort {
     // (ContextService 리팩토링 때 정의한 getMessageMetadata 사용)
     const metadata = this.contextService.getMessageMetadata();
 
-    const jobsByQueue = new Map<string, AbstractJob<string, string, string, string>[]>();
+    const jobsByQueue = new Map<string, BaseJob<BaseJobProps<unknown>>[]>();
 
     for (const job of this.jobs) {
       if (metadata) {
-        job.setMetadata(metadata);
+        job.updateMetadata(metadata);
       }
 
       const { queueName } = job;
@@ -64,7 +61,7 @@ export class JobDispatcher implements JobDispatcherPort {
 
     // 2. 모든 메세지에 메타데이터 주입 (Causation 추적용)
     if (metadata) {
-      this.jobs.forEach((job) => job.setMetadata(metadata));
+      this.jobs.forEach((job) => job.updateMetadata(metadata));
     }
 
     await Promise.all(
@@ -74,7 +71,7 @@ export class JobDispatcher implements JobDispatcherPort {
         const bulkJobs = jobs.map((job) => ({
           name: job.code,
           data: job.data,
-          opts: job.jobsOptions,
+          opts: job.options,
         }));
 
         return queue.addBulk(bulkJobs);
