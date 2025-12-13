@@ -27,10 +27,7 @@ export type CommandCode<T extends string = string> = MessageCode<T, 'cmd'>;
 export type QueryCode<T extends string = string> = MessageCode<T, 'qry'>;
 export type EventCode<T extends string = string> = MessageCode<T, 'evt'>;
 export type JobCode<T extends string = string> = MessageCode<T, 'job'>;
-export type CausationCode<T extends string = string> = MessageCode<
-  T,
-  'cmd' | 'evt' | 'job' | 'trg'
->;
+export type CausationCode<T extends string = string> = MessageCode<T, MessageType>;
 // ---------------------------------------------------------------------------
 // 2. Definition Utilities
 // ---------------------------------------------------------------------------

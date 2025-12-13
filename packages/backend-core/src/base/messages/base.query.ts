@@ -1,14 +1,22 @@
+import { Query } from '@nestjs/cqrs';
+import { RESULT_TYPE_SYMBOL } from '@nestjs/cqrs/dist/classes/constants';
+
 import {
-  AbstractIPaginatedQuery,
-  AbstractIQuery,
+  AbstractPaginatedQueryProps,
   AbstractQuery,
+  AbstractQueryProps,
   DomainError,
   DomainResult,
 } from '@workspace/backend-ddd';
-import { CausationCode, QueryCode } from '@workspace/domain';
+import { PaginationQuery } from '@workspace/common';
+import { CausationCode, DomainCode, QueryCode } from '@workspace/domain';
 
-export type BaseIQuery<T> = AbstractIQuery<CausationCode<string>, T>;
-export type BaseIPaginatedQuery<T> = AbstractIPaginatedQuery<CausationCode<string>, T>;
+export type BaseQueryProps<T> = AbstractQueryProps<CausationCode, DomainCode, T>;
+export type BasePaginatedQueryProps<T> = AbstractPaginatedQueryProps<
+  CausationCode,
+  DomainCode,
+  PaginationQuery<T>
+>;
 
 /**
  * BaseQuery는 모든 쿼리의 공통 속성과 동작을 정의하는 추상 클래스입니다.
@@ -18,7 +26,12 @@ export type BaseIPaginatedQuery<T> = AbstractIPaginatedQuery<CausationCode<strin
  * @template O - 쿼리 핸들러가 성공적으로 처리했을 때 반환하는 값의 타입
  */
 export abstract class BaseQuery<
-  D extends BaseIQuery<unknown>,
-  R extends DomainResult<O, DomainError>,
-  O,
-> extends AbstractQuery<QueryCode<string>, string, CausationCode<string>, D, R, O> {}
+  TProps extends BaseQueryProps<unknown>,
+  TOk,
+  TRes extends DomainResult<TOk, DomainError>,
+>
+  extends AbstractQuery<CausationCode, DomainCode, QueryCode, TProps, TOk, TRes>
+  implements Query<TRes>
+{
+  declare [RESULT_TYPE_SYMBOL]: TRes;
+}

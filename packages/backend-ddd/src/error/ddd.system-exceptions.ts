@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import z from 'zod';
+
 import { DomainError } from './base.domain-errors';
 import { BaseInternalServerException } from './base.system-exception';
 
@@ -24,6 +26,29 @@ export class UnexpectedDomainErrorException extends BaseInternalServerException<
     super('An unexpected domain error occurred', {
       error: error,
     });
+  }
+}
+
+export class MessageCodeMismatchException extends BaseInternalServerException<
+  'MessageCodeMismatch',
+  { expected: string; actual: string }
+> {
+  readonly code = 'MessageCodeMismatch';
+  constructor(expected: string, actual: string) {
+    super(`Message code mismatch: expected ${expected}, got ${actual}`, {
+      expected,
+      actual,
+    });
+  }
+}
+
+export class InvalidMessageException extends BaseInternalServerException<
+  'InvalidMessage',
+  { reasons: z.core.$ZodIssue[] }
+> {
+  readonly code = 'InvalidMessage';
+  constructor(reasons: z.core.$ZodIssue[]) {
+    super(`Invalid message metadata: ${reasons}`, { reasons });
   }
 }
 

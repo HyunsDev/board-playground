@@ -1,68 +1,34 @@
-import { Query } from '@nestjs/cqrs';
-import { v7 as uuidv7 } from 'uuid';
+import { PaginationQuery } from '@workspace/common';
 
-import { DomainError, DomainResult } from '../error';
-import {
-  AbstractCreateMessageMetadata,
-  AbstractMessageMetadata,
-} from './abstract-message-metadata.type';
+import { AbstractMessage, AbstractMessageProps } from './internal/abstract.message';
 
-export type AbstractIQuery<CausationCodeType extends string, T> = {
-  readonly data: T;
-  readonly metadata: AbstractCreateMessageMetadata<CausationCodeType>;
-};
+import { DomainError, DomainResult } from '@/error';
 
-export type AbstractIPaginatedQuery<CausationCodeType extends string, T> = AbstractIQuery<
-  CausationCodeType,
-  T & {
-    page: number;
-    limit: number;
-  }
->;
+export type AbstractQueryProps<
+  CausationCodeType extends string = string,
+  ResourceCodeType extends string = string,
+  T = unknown,
+> = AbstractMessageProps<CausationCodeType, ResourceCodeType, T>;
 
-/**
- * BaseQuery는 모든 쿼리의 공통 속성과 동작을 정의하는 추상 클래스입니다.
- * 각 쿼리는 이 클래스를 상속하여 고유한 데이터와 메타데이터를 가질 수 있습니다.
- * @template D - 쿼리의 데이터와 메타데이터를 포함하는 타입
- * @template R - 쿼리 핸들러의 반환 타입
- * @template O - 쿼리 핸들러가 성공적으로 처리했을 때 반환하는 값의 타입
- */
+export type AbstractPaginatedQueryProps<
+  CausationCodeType extends string = string,
+  ResourceCodeType extends string = string,
+  T extends PaginationQuery<unknown> = PaginationQuery<unknown>,
+> = AbstractMessageProps<CausationCodeType, ResourceCodeType, T>;
+
+export type AbstractPaginatedQueryResult<C extends AbstractQuery> =
+  C extends AbstractQuery<string, string, string, AbstractQueryProps, unknown, infer TRes>
+    ? TRes
+    : never;
+
 export abstract class AbstractQuery<
-  QueryCodeType extends string,
-  QueryResourceCodeType extends string,
-  CausationCodeType extends string,
-  D extends AbstractIQuery<CausationCodeType, unknown>,
-  R extends DomainResult<O, DomainError>,
-  O,
-> extends Query<R> {
-  abstract readonly code: QueryCodeType;
-  abstract readonly resourceType: QueryResourceCodeType;
-
-  readonly id: string;
-  readonly resourceId: string | null;
-  readonly data: D['data'];
-  readonly metadata: AbstractMessageMetadata<CausationCodeType>;
-
-  constructor(
-    resourceId: string | null,
-    data: D['data'],
-    metadata: AbstractCreateMessageMetadata<CausationCodeType>,
-  ) {
-    super();
-    this.id = uuidv7();
-    this.data = data;
-    this.resourceId = resourceId;
-
-    this.metadata = {
-      correlationId: metadata.correlationId || '',
-      causationId: metadata.causationId,
-      causationType: metadata.causationType,
-      userId: metadata.userId,
-      createdAt: Date.now(),
-    };
-  }
-
-  get streamId(): string {
-    return `${this.resourceType}:${this.resourceId}`;
-  }
-}
+  CausationCodeType extends string = string,
+  ResourceCodeType extends string = string,
+  QueryCodeType extends CausationCodeType = CausationCodeType,
+  TProps extends AbstractQueryProps<CausationCodeType, ResourceCodeType> = AbstractQueryProps<
+    CausationCodeType,
+    ResourceCodeType
+  >,
+  TOk = unknown,
+  TRes extends DomainResult<TOk, DomainError> = DomainResult<TOk, DomainError>,
+> extends AbstractMessage<CausationCodeType, ResourceCodeType, QueryCodeType, TProps, TOk, TRes> {}
