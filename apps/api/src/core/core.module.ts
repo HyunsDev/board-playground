@@ -8,6 +8,7 @@ import {
   HttpContextModule,
   LoggingModule,
   SecurityModule,
+  HealthModule,
 } from '@workspace/backend-core';
 
 import { refreshTokenConfig } from './configs/refresh-token.config';
@@ -29,6 +30,10 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
       enableGlobalAuthGuard: true,
     }),
     ExceptionFilterModule,
+    HealthModule.forRoot({
+      exposeHttp: true,
+      checkDatabase: true,
+    }),
   ],
   exports: [HttpContextModule, DatabaseModule, EventBusModule, LoggingModule, SecurityModule],
 })
