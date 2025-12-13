@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { ClsService } from 'nestjs-cls';
@@ -11,7 +11,8 @@ import { TriggerCodeEnum } from '@/common';
 export class ContextService {
   constructor(
     private readonly cls: ClsService<AppContext>,
-    private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+    @Optional()
+    private readonly txHost?: TransactionHost<TransactionalAdapterPrisma>,
   ) {}
 
   // --- Request ID ---
@@ -52,11 +53,12 @@ export class ContextService {
 
   // --- Transaction ---
   isTransactionActive(): boolean {
-    return this.txHost.isTransactionActive();
+    const { txHost } = this;
+    return txHost?.isTransactionActive() ?? false;
   }
 
   getTx() {
-    return this.txHost.tx;
+    return this.txHost?.tx;
   }
 
   // --- Error Code ---

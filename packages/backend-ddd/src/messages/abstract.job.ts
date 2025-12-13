@@ -27,7 +27,7 @@ export abstract class AbstractJob<
   QueueCodeType extends string,
   ResourceCodeType extends string,
   CausationCodeType extends string,
-  D extends AbstractIJob<CausationCodeType, unknown>,
+  D extends AbstractIJob<CausationCodeType, unknown> = AbstractIJob<CausationCodeType, unknown>,
 > {
   abstract readonly code: JobCodeType;
   abstract readonly resourceType: ResourceCodeType;

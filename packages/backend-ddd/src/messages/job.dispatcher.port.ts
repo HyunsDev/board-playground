@@ -1,16 +1,12 @@
-import { AbstractIJob, AbstractJob } from './abstract.job';
+import { AbstractJob } from './abstract.job';
 
 export abstract class JobDispatcherPort {
-  abstract dispatch(
-    job: AbstractJob<string, string, string, string, AbstractIJob<string, unknown>>,
-  ): Promise<void>;
+  abstract dispatch(job: AbstractJob<string, string, string, string>): Promise<void>;
 
   /**
    * 여러 작업을 한 번에 큐에 등록합니다.
    */
-  abstract dispatchMany(
-    jobs: AbstractJob<string, string, string, string, AbstractIJob<string, unknown>>[],
-  ): Promise<void>;
+  abstract dispatchMany(jobs: AbstractJob<string, string, string, string>[]): Promise<void>;
 
   /**
    * 버퍼에 담긴 작업들을 모두 비웁니다. (발송 취소)

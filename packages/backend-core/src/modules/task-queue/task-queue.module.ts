@@ -1,11 +1,16 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module, Global } from '@nestjs/common';
 
+import { JobDispatcherPort } from '@workspace/backend-ddd';
+
 import { RedisConfig, redisConfig } from '../config';
+import { CoreContextModule } from '../context';
+import { JobDispatcher } from './job.dispatcher';
 
 @Global()
 @Module({
   imports: [
+    CoreContextModule,
     BullModule.forRootAsync({
       useFactory: async (config: RedisConfig) => ({
         connection: {
@@ -27,6 +32,12 @@ import { RedisConfig, redisConfig } from '../config';
       inject: [redisConfig.KEY],
     }),
   ],
-  exports: [BullModule],
+  providers: [
+    {
+      provide: JobDispatcherPort,
+      useClass: JobDispatcher,
+    },
+  ],
+  exports: [BullModule, JobDispatcherPort],
 })
 export class TaskQueueModule {}
