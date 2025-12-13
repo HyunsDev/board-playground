@@ -8,6 +8,12 @@ import {
   HttpContextModule,
   LoggingModule,
   SecurityModule,
+  HealthModule,
+  CacheModule,
+  accessTokenConfig,
+  httpConfig,
+  prismaConfig,
+  redisConfig,
 } from '@workspace/backend-core';
 
 import { refreshTokenConfig } from './configs/refresh-token.config';
@@ -17,18 +23,22 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
 @Module({
   imports: [
     CoreConfigModule.forRoot({
-      isHttp: true,
-      extraLoad: [refreshTokenConfig],
+      extraLoad: [httpConfig, prismaConfig, accessTokenConfig, redisConfig, refreshTokenConfig],
     }),
     CqrsModule.forRoot(),
     DatabaseModule,
-    HttpContextModule,
+    CacheModule,
+    HttpContextModule.forRoot(),
     EventBusModule,
     LoggingModule,
     SecurityModule.forRoot({
       enableGlobalAuthGuard: true,
     }),
     ExceptionFilterModule,
+    HealthModule.forRoot({
+      exposeHttp: true,
+      checkDatabase: true,
+    }),
   ],
   exports: [HttpContextModule, DatabaseModule, EventBusModule, LoggingModule, SecurityModule],
 })

@@ -27,6 +27,7 @@
   "dependencies": {
     "@ts-rest/core": "3.53.0-rc.1",
     "neverthrow": "^8.2.0",
+    "typescript": "^5.9.3",
     "zod": "^4.1.13"
   },
   "devDependencies": {
