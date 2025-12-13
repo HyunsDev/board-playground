@@ -8,6 +8,7 @@
   "scripts": {
     "build": "turbo run build",
     "clean": "pnpm -w dlx rimraf \"node_modules\" \"packages/**/node_modules\" \"packages/**/dist\"",
+    "clean:dist": "pnpm -w dlx rimraf \"packages/**/dist\"",
     "depcruise": "pnpm exec depcruise apps packages --include-only \"^(apps|packages)/\"",
     "dependency-graph": "depcruise apps packages --include-only \"^(apps|packages)/\" --exclude \"(/dist/|/\\.next/|/coverage/|/src/generated/|/node_modules/)\" --output-type dot | dot -T svg > dependency-graph.svg",
     "dev": "turbo run dev dev:check --concurrency=20",
