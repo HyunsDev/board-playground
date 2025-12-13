@@ -45,3 +45,8 @@ export abstract class BaseBadRequestError<
   Code extends string = string,
   Details = unknown,
 > extends DomainError<Code, Details> {}
+
+export abstract class BaseInternalServerError<
+  Code extends string = string,
+  Details = unknown,
+> extends DomainError<Code, Details> {}

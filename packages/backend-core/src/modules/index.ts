@@ -5,3 +5,4 @@ export * from './logging';
 export * from './config';
 export * from './security';
 export * from './health';
+export * from './cache';
