@@ -2,7 +2,7 @@ import { WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common'; // 혹은 커스텀 LoggerPort
 import { Job } from 'bullmq';
 
-import { IJobHandler } from '@workspace/backend-ddd';
+import { IJobHandler, InvalidMessageException } from '@workspace/backend-ddd';
 
 import { JobCodeMismatchException } from './job.errors';
 
@@ -44,10 +44,10 @@ export abstract class JobProcessor extends WorkerHost {
       // 2. [핵심] Raw Data -> Job Instance 변환 (fromPlain + Validation)
       // 핸들러가 가지고 있는 JobClass 정보를 이용해 정적 메서드 호출
       const jobInstance = handler.JobClass.fromPlain({
-        id: bullJob.id!,
+        id: bullJob.data.id,
         code: jobCode,
-        data: bullJob.data,
-        metadata: bullJob.opts as any, // 우리가 메타데이터를 opts에 넣었다면 이렇게 복원
+        data: bullJob.data.data,
+        metadata: bullJob.data.metadata, // 우리가 메타데이터를 opts에 넣었다면 이렇게 복원
         // 혹은 metadata가 data 안에 포함되어 있다면 bullJob.data.metadata
       });
 
@@ -59,6 +59,12 @@ export abstract class JobProcessor extends WorkerHost {
       if (error instanceof JobCodeMismatchException) {
         this.logger.error(
           `[${jobCode}] Job ${bullJob.id} failed due to code mismatch: ${error.message}`,
+        );
+      }
+
+      if (error instanceof InvalidMessageException) {
+        this.logger.error(
+          `[${jobCode}] Job ${bullJob.id} failed due to invalid message: ${error.message}`,
         );
       }
 
