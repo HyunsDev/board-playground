@@ -24,7 +24,7 @@ export const createDevLoggerStream = async (): Promise<DestinationStream> => {
     singleLine: true,
     translateTime: 'SYS:HH:MM:ss',
     ignore:
-      'pid,hostname,req,res,responseTime,context,reqId,userId,sessionId,httpMethod,reqUrl,resStatus,duration,errorCode,event,type,action,isError,correlationId,causationId,causationType,createdAt,queryData,error,handlerName',
+      'pid,hostname,req,res,responseTime,context,reqId,userId,sessionId,httpMethod,reqUrl,resStatus,duration,errorCode,event,type,action,isError,correlationId,causationId,causationType,createdAt,queryData,error,handlerName,resourceId,resourceType',
 
     messageFormat: (log: any, messageKey: string) => {
       const msg = log[messageKey] as string;
