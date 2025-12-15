@@ -5,7 +5,7 @@ import { ClsService } from 'nestjs-cls';
 
 import { AppContext, ClientContext, TokenContext, MessageMetadataContext } from './context.types';
 
-import { TriggerCodeEnum } from '@/common';
+import { TriggerCode, TriggerCodeEnum } from '@/common';
 
 @Injectable()
 export class ContextService {
@@ -17,11 +17,11 @@ export class ContextService {
 
   // --- Request ID ---
   getRequestId(): string | undefined {
-    return this.cls.getId();
+    return this.cls.get('requestId');
   }
 
   // --- Trigger Type ---
-  setTriggerType(type: string) {
+  setTriggerType(type: TriggerCode) {
     this.cls.set('triggerType', type);
   }
 

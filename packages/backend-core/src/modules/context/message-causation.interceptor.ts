@@ -1,7 +1,7 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
-import { AbstractCommand, AbstractDomainEvent } from '@workspace/backend-ddd';
+import { AbstractMessage } from '@workspace/backend-ddd/dist/messages/internal/abstract.message';
 
 import { ContextService } from './context.service';
 
@@ -11,7 +11,7 @@ export class MessageCausationInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const message = context.switchToRpc().getData();
-    if (message instanceof AbstractDomainEvent || message instanceof AbstractCommand) {
+    if (message instanceof AbstractMessage) {
       this.context.setMessageMetadata(message.deriveMetadata());
     }
     return next.handle();
