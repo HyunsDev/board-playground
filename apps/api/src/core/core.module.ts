@@ -25,10 +25,10 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
     CoreConfigModule.forRoot({
       extraLoad: [httpConfig, prismaConfig, accessTokenConfig, redisConfig, refreshTokenConfig],
     }),
+    HttpContextModule.forRoot(),
     CqrsModule.forRoot(),
     DatabaseModule,
     CacheModule,
-    HttpContextModule.forRoot(),
     EventBusModule,
     LoggingModule,
     SecurityModule.forRoot({
