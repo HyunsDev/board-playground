@@ -2,7 +2,7 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 import { AccessDeniedError, DomainException } from '@workspace/backend-ddd';
-import { UserRole } from '@workspace/database';
+import { UserRole } from '@workspace/domain';
 
 import { ROLES_KEY } from '../decorators/roles.decorator';
 
