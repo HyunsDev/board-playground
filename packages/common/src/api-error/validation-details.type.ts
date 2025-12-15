@@ -1,13 +1,13 @@
 import { type ErrorHttpStatusCode } from '@ts-rest/core';
-import { type ZodIssue } from 'zod';
+import { z } from 'zod';
 
 import { type ApiError } from './api-error.type';
 
 export type ValidationDetails = {
-  body: ZodIssue[] | null;
-  query: ZodIssue[] | null;
-  pathParams: ZodIssue[] | null;
-  headers: ZodIssue[] | null;
+  body: z.core.$ZodIssue[] | null;
+  query: z.core.$ZodIssue[] | null;
+  pathParams: z.core.$ZodIssue[] | null;
+  headers: z.core.$ZodIssue[] | null;
 };
 
 /**
