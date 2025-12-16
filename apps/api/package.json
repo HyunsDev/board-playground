@@ -5,7 +5,7 @@
   "scripts": {
     "build": "nest build",
     "check:contracts": "ts-node -r tsconfig-paths/register devtools/check-contracts/index",
-    "dev": "nest start --watch",
+    "dev": "nodemon --watch src --watch ../../packages/backend-core/dist --ext ts,js,json --exec \"nest start\"",
     "dev:check": "nodemon --watch \"src/**/*.controller.ts\" --watch \"../../packages/contract/src\" --watch \"devtools/check-contracts\" --ext ts --exec \"pnpm run check:contracts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "start": "nest start",
