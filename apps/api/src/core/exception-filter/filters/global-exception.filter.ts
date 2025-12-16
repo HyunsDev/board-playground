@@ -9,10 +9,11 @@ import {
 import { ErrorHttpStatusCode } from '@nestjs/common/utils/http-error-by-code.util';
 import { HttpAdapterHost } from '@nestjs/core';
 
-import { ContextService } from '@workspace/backend-core';
+import { ContextService, systemLog, SystemLogActionEnum } from '@workspace/backend-core';
 import { DomainError } from '@workspace/backend-ddd';
 import { ApiError } from '@workspace/common';
 import { ApiErrors } from '@workspace/contract';
+import { DomainCodeEnums } from '@workspace/domain';
 
 interface ErrorInfo {
   level?: LogLevel;
@@ -60,7 +61,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
    */
   private resolveError(exception: unknown): ErrorInfo {
     if (exception instanceof DomainError) {
-      return this.handleUnhandledDomainException(exception as DomainError);
+      return this.handleUnhandledDomainError(exception as DomainError);
     }
     if (exception instanceof HttpException) {
       return this.handleHttpException(exception);
@@ -87,8 +88,13 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
   /**
    * Controller에서 처리되지 않은 도메인 예외 처리
    */
-  private handleUnhandledDomainException(exception: DomainError): ErrorInfo {
-    this.logger.error(`Unhandled domain error: ${exception.code}`);
+  private handleUnhandledDomainError(exception: DomainError): ErrorInfo {
+    this.logger.error(
+      systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.InvariantViolation, {
+        msg: `Unhandled domain error: ${exception.code}`,
+        error: exception,
+      }),
+    );
     return {
       level: 'warn',
       ...ApiErrors.Common.UnhandledDomainError,
@@ -118,10 +124,22 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
     if (info?.level === 'error' || info.status >= 500) {
       // 심각한 에러: Error 레벨 + 스택 트레이스
       const stack = exception instanceof Error ? exception.stack : undefined;
-      this.logger.error(logMessage, stack);
+
+      this.logger.error(
+        systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.InternalError, {
+          msg: logMessage,
+          error: exception,
+        }),
+        stack,
+      );
     } else if (info?.level === 'warn' || info.status >= 400) {
       // 클라이언트 에러: Debug 레벨
-      this.logger.debug(logMessage);
+      this.logger.debug(
+        systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.InternalError, {
+          msg: logMessage,
+          error: exception,
+        }),
+      );
     }
   }
 }

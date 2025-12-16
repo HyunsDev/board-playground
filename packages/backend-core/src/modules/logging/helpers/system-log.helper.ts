@@ -12,8 +12,8 @@ export const systemLog = (
     error,
   }: {
     msg?: string;
-    data: Record<string, unknown>;
-    error: Error | unknown;
+    data?: Record<string, unknown>;
+    error?: Error | unknown;
   },
 ): SystemLogData => {
   return {

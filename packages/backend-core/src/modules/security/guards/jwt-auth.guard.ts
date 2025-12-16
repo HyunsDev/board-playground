@@ -9,11 +9,12 @@ import {
   InvalidAccessTokenError,
   MissingTokenError,
 } from '@workspace/backend-ddd';
-import { TokenPayload, TokenPayloadSchema } from '@workspace/domain';
+import { DomainCodeEnums, TokenPayload, TokenPayloadSchema } from '@workspace/domain';
 
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 import { ContextService } from '@/modules/context';
+import { systemLog, SystemLogActionEnum } from '@/modules/logging';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -70,7 +71,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       }
 
       // 그 외 알 수 없는 인증 에러는 로그를 남기고 Unauthorized 처리
-      this.logger.warn(`Unknown Auth Error: ${JSON.stringify(info)}`);
+      this.logger.warn(
+        systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
+          msg: `Unknown authentication error: ${JSON.stringify(info)}`,
+        }),
+      );
       throw new InternalServerErrorException();
     }
 
@@ -79,7 +84,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const parsedResult = TokenPayloadSchema.safeParse(payload);
 
     if (!parsedResult.success) {
-      this.logger.error(`Invalid Token Payload: ${parsedResult.error}`);
+      this.logger.warn(
+        systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.InvariantViolation, {
+          msg: `Invalid Token Payload: ${JSON.stringify(parsedResult.error.issues)}`,
+        }),
+      );
       throw new DomainException(new InvalidAccessTokenError());
     }
 

@@ -6,13 +6,15 @@ import { DiscoveryService } from '@nestjs/core';
 import { EventBus } from '@nestjs/cqrs';
 
 import { DomainError, DomainResult, SystemException } from '@workspace/backend-ddd';
+import { DomainCodeEnums } from '@workspace/domain';
 
 import { LogTypeEnum } from '../log.enums';
-import { EventPublishedLogData } from '../types';
+import { EventPublishedLogData, SystemLogActionEnum } from '../types';
 import { MeasureResult } from './instrumentation.types';
 import { toCommandLogData } from './toCommandLogData';
 import { toEventLogData } from './toEventLogData';
 import { toQueryLogData } from './toQueryLogData';
+import { systemLog } from '../helpers';
 
 import { BaseCommand, BaseDomainEvent, BaseDomainEventProps, BaseQuery } from '@/base';
 
@@ -42,7 +44,11 @@ export class CqrsInstrumentation implements OnApplicationBootstrap {
     this.wrapHandlers(QUERY_HANDLER_METADATA, 'Query');
     this.wrapHandlers(EVENTS_HANDLER_METADATA, 'Event');
 
-    this.logger.log('CQRS Instrumentation initialized: Handlers wrapped.');
+    this.logger.log(
+      systemLog(DomainCodeEnums.System.Infra, SystemLogActionEnum.AppInitialize, {
+        msg: 'CQRS Instrumentation initialized: Handlers wrapped.',
+      }),
+    );
   }
 
   private wrapEventBusPublish(bus: EventBus) {

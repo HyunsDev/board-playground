@@ -1,9 +1,10 @@
 import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
-import { CoreSystemException } from '@workspace/backend-core';
+import { CoreSystemException, systemLog, SystemLogActionEnum } from '@workspace/backend-core';
 import { SystemException, matchError, apiErr, DDDSystemException } from '@workspace/backend-ddd';
 import { ApiErrors } from '@workspace/contract';
+import { DomainCodeEnums } from '@workspace/domain';
 
 type GlobalSystemException = DDDSystemException | CoreSystemException;
 
@@ -20,27 +21,40 @@ export class SystemExceptionFilter implements ExceptionFilter<SystemException> {
       const response = matchError(exception, {
         InternalServerError: (err) => {
           this.logger.error(
-            `Internal server error: ${err.details?.error?.code}`,
+            systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.InternalError, {
+              msg: `Internal server error: ${err.details?.error?.code}`,
+              error: err,
+            }),
             exception?.stack,
-            JSON.stringify(err.details?.error),
           );
           return apiErr(ApiErrors.Common.InternalServerError);
         },
         UnexpectedDomainError: (err) => {
           this.logger.error(
-            `Unexpected domain error: ${err.details?.error?.code}`,
+            systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.InternalError, {
+              msg: `Unexpected domain error: ${err.details?.error?.code}`,
+              error: err,
+            }),
             exception?.stack,
-            JSON.stringify(err.details?.error),
           );
           return apiErr(ApiErrors.Common.UnexpectedDomainError);
         },
         InvariantViolation: (err) => {
-          this.logger.error(`Invariant violation: ${err.message}`, exception?.stack);
+          this.logger.error(
+            systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.InternalError, {
+              msg: `Invariant violation: ${err.message}`,
+              error: err,
+            }),
+            exception?.stack,
+          );
           return apiErr(ApiErrors.Common.InternalServerError, {});
         },
         CacheInfrastructureError: (err) => {
           this.logger.error(
-            `Cache infrastructure error: ${err.details?.key}`,
+            systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.InternalError, {
+              msg: `Cache infrastructure error: ${err.details?.key}`,
+              error: err,
+            }),
             exception?.stack,
             JSON.stringify(err.details?.originalError),
           );
@@ -52,7 +66,10 @@ export class SystemExceptionFilter implements ExceptionFilter<SystemException> {
       void httpAdapter.reply(ctx.getResponse(), response.body, response.status);
     } catch {
       this.logger.error(
-        `Unhandled domain error: ${exception.code}`,
+        systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.InternalError, {
+          msg: `Unhandled domain error: ${exception.code}`,
+          error: exception,
+        }),
         exception?.stack,
         JSON.stringify(exception),
       );

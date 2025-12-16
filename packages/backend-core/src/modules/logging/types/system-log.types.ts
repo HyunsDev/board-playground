@@ -10,8 +10,10 @@ export const SystemLogActionEnum = {
   ResourceExhausted: 'RESOURCE_EXHAUSTED',
   InternalError: 'INTERNAL_ERROR',
 
-  DBConnectionError: 'DB_CONNECTION_ERROR',
-  CacheConnectionError: 'CACHE_CONNECTION_ERROR',
+  PrismaError: 'PRISMA_ERROR',
+  RedisError: 'REDIS_ERROR',
+
+  UnknownError: 'UNKNOWN_ERROR',
 
   // Devtools
   DevtoolsUsage: 'DEVTOOLS_USAGE',

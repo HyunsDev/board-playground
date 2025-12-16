@@ -1,6 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
+import { systemLog, SystemLogActionEnum } from '@workspace/backend-core';
 import {
   apiErr,
   DomainException,
@@ -8,6 +9,7 @@ import {
   matchPublicError,
 } from '@workspace/backend-ddd';
 import { ApiErrors } from '@workspace/contract';
+import { DomainCodeEnums } from '@workspace/domain';
 
 import { GlobalDomainError } from '../global-domain-error.type';
 
@@ -23,7 +25,12 @@ export class DomainExceptionFilter implements ExceptionFilter<DomainException> {
     const error = exception?.error;
     try {
       if (error.scope !== 'public') {
-        this.logger.error(`Non-public domain error caught in DomainExceptionFilter: ${error.code}`);
+        this.logger.error(
+          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.InvariantViolation, {
+            msg: `Non-public domain error caught in DomainExceptionFilter: ${error.code}`,
+            error,
+          }),
+        );
 
         const response = apiErr(ApiErrors.Common.UnhandledDomainError, {});
         void httpAdapter.reply(ctx.getResponse(), response.body, response.status);
@@ -42,7 +49,10 @@ export class DomainExceptionFilter implements ExceptionFilter<DomainException> {
     } catch (err: unknown) {
       if (err instanceof InvariantViolationException) {
         this.logger.error(
-          `Unregistered public domain error caught in DomainExceptionFilter: ${error?.code}`,
+          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.InvariantViolation, {
+            msg: `Invariant violation in DomainExceptionFilter: ${err.message}`,
+            error: err,
+          }),
         );
         const response = apiErr(ApiErrors.Common.UnhandledDomainError, {});
         void httpAdapter.reply(ctx.getResponse(), response.body, response.status);
@@ -50,9 +60,10 @@ export class DomainExceptionFilter implements ExceptionFilter<DomainException> {
       }
 
       this.logger.error(
-        `Unexpected error in DomainExceptionFilter: ${error?.code}`,
-        exception?.stack,
-        JSON.stringify(err),
+        systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.InvariantViolation, {
+          msg: `Unexpected error in DomainExceptionFilter: ${error?.code}`,
+          error: err,
+        }),
       );
       const response = apiErr(ApiErrors.Common.InternalServerError, {});
       void httpAdapter.reply(ctx.getResponse(), response.body, response.status);
