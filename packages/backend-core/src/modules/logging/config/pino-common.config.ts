@@ -18,6 +18,15 @@ export const getCommonPinoConfig = (
       }),
     },
 
+    customSuccessMessage: (req, res) => {
+      return `${req.method} ${req.url} ${res.statusCode}`;
+    },
+
+    // [참고] 에러 메시지("request errored")도 덮어쓰고 싶다면:
+    customErrorMessage: (req, res, err) => {
+      return `${req.method} ${req.url} ${res.statusCode} - ${err.message}`;
+    },
+
     genReqId: (req) => contextService.getRequestId() || req.headers['x-request-id'] || 'unknown',
     mixin: () => {
       return {

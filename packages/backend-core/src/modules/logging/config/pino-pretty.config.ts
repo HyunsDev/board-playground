@@ -19,10 +19,49 @@ export const createDevLoggerStream = async (): Promise<DestinationStream> => {
   const formatId = (id: string) => (id ? chalk.gray(`[${id.slice(-7)}]`) : '');
   const formatDuration = (ms: any) => (ms ? chalk.gray(`+${ms}ms`) : '');
 
+  // [추가] 레벨 매핑 (Pino는 기본적으로 레벨을 숫자로 전달함)
+  const levelLabels: Record<number, string> = {
+    10: 'TRACE',
+    20: 'DEBUG',
+    30: 'INFO',
+    40: 'WARN',
+    50: 'ERROR',
+    60: 'FATAL',
+  };
+
   return build({
     colorize: true,
     singleLine: true,
     translateTime: 'SYS:HH:MM:ss',
+    customPrettifiers: {
+      level: (logLevel: any) => {
+        // 1. 레벨 숫자를 문자열로 변환 (혹은 이미 문자열이면 대문자로)
+        const label =
+          typeof logLevel === 'number'
+            ? levelLabels[logLevel] || 'UNKNOWN'
+            : (logLevel as string).toUpperCase();
+
+        // 2. 5글자로 Left Padding (DEBUG가 5글자이므로 이에 맞춤)
+        // "INFO" -> " INFO"
+        const paddedLabel = label.padStart(5);
+
+        // 3. 색상 적용 (기존 pino-pretty 색상 테마 흉내)
+        switch (label) {
+          case 'INFO':
+            return chalk.green(paddedLabel);
+          case 'DEBUG':
+            return chalk.blue(paddedLabel);
+          case 'WARN':
+            return chalk.yellow(paddedLabel);
+          case 'ERROR':
+            return chalk.red(paddedLabel);
+          case 'FATAL':
+            return chalk.redBright(paddedLabel);
+          default:
+            return chalk.white(paddedLabel);
+        }
+      },
+    },
     ignore:
       'pid,hostname,req,res,responseTime,context,reqId,userId,sessionId,httpMethod,reqUrl,resStatus,duration,errorCode,event,type,action,isError,correlationId,causationId,causationType,createdAt,queryData,error,handlerName,resourceId,resourceType',
 
