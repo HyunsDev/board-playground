@@ -10,10 +10,12 @@ import { BaseJob, BaseJobProps } from '@/base';
 
 export abstract class JobProcessor extends WorkerHost {
   // 제네릭 제거: 내부 구현에서는 구체적인 타입을 몰라도 Map으로 관리 가능
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected readonly handlers = new Map<string, IJobHandler<any>>();
 
   constructor(
     protected readonly logger: Logger, // LoggerPort
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handlers: IJobHandler<BaseJob<BaseJobProps<any>>>[],
   ) {
     super();
@@ -26,6 +28,7 @@ export abstract class JobProcessor extends WorkerHost {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async process(bullJob: Job<any, any, string>): Promise<void> {
     const jobCode = bullJob.name; // BullMQ의 jobName을 code로 사용
     const handler = this.handlers.get(jobCode);
