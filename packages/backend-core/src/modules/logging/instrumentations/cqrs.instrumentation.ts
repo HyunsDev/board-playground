@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { performance } from 'perf_hooks';
 
-import { Injectable, Logger, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { DiscoveryService } from '@nestjs/core';
 import { EventBus } from '@nestjs/cqrs';
 
@@ -28,7 +28,7 @@ const resultLogLevel = {
 } as const;
 
 @Injectable()
-export class CqrsInstrumentation implements OnModuleInit, OnApplicationBootstrap {
+export class CqrsInstrumentation implements OnApplicationBootstrap {
   private readonly logger = new Logger(CqrsInstrumentation.name);
 
   constructor(
@@ -36,15 +36,13 @@ export class CqrsInstrumentation implements OnModuleInit, OnApplicationBootstrap
     private readonly discoveryService: DiscoveryService,
   ) {}
 
-  onModuleInit() {
-    this.logger.log('CQRS Instrumentation initialized: Buses wrapped.');
-  }
-
   onApplicationBootstrap() {
     this.wrapEventBusPublish(this.eventBus);
     this.wrapHandlers(COMMAND_HANDLER_METADATA, 'Command');
     this.wrapHandlers(QUERY_HANDLER_METADATA, 'Query');
     this.wrapHandlers(EVENTS_HANDLER_METADATA, 'Event');
+
+    this.logger.log('CQRS Instrumentation initialized: Handlers wrapped.');
   }
 
   private wrapEventBusPublish(bus: EventBus) {
