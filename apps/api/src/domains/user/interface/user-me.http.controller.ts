@@ -1,7 +1,7 @@
 import { Controller, Res } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
-import { Response } from 'express';
+import { FastifyReply } from 'fastify';
 
 import { ContextService, Token } from '@workspace/backend-core';
 import { apiOk, matchPublicError, apiErr } from '@workspace/backend-ddd';
@@ -13,8 +13,6 @@ import { DeleteUserMeCommand } from '../application/me/commands/delete-user-me.c
 import { UpdateUserMeProfileCommand } from '../application/me/commands/update-user-me-profile.command';
 import { UpdateUserMeUsernameCommand } from '../application/me/commands/update-user-me-username.command';
 import { GetUserMeQuery } from '../application/me/queries/get-user-me.query';
-
-import { REFRESH_TOKEN_COOKIE_OPTIONS } from '@/shared/constants/cookie.constant';
 
 @Controller()
 export class UserMeHttpController {
@@ -101,7 +99,7 @@ export class UserMeHttpController {
   }
 
   @TsRestHandler(contract.user.me.delete)
-  async deleteMe(@Res({ passthrough: true }) res: Response, @Token() token: TokenPayload) {
+  async deleteMe(@Res({ passthrough: true }) res: FastifyReply, @Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.delete, async () => {
       const result = await this.commandBus.execute(
         new DeleteUserMeCommand(
@@ -114,7 +112,7 @@ export class UserMeHttpController {
 
       return result.match(
         () => {
-          void res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_OPTIONS);
+          void res.clearCookie('refreshToken', { path: '/auth' });
           return apiOk(200, {});
         },
         (error) =>

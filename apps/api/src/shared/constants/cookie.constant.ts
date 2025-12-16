@@ -1,9 +1,9 @@
-import { CookieOptions } from 'express';
+import { CookieSerializeOptions } from '@fastify/cookie';
 
-export const REFRESH_TOKEN_COOKIE_OPTIONS: CookieOptions = {
+export const REFRESH_TOKEN_COOKIE_OPTIONS: CookieSerializeOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production', // 환경변수 직접 접근 혹은 주입 필요
+  secure: process.env.NODE_ENV === 'production',
   path: '/auth',
-  maxAge: 30 * 24 * 60 * 60 * 1000,
+  maxAge: 30 * 24 * 60 * 60,
   sameSite: 'strict',
 };

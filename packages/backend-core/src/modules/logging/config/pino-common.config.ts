@@ -19,6 +19,11 @@ export const getCommonPinoConfig = (
     },
 
     genReqId: (req) => contextService.getRequestId() || req.headers['x-request-id'] || 'unknown',
+    mixin: () => {
+      return {
+        reqId: contextService.getRequestId(),
+      };
+    },
 
     customProps: (req: IncomingMessage, res: ServerResponse) => {
       const contextUserId = contextService?.getUserId();

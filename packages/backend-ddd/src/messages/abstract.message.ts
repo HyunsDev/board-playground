@@ -5,8 +5,8 @@ import {
   AbstractCreateMessageMetadata,
   AbstractDrivenMessageMetadata,
   AbstractMessageMetadata,
-} from '../abstract-message-metadata.type';
-import { RESULT_TYPE_SYMBOL } from '../message.constant';
+} from './abstract-message-metadata.type';
+import { RESULT_TYPE_SYMBOL } from './message.constant';
 
 import {
   DomainError,

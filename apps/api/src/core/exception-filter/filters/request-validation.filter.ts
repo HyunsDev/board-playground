@@ -1,6 +1,6 @@
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { RequestValidationError } from '@ts-rest/nest';
-import { Response } from 'express';
+import { FastifyReply } from 'fastify';
 
 import { apiErr } from '@workspace/backend-ddd';
 import { ValidationDetails } from '@workspace/common';
@@ -10,7 +10,7 @@ import { ApiErrors } from '@workspace/contract';
 export class RequestValidationFilter implements ExceptionFilter<RequestValidationError> {
   catch(exception: RequestValidationError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
+    const response = ctx.getResponse<FastifyReply>();
 
     const details: ValidationDetails = {
       body: exception.body?.issues || null,
@@ -20,6 +20,6 @@ export class RequestValidationFilter implements ExceptionFilter<RequestValidatio
     };
 
     const res = apiErr(ApiErrors.Common.ValidationError, details);
-    void response.status(res.status).json(res.body);
+    void response.status(res.status).send(res.body);
   }
 }
