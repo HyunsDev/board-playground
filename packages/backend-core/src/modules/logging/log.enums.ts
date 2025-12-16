@@ -2,6 +2,7 @@ import { uniqueDeepMerge } from '@workspace/common';
 
 export const GeneralLogTypeEnum = {
   Http: 'HTTP',
+  System: 'SYSTEM',
   Domain: 'DOMAIN',
   General: 'GENERAL',
 } as const;
