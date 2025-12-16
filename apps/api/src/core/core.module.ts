@@ -26,9 +26,9 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
     CoreConfigModule.forRoot({
       extraLoad: [httpConfig, prismaConfig, accessTokenConfig, redisConfig, refreshTokenConfig],
     }),
+    CqrsModule.forRoot(),
     TaskQueueModule,
     HttpContextModule.forRoot(),
-    CqrsModule.forRoot(),
     DatabaseModule,
     CacheModule,
     EventBusModule,
@@ -45,6 +45,13 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
       },
     }),
   ],
-  exports: [HttpContextModule, DatabaseModule, EventBusModule, LoggingModule, SecurityModule],
+  exports: [
+    HttpContextModule,
+    DatabaseModule,
+    EventBusModule,
+    LoggingModule,
+    SecurityModule,
+    CqrsModule,
+  ],
 })
 export class CoreModule {}

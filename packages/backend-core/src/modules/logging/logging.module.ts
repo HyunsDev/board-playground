@@ -6,7 +6,7 @@ import { LoggerModule } from 'nestjs-pino';
 
 import { getCommonPinoConfig } from './config/pino-common.config';
 import { createDevLoggerStream } from './config/pino-pretty.config';
-import { CqrsInstrumentation } from './cqrs.instrumentation';
+import { CqrsInstrumentation } from './instrumentations/cqrs.instrumentation';
 import { ContextService } from '../context/context.service';
 
 import { CoreConfig, coreConfig } from '@/modules/config';
