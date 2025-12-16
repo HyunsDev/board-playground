@@ -42,7 +42,9 @@ export const DomainCodeEnums = uniqueDeepMerge(
     },
     Community: {},
     System: {
+      Lifecycle: 'system:lifecycle',
       Infra: 'system:infra',
+      Exception: 'system:exception',
       Devtools: 'system:devtools',
     },
   }),

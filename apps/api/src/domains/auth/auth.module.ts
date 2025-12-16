@@ -1,5 +1,4 @@
 import { Logger, Module, Provider } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 
 import { SessionModule } from '../session/session.module';
 import { UserModule } from '../user/user.module';
@@ -25,7 +24,7 @@ const mappers: Provider[] = [];
 const repositories: Provider[] = [];
 
 @Module({
-  imports: [CqrsModule, UserModule, CryptoModule, SessionModule],
+  imports: [UserModule, CryptoModule, SessionModule],
   providers: [
     Logger,
     ...commandHandlers,

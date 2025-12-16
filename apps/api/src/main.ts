@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
@@ -27,8 +28,7 @@ async function bootstrap() {
 
   // 4. 서버 시작 (0.0.0.0 필수)
   void (await app.listen(port, '0.0.0.0'));
-
-  console.log(`Application is running on: ${await app.getUrl()}`);
+  Logger.log(`🚀 Application is running on: ${await app.getUrl()}`);
 }
 
 void bootstrap();

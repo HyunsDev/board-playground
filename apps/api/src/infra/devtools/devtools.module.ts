@@ -1,5 +1,4 @@
 import { Logger, Module, Provider } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 
 import { ForceLoginCommandHandler } from './commands/force-login.command';
 import { ForceRegisterCommandHandler } from './commands/force-register.command';
@@ -18,7 +17,7 @@ const commandHandlers: Provider[] = [
 const services: Provider[] = [];
 
 @Module({
-  imports: [CqrsModule, UserModule, AuthModule, SessionModule],
+  imports: [UserModule, AuthModule, SessionModule],
   controllers: [DevtoolsController],
   providers: [Logger, ...commandHandlers, ...services],
 })

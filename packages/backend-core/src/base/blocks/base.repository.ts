@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+import { Logger } from '@nestjs/common';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
@@ -10,11 +12,13 @@ import {
   EntityConflictError,
   DomainResult,
   DomainEventPublisherPort,
-  LoggerPort,
 } from '@workspace/backend-ddd';
 import { PrismaClient, Prisma } from '@workspace/database';
+import { DomainCodeEnums } from '@workspace/domain';
 
 import { BaseDomainEvent, BaseDomainEventProps } from '../messages';
+
+import { systemLog, SystemLogActionEnum } from '@/modules';
 
 type AbstractCrudDelegate<R> = {
   findUnique(args: unknown): Promise<R | null>;
@@ -35,7 +39,7 @@ export abstract class BaseRepository<
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly mapper: AbstractMapper<TAggregate, TDbModel>,
     protected readonly eventDispatcher: DomainEventPublisherPort,
-    protected readonly logger: LoggerPort,
+    protected readonly logger: Logger,
   ) {}
 
   /**
@@ -90,9 +94,20 @@ export abstract class BaseRepository<
         }
       }
       if (error instanceof Error) {
-        this.logger.error(`[CreateEntity] Unexpected Error: ${error.message}`, error);
+        this.logger.error(
+          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
+            msg: `[CreateEntity] Unexpected Error: ${error.message}`,
+            error: error,
+          }),
+          error.stack,
+        );
       } else {
-        this.logger.error(`[CreateEntity] Unexpected Error: ${String(error)}`);
+        this.logger.error(
+          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
+            msg: `[CreateEntity] Unexpected Error: ${String(error)}`,
+            error: error,
+          }),
+        );
       }
       throw error;
     }
@@ -137,9 +152,20 @@ export abstract class BaseRepository<
         }
       }
       if (error instanceof Error) {
-        this.logger.error(`[CreateEntity] Unexpected Error: ${error.message}`, error);
+        this.logger.error(
+          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
+            msg: `[updateEntity] Unexpected Error: ${error.message}`,
+            error: error,
+          }),
+          error.stack,
+        );
       } else {
-        this.logger.error(`[CreateEntity] Unexpected Error: ${String(error)}`);
+        this.logger.error(
+          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
+            msg: `[updateEntity] Unexpected Error: ${String(error)}`,
+            error: error,
+          }),
+        );
       }
       throw error;
     }
@@ -165,9 +191,20 @@ export abstract class BaseRepository<
         );
       }
       if (error instanceof Error) {
-        this.logger.error(`[CreateEntity] Unexpected Error: ${error.message}`, error);
+        this.logger.error(
+          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
+            msg: `[DeleteEntity] Unexpected Error: ${error.message}`,
+            error: error,
+          }),
+          error.stack,
+        );
       } else {
-        this.logger.error(`[CreateEntity] Unexpected Error: ${String(error)}`);
+        this.logger.error(
+          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
+            msg: `[DeleteEntity] Unexpected Error: ${String(error)}`,
+            error: error,
+          }),
+        );
       }
       throw error;
     }

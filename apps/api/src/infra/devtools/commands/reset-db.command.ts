@@ -3,9 +3,14 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
-import { DeriveMetadata, PrismaService } from '@workspace/backend-core';
+import {
+  DeriveMetadata,
+  PrismaService,
+  systemLog,
+  SystemLogActionEnum,
+} from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
-import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
+import { AggregateCodeEnum, defineCommandCode, DomainCodeEnums } from '@workspace/domain';
 
 type ResetDbCommandProps = BaseCommandProps<void>;
 
@@ -24,10 +29,9 @@ export class ResetDBCommand extends BaseCommand<
 
 @CommandHandler(ResetDBCommand)
 export class ResetDBCommandHandler implements ICommandHandler<ResetDBCommand> {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly logger: Logger,
-  ) {}
+  private readonly logger = new Logger(ResetDBCommandHandler.name);
+
+  constructor(private readonly prisma: PrismaService) {}
 
   async execute() {
     const tables = await this.prisma.$queryRaw<Array<{ tablename: string }>>`
@@ -41,7 +45,11 @@ export class ResetDBCommandHandler implements ICommandHandler<ResetDBCommand> {
     const targets = tablesToTruncate.map((name) => `"${name}"`).join(', ');
     const query = `TRUNCATE TABLE ${targets} RESTART IDENTITY CASCADE;`;
     void (await this.prisma.$executeRawUnsafe(query));
-    this.logger.debug(`Truncated tables: ${targets}`, ResetDBCommandHandler.name);
+    this.logger.log(
+      systemLog(DomainCodeEnums.System.Devtools, SystemLogActionEnum.DevtoolsUsage, {
+        msg: `Database reset executed. Truncated tables: ${targets}`,
+      }),
+    );
     return ok(undefined);
   }
 }
