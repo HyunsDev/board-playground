@@ -140,7 +140,7 @@ export class CqrsInstrumentation implements OnModuleInit, OnApplicationBootstrap
       const result = await executor();
       const duration = (performance.now() - start).toFixed(0);
 
-      if (result.isErr()) {
+      if (result?.isErr()) {
         return {
           duration,
           result: 'DomainError',
