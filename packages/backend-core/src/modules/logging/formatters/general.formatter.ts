@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { formatReqId } from './formatter.utils';
 import { BaseLogData } from '../types';
-import { DomainLogData } from '../types/domain.log.types';
+import { DomainLogData } from '../types/domain-log.types';
 
 export const formatDomainLog = (log: DomainLogData): string => {
   const reqId = formatReqId(log.reqId);

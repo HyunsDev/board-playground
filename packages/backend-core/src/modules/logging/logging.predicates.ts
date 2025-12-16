@@ -7,7 +7,7 @@ import {
   JobLogData,
   QueryLogData,
 } from './types';
-import { DomainLogData } from './types/domain.log.types';
+import { DomainLogData } from './types/domain-log.types';
 
 export const isHttpLog = (log: {
   httpMethod?: string;
