@@ -1,6 +1,6 @@
 import { PaginationQuery } from '@workspace/common';
 
-import { AbstractMessage, AbstractMessageProps } from './internal/abstract.message';
+import { AbstractMessage, AbstractMessageProps } from './abstract.message';
 
 import { DomainError, DomainResult } from '@/error';
 

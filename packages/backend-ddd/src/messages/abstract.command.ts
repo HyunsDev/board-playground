@@ -1,4 +1,4 @@
-import { AbstractMessage, AbstractMessageProps } from './internal/abstract.message';
+import { AbstractMessage, AbstractMessageProps } from './abstract.message';
 
 import { DomainResult, DomainError } from '@/error';
 
