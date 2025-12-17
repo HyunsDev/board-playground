@@ -665,6 +665,31 @@ importers:
         specifier: ^8.49.0
         version: 8.50.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
 
+  packages/infra:
+    dependencies:
+      '@workspace/common':
+        specifier: workspace:*
+        version: link:../common
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+    devDependencies:
+      '@types/node':
+        specifier: ^24.10.3
+        version: 24.10.4
+      '@workspace/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@workspace/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      rimraf:
+        specifier: ^6.1.2
+        version: 6.1.2
+      tsc-alias:
+        specifier: ^1.8.16
+        version: 1.8.16
+
   packages/jest-config:
     dependencies:
       typescript:
