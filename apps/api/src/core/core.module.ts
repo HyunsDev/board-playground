@@ -15,6 +15,7 @@ import {
   prismaConfig,
   redisConfig,
   TaskQueueModule,
+  ssmConfig,
 } from '@workspace/backend-core';
 
 import { refreshTokenConfig } from './configs/refresh-token.config';
@@ -24,7 +25,14 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
 @Module({
   imports: [
     CoreConfigModule.forRoot({
-      extraLoad: [httpConfig, prismaConfig, accessTokenConfig, redisConfig, refreshTokenConfig],
+      extraLoad: [
+        httpConfig,
+        prismaConfig,
+        accessTokenConfig,
+        redisConfig,
+        refreshTokenConfig,
+        ssmConfig,
+      ],
     }),
     CqrsModule.forRoot(),
     TaskQueueModule,

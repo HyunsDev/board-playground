@@ -1,6 +1,7 @@
 // infra/lib/storage-stack.ts
 import * as cdk from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 
 interface StorageStackProps extends cdk.StackProps {
@@ -48,6 +49,14 @@ export class StorageStack extends cdk.Stack {
     });
 
     this.bucketName = bucket.bucketName;
+
+    const paramName = `/board-playground/${props.stage}/s3/bucket-name`;
+
+    new ssm.StringParameter(this, 'BucketNameParam', {
+      parameterName: paramName,
+      stringValue: bucket.bucketName,
+      description: `S3 Bucket name for ${props.stage} environment`,
+    });
 
     // 2. 출력 (콘솔에 버킷 이름 표시)
     new cdk.CfnOutput(this, 'BucketNameOutput', {
