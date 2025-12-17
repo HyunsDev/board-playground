@@ -1,0 +1,42 @@
+{
+  "name": "@workspace/infra",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "require": "./dist/*.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "pnpm clean && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "clean": "rimraf dist *.tsbuildinfo",
+    "dev": "tsc -p tsconfig.build.json -w & tsc-alias -p tsconfig.build.json -w",
+    "lint": "eslint \"{src,test}/**/*.ts\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@workspace/common": "workspace:*",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.3",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "rimraf": "^6.1.2",
+    "tsc-alias": "^1.8.16"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
