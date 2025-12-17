@@ -4,14 +4,14 @@ import { BaseEntityProps, BaseAggregateRoot } from '@/base';
 
 export interface FileReferenceProps extends BaseEntityProps {
   fileId: string;
-  referenceType: string;
-  referenceId: string;
+  targetType: string;
+  targetId: string;
 }
 
 export interface CreateFileReferenceProps {
   fileId: string;
-  referenceType: string;
-  referenceId: string;
+  targetType: string;
+  targetId: string;
 }
 
 export class FileReferenceEntity extends BaseAggregateRoot<FileReferenceProps> {
@@ -28,11 +28,11 @@ export class FileReferenceEntity extends BaseAggregateRoot<FileReferenceProps> {
   get fileId() {
     return this.props.fileId;
   }
-  get referenceType() {
-    return this.props.referenceType;
+  get targetType() {
+    return this.props.targetType;
   }
-  get referenceId() {
-    return this.props.referenceId;
+  get targetId() {
+    return this.props.targetId;
   }
 
   static create(props: CreateFileReferenceProps) {

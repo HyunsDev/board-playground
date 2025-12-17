@@ -25,6 +25,6 @@ const storages: Provider[] = [
 @Module({
   imports: [],
   providers: [...facades, ...mappers, ...repositories, ...storages],
-  exports: [...facades, ...repositories, ...storages],
+  exports: [...facades, FileStoragePort, FileRepositoryPort],
 })
 export class FileModule {}
