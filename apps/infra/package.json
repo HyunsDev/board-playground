@@ -20,6 +20,9 @@
   ],
   "scripts": {
     "build": "pnpm clean && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "cdk:deploy": "cdk deploy --app 'npx ts-node --prefer-ts-exts bin/infra.ts'",
+    "cdk:diff": "cdk diff --app 'npx ts-node --prefer-ts-exts bin/infra.ts'",
+    "cdk:synth": "cdk synth --app 'npx ts-node --prefer-ts-exts bin/infra.ts'",
     "clean": "rimraf dist *.tsbuildinfo",
     "lint": "eslint \"{src,test}/**/*.ts\"",
     "typecheck": "tsc -p tsconfig.json --noEmit"
