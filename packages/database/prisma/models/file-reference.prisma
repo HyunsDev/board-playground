@@ -1,0 +1,13 @@
+model FileReference {
+    id        String   @id @default(uuid()) @db.Uuid
+    createdAt DateTime @default(now())
+
+    targetType String
+    targetId   String
+
+    fileId String @db.Uuid
+    file   File   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+    @@unique([targetType, targetId, fileId])
+    @@index([fileId])
+}

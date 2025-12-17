@@ -1,0 +1,27 @@
+// schema.prisma
+
+enum FileStatus {
+    PENDING
+    ACTIVE
+    FAILED
+}
+
+model File {
+    id         String     @id @default(uuid()) @db.Uuid
+    key        String
+    bucket     String
+    mimeType   String
+    size       Int        @default(0)
+    status     FileStatus @default(PENDING)
+    metadata   Json?
+    createdAt  DateTime   @default(now())
+    updatedAt  DateTime   @updatedAt
+    orphanedAt DateTime?
+
+    references FileReference[]
+
+    uploaderId String @db.Uuid
+    uploader   User   @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+
+    @@index([createdAt])
+}
