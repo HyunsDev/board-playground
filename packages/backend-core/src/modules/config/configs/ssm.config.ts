@@ -11,6 +11,7 @@ const envSchema = z.object({
 
 // 2. 최종 Config 구조 스키마
 export const ssmResultSchema = z.object({
+  region: z.string(),
   aws: z.object({
     s3: z.object({
       bucketName: z.string().min(1, 'S3 Bucket Name is required'),
@@ -67,6 +68,7 @@ export const ssmConfig = registerAs('ssm', async (): Promise<SsmConfig> => {
 
     // [명시적 매핑]
     const rawConfig = {
+      region: AWS_REGION,
       aws: {
         s3: {
           bucketName: paramMap.get(`${rootPath}/s3/bucket-name`),

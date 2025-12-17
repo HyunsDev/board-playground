@@ -6,17 +6,24 @@ enum FileStatus {
     FAILED
 }
 
+enum FileAccessType {
+    PRIVATE
+    PUBLIC
+}
+
 model File {
-    id         String     @id @default(uuid()) @db.Uuid
-    key        String
-    bucket     String
-    mimeType   String
-    size       Int        @default(0)
-    status     FileStatus @default(PENDING)
-    metadata   Json?
-    createdAt  DateTime   @default(now())
-    updatedAt  DateTime   @updatedAt
-    orphanedAt DateTime?
+    id           String         @id @default(uuid()) @db.Uuid
+    key          String         @unique
+    bucket       String?
+    mimeType     String
+    accessType   FileAccessType @default(PRIVATE)
+    originalName String
+    size         Int            @default(0)
+    status       FileStatus     @default(PENDING)
+    metadata     Json?
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    orphanedAt   DateTime?
 
     references FileReference[]
 
