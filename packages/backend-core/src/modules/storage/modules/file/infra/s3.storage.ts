@@ -9,12 +9,12 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Inject, Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
-import { SsmConfig, ssmConfig } from '../../../config';
-import { StorageError } from '../file/domain/file.errors';
-import { FileStoragePort, PresignedUrlOptions } from '../file/domain/file.storage.port';
+import { SsmConfig, ssmConfig } from '../../../../config';
+import { StorageError } from '../domain/file.errors';
+import { FileStoragePort, PresignedUrlOptions } from '../domain/file.storage.port';
 
 @Injectable()
-export class S3Service implements FileStoragePort {
+export class S3Storage implements FileStoragePort {
   private client: S3Client;
   private bucket: string;
 
@@ -31,7 +31,6 @@ export class S3Service implements FileStoragePort {
       Bucket: this.bucket,
       Key: options.key,
       ContentType: options.mimetype,
-      // ACL: 'public-read' // 필요시 설정, 보통은 버킷 정책 따름
     });
 
     try {
