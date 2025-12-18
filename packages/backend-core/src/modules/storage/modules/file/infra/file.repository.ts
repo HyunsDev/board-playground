@@ -16,7 +16,7 @@ import { FileEntity } from '../domain/file.entity';
 import { FileAlreadyExistsError, FileNotFoundError } from '../domain/file.errors';
 import { FileRepositoryPort } from '../domain/file.repository.port';
 
-import { BaseRepository } from '@/base';
+import { BaseRepository } from '@/base/blocks/base.repository';
 import { ContextService } from '@/modules/context';
 import { PrismaService } from '@/modules/database';
 

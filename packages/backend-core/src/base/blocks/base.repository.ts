@@ -14,9 +14,8 @@ import {
 } from '@workspace/backend-ddd';
 import { PrismaClient, Prisma } from '@workspace/database';
 
+import { UnexpectedPrismaErrorException } from '../core.errors';
 import { BaseDomainEvent, BaseDomainEventProps } from '../messages';
-
-import { UnexpectedPrismaErrorException } from '@/modules';
 
 type AbstractCrudDelegate<R> = {
   findUnique(args: unknown): Promise<R | null>;

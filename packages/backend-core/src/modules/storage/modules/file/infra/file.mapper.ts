@@ -4,7 +4,7 @@ import { File, FileAccessType, FileStatus } from '@workspace/database';
 
 import { FileEntity, FileProps } from '../domain/file.entity';
 
-import { BaseMapper } from '@/base';
+import { BaseMapper } from '@/base/mappers/base.mapper';
 
 @Injectable()
 export class FileMapper extends BaseMapper<FileEntity, File> {

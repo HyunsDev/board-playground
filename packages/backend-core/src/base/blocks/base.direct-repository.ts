@@ -10,9 +10,8 @@ import {
   DirectRepositoryPort,
 } from '@workspace/backend-ddd';
 import { PrismaClient, Prisma } from '@workspace/database';
-import { DomainCodeEnums } from '@workspace/domain';
 
-import { systemLog, SystemLogActionEnum } from '@/modules';
+import { UnexpectedPrismaErrorException } from '../core.errors';
 
 type AbstractCrudDelegate<R> = {
   findUnique(args: any): Promise<R | null>;
@@ -68,7 +67,25 @@ export abstract class BaseDirectRepository<
       const result = await this.delegate.create({ data });
       return ok(result);
     } catch (error) {
-      return this.handleError(error, 'safeCreate');
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        // Unique Constraint Violation
+        if (error.code === 'P2002') {
+          const targets = (error.meta?.target as string[]) || [];
+          const details = targets.map((field) => ({
+            field,
+            value: (data as Record<string, unknown>)[field],
+          }));
+
+          return err(
+            new EntityConflictError({
+              entityName: this.constructor.name.replace('Repository', ''),
+              conflicts: details,
+            }),
+          );
+        }
+      }
+
+      throw new UnexpectedPrismaErrorException(error);
     }
   }
 
@@ -82,7 +99,25 @@ export abstract class BaseDirectRepository<
       });
       return ok(undefined);
     } catch (error) {
-      return this.handleError(error, 'safeCreateMany');
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        // Unique Constraint Violation
+        if (error.code === 'P2002') {
+          const targets = (error.meta?.target as string[]) || [];
+          const details = targets.map((field) => ({
+            field,
+            value: (data as Record<string, unknown>)[field],
+          }));
+
+          return err(
+            new EntityConflictError({
+              entityName: this.constructor.name.replace('Repository', ''),
+              conflicts: details,
+            }),
+          );
+        }
+      }
+
+      throw new UnexpectedPrismaErrorException(error);
     }
   }
 
@@ -97,7 +132,34 @@ export abstract class BaseDirectRepository<
       });
       return ok(result);
     } catch (error) {
-      return this.handleError(error, 'safeUpdate', id);
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        // Unique Constraint Violation
+        if (error.code === 'P2002') {
+          const targets = (error.meta?.target as string[]) || [];
+          const details = targets.map((field) => ({
+            field,
+            value: (data as Record<string, unknown>)[field],
+          }));
+
+          return err(
+            new EntityConflictError({
+              entityName: this.constructor.name.replace('Repository', ''),
+              conflicts: details,
+            }),
+          );
+        }
+        // Record Not Found (update 대상 없음)
+        if (error.code === 'P2025') {
+          return err(
+            new EntityNotFoundError({
+              entityName: this.constructor.name.replace('Repository', ''),
+              entityId: id,
+            }),
+          );
+        }
+      }
+
+      throw new UnexpectedPrismaErrorException(error);
     }
   }
 
@@ -108,7 +170,15 @@ export abstract class BaseDirectRepository<
       });
       return ok(undefined);
     } catch (error) {
-      return this.handleError(error, 'safeDelete', id);
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        return err(
+          new EntityNotFoundError({
+            entityName: this.constructor.name.replace('Repository', ''),
+            entityId: id,
+          }),
+        );
+      }
+      throw new UnexpectedPrismaErrorException(error);
     }
   }
 
@@ -119,68 +189,12 @@ export abstract class BaseDirectRepository<
       const { count } = await this.delegate.deleteMany({ where });
       return ok(count);
     } catch (error) {
-      return this.handleError(error, 'safeDeleteMany');
+      throw new UnexpectedPrismaErrorException(error);
     }
   }
 
   protected async findById(id: string): Promise<TDbModel | null> {
     const result = await this.delegate.findUnique({ where: { id } });
     return result || null;
-  }
-
-  // --------------------------------------------------------------------------
-  // Error Handling (BaseRepository 로직 재사용)
-  // --------------------------------------------------------------------------
-
-  private handleError(error: unknown, methodName: string, id?: string): any {
-    // 반환 타입은 호출 메서드의 Result Error 타입에 따라 달라짐
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      // P2002: Unique Constraint Violation
-      if (error.code === 'P2002') {
-        const targets = (error.meta?.target as string[]) || [];
-        const details = targets.map((field) => ({
-          field,
-          value: 'conflict',
-        }));
-
-        return err(
-          new EntityConflictError({
-            entityName: this.constructor.name.replace('Repository', ''), // 리포지토리 이름에서 유추
-            conflicts: details,
-          }),
-        );
-      }
-      // P2025: Record Not Found
-      if (error.code === 'P2025') {
-        return err(
-          new EntityNotFoundError({
-            entityName: this.constructor.name.replace('Repository', ''),
-            entityId: id || 'unknown',
-          }),
-        );
-      }
-    }
-
-    // Unexpected Errors
-    if (error instanceof Error) {
-      this.logger.error(
-        systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
-          msg: `[${methodName}] Unexpected Error: ${error.message}`,
-          error: error,
-        }),
-        error.stack,
-      );
-    } else {
-      this.logger.error(
-        systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
-          msg: `[${methodName}] Unexpected Error: ${String(error)}`,
-          error: error,
-        }),
-      );
-    }
-
-    // BaseRepository처럼 throw를 할지, Neverthrow로 감쌀지 결정
-    // 여기서는 neverthrow 흐름을 위해 throw로 상위로 전파하거나, UnexpectedError 리턴
-    throw error;
   }
 }

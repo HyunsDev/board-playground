@@ -7,7 +7,8 @@ import { FILE_ACCESS_TYPE, FILE_STATUS, FileAccessType, FileStatus } from './fil
 import { InvalidFileError } from './file.errors';
 import { FileMetadataResult } from './file.storage.port';
 
-import { BaseAggregateRoot, BaseEntityProps } from '@/base';
+import { BaseAggregateRoot } from '@/base/blocks/base.aggregate-root';
+import { BaseEntityProps } from '@/base/blocks/base.entity';
 
 export interface FileProps extends BaseEntityProps {
   key: string;
