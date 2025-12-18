@@ -4,7 +4,9 @@ import { ModuleRef } from '@nestjs/core';
 import { Queue } from 'bullmq';
 
 import { JobDispatcherPort, InternalServerErrorException } from '@workspace/backend-ddd';
+import { TaskQueueCode } from '@workspace/domain';
 
+import { toSafeQueueName } from './task-queue.utils';
 import { ContextService } from '../context/context.service';
 
 import { BaseJob, BaseJobProps } from '@/base';
@@ -45,7 +47,7 @@ export class JobDispatcher implements JobDispatcherPort {
     // (ContextService 리팩토링 때 정의한 getMessageMetadata 사용)
     const metadata = this.contextService.getMessageMetadata();
 
-    const jobsByQueue = new Map<string, BaseJob<BaseJobProps<unknown>>[]>();
+    const jobsByQueue = new Map<TaskQueueCode, BaseJob<BaseJobProps<unknown>>[]>();
 
     for (const job of this.jobs) {
       if (metadata) {
@@ -86,10 +88,12 @@ export class JobDispatcher implements JobDispatcherPort {
     this.clear();
   }
 
-  private getQueue(name: string): Queue {
+  private getQueue(name: TaskQueueCode): Queue {
     if (this.queues.has(name)) return this.queues.get(name)!;
     try {
-      const queue = this.moduleRef.get<Queue>(getQueueToken(name), { strict: false });
+      const queue = this.moduleRef.get<Queue>(getQueueToken(toSafeQueueName(name)), {
+        strict: false,
+      });
       this.queues.set(name, queue);
       return queue;
     } catch {

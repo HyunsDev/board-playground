@@ -17,7 +17,7 @@ import {
   TaskQueueModule,
   ssmConfig,
   StorageModule,
-  StorageGcModule,
+  StorageWorkerModule,
 } from '@workspace/backend-core';
 
 import { refreshTokenConfig } from './configs/refresh-token.config';
@@ -37,12 +37,12 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
       ],
     }),
     CqrsModule.forRoot(),
-    TaskQueueModule,
+    TaskQueueModule.forRoot(),
     HttpContextModule.forRoot(),
     DatabaseModule,
     CacheModule,
     StorageModule,
-    StorageGcModule,
+    StorageWorkerModule,
     EventBusModule,
     LoggingModule,
     SecurityModule.forRoot({

@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const redisConfigSchema = z.object({
   REDIS_HOST: z.string().min(1),
   REDIS_PORT: z.coerce.number().int().positive(),
-  REDIS_PASSWORD: z.string().min(1).optional(),
+  REDIS_PASSWORD: z.string().min(1),
   CACHE_PREFIX: z.string(),
   CACHE_DEFAULT_TTL_MS: z.coerce
     .number()

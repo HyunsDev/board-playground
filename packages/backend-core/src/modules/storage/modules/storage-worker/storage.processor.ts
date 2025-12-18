@@ -1,13 +1,13 @@
-import { Processor } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 
 import { TaskQueueCodeEnum } from '@workspace/domain';
 
-import { CleanUpOrphanFilesJobHandler } from './clean-up-orphan-files.handler';
+import { CleanUpOrphanFilesJobHandler } from './jobs/clean-up-orphan-files.job';
 
+import { TaskProcessor } from '@/modules/task-queue/decorators';
 import { JobProcessor } from '@/modules/task-queue/job.processor';
 
-@Processor(TaskQueueCodeEnum.System.Storage as string)
+@TaskProcessor(TaskQueueCodeEnum.System.Storage)
 export class StorageProcessor extends JobProcessor {
   constructor(readonly cleanUpOrphanFilesJobHandler: CleanUpOrphanFilesJobHandler) {
     const logger = new Logger(StorageProcessor.name);

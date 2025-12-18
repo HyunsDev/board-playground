@@ -75,16 +75,29 @@ export class ContextService {
     this.cls.set('messageMetadata', metadata);
   }
 
-  getMessageMetadata(): MessageMetadataContext {
+  getMessageMetadata(
+    initialTriggerCode: TriggerCode = TriggerCodeEnum.Unknown,
+  ): MessageMetadataContext {
     const metadata = this.cls.get('messageMetadata');
     return (
       metadata || {
         causationId: this.getRequestId() || null,
-        causationType: TriggerCodeEnum.Unknown,
+        causationType: initialTriggerCode,
         correlationId: this.getRequestId() || null,
         userId: this.getUserId() || null,
       }
     );
+  }
+
+  getNewMessageMetadata(
+    initialTriggerCode: TriggerCode = TriggerCodeEnum.Unknown,
+  ): MessageMetadataContext {
+    return {
+      causationId: this.getRequestId() || null,
+      causationType: initialTriggerCode,
+      correlationId: this.getRequestId() || null,
+      userId: this.getUserId() || null,
+    };
   }
 
   // --- Run in Context ---
