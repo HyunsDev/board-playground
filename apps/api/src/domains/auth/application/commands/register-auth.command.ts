@@ -2,7 +2,11 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
-import { AccessTokenProvider, DeriveMetadata, TransactionManager } from '@workspace/backend-core';
+import {
+  AccessTokenProvider,
+  DrivenMessageMetadata,
+  TransactionManager,
+} from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { ValidationError } from '@workspace/backend-ddd';
 import { DEVICE_PLATFORM, passwordSchema } from '@workspace/contract';
@@ -30,7 +34,7 @@ export class RegisterAuthCommand extends BaseCommand<
   static readonly code = defineCommandCode('account:auth:cmd:register');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: IRegisterAuthCommand['data'], metadata: DeriveMetadata) {
+  constructor(data: IRegisterAuthCommand['data'], metadata: DrivenMessageMetadata) {
     super(null, data, metadata);
   }
 }

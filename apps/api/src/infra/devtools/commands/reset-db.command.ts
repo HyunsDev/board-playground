@@ -4,7 +4,7 @@ import { ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
 import {
-  DeriveMetadata,
+  DrivenMessageMetadata,
   PrismaService,
   systemLog,
   SystemLogActionEnum,
@@ -22,7 +22,7 @@ export class ResetDBCommand extends BaseCommand<
   static readonly code = defineCommandCode('system:devtools:cmd:reset_db');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: ResetDbCommandProps['data'], metadata: DeriveMetadata) {
+  constructor(data: ResetDbCommandProps['data'], metadata: DrivenMessageMetadata) {
     super(null, data, metadata);
   }
 }

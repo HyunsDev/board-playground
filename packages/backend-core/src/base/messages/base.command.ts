@@ -9,7 +9,7 @@ import {
 } from '@workspace/backend-ddd';
 import { CausationCode, CommandCode, DomainCode } from '@workspace/domain';
 
-import { CreateMessageMetadata } from './message-metadata';
+import { DrivenMessageMetadata } from './message-metadata';
 
 export type BaseCommandProps<T> = AbstractCommandProps<T>;
 
@@ -34,7 +34,7 @@ export abstract class BaseCommand<
   constructor(
     resourceId: string | null,
     data: TProps['data'],
-    metadata: CreateMessageMetadata,
+    metadata: DrivenMessageMetadata,
     id?: string | null,
   ) {
     super(resourceId, data, metadata, id);

@@ -45,7 +45,7 @@ export class JobDispatcher implements JobDispatcherPort {
 
     // 1. Context에서 메타데이터(TraceId, UserId 등) 가져오기
     // (ContextService 리팩토링 때 정의한 getMessageMetadata 사용)
-    const metadata = this.contextService.getMessageMetadata();
+    const metadata = this.contextService.getDrivenMessageMetadata();
 
     const jobsByQueue = new Map<TaskQueueCode, BaseJob<BaseJobProps<unknown>>[]>();
 

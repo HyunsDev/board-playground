@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
-import { DeriveMetadata, TransactionManager } from '@workspace/backend-core';
+import { DrivenMessageMetadata, TransactionManager } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
@@ -19,7 +19,7 @@ export class LogoutAuthCommand extends BaseCommand<
   static readonly code = defineCommandCode('account:auth:cmd:logout');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: ILogoutAuthCommand['data'], metadata: DeriveMetadata) {
+  constructor(data: ILogoutAuthCommand['data'], metadata: DrivenMessageMetadata) {
     super(null, data, metadata);
   }
 }

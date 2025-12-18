@@ -1,4 +1,8 @@
-import { BaseDomainEvent, BaseDomainEventProps, DeriveMetadata } from '@workspace/backend-core';
+import {
+  BaseDomainEvent,
+  BaseDomainEventProps,
+  DrivenMessageMetadata,
+} from '@workspace/backend-core';
 import { AggregateCodeEnum, defineEventCode } from '@workspace/domain';
 
 type IUserNameChangedEvent = BaseDomainEventProps<{
@@ -11,7 +15,7 @@ export class UserUsernameChangedEvent extends BaseDomainEvent<IUserNameChangedEv
   static readonly code = defineEventCode('account:user:evt:username_changed');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: IUserNameChangedEvent['data'], metadata?: DeriveMetadata) {
+  constructor(data: IUserNameChangedEvent['data'], metadata?: DrivenMessageMetadata) {
     super(data.userId, data, metadata);
   }
 }

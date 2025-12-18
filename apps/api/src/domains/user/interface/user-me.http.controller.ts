@@ -3,7 +3,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { FastifyReply } from 'fastify';
 
-import { ContextService, Token } from '@workspace/backend-core';
+import { ContextService, Token, TriggerCodeEnum } from '@workspace/backend-core';
 import { apiOk, matchPublicError, apiErr } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
 import { TokenPayload } from '@workspace/domain';
@@ -27,7 +27,10 @@ export class UserMeHttpController {
   async getMe(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.get, async () => {
       const result = await this.queryBus.execute(
-        new GetUserMeQuery({ userId: token.sub }, this.contextService.getMessageMetadata()),
+        new GetUserMeQuery(
+          { userId: token.sub },
+          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
+        ),
       );
       return result.match(
         (user) =>
@@ -52,7 +55,7 @@ export class UserMeHttpController {
             nickname: body.nickname,
             bio: body.bio,
           },
-          this.contextService.getMessageMetadata(),
+          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -80,7 +83,7 @@ export class UserMeHttpController {
             userId: token.sub,
             newUsername: body.username,
           },
-          this.contextService.getMessageMetadata(),
+          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -106,7 +109,7 @@ export class UserMeHttpController {
           {
             userId: token.sub,
           },
-          this.contextService.getMessageMetadata(),
+          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
         ),
       );
 

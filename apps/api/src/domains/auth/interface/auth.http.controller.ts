@@ -3,7 +3,13 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
-import { ContextService, Public, IpAddress, UserAgent } from '@workspace/backend-core';
+import {
+  ContextService,
+  Public,
+  IpAddress,
+  UserAgent,
+  TriggerCodeEnum,
+} from '@workspace/backend-core';
 import {
   apiOk,
   matchPublicError,
@@ -46,7 +52,7 @@ export class AuthHttpController {
             ipAddress: ipAddress,
             userAgent: ua,
           },
-          this.contextService.getMessageMetadata(),
+          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -83,7 +89,7 @@ export class AuthHttpController {
             ipAddress: ipAddress,
             userAgent: ua,
           },
-          this.contextService.getMessageMetadata(),
+          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -117,7 +123,7 @@ export class AuthHttpController {
           {
             refreshToken,
           },
-          this.contextService.getMessageMetadata(),
+          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -162,7 +168,7 @@ export class AuthHttpController {
           {
             refreshToken: refreshToken,
           },
-          this.contextService.getMessageMetadata(),
+          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -183,7 +189,7 @@ export class AuthHttpController {
           {
             username: query.username,
           },
-          this.contextService.getMessageMetadata(),
+          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
         ),
       );
 

@@ -11,7 +11,7 @@ import {
 import { PaginationQuery } from '@workspace/common';
 import { CausationCode, DomainCode, QueryCode } from '@workspace/domain';
 
-import { CreateMessageMetadata } from './message-metadata';
+import { DrivenMessageMetadata } from './message-metadata';
 
 export type BaseQueryProps<T> = AbstractQueryProps<T>;
 export type BasePaginatedQueryProps<T> = AbstractPaginatedQueryProps<PaginationQuery<T>>;
@@ -37,7 +37,7 @@ export abstract class BaseQuery<
   constructor(
     resourceId: string | null,
     data: TProps['data'],
-    metadata?: CreateMessageMetadata,
+    metadata?: DrivenMessageMetadata,
     id?: string | null,
   ) {
     super(resourceId, data, metadata, id);

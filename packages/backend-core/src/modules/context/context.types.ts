@@ -1,9 +1,9 @@
 import { ClsStore } from 'nestjs-cls';
 
-import { AbstractDrivenMessageMetadata } from '@workspace/backend-ddd';
 import { Prisma } from '@workspace/database';
-import { CausationCode, DomainCode, UserRole } from '@workspace/domain';
+import { UserRole } from '@workspace/domain';
 
+import { DrivenMessageMetadata } from '@/base';
 import { TriggerCode } from '@/common';
 
 export interface ClientContext {
@@ -18,9 +18,6 @@ export interface TokenContext {
   sessionId: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type MessageMetadataContext = AbstractDrivenMessageMetadata<CausationCode<any>, DomainCode>;
-
 export interface AppContext extends ClsStore {
   requestId: string;
   triggerType?: TriggerCode; // TriggerCode 타입을 직접 쓰거나 string으로 완화
@@ -28,5 +25,5 @@ export interface AppContext extends ClsStore {
   token?: TokenContext;
   transaction?: Prisma.TransactionClient;
   errorCode?: string;
-  messageMetadata?: MessageMetadataContext;
+  messageMetadata?: DrivenMessageMetadata;
 }

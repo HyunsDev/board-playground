@@ -12,8 +12,8 @@ export class MessageCausationInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const message = context.switchToRpc().getData();
     if (message instanceof AbstractMessage) {
-      const metadata = this.context.getMessageMetadata();
-      this.context.setMessageMetadata(metadata);
+      const metadata = this.context.getDrivenMessageMetadata();
+      this.context.setDrivenMessageMetadata(metadata);
     }
     return next.handle();
   }

@@ -3,9 +3,11 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { ClsService } from 'nestjs-cls';
 
-import { AppContext, ClientContext, TokenContext, MessageMetadataContext } from './context.types';
+import { DrivenMessageMetadataNotFoundException } from './context.exceptions';
+import { AppContext, ClientContext, TokenContext } from './context.types';
 
-import { TriggerCode, TriggerCodeEnum } from '@/common';
+import { DrivenMessageMetadata } from '@/base';
+import { TriggerCode } from '@/common';
 
 @Injectable()
 export class ContextService {
@@ -71,27 +73,19 @@ export class ContextService {
   }
 
   // --- Message Metadata (CQRS/Event) ---
-  setMessageMetadata(metadata: MessageMetadataContext) {
+  setDrivenMessageMetadata(metadata: DrivenMessageMetadata) {
     this.cls.set('messageMetadata', metadata);
   }
 
-  getMessageMetadata(
-    initialTriggerCode: TriggerCode = TriggerCodeEnum.Unknown,
-  ): MessageMetadataContext {
+  getDrivenMessageMetadata(): DrivenMessageMetadata {
     const metadata = this.cls.get('messageMetadata');
-    return (
-      metadata || {
-        causationId: this.getRequestId() || null,
-        causationType: initialTriggerCode,
-        correlationId: this.getRequestId() || null,
-        userId: this.getUserId() || null,
-      }
-    );
+    if (!metadata) {
+      throw new DrivenMessageMetadataNotFoundException();
+    }
+    return metadata;
   }
 
-  getNewMessageMetadata(
-    initialTriggerCode: TriggerCode = TriggerCodeEnum.Unknown,
-  ): MessageMetadataContext {
+  getNewMessageMetadata(initialTriggerCode: TriggerCode): DrivenMessageMetadata {
     return {
       causationId: this.getRequestId() || null,
       causationType: initialTriggerCode,

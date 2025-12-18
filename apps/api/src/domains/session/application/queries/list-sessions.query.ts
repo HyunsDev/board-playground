@@ -2,7 +2,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
-import { BaseQuery, BaseQueryProps, DeriveMetadata } from '@workspace/backend-core';
+import { BaseQuery, BaseQueryProps, DrivenMessageMetadata } from '@workspace/backend-core';
 import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { SessionEntity } from '../../domain/session.entity';
@@ -21,7 +21,7 @@ export class ListSessionsQuery extends BaseQuery<
   static readonly code = defineQueryCode('account:session:qry:list');
   readonly resourceType = DomainCodeEnums.Account.Session;
 
-  constructor(data: ISessionsQuery['data'], metadata: DeriveMetadata) {
+  constructor(data: ISessionsQuery['data'], metadata: DrivenMessageMetadata) {
     super(data.userId, data, metadata);
   }
 }

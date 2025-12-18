@@ -36,7 +36,7 @@ export class NestJSDomainEventPublisher implements DomainEventPublisherPort {
   async flush(): Promise<void> {
     // 1. Context에서 메타데이터(TraceId, UserId 등) 가져오기
     // (ContextService 리팩토링 때 정의한 getMessageMetadata 사용)
-    const metadata = this.contextService.getMessageMetadata();
+    const metadata = this.contextService.getDrivenMessageMetadata();
 
     // 2. 모든 이벤트에 메타데이터 주입 (Causation 추적용)
     if (metadata) {

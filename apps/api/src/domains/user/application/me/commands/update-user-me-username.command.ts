@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
-import { BaseCommandProps, BaseCommand, DeriveMetadata } from '@workspace/backend-core';
+import { BaseCommandProps, BaseCommand, DrivenMessageMetadata } from '@workspace/backend-core';
 import { matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
@@ -22,7 +22,7 @@ export class UpdateUserMeUsernameCommand extends BaseCommand<
   static readonly code = defineCommandCode('account:user:cmd:update_me_username');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: IUpdateUserMeUsernameCommand['data'], metadata: DeriveMetadata) {
+  constructor(data: IUpdateUserMeUsernameCommand['data'], metadata: DrivenMessageMetadata) {
     super(data.userId, data, metadata);
   }
 }

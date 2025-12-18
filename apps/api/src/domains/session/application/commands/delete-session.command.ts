@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
-import { DeriveMetadata, TransactionManager } from '@workspace/backend-core';
+import { DrivenMessageMetadata, TransactionManager } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
@@ -24,7 +24,7 @@ export class DeleteSessionCommand extends BaseCommand<
   static readonly code = defineCommandCode('account:session:cmd:delete');
   readonly resourceType = AggregateCodeEnum.Account.Session;
 
-  constructor(data: IDeleteSessionCommand['data'], metadata: DeriveMetadata) {
+  constructor(data: IDeleteSessionCommand['data'], metadata: DrivenMessageMetadata) {
     super(data.sessionId, data, metadata);
   }
 }

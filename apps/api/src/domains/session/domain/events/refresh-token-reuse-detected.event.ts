@@ -1,4 +1,8 @@
-import { BaseDomainEvent, BaseDomainEventProps, DeriveMetadata } from '@workspace/backend-core';
+import {
+  BaseDomainEvent,
+  BaseDomainEventProps,
+  DrivenMessageMetadata,
+} from '@workspace/backend-core';
 import { AggregateCodeEnum, defineEventCode } from '@workspace/domain';
 
 type IRefreshTokenReuseDetectedEvent = BaseDomainEventProps<{
@@ -10,7 +14,7 @@ export class RefreshTokenReuseDetectedEvent extends BaseDomainEvent<IRefreshToke
   public static readonly code = defineEventCode('account:session:evt:refresh_token_reuse_detected');
   public readonly resourceType = AggregateCodeEnum.Account.Session;
 
-  constructor(data: IRefreshTokenReuseDetectedEvent['data'], metadata?: DeriveMetadata) {
+  constructor(data: IRefreshTokenReuseDetectedEvent['data'], metadata?: DrivenMessageMetadata) {
     super(data.sessionId, data, metadata);
   }
 }

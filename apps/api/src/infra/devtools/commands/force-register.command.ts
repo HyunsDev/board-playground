@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
-import { AccessTokenProvider, DeriveMetadata } from '@workspace/backend-core';
+import { AccessTokenProvider, DrivenMessageMetadata } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 
@@ -24,7 +24,7 @@ export class ForceRegisterCommand extends BaseCommand<
   static readonly code = defineCommandCode('system:devtools:cmd:force_register');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: ForceRegisterCommandProps['data'], metadata: DeriveMetadata) {
+  constructor(data: ForceRegisterCommandProps['data'], metadata: DrivenMessageMetadata) {
     super(null, data, metadata);
   }
 }
