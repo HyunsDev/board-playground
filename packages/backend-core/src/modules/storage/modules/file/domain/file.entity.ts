@@ -1,3 +1,5 @@
+import path from 'path';
+
 import { err, ok } from 'neverthrow';
 import { v7 as uuidv7 } from 'uuid';
 
@@ -70,8 +72,11 @@ export class FileEntity extends BaseAggregateRoot<FileProps> {
       return err(new InvalidFileError('File size must be a non-negative number.'));
     }
 
+    const ext = path.extname(originalName);
+    const fileName = ext ? `${id}${ext}` : id;
+
     // S3 Key 생성 전략
-    const key = `uploads/${AccessTypeKeyMap[accessType]}/${uploaderId}/${id}/${originalName}`;
+    const key = `uploads/${AccessTypeKeyMap[accessType]}/${uploaderId}/${id}/${fileName}`;
 
     return ok(
       new FileEntity({
