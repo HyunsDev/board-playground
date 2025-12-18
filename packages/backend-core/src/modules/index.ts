@@ -1,3 +1,4 @@
+export * from './bull-board';
 export * from './cache';
 export * from './config';
 export * from './context';

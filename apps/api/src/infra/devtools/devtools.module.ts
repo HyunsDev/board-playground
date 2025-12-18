@@ -1,5 +1,7 @@
 import { Logger, Module, Provider } from '@nestjs/common';
 
+import { CoreBullBoardModule } from '@workspace/backend-core';
+
 import { ForceLoginCommandHandler } from './commands/force-login.command';
 import { ForceRegisterCommandHandler } from './commands/force-register.command';
 import { ResetDBCommandHandler } from './commands/reset-db.command';
@@ -17,7 +19,7 @@ const commandHandlers: Provider[] = [
 const services: Provider[] = [];
 
 @Module({
-  imports: [UserModule, AuthModule, SessionModule],
+  imports: [UserModule, AuthModule, SessionModule, CoreBullBoardModule],
   controllers: [DevtoolsController],
   providers: [Logger, ...commandHandlers, ...services],
 })
