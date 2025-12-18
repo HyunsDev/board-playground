@@ -31,7 +31,9 @@ export const AggregateCodeEnum = defineDomainCodeEnum({
 export const TaskQueueCodeEnum = defineDomainCodeEnum({
   Account: {},
   Community: {},
-  System: {},
+  System: {
+    Storage: 'system:storage',
+  },
 });
 
 export const DomainCodeEnums = uniqueDeepMerge(

@@ -108,18 +108,43 @@ export class FileService {
     }
     const file = fileResult.value;
 
-    // 1) S3 파일 삭제
-    const s3DeleteResult = await this.s3Port.delete(file.key);
-    if (s3DeleteResult.isErr()) {
-      return err(s3DeleteResult.error);
-    }
-
-    // 2) DB 레코드 삭제
+    // DB 레코드 삭제
     const dbDeleteResult = await this.fileRepo.delete(file);
     if (dbDeleteResult.isErr()) {
       return err(dbDeleteResult.error);
     }
 
+    // S3 파일 삭제
+    // 파일 삭제 실패시 레코드도 DB 트랜젝션에 의해 롤백
+    const s3DeleteResult = await this.s3Port.delete(file.key);
+    if (s3DeleteResult.isErr()) {
+      return err(s3DeleteResult.error);
+    }
+
     return ok(undefined);
+  }
+
+  async cleanUpOrphans(limit: number, retentionThreshold: Date) {
+    const orphans = await this.fileRepo.findOrphans(limit, retentionThreshold);
+    if (orphans.length === 0) {
+      return ok(0);
+    }
+
+    const keysToDelete: string[] = [];
+    const idsToDelete: string[] = [];
+
+    for (const orphan of orphans) {
+      keysToDelete.push(orphan.key);
+      idsToDelete.push(orphan.id);
+    }
+
+    await this.fileRepo.deleteManyDirectly(idsToDelete);
+
+    const s3DeleteResult = await this.s3Port.deleteMany(keysToDelete);
+    if (s3DeleteResult.isErr()) {
+      return err(s3DeleteResult.error);
+    }
+
+    return ok(orphans.length);
   }
 }

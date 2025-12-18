@@ -1,12 +1,4 @@
-import { BaseBadRequestError, BaseInternalServerError } from '@workspace/backend-ddd';
-
-export class StorageError extends BaseInternalServerError<'StorageError'> {
-  readonly code = 'StorageError' as const;
-  readonly scope = 'private';
-  constructor(message: string, details?: unknown) {
-    super(message, details);
-  }
-}
+import { BaseBadRequestError } from '@workspace/backend-ddd';
 
 export class InvalidFileError extends BaseBadRequestError<'InvalidFileError'> {
   readonly code = 'InvalidFileError' as const;

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 // libs/common/src/guards/jwt-auth.guard.ts
 import { Injectable, ExecutionContext, Logger, InternalServerErrorException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';

@@ -1,6 +1,8 @@
 import { AbstractMessageMetadata } from './abstract-message-metadata.type';
 import { AbstractJob, AbstractJobProps } from './abstract.job';
 
+import { DomainError, DomainResult } from '@/error';
+
 export interface IJobConstructor<T extends AbstractJob> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   new (...args: any[]): T;
@@ -18,5 +20,5 @@ export interface IJobHandler<
   TJob extends AbstractJob<string, string, string, AbstractJobProps<any>, any>,
 > {
   readonly JobClass: IJobConstructor<TJob>;
-  execute(job: TJob): Promise<void>;
+  execute(job: TJob): Promise<DomainResult<void | DomainError>>;
 }

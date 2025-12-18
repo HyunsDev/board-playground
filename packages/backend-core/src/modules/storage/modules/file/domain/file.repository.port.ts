@@ -11,4 +11,7 @@ export abstract class FileRepositoryPort extends RepositoryPort<FileEntity> {
     file: FileEntity,
   ): Promise<DomainResult<FileEntity, FileNotFoundError | FileAlreadyExistsError>>;
   abstract delete(file: FileEntity): Promise<DomainResult<void, FileNotFoundError>>;
+
+  abstract findOrphans(limit: number, retentionThreshold: Date): Promise<FileEntity[]>;
+  abstract deleteManyDirectly(ids: string[]): Promise<void>;
 }

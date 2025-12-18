@@ -4,13 +4,16 @@ import {
   HeadObjectCommand,
   DeleteObjectCommand,
   GetObjectCommand,
+  DeleteObjectsCommand,
+  S3ServiceException,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Inject, Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
 import { SsmConfig, ssmConfig } from '../../../../config';
-import { StorageError } from '../domain/file.errors';
+import { FileNotFoundError } from '../domain';
+import { InvalidS3MetadataException, UnexpectedS3Exception } from '../domain/file.exceptions';
 import { FileStoragePort, PresignedUrlOptions } from '../domain/file.storage.port';
 
 @Injectable()
@@ -40,7 +43,7 @@ export class S3Storage implements FileStoragePort {
 
       return ok(result);
     } catch (error) {
-      return err(new StorageError('Failed to generate presigned PUT URL', error));
+      throw new UnexpectedS3Exception(error);
     }
   }
 
@@ -54,7 +57,7 @@ export class S3Storage implements FileStoragePort {
       const response = await this.client.send(command);
 
       if (!response.ContentLength || !response.ContentType || !response.LastModified) {
-        return err(new StorageError('Incomplete metadata received from S3'));
+        throw new InvalidS3MetadataException();
       }
 
       return ok({
@@ -63,7 +66,11 @@ export class S3Storage implements FileStoragePort {
         lastModified: response.LastModified,
       });
     } catch (error) {
-      return err(new StorageError('Failed to get file metadata', error));
+      if (this.isNotFoundError(error)) {
+        return err(new FileNotFoundError(key));
+      }
+
+      throw new UnexpectedS3Exception(error);
     }
   }
 
@@ -80,7 +87,7 @@ export class S3Storage implements FileStoragePort {
 
       return ok(result);
     } catch (error) {
-      return err(new StorageError('Failed to generate presigned GET URL', error));
+      throw new UnexpectedS3Exception(error);
     }
   }
 
@@ -93,7 +100,34 @@ export class S3Storage implements FileStoragePort {
       await this.client.send(command);
       return ok(undefined);
     } catch (error) {
-      return err(new StorageError('Failed to delete object from S3', error));
+      throw new UnexpectedS3Exception(error);
     }
+  }
+
+  async deleteMany(keys: string[]) {
+    if (keys.length === 0) return ok(undefined);
+
+    const command = new DeleteObjectsCommand({
+      Bucket: this.bucket,
+      Delete: {
+        Objects: keys.map((Key) => ({ Key })),
+        Quiet: true, // 에러만 리턴받음
+      },
+    });
+
+    try {
+      await this.client.send(command);
+      return ok(undefined);
+    } catch (error) {
+      throw new UnexpectedS3Exception(error);
+    }
+  }
+
+  private isNotFoundError(error: unknown): boolean {
+    // AWS SDK v3 에러 체크 방식
+    return (
+      error instanceof S3ServiceException &&
+      (error.name === 'NotFound' || error.$metadata?.httpStatusCode === 404)
+    );
   }
 }

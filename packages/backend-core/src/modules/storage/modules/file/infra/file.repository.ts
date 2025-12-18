@@ -96,4 +96,29 @@ export class FileRepository extends BaseRepository<FileEntity, File> implements 
         }),
     );
   }
+
+  async findOrphans(limit: number, retentionThreshold: Date): Promise<FileEntity[]> {
+    const records = await this.delegate.findMany({
+      where: {
+        references: {
+          none: {},
+        },
+        createdAt: {
+          lt: retentionThreshold,
+        },
+      },
+      take: limit,
+    });
+    return records.map((record) => this.mapper.toDomain(record));
+  }
+
+  async deleteManyDirectly(ids: string[]): Promise<void> {
+    await this.delegate.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+  }
 }
