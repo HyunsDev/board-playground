@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Logger } from '@nestjs/common';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
@@ -23,6 +22,9 @@ import { systemLog, SystemLogActionEnum } from '@/modules';
 type AbstractCrudDelegate<R> = {
   findUnique(args: unknown): Promise<R | null>;
   create(args: unknown): Promise<R>;
+  createMany(args: unknown): Promise<{
+    count: number;
+  }>;
   update(args: unknown): Promise<R>;
   delete(args: unknown): Promise<R>;
 };
@@ -105,6 +107,62 @@ export abstract class BaseRepository<
         this.logger.error(
           systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
             msg: `[CreateEntity] Unexpected Error: ${String(error)}`,
+            error: error,
+          }),
+        );
+      }
+      throw error;
+    }
+  }
+
+  protected async createManyEntities(
+    entities: TAggregate[],
+  ): Promise<DomainResult<void, EntityConflictError>> {
+    const records = entities.map((entity) => this.mapper.toPersistence(entity));
+
+    try {
+      await this.delegate.createMany({
+        data: records,
+        skipDuplicates: false,
+      });
+
+      await Promise.all(entities.map((entity) => this.publishEvents(entity)));
+
+      return ok(undefined);
+    } catch (error: unknown) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        // Unique Constraint Violation (P2002)
+        if (error.code === 'P2002') {
+          const targets = (error.meta?.target as string[]) || [];
+
+          // Bulk Insert 실패 시, 구체적으로 어떤 레코드가 실패했는지 Prisma가 알려주지 않음
+          // 따라서 충돌 필드 정보만이라도 반환하도록 구성
+          const details = targets.map((field) => ({
+            field,
+            value: 'Batch insert conflict',
+          }));
+
+          return err(
+            new EntityConflictError({
+              entityName: entities[0]?.constructor.name || 'UnknownAggregate',
+              conflicts: details,
+            }),
+          );
+        }
+      }
+
+      if (error instanceof Error) {
+        this.logger.error(
+          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
+            msg: `[CreateManyEntities] Unexpected Error: ${error.message}`,
+            error: error,
+          }),
+          error.stack,
+        );
+      } else {
+        this.logger.error(
+          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
+            msg: `[CreateManyEntities] Unexpected Error: ${String(error)}`,
             error: error,
           }),
         );
