@@ -1,4 +1,3 @@
-// libs/backend-core/src/health/health.controller.ts
 import { Controller, Get, Inject, Optional } from '@nestjs/common';
 import {
   HealthCheck,

@@ -67,8 +67,6 @@ export const createDevLoggerStream = async (): Promise<DestinationStream> => {
       'pid,hostname,req,res,responseTime,context,reqId,userId,sessionId,httpMethod,reqUrl,resStatus,duration,errorCode,event,type,action,isError,correlationId,causationId,causationType,createdAt,queryData,error,handlerName,resourceId,resourceType,code,result',
 
     messageFormat: (log: any) => {
-      // const msg = log[messageKey] as string;
-
       if (isCommandLog(log)) {
         return formatCommandAndQueryResultLog(log);
       }

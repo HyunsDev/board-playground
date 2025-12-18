@@ -1,3 +1,3 @@
 export * from './blocks';
-export * from './messages';
 export * from './mappers';
+export * from './messages';

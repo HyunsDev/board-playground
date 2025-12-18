@@ -1,2 +1,2 @@
-export * from './trigger.codes';
 export * from './decorators';
+export * from './trigger.codes';
