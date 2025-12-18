@@ -76,7 +76,7 @@ export class FileEntity extends BaseAggregateRoot<FileProps> {
     const fileName = ext ? `${id}${ext}` : id;
 
     // S3 Key 생성 전략
-    const key = `uploads/${AccessTypeKeyMap[accessType]}/${uploaderId}/${id}/${fileName}`;
+    const key = `uploads/${AccessTypeKeyMap[accessType]}/${id}/${fileName}`;
 
     return ok(
       new FileEntity({

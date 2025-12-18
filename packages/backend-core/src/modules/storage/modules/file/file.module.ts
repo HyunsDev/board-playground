@@ -1,13 +1,13 @@
 import { Module, Provider } from '@nestjs/common';
 
-import { FileFacade } from './application/facades/file.facade';
+import { FileService } from './application/file.service';
 import { FileRepositoryPort } from './domain/file.repository.port';
 import { FileStoragePort } from './domain/file.storage.port';
 import { FileMapper } from './infra/file.mapper';
 import { FileRepository } from './infra/file.repository';
 import { S3Storage } from './infra/s3.storage';
 
-const facades: Provider[] = [FileFacade];
+const services: Provider[] = [FileService];
 const mappers: Provider[] = [FileMapper];
 const repositories: Provider[] = [
   {
@@ -24,7 +24,7 @@ const storages: Provider[] = [
 
 @Module({
   imports: [],
-  providers: [...facades, ...mappers, ...repositories, ...storages],
-  exports: [...facades, FileStoragePort, FileRepositoryPort],
+  providers: [...services, ...mappers, ...repositories, ...storages],
+  exports: [...services, FileStoragePort, FileRepositoryPort],
 })
 export class FileModule {}

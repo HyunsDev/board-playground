@@ -1,25 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
-import { FileEntity } from '../../domain/file.entity';
-import { FileAccessType } from '../../domain/file.enums';
-import { FileRepositoryPort } from '../../domain/file.repository.port';
-import { FileStoragePort } from '../../domain/file.storage.port';
+import { FileEntity } from '../domain/file.entity';
+import { FileAccessType } from '../domain/file.enums';
+import { FileRepositoryPort } from '../domain/file.repository.port';
+import { FileStoragePort } from '../domain/file.storage.port';
+
+export interface InitializeUploadParam {
+  originalName: string;
+  accessType: FileAccessType;
+  uploaderId: string;
+  mimeType: string;
+  size: number;
+}
 
 @Injectable()
-export class FileFacade {
+export class FileService {
   constructor(
     private readonly fileRepo: FileRepositoryPort,
     private readonly s3Port: FileStoragePort,
   ) {}
 
-  async initializeUpload(data: {
-    originalName: string;
-    accessType: FileAccessType;
-    uploaderId: string;
-    mimeType: string;
-    size: number;
-  }) {
+  async initializeUpload(data: InitializeUploadParam) {
     // 1) Entity 생성
     const fileResult = FileEntity.create(data);
     if (fileResult.isErr()) {
@@ -78,5 +80,46 @@ export class FileFacade {
     file = updateResult.value;
 
     return ok(file);
+  }
+
+  async getDownloadUrl(fileId: string) {
+    const fileResult = await this.fileRepo.getOneById(fileId);
+    if (fileResult.isErr()) {
+      return err(fileResult.error);
+    }
+    const file = fileResult.value;
+
+    const presignedUrlResult = await this.s3Port.generatePresignedGetUrl(file.key);
+    if (presignedUrlResult.isErr()) {
+      return err(presignedUrlResult.error);
+    }
+
+    return ok(presignedUrlResult.value);
+  }
+
+  /**
+   * 주의! FileService는 FileReference 관리를 하지 않습니다.
+   * StorageService 를 사용하세요.
+   */
+  async deleteFile(fileId: string) {
+    const fileResult = await this.fileRepo.getOneById(fileId);
+    if (fileResult.isErr()) {
+      return err(fileResult.error);
+    }
+    const file = fileResult.value;
+
+    // 1) S3 파일 삭제
+    const s3DeleteResult = await this.s3Port.delete(file.key);
+    if (s3DeleteResult.isErr()) {
+      return err(s3DeleteResult.error);
+    }
+
+    // 2) DB 레코드 삭제
+    const dbDeleteResult = await this.fileRepo.delete(file);
+    if (dbDeleteResult.isErr()) {
+      return err(dbDeleteResult.error);
+    }
+
+    return ok(undefined);
   }
 }
