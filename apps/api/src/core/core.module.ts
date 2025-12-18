@@ -16,6 +16,8 @@ import {
   redisConfig,
   TaskQueueModule,
   ssmConfig,
+  StorageModule,
+  StorageGcModule,
 } from '@workspace/backend-core';
 
 import { refreshTokenConfig } from './configs/refresh-token.config';
@@ -39,6 +41,8 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
     HttpContextModule.forRoot(),
     DatabaseModule,
     CacheModule,
+    StorageModule,
+    StorageGcModule,
     EventBusModule,
     LoggingModule,
     SecurityModule.forRoot({
