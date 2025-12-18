@@ -38,25 +38,3 @@ export class UnexpectedPrismaErrorException extends BaseInternalServerException<
     );
   }
 }
-
-export class UnexpectedS3ErrorException extends BaseInternalServerException<'UnexpectedS3Error'> {
-  readonly code = 'UnexpectedS3Error' as const;
-  readonly scope = 'private' as const;
-
-  constructor(error: unknown, message = '스토리지 서비스 오류가 발생했습니다') {
-    super(message, {
-      originalError: error,
-    });
-  }
-}
-
-export class UnexpectedRedisErrorException extends BaseInternalServerException<'UnexpectedRedisError'> {
-  readonly code = 'UnexpectedRedisError' as const;
-  readonly scope = 'private' as const;
-
-  constructor(error: unknown, message = '캐시 서비스 오류가 발생했습니다') {
-    super(message, {
-      originalError: error,
-    });
-  }
-}
