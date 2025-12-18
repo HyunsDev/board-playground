@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { ContextService, TriggerCodeEnum } from '@workspace/backend-core';
+import { MessageContext, TriggerCodeEnum } from '@workspace/backend-core';
 import { apiOk, matchPublicError, apiErr } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
 
@@ -15,7 +15,7 @@ export class UserHttpController {
   constructor(
     private readonly queryBus: QueryBus,
     private readonly dtoMapper: UserDtoMapper,
-    private readonly contextService: ContextService,
+    private readonly messageContext: MessageContext,
   ) {}
 
   @TsRestHandler(contract.user.get)
@@ -24,7 +24,7 @@ export class UserHttpController {
       const result = await this.queryBus.execute(
         new GetUserQuery(
           { userId: params.userId },
-          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -48,7 +48,7 @@ export class UserHttpController {
             page: query.page,
             limit: query.limit,
           },
-          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 

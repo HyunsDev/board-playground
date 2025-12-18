@@ -4,11 +4,11 @@ import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
 import {
-  ContextService,
   Public,
   IpAddress,
   UserAgent,
   TriggerCodeEnum,
+  MessageContext,
 } from '@workspace/backend-core';
 import {
   apiOk,
@@ -31,7 +31,7 @@ export class AuthHttpController {
   constructor(
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
-    private readonly contextService: ContextService,
+    private readonly messageContext: MessageContext,
   ) {}
 
   @Public()
@@ -52,7 +52,7 @@ export class AuthHttpController {
             ipAddress: ipAddress,
             userAgent: ua,
           },
-          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -89,7 +89,7 @@ export class AuthHttpController {
             ipAddress: ipAddress,
             userAgent: ua,
           },
-          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -123,7 +123,7 @@ export class AuthHttpController {
           {
             refreshToken,
           },
-          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -168,7 +168,7 @@ export class AuthHttpController {
           {
             refreshToken: refreshToken,
           },
-          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -189,7 +189,7 @@ export class AuthHttpController {
           {
             username: query.username,
           },
-          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 

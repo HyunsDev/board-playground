@@ -3,7 +3,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { FastifyReply } from 'fastify';
 
-import { ContextService, Token, TriggerCodeEnum } from '@workspace/backend-core';
+import { MessageContext, Token, TriggerCodeEnum } from '@workspace/backend-core';
 import { apiOk, matchPublicError, apiErr } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
 import { TokenPayload } from '@workspace/domain';
@@ -20,7 +20,8 @@ export class UserMeHttpController {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
     private readonly dtoMapper: UserDtoMapper,
-    private readonly contextService: ContextService,
+
+    private readonly messageContext: MessageContext,
   ) {}
 
   @TsRestHandler(contract.user.me.get)
@@ -29,7 +30,7 @@ export class UserMeHttpController {
       const result = await this.queryBus.execute(
         new GetUserMeQuery(
           { userId: token.sub },
-          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
       return result.match(
@@ -55,7 +56,7 @@ export class UserMeHttpController {
             nickname: body.nickname,
             bio: body.bio,
           },
-          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -83,7 +84,7 @@ export class UserMeHttpController {
             userId: token.sub,
             newUsername: body.username,
           },
-          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -109,7 +110,7 @@ export class UserMeHttpController {
           {
             userId: token.sub,
           },
-          this.contextService.getNewMessageMetadata(TriggerCodeEnum.Http),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 

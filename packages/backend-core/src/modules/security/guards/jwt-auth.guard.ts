@@ -13,7 +13,7 @@ import { DomainCodeEnums, TokenPayload, TokenPayloadSchema } from '@workspace/do
 
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
-import { ContextService } from '@/modules/context';
+import { TokenContext } from '@/modules/context';
 import { systemLog, SystemLogActionEnum } from '@/modules/logging';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
   constructor(
     private readonly reflector: Reflector,
-    private readonly context: ContextService,
+    private readonly tokenContext: TokenContext,
   ) {
     super();
   }
@@ -94,8 +94,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     const validatedPayload: TokenPayload = parsedResult.data;
 
-    // 4. ContextService에 토큰 정보 주입
-    this.context.setToken({
+    this.tokenContext.setToken({
       sub: validatedPayload.sub,
       email: validatedPayload.email,
       role: validatedPayload.role,

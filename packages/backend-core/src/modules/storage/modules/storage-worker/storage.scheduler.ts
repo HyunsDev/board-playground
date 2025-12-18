@@ -8,7 +8,7 @@ import { TaskQueueCodeEnum } from '@workspace/domain';
 import { CleanUpOrphanFilesJob } from './jobs/clean-up-orphan-files.job';
 
 import { TriggerCodeEnum } from '@/common';
-import { ContextService } from '@/modules/context';
+import { MessageContext } from '@/modules/context';
 import { InjectTaskQueue } from '@/modules/task-queue/decorators';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class StorageScheduler implements OnApplicationBootstrap {
 
   constructor(
     @InjectTaskQueue(TaskQueueCodeEnum.System.Storage) private readonly storageQueue: Queue,
-    private readonly contextService: ContextService,
+    private readonly messageContext: MessageContext,
   ) {}
 
   async onApplicationBootstrap() {
@@ -31,7 +31,7 @@ export class StorageScheduler implements OnApplicationBootstrap {
       }
     }
 
-    const metadata = this.contextService.getNewMessageMetadata(TriggerCodeEnum.Scheduler);
+    const metadata = this.messageContext.createMetadata(TriggerCodeEnum.Scheduler);
 
     await this.storageQueue.add(
       CleanUpOrphanFilesJob.code,

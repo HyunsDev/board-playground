@@ -4,15 +4,13 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
 import { v7 as uuidv7 } from 'uuid';
 
-import { ContextService } from '../context.service';
-
-import { TriggerCodeEnum } from '@/common/trigger.codes';
+import { ClientContext } from '../contexts';
 
 @Injectable()
 export class ContextMiddleware implements NestMiddleware {
   constructor(
     private readonly cls: ClsService,
-    private readonly context: ContextService,
+    private readonly clientCtx: ClientContext,
   ) {}
 
   async use(req: IncomingMessage, res: ServerResponse, next: () => void) {
@@ -30,10 +28,7 @@ export class ContextMiddleware implements NestMiddleware {
 
       const userAgent = req.headers['user-agent'] || 'unknown';
 
-      this.context.setClient({ ipAddress, userAgent });
-
-      // 3. Trigger Type
-      this.context.setTriggerType(TriggerCodeEnum.Unknown);
+      this.clientCtx.setClient({ ipAddress, userAgent });
 
       next();
     });

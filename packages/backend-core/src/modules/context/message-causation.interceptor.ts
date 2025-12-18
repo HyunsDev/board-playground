@@ -3,17 +3,17 @@ import { Observable } from 'rxjs';
 
 import { AbstractMessage } from '@workspace/backend-ddd';
 
-import { ContextService } from './context.service';
+import { MessageContext } from './contexts';
 
 @Injectable()
 export class MessageCausationInterceptor implements NestInterceptor {
-  constructor(private readonly context: ContextService) {}
+  constructor(private readonly messageCtx: MessageContext) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const message = context.switchToRpc().getData();
     if (message instanceof AbstractMessage) {
-      const metadata = this.context.getDrivenMessageMetadata();
-      this.context.setDrivenMessageMetadata(metadata);
+      const metadata = message.deriveMetadata();
+      this.messageCtx.setMetadata(metadata);
     }
     return next.handle();
   }

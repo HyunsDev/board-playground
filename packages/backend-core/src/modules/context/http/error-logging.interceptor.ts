@@ -2,11 +2,11 @@ import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nes
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { ContextService } from '../context.service';
+import { CoreContext } from '../contexts';
 
 @Injectable()
 export class ErrorLoggingInterceptor implements NestInterceptor {
-  constructor(private readonly contextService: ContextService) {}
+  constructor(private readonly coreCtx: CoreContext) {}
 
   intercept(_context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(
@@ -14,7 +14,7 @@ export class ErrorLoggingInterceptor implements NestInterceptor {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const body = (data as any)?.body || data;
         if (body && body.code) {
-          this.contextService.setErrorCode(body.code as string);
+          this.coreCtx.setErrorCode(body.code as string);
         }
       }),
     );

@@ -17,7 +17,6 @@ import { FileAlreadyExistsError, FileNotFoundError } from '../domain/file.errors
 import { FileRepositoryPort } from '../domain/file.repository.port';
 
 import { BaseRepository } from '@/base/blocks/base.repository';
-import { ContextService } from '@/modules/context';
 import { PrismaService } from '@/modules/database';
 
 @Injectable()
@@ -25,7 +24,6 @@ export class FileRepository extends BaseRepository<FileEntity, File> implements 
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
-    protected readonly context: ContextService,
     protected readonly mapper: FileMapper,
     protected readonly eventDispatcher: DomainEventPublisherPort,
   ) {

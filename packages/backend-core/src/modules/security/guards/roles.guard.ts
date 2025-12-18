@@ -6,13 +6,13 @@ import { UserRole } from '@workspace/domain';
 
 import { ROLES_KEY } from '../decorators/roles.decorator';
 
-import { ContextService } from '@/modules/context';
+import { TokenContext } from '@/modules/context';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(
-    private reflector: Reflector,
-    private readonly appContext: ContextService,
+    private readonly reflector: Reflector,
+    private readonly tokenContext: TokenContext,
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
@@ -26,7 +26,7 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    const token = this.appContext.getToken();
+    const { token } = this.tokenContext;
 
     if (!token || !requiredRoles.includes(token.role)) {
       throw new DomainException(new AccessDeniedError());

@@ -14,7 +14,6 @@ import {
 } from '../domain/file-reference.repository.port';
 
 import { BaseDirectRepository } from '@/base';
-import { ContextService } from '@/modules/context';
 import { PrismaService } from '@/modules/database';
 
 @Injectable()
@@ -25,7 +24,6 @@ export class FileReferenceRepository
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
-    protected readonly context: ContextService,
   ) {
     super(prisma, txHost, new Logger(FileReferenceRepository.name));
   }

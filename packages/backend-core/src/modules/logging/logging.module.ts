@@ -4,10 +4,10 @@ import { DiscoveryModule } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 import { LoggerModule } from 'nestjs-pino';
 
+import { CoreContext, TokenContext } from '../context';
 import { getCommonPinoConfig } from './config/pino-common.config';
 import { createDevLoggerStream } from './config/pino-pretty.config';
 import { CqrsInstrumentation } from './instrumentations/cqrs.instrumentation';
-import { ContextService } from '../context/context.service';
 
 import { CoreConfig, coreConfig } from '@/modules/config';
 import { CoreContextModule } from '@/modules/context/context.module';
@@ -19,12 +19,15 @@ import { CoreContextModule } from '@/modules/context/context.module';
     CoreContextModule,
     LoggerModule.forRootAsync({
       imports: [ConfigModule, CoreContextModule],
-      inject: [coreConfig.KEY, ContextService],
-      useFactory: async (coreConfig: CoreConfig, contextService: ContextService) => {
+      inject: [coreConfig.KEY, CoreContext, TokenContext],
+      useFactory: async (
+        coreConfig: CoreConfig,
+        coreContext: CoreContext,
+        tokenContext: TokenContext,
+      ) => {
         const isProduction = coreConfig.nodeEnv === 'production';
 
-        const commonConfig = getCommonPinoConfig(isProduction, contextService);
-
+        const commonConfig = getCommonPinoConfig(isProduction, coreContext, tokenContext);
         if (isProduction) {
           return { pinoHttp: commonConfig };
         }

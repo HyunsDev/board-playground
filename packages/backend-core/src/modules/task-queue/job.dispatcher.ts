@@ -7,7 +7,7 @@ import { JobDispatcherPort, InternalServerErrorException } from '@workspace/back
 import { TaskQueueCode } from '@workspace/domain';
 
 import { toSafeQueueName } from './task-queue.utils';
-import { ContextService } from '../context/context.service';
+import { MessageContext, TransactionContext } from '../context';
 
 import { BaseJob, BaseJobProps } from '@/base';
 
@@ -18,20 +18,21 @@ export class JobDispatcher implements JobDispatcherPort {
 
   constructor(
     private readonly moduleRef: ModuleRef,
-    private readonly contextService: ContextService,
+    private readonly txContext: TransactionContext,
+    private readonly messageContext: MessageContext,
   ) {}
 
   async dispatch(job: BaseJob<BaseJobProps<unknown>>): Promise<void> {
     this.jobs.push(job);
     // 트랜잭션이 활성화되어 있지 않다면 즉시 발행
-    if (!this.contextService.isTransactionActive()) {
+    if (!this.txContext.isTransactionActive()) {
       await this.flush();
     }
   }
 
   async dispatchMany(jobs: BaseJob<BaseJobProps<unknown>>[]): Promise<void> {
     this.jobs.push(...jobs);
-    if (!this.contextService.isTransactionActive()) {
+    if (!this.txContext.isTransactionActive()) {
       await this.flush();
     }
   }
@@ -44,8 +45,7 @@ export class JobDispatcher implements JobDispatcherPort {
     if (this.jobs.length === 0) return;
 
     // 1. Context에서 메타데이터(TraceId, UserId 등) 가져오기
-    // (ContextService 리팩토링 때 정의한 getMessageMetadata 사용)
-    const metadata = this.contextService.getDrivenMessageMetadata();
+    const metadata = this.messageContext.drivenMetadata;
 
     const jobsByQueue = new Map<TaskQueueCode, BaseJob<BaseJobProps<unknown>>[]>();
 

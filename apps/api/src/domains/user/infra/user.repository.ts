@@ -3,7 +3,7 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
-import { BaseRepository, PrismaService, ContextService } from '@workspace/backend-core';
+import { BaseRepository, PrismaService } from '@workspace/backend-core';
 import {
   DomainEventPublisherPort,
   DomainResult,
@@ -27,7 +27,6 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
-    protected readonly context: ContextService,
     protected readonly mapper: UserMapper,
     protected readonly eventDispatcher: DomainEventPublisherPort,
   ) {

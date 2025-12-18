@@ -9,7 +9,7 @@ import {
 import { ErrorHttpStatusCode } from '@nestjs/common/utils/http-error-by-code.util';
 import { HttpAdapterHost } from '@nestjs/core';
 
-import { ContextService, systemLog, SystemLogActionEnum } from '@workspace/backend-core';
+import { CoreContext, systemLog, SystemLogActionEnum } from '@workspace/backend-core';
 import { DomainError } from '@workspace/backend-ddd';
 import { ApiError } from '@workspace/common';
 import { ApiErrors } from '@workspace/contract';
@@ -30,13 +30,13 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
 
   constructor(
     private readonly httpAdapterHost: HttpAdapterHost,
-    private readonly context: ContextService,
+    private readonly coreCtx: CoreContext,
   ) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
     const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
-    const requestId = this.context.getRequestId() || 'unknown';
+    const requestId = this.coreCtx.requestId || 'unknown';
 
     // 1. 예외 분석 및 표준화된 정보 추출
     const errorInfo = this.resolveError(exception);
