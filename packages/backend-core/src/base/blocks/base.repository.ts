@@ -13,11 +13,10 @@ import {
   DomainEventPublisherPort,
 } from '@workspace/backend-ddd';
 import { PrismaClient, Prisma } from '@workspace/database';
-import { DomainCodeEnums } from '@workspace/domain';
 
 import { BaseDomainEvent, BaseDomainEventProps } from '../messages';
 
-import { systemLog, SystemLogActionEnum } from '@/modules';
+import { UnexpectedPrismaErrorException } from '@/common';
 
 type AbstractCrudDelegate<R> = {
   findUnique(args: unknown): Promise<R | null>;
@@ -95,23 +94,8 @@ export abstract class BaseRepository<
           );
         }
       }
-      if (error instanceof Error) {
-        this.logger.error(
-          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
-            msg: `[CreateEntity] Unexpected Error: ${error.message}`,
-            error: error,
-          }),
-          error.stack,
-        );
-      } else {
-        this.logger.error(
-          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
-            msg: `[CreateEntity] Unexpected Error: ${String(error)}`,
-            error: error,
-          }),
-        );
-      }
-      throw error;
+
+      throw new UnexpectedPrismaErrorException(error);
     }
   }
 
@@ -150,24 +134,7 @@ export abstract class BaseRepository<
           );
         }
       }
-
-      if (error instanceof Error) {
-        this.logger.error(
-          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
-            msg: `[CreateManyEntities] Unexpected Error: ${error.message}`,
-            error: error,
-          }),
-          error.stack,
-        );
-      } else {
-        this.logger.error(
-          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
-            msg: `[CreateManyEntities] Unexpected Error: ${String(error)}`,
-            error: error,
-          }),
-        );
-      }
-      throw error;
+      throw new UnexpectedPrismaErrorException(error);
     }
   }
 
@@ -209,23 +176,7 @@ export abstract class BaseRepository<
           );
         }
       }
-      if (error instanceof Error) {
-        this.logger.error(
-          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
-            msg: `[updateEntity] Unexpected Error: ${error.message}`,
-            error: error,
-          }),
-          error.stack,
-        );
-      } else {
-        this.logger.error(
-          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
-            msg: `[updateEntity] Unexpected Error: ${String(error)}`,
-            error: error,
-          }),
-        );
-      }
-      throw error;
+      throw new UnexpectedPrismaErrorException(error);
     }
   }
 
@@ -248,23 +199,7 @@ export abstract class BaseRepository<
           }),
         );
       }
-      if (error instanceof Error) {
-        this.logger.error(
-          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
-            msg: `[DeleteEntity] Unexpected Error: ${error.message}`,
-            error: error,
-          }),
-          error.stack,
-        );
-      } else {
-        this.logger.error(
-          systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.UnknownError, {
-            msg: `[DeleteEntity] Unexpected Error: ${String(error)}`,
-            error: error,
-          }),
-        );
-      }
-      throw error;
+      throw new UnexpectedPrismaErrorException(error);
     }
   }
 
