@@ -18,6 +18,7 @@ import {
   ssmConfig,
   StorageModule,
   StorageWorkerModule,
+  MessagingModule,
 } from '@workspace/backend-core';
 
 import { refreshTokenConfig } from './configs/refresh-token.config';
@@ -45,6 +46,7 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
     StorageWorkerModule,
     EventBusModule,
     LoggingModule,
+    MessagingModule,
     SecurityModule.forRoot({
       enableGlobalAuthGuard: true,
     }),
