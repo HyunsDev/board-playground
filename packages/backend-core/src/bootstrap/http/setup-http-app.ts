@@ -1,5 +1,3 @@
-// backend-core/src/.../setupHttpApp.ts (위치에 맞게)
-
 import fastifyCookie from '@fastify/cookie'; // 쿠키 플러그인 변경
 import { NestFastifyApplication } from '@nestjs/platform-fastify'; // 타입 변경
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
