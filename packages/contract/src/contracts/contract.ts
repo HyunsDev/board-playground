@@ -5,6 +5,7 @@ import { commentContract } from './comment/comment.contracts';
 import { DevtoolsContract } from './devtools/devtools.contract';
 import { postContract } from './post/post.contracts';
 import { sessionContract } from './session/session.contract';
+import { sseContract } from './sse/sse.contract';
 import { userContract, userForAdminContract } from './user/user.contracts';
 
 import { c } from '@/internal/c';
@@ -15,12 +16,15 @@ export const contract = c.router(
     admin: c.router({
       user: userForAdminContract,
     }),
+
     auth: authContract,
     session: sessionContract,
     user: userContract,
     board: boardContract,
     post: postContract,
     comment: commentContract,
+
+    sse: sseContract,
 
     devtools: DevtoolsContract,
   },
