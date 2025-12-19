@@ -8,6 +8,7 @@ import { TriggerCodeEnum } from '@workspace/domain';
 
 import { CleanUpOrphanFilesJob } from './jobs/clean-up-orphan-files.job';
 
+import { DrivenMessageMetadata } from '@/base';
 import { MessageContext } from '@/modules/context';
 import { InjectTaskQueue } from '@/modules/task-queue/decorators';
 
@@ -31,7 +32,12 @@ export class StorageScheduler implements OnApplicationBootstrap {
       }
     }
 
-    const metadata = this.messageContext.createMetadata(TriggerCodeEnum.Scheduler);
+    const metadata: DrivenMessageMetadata = {
+      causationId: null,
+      causationType: TriggerCodeEnum.Scheduler,
+      correlationId: null,
+      userId: null,
+    };
 
     await this.storageQueue.add(
       CleanUpOrphanFilesJob.code,

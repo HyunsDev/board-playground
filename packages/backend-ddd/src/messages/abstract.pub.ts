@@ -10,21 +10,14 @@ export abstract class AbstractPub<
   ResourceCodeType extends string = string,
   PubCodeType extends CausationCodeType = CausationCodeType,
   TProps extends AbstractPubProps = AbstractPubProps,
-  TOptions = void,
 > extends AbstractMessage<CausationCodeType, ResourceCodeType, PubCodeType, TProps, unknown, void> {
   abstract override get schema(): z.ZodType<TProps['data']>;
-
-  protected readonly _options?: TOptions;
 
   constructor(
     resourceId: string | null,
     data: TProps['data'],
-    metadata: AbstractDrivenMessageMetadata<CausationCodeType, ResourceCodeType>,
-    options?: TOptions,
+    metadata?: AbstractDrivenMessageMetadata<CausationCodeType, ResourceCodeType>,
   ) {
     super(resourceId, data, metadata);
-    this._options = options;
   }
-
-  abstract get options(): TOptions;
 }

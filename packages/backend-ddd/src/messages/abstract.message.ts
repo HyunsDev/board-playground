@@ -17,11 +17,11 @@ import {
 
 const MessageMetadataSchema = z.object({
   createdAt: z.number(),
-  correlationId: z.string(),
+  correlationId: z.string().nullable(),
   causationType: z.string(),
   resourceId: z.string().nullable(),
   resourceType: z.string(),
-  causationId: z.string(),
+  causationId: z.string().nullable(),
   userId: z.string().nullable(),
 });
 

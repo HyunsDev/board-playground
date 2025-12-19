@@ -17,12 +17,14 @@ export class MessageContext {
   }
 
   createMetadata(initialTriggerCode: TriggerCode): DrivenMessageMetadata {
-    return {
+    const metadata: DrivenMessageMetadata = {
       causationId: this.cls.get('requestId') || null,
       causationType: initialTriggerCode,
       correlationId: this.cls.get('requestId') || null,
       userId: this.cls.get('token')?.sub || null,
     };
+    this.setMetadata(metadata);
+    return metadata;
   }
 
   get drivenMetadata(): DrivenMessageMetadata {
