@@ -10,3 +10,4 @@ export * from './security';
 export * from './storage';
 export * from './task-queue';
 export * from './notifications';
+export * from './messaging';

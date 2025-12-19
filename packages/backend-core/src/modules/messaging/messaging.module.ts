@@ -1,0 +1,41 @@
+import { Global, Module } from '@nestjs/common';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+
+import { MESSAGING_SERVICE_TOKEN } from './messaging.constant';
+import { MessagingService } from './messaging.service';
+import { RedisConfig, redisConfig } from '../config';
+import { CoreContextModule } from '../context/context.module';
+
+@Global()
+@Module({
+  imports: [
+    CoreContextModule,
+    ClientsModule.registerAsync([
+      {
+        name: MESSAGING_SERVICE_TOKEN,
+        imports: [CoreContextModule],
+        inject: [redisConfig.KEY],
+        useFactory: (redisConfig: RedisConfig) => {
+          const host = redisConfig.redisHost;
+          const port = redisConfig.redisPort;
+          const password = redisConfig.redisPassword; // 필요 시
+
+          return {
+            transport: Transport.REDIS,
+            options: {
+              host,
+              port,
+              password,
+              // Redis 큐 이름 설정 (이 이름을 구독하는 서버가 메시지를 받음)
+              // MSA 환경에서 여러 서비스가 있다면 서비스별로 queue 이름을 분리하는 것이 좋습니다.
+              // 예: queue: 'MAIN_API_QUEUE'
+            },
+          };
+        },
+      },
+    ]),
+  ],
+  providers: [MessagingService],
+  exports: [MessagingService],
+})
+export class MessagingModule {}
