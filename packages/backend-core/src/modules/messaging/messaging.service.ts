@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom, timeout } from 'rxjs';
+import { err, ok } from 'neverthrow';
+import { firstValueFrom, map, timeout } from 'rxjs';
 
 import { MessageResult } from '@workspace/backend-ddd';
 
@@ -31,7 +32,10 @@ export class MessagingService {
 
     try {
       return await firstValueFrom(
-        this.client.send<TResult>(rpc.code, rpc.toPlain()).pipe(timeout(timeoutMsFinal)),
+        this.client.send<TResult>(rpc.code, rpc.toPlain()).pipe(
+          timeout(timeoutMsFinal),
+          map((response) => this.restoreNeverthrow<TResult>(response)),
+        ),
       );
     } catch (error) {
       this.logger.error(`[RPC] Error processing pattern ${rpc.code}`, error);
@@ -46,5 +50,21 @@ export class MessagingService {
     this.logger.debug(`[Event] Emitting message to pattern: ${pub.code}`);
 
     this.client.emit(pub.code, pub.toPlain());
+  }
+
+  private restoreNeverthrow<T>(response: any): T {
+    if (!response || typeof response !== 'object') {
+      return response;
+    }
+
+    if ('value' in response && !('error' in response)) {
+      return ok(response.value) as unknown as T;
+    }
+
+    if ('error' in response && !('value' in response)) {
+      return err(response.error) as unknown as T;
+    }
+
+    return response;
   }
 }
