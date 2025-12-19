@@ -10,7 +10,7 @@ import {
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { matchError } from '@workspace/backend-ddd';
 import { DEVICE_PLATFORM } from '@workspace/contract';
-import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
+import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
 import { InvalidCredentialsError } from '../../auth.domain-error';
 
@@ -31,7 +31,7 @@ export class LoginAuthCommand extends BaseCommand<
   AuthTokens,
   HandlerResult<LoginAuthCommandHandler>
 > {
-  static readonly code = defineCommandCode('account:auth:cmd:login');
+  static readonly code = asCommandCode('account:auth:cmd:login');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
   constructor(data: ILoginAuthCommand['data'], metadata: DrivenMessageMetadata) {

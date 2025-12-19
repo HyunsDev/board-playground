@@ -3,13 +3,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
-import {
-  Public,
-  IpAddress,
-  UserAgent,
-  TriggerCodeEnum,
-  MessageContext,
-} from '@workspace/backend-core';
+import { Public, IpAddress, UserAgent, MessageContext } from '@workspace/backend-core';
 import {
   apiOk,
   matchPublicError,
@@ -17,6 +11,7 @@ import {
   InvariantViolationException,
 } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
+import { TriggerCodeEnum } from '@workspace/domain';
 
 import { LoginAuthCommand } from '../application/commands/login-auth.command';
 import { LogoutAuthCommand } from '../application/commands/logout-auth.command';

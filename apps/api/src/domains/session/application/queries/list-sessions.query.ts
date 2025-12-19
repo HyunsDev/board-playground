@@ -3,7 +3,7 @@ import { ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
 import { BaseQuery, BaseQueryProps, DrivenMessageMetadata } from '@workspace/backend-core';
-import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
+import { asQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { SessionEntity } from '../../domain/session.entity';
 
@@ -18,7 +18,7 @@ export class ListSessionsQuery extends BaseQuery<
   SessionEntity[],
   HandlerResult<ListSessionsQueryHandler>
 > {
-  static readonly code = defineQueryCode('account:session:qry:list');
+  static readonly code = asQueryCode('account:session:qry:list');
   readonly resourceType = DomainCodeEnums.Account.Session;
 
   constructor(data: ISessionsQuery['data'], metadata: DrivenMessageMetadata) {

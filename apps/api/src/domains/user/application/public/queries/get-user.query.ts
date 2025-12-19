@@ -3,7 +3,7 @@ import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
 import { BaseQuery, BaseQueryProps, DrivenMessageMetadata } from '@workspace/backend-core';
-import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
+import { asQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserNotFoundError } from '@/domains/user/domain/user.domain-errors';
 import { UserEntity } from '@/domains/user/domain/user.entity';
@@ -18,7 +18,7 @@ export class GetUserQuery extends BaseQuery<
   UserEntity,
   HandlerResult<GetUserQueryHandler>
 > {
-  static readonly code = defineQueryCode('account:user:qry:get');
+  static readonly code = asQueryCode('account:user:qry:get');
   readonly resourceType = DomainCodeEnums.Account.User;
 
   constructor(data: IGetUserMeQuery['data'], metadata: DrivenMessageMetadata) {

@@ -10,7 +10,7 @@ import {
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { ValidationError } from '@workspace/backend-ddd';
 import { DEVICE_PLATFORM, passwordSchema } from '@workspace/contract';
-import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
+import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
@@ -31,7 +31,7 @@ export class RegisterAuthCommand extends BaseCommand<
   AuthTokens,
   HandlerResult<RegisterAuthCommandHandler>
 > {
-  static readonly code = defineCommandCode('account:auth:cmd:register');
+  static readonly code = asCommandCode('account:auth:cmd:register');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
   constructor(data: IRegisterAuthCommand['data'], metadata: DrivenMessageMetadata) {

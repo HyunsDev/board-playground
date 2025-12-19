@@ -1,5 +1,5 @@
 import { DomainError } from '@workspace/backend-ddd';
-import { CommandCode, EventCode, QueryCode } from '@workspace/domain';
+import { CommandCode, DomainEventCode, QueryCode } from '@workspace/domain';
 
 import { BaseLogData } from './base-log.types';
 import { LogTypeEnum } from '../log.enums';
@@ -51,13 +51,13 @@ export type QueryLogData = BaseMessageLogData &
 export type EventLogData = BaseMessageLogData &
   MessageResult & {
     type: LogTypeEnum['Event'];
-    code: EventCode;
+    code: DomainEventCode;
     handlerName: string;
   };
 
 export type EventPublishedLogData = BaseMessageLogData & {
   type: LogTypeEnum['EventPublished'];
-  code: EventCode;
+  code: DomainEventCode;
 };
 
 export type JobLogData = BaseMessageLogData &

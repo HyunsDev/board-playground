@@ -3,7 +3,7 @@ import {
   BaseDomainEventProps,
   DrivenMessageMetadata,
 } from '@workspace/backend-core';
-import { AggregateCodeEnum, defineEventCode } from '@workspace/domain';
+import { AggregateCodeEnum, asDomainEventCode } from '@workspace/domain';
 
 type IRefreshTokenReuseDetectedEvent = BaseDomainEventProps<{
   userId: string;
@@ -11,7 +11,9 @@ type IRefreshTokenReuseDetectedEvent = BaseDomainEventProps<{
   reusedTokenId: string;
 }>;
 export class RefreshTokenReuseDetectedEvent extends BaseDomainEvent<IRefreshTokenReuseDetectedEvent> {
-  public static readonly code = defineEventCode('account:session:evt:refresh_token_reuse_detected');
+  public static readonly code = asDomainEventCode(
+    'account:session:evt:refresh_token_reuse_detected',
+  );
   public readonly resourceType = AggregateCodeEnum.Account.Session;
 
   constructor(data: IRefreshTokenReuseDetectedEvent['data'], metadata?: DrivenMessageMetadata) {

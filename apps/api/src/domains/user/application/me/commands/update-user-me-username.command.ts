@@ -4,7 +4,7 @@ import { err, ok } from 'neverthrow';
 import { HandlerResult } from '@workspace/backend-common';
 import { BaseCommandProps, BaseCommand, DrivenMessageMetadata } from '@workspace/backend-core';
 import { matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
-import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
+import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
@@ -19,7 +19,7 @@ export class UpdateUserMeUsernameCommand extends BaseCommand<
   UserEntity,
   HandlerResult<UpdateUserMeUsernameCommandHandler>
 > {
-  static readonly code = defineCommandCode('account:user:cmd:update_me_username');
+  static readonly code = asCommandCode('account:user:cmd:update_me_username');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
   constructor(data: IUpdateUserMeUsernameCommand['data'], metadata: DrivenMessageMetadata) {

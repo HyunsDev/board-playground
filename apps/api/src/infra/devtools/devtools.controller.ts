@@ -2,9 +2,10 @@ import { Controller } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { MessageContext, Public, TriggerCodeEnum } from '@workspace/backend-core';
+import { MessageContext, Public } from '@workspace/backend-core';
 import { apiOk, matchPublicError, apiErr } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
+import { TriggerCodeEnum } from '@workspace/domain';
 
 import { ForceLoginCommand } from './commands/force-login.command';
 import { ForceRegisterCommand } from './commands/force-register.command';

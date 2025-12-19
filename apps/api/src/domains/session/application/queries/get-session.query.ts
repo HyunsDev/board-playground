@@ -4,7 +4,7 @@ import { err, ok } from 'neverthrow';
 import { HandlerResult } from '@workspace/backend-common';
 import { BaseQueryProps, BaseQuery, DrivenMessageMetadata } from '@workspace/backend-core';
 import { matchError } from '@workspace/backend-ddd';
-import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
+import { asQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { SessionEntity } from '../../domain/session.entity';
 import { SessionRepositoryPort } from '../../domain/session.repository.port';
@@ -19,7 +19,7 @@ export class GetSessionQuery extends BaseQuery<
   SessionEntity,
   HandlerResult<GetSessionQueryHandler>
 > {
-  static readonly code = defineQueryCode('account:session:qry:get');
+  static readonly code = asQueryCode('account:session:qry:get');
   readonly resourceType = DomainCodeEnums.Account.Session;
 
   constructor(data: ISessionQuery['data'], metadata: DrivenMessageMetadata) {

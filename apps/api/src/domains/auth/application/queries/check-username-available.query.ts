@@ -3,7 +3,7 @@ import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
 import { BaseQueryProps, BaseQuery, DrivenMessageMetadata } from '@workspace/backend-core';
-import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
+import { asQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { UserUsernameAlreadyExistsError } from '@/domains/user/domain/user.domain-errors';
@@ -17,7 +17,7 @@ export class CheckUsernameAvailableQuery extends BaseQuery<
   void,
   HandlerResult<CheckUsernameAvailableQueryHandler>
 > {
-  static readonly code = defineQueryCode('account:auth:qry:check_username_available');
+  static readonly code = asQueryCode('account:auth:qry:check_username_available');
   readonly resourceType = DomainCodeEnums.Account.User;
 
   constructor(data: ICheckUsernameAvailableQuery['data'], metadata: DrivenMessageMetadata) {

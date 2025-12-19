@@ -4,7 +4,7 @@ import { err, ok } from 'neverthrow';
 import { HandlerResult } from '@workspace/backend-common';
 import { AccessTokenProvider, DrivenMessageMetadata } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
-import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
+import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
@@ -21,7 +21,7 @@ export class ForceRegisterCommand extends BaseCommand<
   AuthTokens,
   HandlerResult<ForceRegisterCommandHandler>
 > {
-  static readonly code = defineCommandCode('system:devtools:cmd:force_register');
+  static readonly code = asCommandCode('system:devtools:cmd:force_register');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
   constructor(data: ForceRegisterCommandProps['data'], metadata: DrivenMessageMetadata) {

@@ -2,9 +2,10 @@ import { Controller } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { MessageContext, TriggerCodeEnum } from '@workspace/backend-core';
+import { MessageContext } from '@workspace/backend-core';
 import { apiOk, matchPublicError, apiErr } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
+import { TriggerCodeEnum } from '@workspace/domain';
 
 import { UserDtoMapper } from './user.dto-mapper';
 import { GetUserQuery } from '../application/public/queries/get-user.query';

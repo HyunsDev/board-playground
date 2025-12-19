@@ -3,7 +3,7 @@ import {
   BaseDomainEventProps,
   DrivenMessageMetadata,
 } from '@workspace/backend-core';
-import { defineEventCode, AggregateCodeEnum } from '@workspace/domain';
+import { asDomainEventCode, AggregateCodeEnum } from '@workspace/domain';
 
 type ISessionRefreshedEvent = BaseDomainEventProps<{
   userId: string;
@@ -12,7 +12,7 @@ type ISessionRefreshedEvent = BaseDomainEventProps<{
 }>;
 
 export class SessionRefreshedEvent extends BaseDomainEvent<ISessionRefreshedEvent> {
-  public static readonly code = defineEventCode('account:session:evt:refreshed');
+  public static readonly code = asDomainEventCode('account:session:evt:refreshed');
   public readonly resourceType = AggregateCodeEnum.Account.Session;
 
   constructor(data: ISessionRefreshedEvent['data'], metadata?: DrivenMessageMetadata) {

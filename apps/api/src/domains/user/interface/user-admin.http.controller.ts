@@ -2,9 +2,10 @@ import { Controller } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { MessageContext, Roles, TriggerCodeEnum } from '@workspace/backend-core';
+import { MessageContext, Roles } from '@workspace/backend-core';
 import { apiOk, matchError, apiErr } from '@workspace/backend-ddd';
 import { contract, ApiErrors, USER_ROLE } from '@workspace/contract';
+import { TriggerCodeEnum } from '@workspace/domain';
 
 import { UserDtoMapper } from './user.dto-mapper';
 import { GetUserForAdminQuery } from '../application/admin/queries/get-user-for-admin.query';

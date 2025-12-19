@@ -4,7 +4,7 @@ import { ok } from 'neverthrow';
 import { HandlerResult } from '@workspace/backend-common';
 import { BasePaginatedQueryProps, BaseQuery, DrivenMessageMetadata } from '@workspace/backend-core';
 import { PaginatedResult } from '@workspace/common';
-import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
+import { asQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
@@ -18,7 +18,7 @@ export class SearchUserQuery extends BaseQuery<
   PaginatedResult<UserEntity>,
   HandlerResult<SearchUserQueryHandler>
 > {
-  static readonly code = defineQueryCode('account:user:qry:search');
+  static readonly code = asQueryCode('account:user:qry:search');
   readonly resourceType = DomainCodeEnums.Account.User;
 
   constructor(data: ISearchUserQuery['data'], metadata: DrivenMessageMetadata) {

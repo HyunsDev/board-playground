@@ -1,5 +1,5 @@
 import { AbstractDomainEvent, AbstractDomainEventProps } from '@workspace/backend-ddd';
-import { CausationCode, DomainCode, EventCode } from '@workspace/domain';
+import { CausationCode, DomainCode, DomainEventCode } from '@workspace/domain';
 
 export type BaseDomainEventProps<T> = AbstractDomainEventProps<T>;
 
@@ -10,6 +10,6 @@ export type BaseDomainEventProps<T> = AbstractDomainEventProps<T>;
  */
 export abstract class BaseDomainEvent<
   TProps extends BaseDomainEventProps<unknown>,
-> extends AbstractDomainEvent<CausationCode, DomainCode, EventCode, TProps> {
-  static readonly code: EventCode;
+> extends AbstractDomainEvent<CausationCode, DomainCode, DomainEventCode, TProps> {
+  static readonly code: DomainEventCode;
 }

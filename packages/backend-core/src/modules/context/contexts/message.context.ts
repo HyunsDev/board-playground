@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
 
+import { TriggerCode } from '@workspace/domain';
+
 import { AppStore } from '../context.types';
 
 import { DrivenMessageMetadata } from '@/base';
-import { TriggerCode } from '@/common';
 
 @Injectable()
 export class MessageContext {

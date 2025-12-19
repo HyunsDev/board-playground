@@ -4,7 +4,7 @@ import { err, ok } from 'neverthrow';
 import { HandlerResult } from '@workspace/backend-common';
 import { BaseCommand, BaseCommandProps, DrivenMessageMetadata } from '@workspace/backend-core';
 import { matchError } from '@workspace/backend-ddd';
-import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
+import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 
@@ -17,7 +17,7 @@ export class DeleteUserMeCommand extends BaseCommand<
   void,
   HandlerResult<DeleteUserMeCommandHandler>
 > {
-  static readonly code = defineCommandCode('account:user:cmd:delete_me');
+  static readonly code = asCommandCode('account:user:cmd:delete_me');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
   constructor(data: IDeleteUserMeCommand['data'], metadata: DrivenMessageMetadata) {

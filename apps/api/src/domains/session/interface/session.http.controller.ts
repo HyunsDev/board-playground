@@ -2,9 +2,10 @@ import { Controller } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { MessageContext, Token, TriggerCodeEnum } from '@workspace/backend-core';
+import { MessageContext, Token } from '@workspace/backend-core';
 import { apiOk, matchError, apiErr, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
+import { TriggerCodeEnum } from '@workspace/domain';
 import { TokenPayload } from '@workspace/domain';
 
 import { SessionDtoMapper } from './session.dto-mapper';

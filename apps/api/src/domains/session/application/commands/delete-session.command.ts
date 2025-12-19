@@ -4,7 +4,7 @@ import { err, ok } from 'neverthrow';
 import { HandlerResult } from '@workspace/backend-common';
 import { DrivenMessageMetadata, TransactionManager } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
-import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
+import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
 import { CurrentSessionCannotBeDeletedError } from '../../domain/session.domain-errors';
 
@@ -21,7 +21,7 @@ export class DeleteSessionCommand extends BaseCommand<
   void,
   HandlerResult<DeleteSessionCommandHandler>
 > {
-  static readonly code = defineCommandCode('account:session:cmd:delete');
+  static readonly code = asCommandCode('account:session:cmd:delete');
   readonly resourceType = AggregateCodeEnum.Account.Session;
 
   constructor(data: IDeleteSessionCommand['data'], metadata: DrivenMessageMetadata) {
