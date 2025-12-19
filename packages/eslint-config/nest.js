@@ -1,6 +1,7 @@
 import globals from 'globals';
 import { config as baseConfig } from './base.js';
 import functional from 'eslint-plugin-functional';
+import localRulesPlugin from './eslint-local-rules/index.js';
 
 /**
  * A custom ESLint configuration for Nest.js.
@@ -34,6 +35,14 @@ export const nestJsConfig = [
           ignoreCodePattern: ['^this\\..+ = [\\s\\S]+$', '^void [\\s\\S]+$'],
         },
       ],
+    },
+  },
+  {
+    plugins: {
+      'local-rules': localRulesPlugin,
+    },
+    rules: {
+      'local-rules/force-static-code': 'error',
     },
   },
   {

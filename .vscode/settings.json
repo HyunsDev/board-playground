@@ -9,7 +9,7 @@
     "source.fixAll.markdownlint": "always"
   },
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
-  "cSpell.words": ["Neverthrow", "Userbook"],
+  "cSpell.words": ["bullmq", "Neverthrow", "Userbook"],
   "prisma.pinToPrisma6": true,
   "material-icon-theme.activeIconPack": "nest",
   "material-icon-theme.folders.associations": {

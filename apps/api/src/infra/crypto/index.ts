@@ -1,2 +1,2 @@
-export * from './providers/';
 export * from './crypto.module';
+export * from './providers/';

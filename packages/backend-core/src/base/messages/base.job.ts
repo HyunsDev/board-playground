@@ -1,0 +1,24 @@
+import { JobsOptions } from 'bullmq';
+
+import { AbstractJobProps, AbstractJob } from '@workspace/backend-ddd';
+import { CausationCode, DomainCode, JobCode, TaskQueueCode } from '@workspace/domain';
+
+export type BaseJobProps<T> = AbstractJobProps<T>;
+
+export abstract class BaseJob<TProps extends BaseJobProps<unknown>> extends AbstractJob<
+  CausationCode,
+  DomainCode,
+  JobCode,
+  TProps,
+  JobsOptions
+> {
+  abstract readonly queueName: TaskQueueCode;
+  static readonly code: JobCode;
+
+  get options(): JobsOptions {
+    return {
+      jobId: this.id,
+      ...this._options,
+    };
+  }
+}

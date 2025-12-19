@@ -1,5 +1,5 @@
 import { DomainError } from '../base.domain-errors';
-import { InvariantViolationException } from '../common.system-exceptions';
+import { InvariantViolationException } from '../ddd.system-exceptions';
 import { PublicDomainError } from '../error.types';
 
 export function matchError<

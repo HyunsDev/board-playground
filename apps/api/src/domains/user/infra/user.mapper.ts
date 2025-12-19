@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
+import { BaseMapper } from '@workspace/backend-core';
 import { User, UserRole, UserStatus } from '@workspace/database';
 
 import { UserPasswordVO } from '../domain/user-password.vo';
 import { UserEntity, UserProps } from '../domain/user.entity';
-
-import { BaseMapper } from '@/shared/base';
 
 @Injectable()
 export class UserMapper extends BaseMapper<UserEntity, User> {

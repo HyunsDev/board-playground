@@ -1,39 +1,34 @@
+import { IncomingMessage, ServerResponse } from 'http';
+
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
 import { ClsService } from 'nestjs-cls';
 import { v7 as uuidv7 } from 'uuid';
 
-import { ContextService } from '../context.service';
-
-import { TriggerCodeEnum } from '@/common/trigger.codes';
+import { ClientContext } from '../contexts';
 
 @Injectable()
 export class ContextMiddleware implements NestMiddleware {
   constructor(
     private readonly cls: ClsService,
-    private readonly context: ContextService,
+    private readonly clientCtx: ClientContext,
   ) {}
 
-  async use(req: Request, res: Response, next: NextFunction) {
+  async use(req: IncomingMessage, res: ServerResponse, next: () => void) {
     // CLS 컨텍스트 시작
     await this.cls.run(async () => {
       // 1. Request ID 처리
       const requestId = (req.headers['x-request-id'] as string) ?? uuidv7();
       this.cls.set('requestId', requestId);
+
+      // Result 객체에 Request ID 설정
       res.setHeader('X-Request-Id', requestId);
-
-      // 2. Client Info (IP, UserAgent)
+      const xForwardedFor = req.headers['x-forwarded-for'] as string;
       const ipAddress =
-        (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
-        req.socket.remoteAddress ||
-        req.ip ||
-        '0.0.0.0';
-      const userAgent = req.get('user-agent') || 'unknown';
+        xForwardedFor?.split(',')[0]?.trim() || req.socket.remoteAddress || '0.0.0.0';
 
-      this.context.setClient({ ipAddress, userAgent });
+      const userAgent = req.headers['user-agent'] || 'unknown';
 
-      // 3. Trigger Type
-      this.context.setTriggerType(TriggerCodeEnum.Unknown);
+      this.clientCtx.setClient({ ipAddress, userAgent });
 
       next();
     });

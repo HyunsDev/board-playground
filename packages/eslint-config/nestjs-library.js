@@ -1,5 +1,6 @@
 import globals from 'globals';
 import { config as baseConfig } from './base.js';
+import localRulesPlugin from './eslint-local-rules/index.js';
 
 /**
  * A custom ESLint configuration for NestJS specific libraries.
@@ -31,6 +32,14 @@ export const nestLibraryConfig = [
         'warn',
         { accessibility: 'no-public' }, // public은 생략, private/protected는 명시
       ],
+    },
+  },
+  {
+    plugins: {
+      'local-rules': localRulesPlugin,
+    },
+    rules: {
+      'local-rules/force-static-code': 'error',
     },
   },
   {

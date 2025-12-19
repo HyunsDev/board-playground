@@ -1,5 +1,4 @@
 import { Logger, Module, Provider } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 
 import { DeleteSessionCommandHandler } from './application/commands/delete-session.command';
 import { SessionFacade } from './application/facades/session.facade';
@@ -27,7 +26,7 @@ const repositories: Provider[] = [
 ];
 
 @Module({
-  imports: [CqrsModule, CryptoModule],
+  imports: [CryptoModule],
   providers: [
     Logger,
     ...commandHandlers,

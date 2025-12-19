@@ -2,6 +2,7 @@ import { err, ok } from 'neverthrow';
 import { UAParser } from 'ua-parser-js';
 import { v7 as uuidv7 } from 'uuid';
 
+import { BaseAggregateRoot, BaseEntityProps } from '@workspace/backend-core';
 import { matchError, typedOk } from '@workspace/backend-ddd';
 import { DevicePlatform, SESSION_STATUS, SessionStatus } from '@workspace/contract';
 
@@ -12,8 +13,6 @@ import { SessionRefreshedEvent } from './events/session-refreshed.event';
 import { RefreshTokenEntity } from './refresh-token.entity';
 import { SessionClosedError, SessionRevokedError } from './session.domain-errors';
 import { InvalidRefreshTokenError } from './token.domain-errors';
-
-import { BaseAggregateRoot, BaseEntityProps } from '@/shared/base';
 
 export interface SessionProps extends BaseEntityProps {
   userId: string;

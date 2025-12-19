@@ -4,7 +4,13 @@ import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { ClsModule, ClsPlugin } from 'nestjs-cls';
 
-import { ContextService } from './context.service';
+import {
+  ClientContext,
+  CoreContext,
+  MessageContext,
+  TokenContext,
+  TransactionContext,
+} from './contexts';
 import { MessageCausationInterceptor } from './message-causation.interceptor';
 import { TransactionManager } from './transaction.manager';
 import { PrismaService } from '../database/prisma.service';
@@ -25,14 +31,23 @@ export class CoreContextModule {
     const imports: any[] = [];
     const clsPlugins: ClsPlugin[] = [];
     const providers: Provider[] = [
-      ContextService,
+      ClientContext,
+      CoreContext,
+      MessageContext,
+      TokenContext,
       {
         provide: APP_INTERCEPTOR,
         useClass: MessageCausationInterceptor,
       },
     ];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const exports: any[] = [ContextService, ClsModule];
+    const exports: Provider[] = [
+      ClientContext,
+      CoreContext,
+      MessageContext,
+      TokenContext,
+      TransactionContext,
+      ClsModule,
+    ];
 
     if (enableDatabase) {
       imports.push(DatabaseModule);
@@ -45,6 +60,7 @@ export class CoreContextModule {
         }),
       );
       providers.push(TransactionManager);
+      providers.push(TransactionContext);
       exports.push(TransactionManager);
     }
 

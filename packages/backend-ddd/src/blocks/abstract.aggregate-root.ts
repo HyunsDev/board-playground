@@ -1,15 +1,9 @@
 import { AbstractEntity } from './abstract.entity';
 
-import { AbstractDomainEvent, AbstractIDomainEvent } from '@/cqrs/abstract.domain-event';
+import { AbstractDomainEvent } from '@/messages/abstract.domain-event';
 
 export abstract class AbstractAggregateRoot<
-  TDomainEvent extends AbstractDomainEvent<
-    string,
-    string,
-    string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    AbstractIDomainEvent<string, any>
-  >,
+  TDomainEvent extends AbstractDomainEvent,
   TProps,
 > extends AbstractEntity<TProps> {
   private _domainEvents: TDomainEvent[] = [];

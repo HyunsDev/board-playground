@@ -2,26 +2,26 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { BasePaginatedQueryProps, BaseQuery, DrivenMessageMetadata } from '@workspace/backend-core';
 import { PaginatedResult } from '@workspace/common';
 import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
-import { BaseIPaginatedQuery, BaseQuery } from '@/shared/base';
 
-type ISearchUserQuery = BaseIPaginatedQuery<{
+type ISearchUserQuery = BasePaginatedQueryProps<{
   nickname?: string;
 }>;
 
 export class SearchUserQuery extends BaseQuery<
   ISearchUserQuery,
-  HandlerResult<SearchUserQueryHandler>,
-  PaginatedResult<UserEntity>
+  PaginatedResult<UserEntity>,
+  HandlerResult<SearchUserQueryHandler>
 > {
-  readonly code = defineQueryCode('account:user:qry:search');
+  static readonly code = defineQueryCode('account:user:qry:search');
   readonly resourceType = DomainCodeEnums.Account.User;
 
-  constructor(data: ISearchUserQuery['data'], metadata: ISearchUserQuery['metadata']) {
+  constructor(data: ISearchUserQuery['data'], metadata: DrivenMessageMetadata) {
     super(null, data, metadata);
   }
 }

@@ -1,17 +1,20 @@
+import {
+  BaseDomainEvent,
+  BaseDomainEventProps,
+  DrivenMessageMetadata,
+} from '@workspace/backend-core';
 import { AggregateCodeEnum, defineEventCode } from '@workspace/domain';
 
-import { BaseDomainEvent, BaseIDomainEvent } from '@/shared/base';
-
-type ISessionDeletedEvent = BaseIDomainEvent<{
+type ISessionDeletedEvent = BaseDomainEventProps<{
   userId: string;
   sessionId: string;
   sessionName: string;
 }>;
 export class SessionDeletedEvent extends BaseDomainEvent<ISessionDeletedEvent> {
-  public readonly code = defineEventCode('account:session:evt:deleted');
+  public static readonly code = defineEventCode('account:session:evt:deleted');
   public readonly resourceType = AggregateCodeEnum.Account.Session;
 
-  constructor(data: ISessionDeletedEvent['data'], metadata?: ISessionDeletedEvent['metadata']) {
+  constructor(data: ISessionDeletedEvent['data'], metadata?: DrivenMessageMetadata) {
     super(data.sessionId, data, metadata);
   }
 }

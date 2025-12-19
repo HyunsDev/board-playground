@@ -2,11 +2,12 @@ import { IncomingMessage, ServerResponse } from 'http';
 
 import { Params } from 'nestjs-pino';
 
-import { ContextService } from '../../context/context.service';
+import { CoreContext, TokenContext } from '@/modules/context';
 
 export const getCommonPinoConfig = (
   isProduction: boolean,
-  contextService: ContextService,
+  coreContext: CoreContext,
+  tokenContext: TokenContext,
 ): Params['pinoHttp'] => {
   return {
     serializers: {
@@ -18,11 +19,25 @@ export const getCommonPinoConfig = (
       }),
     },
 
-    genReqId: (req) => contextService.getRequestId() || req.headers['x-request-id'] || 'unknown',
+    customSuccessMessage: (req, res) => {
+      return `${req.method} ${req.url} ${res.statusCode}`;
+    },
+
+    // [참고] 에러 메시지("request errored")도 덮어쓰고 싶다면:
+    customErrorMessage: (req, res, err) => {
+      return `${req.method} ${req.url} ${res.statusCode} - ${err.message}`;
+    },
+
+    genReqId: (req) => coreContext.requestId || req.headers['x-request-id'] || 'unknown',
+    mixin: () => {
+      return {
+        reqId: coreContext.requestId,
+      };
+    },
 
     customProps: (req: IncomingMessage, res: ServerResponse) => {
-      const contextUserId = contextService?.getUserId();
-      const errorCode = contextService?.getErrorCode();
+      const contextUserId = tokenContext.userId;
+      const { errorCode } = coreContext;
 
       const baseProps = {
         userId: contextUserId ?? 'guest',
@@ -33,7 +48,7 @@ export const getCommonPinoConfig = (
       if (!isProduction) {
         return {
           ...baseProps,
-          reqId: contextService.getRequestId(),
+          reqId: coreContext.requestId,
           httpMethod: req.method,
           reqUrl: req.url,
           resStatus: res.statusCode,

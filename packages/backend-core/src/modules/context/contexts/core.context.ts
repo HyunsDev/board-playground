@@ -1,0 +1,21 @@
+import { Injectable } from '@nestjs/common';
+import { ClsService } from 'nestjs-cls';
+
+import { AppStore } from '../context.types';
+
+@Injectable()
+export class CoreContext {
+  constructor(private readonly cls: ClsService<AppStore>) {}
+
+  get requestId() {
+    return this.cls.get('requestId');
+  }
+
+  get errorCode() {
+    return this.cls.get('errorCode');
+  }
+
+  setErrorCode(code: string) {
+    this.cls.set('errorCode', code);
+  }
+}

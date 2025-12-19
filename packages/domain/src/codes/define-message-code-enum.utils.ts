@@ -8,7 +8,7 @@ import {
 
 import type { BCCodeEnumKey } from './bounded-context-code.enums.js';
 
-export type MessageType = 'cmd' | 'evt' | 'qry' | 'trg';
+export type MessageType = 'cmd' | 'evt' | 'qry' | 'job' | 'trg';
 
 // ---------------------------------------------------------------------------
 // 1. Base Types & Validation Logic
@@ -23,11 +23,11 @@ type MessageCode<
     : never // ❌ 케이스가 틀림
   : `${DomainCode}:${M}:${string}`;
 
-export type CommandCode<T extends string> = MessageCode<T, 'cmd'>;
-export type QueryCode<T extends string> = MessageCode<T, 'qry'>;
-export type EventCode<T extends string> = MessageCode<T, 'evt'>;
-export type CausationCode<T extends string> = MessageCode<T, 'cmd' | 'evt' | 'trg'>;
-
+export type CommandCode<T extends string = string> = MessageCode<T, 'cmd'>;
+export type QueryCode<T extends string = string> = MessageCode<T, 'qry'>;
+export type EventCode<T extends string = string> = MessageCode<T, 'evt'>;
+export type JobCode<T extends string = string> = MessageCode<T, 'job'>;
+export type CausationCode<T extends string = string> = MessageCode<T, MessageType>;
 // ---------------------------------------------------------------------------
 // 2. Definition Utilities
 // ---------------------------------------------------------------------------
@@ -69,6 +69,14 @@ export const defineEventCode = <const T extends string>(
 export const defineQueryCode = <const T extends string>(
   code: ValidateCode<T, 'qry'>,
 ): ValidateCode<T, 'qry'> => code as unknown as T & ValidateCode<T, 'qry'>;
+
+/**
+ * Query 코드를 정의하고 검증합니다.
+ * @example const code = defineQueryCode('account:user:qry:get_by_id');
+ */
+export const defineJobCode = <const T extends string>(
+  code: ValidateCode<T, 'job'>,
+): ValidateCode<T, 'job'> => code as unknown as T & ValidateCode<T, 'job'>;
 
 // ---------------------------------------------------------------------------
 // 3. Deprecated (Legacy Support)

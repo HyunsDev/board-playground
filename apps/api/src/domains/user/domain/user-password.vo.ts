@@ -1,6 +1,5 @@
+import { BaseValueObject } from '@workspace/backend-core';
 import { DomainPrimitive, InternalServerErrorException } from '@workspace/backend-ddd';
-
-import { BaseValueObject } from '@/shared/base';
 
 export class UserPasswordVO extends BaseValueObject<string> {
   // 1. 유효성 검증 (해시된 문자열이 비어있는지 등)

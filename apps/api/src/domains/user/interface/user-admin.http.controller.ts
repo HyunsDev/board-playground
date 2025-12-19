@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { ContextService, Roles } from '@workspace/backend-core';
+import { MessageContext, Roles, TriggerCodeEnum } from '@workspace/backend-core';
 import { apiOk, matchError, apiErr } from '@workspace/backend-ddd';
 import { contract, ApiErrors, USER_ROLE } from '@workspace/contract';
 
@@ -15,7 +15,7 @@ export class UserAdminHttpController {
   constructor(
     private readonly queryBus: QueryBus,
     private readonly dtoMapper: UserDtoMapper,
-    private readonly contextService: ContextService,
+    private readonly messageContext: MessageContext,
   ) {}
 
   @TsRestHandler(contract.admin.user.get)
@@ -24,7 +24,7 @@ export class UserAdminHttpController {
       const result = await this.queryBus.execute(
         new GetUserForAdminQuery(
           { userId: params.userId },
-          this.contextService.getMessageMetadata(),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 

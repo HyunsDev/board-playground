@@ -28,9 +28,11 @@
   "dependencies": {
     "@nestjs/cqrs": "^11.0.3",
     "@workspace/common": "workspace:*",
+    "bullmq": "^5.66.0",
     "neverthrow": "^8.2.0",
     "typescript": "^5.9.3",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@types/node": "^24.10.3",

@@ -3,7 +3,10 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { err, ok, Result } from 'neverthrow';
 
+import { DomainCodeEnums } from '@workspace/domain';
+
 import { CacheInfrastructureErrorException } from './errors';
+import { systemLog, SystemLogActionEnum } from '../logging';
 import { CacheInfrastructureError } from './errors/cache.errors';
 
 @Injectable()
@@ -20,7 +23,11 @@ export class CacheService {
       const value = await this.cache.get<T>(key);
       return value ?? null;
     } catch (e) {
-      this.logger.warn(`[Best-Effort] Cache get failed. key=${key}, error=${e}`);
+      this.logger.warn(
+        systemLog(DomainCodeEnums.System.Infra, SystemLogActionEnum.RedisError, {
+          msg: `Cache get failed. key=${key}, error=${e}`,
+        }),
+      );
       return null;
     }
   }
@@ -35,6 +42,11 @@ export class CacheService {
       return ok(value ?? null);
     } catch (e: unknown) {
       // 여기서는 로그를 error 레벨로 찍거나, 호출부로 책임을 넘깁니다.
+      this.logger.warn(
+        systemLog(DomainCodeEnums.System.Infra, SystemLogActionEnum.RedisError, {
+          msg: `Cache tryGet failed. key=${key}, error=${e}`,
+        }),
+      );
       return err(new CacheInfrastructureError(key, e));
     }
   }
@@ -57,7 +69,11 @@ export class CacheService {
     try {
       await this.cache.set(key, value, ttl);
     } catch (e) {
-      this.logger.warn(`[Best-Effort] Cache set failed. key=${key}, error=${e}`);
+      this.logger.warn(
+        systemLog(DomainCodeEnums.System.Infra, SystemLogActionEnum.RedisError, {
+          msg: `Cache set failed. key=${key}, error=${e}`,
+        }),
+      );
     }
   }
 
@@ -73,6 +89,11 @@ export class CacheService {
       await this.cache.set(key, value, ttl);
       return ok(undefined);
     } catch (e: unknown) {
+      this.logger.warn(
+        systemLog(DomainCodeEnums.System.Infra, SystemLogActionEnum.RedisError, {
+          msg: `Cache trySet failed. key=${key}, error=${e}`,
+        }),
+      );
       return err(new CacheInfrastructureError(key, e));
     }
   }
@@ -92,7 +113,11 @@ export class CacheService {
     try {
       await this.cache.del(key);
     } catch (e) {
-      this.logger.warn(`[Best-Effort] Cache del failed. key=${key}, error=${e}`);
+      this.logger.warn(
+        systemLog(DomainCodeEnums.System.Infra, SystemLogActionEnum.RedisError, {
+          msg: `Cache del failed. key=${key}, error=${e}`,
+        }),
+      );
     }
   }
 
@@ -101,6 +126,11 @@ export class CacheService {
       await this.cache.del(key);
       return ok(undefined);
     } catch (e: unknown) {
+      this.logger.warn(
+        systemLog(DomainCodeEnums.System.Infra, SystemLogActionEnum.RedisError, {
+          msg: `Cache tryDel failed. key=${key}, error=${e}`,
+        }),
+      );
       return err(new CacheInfrastructureError(key, e));
     }
   }

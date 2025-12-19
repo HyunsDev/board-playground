@@ -27,6 +27,7 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "migrate:deploy": "prisma migrate deploy",
     "migrate:dev": "prisma migrate dev",
+    "migrate:reset": "prisma migrate reset",
     "studio": "prisma studio",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },

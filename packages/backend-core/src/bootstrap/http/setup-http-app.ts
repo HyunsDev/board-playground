@@ -1,5 +1,7 @@
-import { INestApplication } from '@nestjs/common';
-import cookieParser from 'cookie-parser';
+// backend-core/src/.../setupHttpApp.ts (위치에 맞게)
+
+import fastifyCookie from '@fastify/cookie'; // 쿠키 플러그인 변경
+import { NestFastifyApplication } from '@nestjs/platform-fastify'; // 타입 변경
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 
 import { httpConfig, HttpConfig } from '@/modules/config';
@@ -8,21 +10,14 @@ export interface BootstrapOptions {
   enableCors?: boolean;
 }
 
-export function setupHttpApp(app: INestApplication, options: BootstrapOptions = {}) {
-  // Logger 연결 (nestjs-pino)
+export async function setupHttpApp(app: NestFastifyApplication, options: BootstrapOptions = {}) {
+  // Logger 연결
   const logger = app.get(Logger);
   app.useLogger(logger);
   app.flushLogs();
 
-  // Global Interceptors (Infrastructure Level)
-  // - LoggerErrorInterceptor: 포착되지 않은 500 에러 등을 자동으로 로깅
-  // - 주의: 비즈니스 로직 에러(Result.err)는 대부분 Controller에서 처리되므로 여기서 잡지 않음
+  // Global Interceptors
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
-
-  // Infrastructure Settings
-  // 프록시(로드밸런서) 뒤에서 클라이언트 IP 식별
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (app as any).set('trust proxy', true);
 
   // CORS
   if (options.enableCors) {
@@ -32,11 +27,14 @@ export function setupHttpApp(app: INestApplication, options: BootstrapOptions = 
     });
   }
 
-  // Cookie Parser
+  // Cookie Parser 교체 -> Fastify Plugin 등록
   const { cookieSecret } = app.get<HttpConfig>(httpConfig.KEY);
-  void app.use(cookieParser(cookieSecret));
+
+  // app.use(cookieParser()) 대신 app.register 사용
+  await app.register(fastifyCookie, {
+    secret: cookieSecret, // 서명(signed) 쿠키 사용 시 필요
+  });
 
   // Graceful Shutdown
-  // SIGTERM 시그널 등을 받았을 때 연결을 안전하게 끊음
   app.enableShutdownHooks();
 }

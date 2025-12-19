@@ -2,7 +2,12 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
-import { AccessTokenProvider, TransactionManager } from '@workspace/backend-core';
+import {
+  AccessTokenProvider,
+  DrivenMessageMetadata,
+  TransactionManager,
+} from '@workspace/backend-core';
+import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { ValidationError } from '@workspace/backend-ddd';
 import { DEVICE_PLATFORM, passwordSchema } from '@workspace/contract';
 import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
@@ -10,10 +15,9 @@ import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { PasswordProvider } from '@/infra/crypto';
-import { BaseCommand, BaseICommand } from '@/shared/base';
 import { AuthTokens } from '@/shared/types/tokens';
 
-type IRegisterAuthCommand = BaseICommand<{
+type IRegisterAuthCommand = BaseCommandProps<{
   email: string;
   username: string;
   nickname: string;
@@ -24,21 +28,22 @@ type IRegisterAuthCommand = BaseICommand<{
 
 export class RegisterAuthCommand extends BaseCommand<
   IRegisterAuthCommand,
-  HandlerResult<RegisterAuthCommandHandler>,
-  AuthTokens
+  AuthTokens,
+  HandlerResult<RegisterAuthCommandHandler>
 > {
-  readonly code = defineCommandCode('account:auth:cmd:register');
+  static readonly code = defineCommandCode('account:auth:cmd:register');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: IRegisterAuthCommand['data'], metadata: IRegisterAuthCommand['metadata']) {
+  constructor(data: IRegisterAuthCommand['data'], metadata: DrivenMessageMetadata) {
     super(null, data, metadata);
   }
 }
 
 @CommandHandler(RegisterAuthCommand)
-export class RegisterAuthCommandHandler
-  implements ICommandHandler<RegisterAuthCommand, HandlerResult<RegisterAuthCommandHandler>>
-{
+export class RegisterAuthCommandHandler implements ICommandHandler<
+  RegisterAuthCommand,
+  HandlerResult<RegisterAuthCommandHandler>
+> {
   constructor(
     private readonly userFacade: UserFacade,
     private readonly sessionFacade: SessionFacade,

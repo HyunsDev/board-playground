@@ -12,6 +12,7 @@
     "depcruise": "pnpm exec depcruise apps packages --include-only \"^(apps|packages)/\"",
     "dependency-graph": "depcruise apps packages --include-only \"^(apps|packages)/\" --exclude \"(/dist/|/\\.next/|/coverage/|/src/generated/|/node_modules/)\" --output-type dot | dot -T svg > dependency-graph.svg",
     "dev": "turbo run dev dev:check --concurrency=20",
+    "docker:up": "docker-compose -f docker-compose.dev.yml up -d",
     "fix-mismatches": "syncpack fix-mismatches",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "format:pkg": "pnpm exec sort-package-json \"**/package.json\" \"!**/node_modules/**\"",

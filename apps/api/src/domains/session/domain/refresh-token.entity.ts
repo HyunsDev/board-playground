@@ -1,11 +1,11 @@
 import { err, ok } from 'neverthrow';
 import { v7 } from 'uuid';
 
+import { BaseEntity, BaseEntityProps } from '@workspace/backend-core';
 import { ExpiredTokenError } from '@workspace/backend-ddd';
 
 import { TokenReuseDetectedError } from './token.domain-errors';
 
-import { BaseEntity, BaseEntityProps } from '@/shared/base';
 
 export interface RefreshTokenProps extends BaseEntityProps {
   id: string;

@@ -3,7 +3,12 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err } from 'neverthrow';
 
-import { DomainError, DomainEventPublisher, DomainResult } from '@workspace/backend-ddd';
+import {
+  DomainError,
+  DomainEventPublisherPort,
+  DomainResult,
+  JobDispatcherPort,
+} from '@workspace/backend-ddd';
 
 class TransactionRollbackError<E> extends Error {
   originalError: E;
@@ -17,7 +22,8 @@ class TransactionRollbackError<E> extends Error {
 export class TransactionManager {
   constructor(
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
-    private readonly eventDispatcher: DomainEventPublisher,
+    private readonly eventDispatcher: DomainEventPublisherPort,
+    private readonly jobDispatcher: JobDispatcherPort,
   ) {}
 
   async run<Res extends DomainResult<unknown, DomainError>>(
@@ -37,16 +43,19 @@ export class TransactionManager {
           }
           // 예측하지 못한 에러 발생 시 이벤트를 비웁니다.
           this.eventDispatcher.clear();
+          this.jobDispatcher.clear();
           throw error;
         }
       });
 
       // 트랜잭션이 성공적으로 커밋된 후에만 이벤트를 발행합니다 (Transactional Outbox 패턴의 단순화)
       await this.eventDispatcher.flush();
+      await this.jobDispatcher.flush();
 
       return result;
     } catch (error) {
       this.eventDispatcher.clear();
+      this.jobDispatcher.clear();
       if (error instanceof TransactionRollbackError) {
         return err(error.originalError) as Res;
       }

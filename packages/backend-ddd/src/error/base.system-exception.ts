@@ -12,8 +12,8 @@ export abstract class SystemException<
   readonly message: string;
   readonly details?: Details;
 
-  constructor(message: string, details?: Details) {
-    super(message);
+  constructor(message: string, details?: Details, cause?: unknown) {
+    super(message, { cause });
     this.message = message;
     this.details = details;
   }

@@ -21,7 +21,8 @@
         "COOKIE_SECRET",
         "JWT_ACCESS_SECRET",
         "JWT_ACCESS_EXPIRATION_TIME",
-        "REFRESH_TOKEN_SECRET"
+        "REFRESH_TOKEN_SECRET",
+        "CDK_DEFAULT_ACCOUNT"
       ]
     },
     "lint": {

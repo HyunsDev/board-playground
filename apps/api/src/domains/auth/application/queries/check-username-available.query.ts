@@ -2,36 +2,31 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { BaseQueryProps, BaseQuery, DrivenMessageMetadata } from '@workspace/backend-core';
 import { defineQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { UserUsernameAlreadyExistsError } from '@/domains/user/domain/user.domain-errors';
-import { BaseIQuery, BaseQuery } from '@/shared/base';
 
-type ICheckUsernameAvailableQuery = BaseIQuery<{
+type ICheckUsernameAvailableQuery = BaseQueryProps<{
   username: string;
 }>;
 
 export class CheckUsernameAvailableQuery extends BaseQuery<
   ICheckUsernameAvailableQuery,
-  HandlerResult<CheckUsernameAvailableQueryHandler>,
-  void
+  void,
+  HandlerResult<CheckUsernameAvailableQueryHandler>
 > {
-  readonly code = defineQueryCode('account:auth:qry:check_username_available');
+  static readonly code = defineQueryCode('account:auth:qry:check_username_available');
   readonly resourceType = DomainCodeEnums.Account.User;
 
-  constructor(
-    data: ICheckUsernameAvailableQuery['data'],
-    metadata: ICheckUsernameAvailableQuery['metadata'],
-  ) {
+  constructor(data: ICheckUsernameAvailableQuery['data'], metadata: DrivenMessageMetadata) {
     super(null, data, metadata);
   }
 }
 
 @QueryHandler(CheckUsernameAvailableQuery)
-export class CheckUsernameAvailableQueryHandler
-  implements IQueryHandler<CheckUsernameAvailableQuery>
-{
+export class CheckUsernameAvailableQueryHandler implements IQueryHandler<CheckUsernameAvailableQuery> {
   constructor(private readonly userFacade: UserFacade) {}
 
   async execute({ data }: ICheckUsernameAvailableQuery) {

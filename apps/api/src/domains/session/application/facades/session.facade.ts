@@ -71,6 +71,7 @@ export class SessionFacade {
       newTokenHash: refreshTokenSet.refreshTokenHash,
       expiresAt: this.getExpiresAtDate(),
     });
+
     if (rotateResult.isErr()) return rotateResult;
 
     const updatedSessionResult = await this.sessionRepo.update(session);

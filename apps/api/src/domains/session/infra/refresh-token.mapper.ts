@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
+import { BaseMapper } from '@workspace/backend-core';
 import { RefreshToken } from '@workspace/database';
 
 import { RefreshTokenEntity, RefreshTokenProps } from '../domain/refresh-token.entity';
 
-import { BaseMapper } from '@/shared/base';
 
 @Injectable()
 export class RefreshTokenMapper extends BaseMapper<RefreshTokenEntity, RefreshToken> {

@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { ContextService, Token } from '@workspace/backend-core';
+import { MessageContext, Token, TriggerCodeEnum } from '@workspace/backend-core';
 import { apiOk, matchError, apiErr, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
 import { TokenPayload } from '@workspace/domain';
@@ -18,7 +18,7 @@ export class SessionHttpController {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
     private readonly sessionDtoMapper: SessionDtoMapper,
-    private readonly contextService: ContextService,
+    private readonly messageContext: MessageContext,
   ) {}
 
   @TsRestHandler(contract.session.get)
@@ -27,7 +27,7 @@ export class SessionHttpController {
       const result = await this.queryBus.execute(
         new GetSessionQuery(
           { userId: token.sub, sessionId: params.sessionId },
-          this.contextService.getMessageMetadata(),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -45,7 +45,10 @@ export class SessionHttpController {
   async listSessions(@Token() token: TokenPayload) {
     return tsRestHandler(contract.session.list, async () => {
       const result = await this.queryBus.execute(
-        new ListSessionsQuery({ userId: token.sub }, this.contextService.getMessageMetadata()),
+        new ListSessionsQuery(
+          { userId: token.sub },
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
+        ),
       );
 
       return result.match(
@@ -70,7 +73,7 @@ export class SessionHttpController {
             userId: token.sub,
             currentSessionId: token.sessionId,
           },
-          this.contextService.getMessageMetadata(),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 

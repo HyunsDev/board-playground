@@ -1,9 +1,15 @@
 import { Controller, Req, Res } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
-import { Request, Response } from 'express';
+import { FastifyReply, FastifyRequest } from 'fastify';
 
-import { ContextService, Public, IpAddress, UserAgent } from '@workspace/backend-core';
+import {
+  Public,
+  IpAddress,
+  UserAgent,
+  TriggerCodeEnum,
+  MessageContext,
+} from '@workspace/backend-core';
 import {
   apiOk,
   matchPublicError,
@@ -25,13 +31,13 @@ export class AuthHttpController {
   constructor(
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
-    private readonly contextService: ContextService,
+    private readonly messageContext: MessageContext,
   ) {}
 
   @Public()
   @TsRestHandler(contract.auth.register)
   async register(
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: FastifyReply,
     @IpAddress() ipAddress: string,
     @UserAgent() ua: string,
   ) {
@@ -46,13 +52,13 @@ export class AuthHttpController {
             ipAddress: ipAddress,
             userAgent: ua,
           },
-          this.contextService.getMessageMetadata(),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 
       return result.match(
         (data) => {
-          void res.cookie('refreshToken', data.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+          void res.setCookie('refreshToken', data.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
           return apiOk(200, {
             accessToken: data.accessToken,
           });
@@ -70,7 +76,7 @@ export class AuthHttpController {
   @Public()
   @TsRestHandler(contract.auth.login)
   async login(
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: FastifyReply,
     @IpAddress() ipAddress: string,
     @UserAgent() ua: string,
   ) {
@@ -83,13 +89,13 @@ export class AuthHttpController {
             ipAddress: ipAddress,
             userAgent: ua,
           },
-          this.contextService.getMessageMetadata(),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 
       return result.match(
         (data) => {
-          void res.cookie('refreshToken', data.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+          void res.setCookie('refreshToken', data.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
           return apiOk(200, {
             accessToken: data.accessToken,
           });
@@ -104,7 +110,7 @@ export class AuthHttpController {
 
   @Public()
   @TsRestHandler(contract.auth.refreshToken)
-  async refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async refreshToken(@Req() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
     return tsRestHandler(contract.auth.refreshToken, async () => {
       const refreshToken = req.cookies?.['refreshToken'];
 
@@ -117,7 +123,7 @@ export class AuthHttpController {
           {
             refreshToken,
           },
-          this.contextService.getMessageMetadata(),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -125,13 +131,13 @@ export class AuthHttpController {
         (data) => {
           if (data.type === 'revoked') {
             if (data.reason === 'TokenReuseDetected') {
-              void res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_OPTIONS);
+              void res.clearCookie('refreshToken', { path: '/auth' });
               return apiErr(ApiErrors.Auth.RefreshTokenReuseDetected);
             }
             throw new InvariantViolationException();
           }
 
-          void res.cookie('refreshToken', data.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+          void res.setCookie('refreshToken', data.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
           return apiOk(200, {
             accessToken: data.accessToken,
           });
@@ -149,7 +155,7 @@ export class AuthHttpController {
 
   @Public()
   @TsRestHandler(contract.auth.logout)
-  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async logout(@Req() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
     return tsRestHandler(contract.auth.logout, async () => {
       const refreshToken = req.cookies?.['refreshToken'];
 
@@ -162,11 +168,11 @@ export class AuthHttpController {
           {
             refreshToken: refreshToken,
           },
-          this.contextService.getMessageMetadata(),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 
-      void res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_OPTIONS);
+      void res.clearCookie('refreshToken', { path: '/auth' });
       return result.match(
         () => apiOk(204, undefined),
         () => apiOk(204, undefined),
@@ -183,7 +189,7 @@ export class AuthHttpController {
           {
             username: query.username,
           },
-          this.contextService.getMessageMetadata(),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 

@@ -1,9 +1,9 @@
 import { Controller, Res } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
-import { Response } from 'express';
+import { FastifyReply } from 'fastify';
 
-import { ContextService, Token } from '@workspace/backend-core';
+import { MessageContext, Token, TriggerCodeEnum } from '@workspace/backend-core';
 import { apiOk, matchPublicError, apiErr } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
 import { TokenPayload } from '@workspace/domain';
@@ -14,22 +14,24 @@ import { UpdateUserMeProfileCommand } from '../application/me/commands/update-us
 import { UpdateUserMeUsernameCommand } from '../application/me/commands/update-user-me-username.command';
 import { GetUserMeQuery } from '../application/me/queries/get-user-me.query';
 
-import { REFRESH_TOKEN_COOKIE_OPTIONS } from '@/shared/constants/cookie.constant';
-
 @Controller()
 export class UserMeHttpController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
     private readonly dtoMapper: UserDtoMapper,
-    private readonly contextService: ContextService,
+
+    private readonly messageContext: MessageContext,
   ) {}
 
   @TsRestHandler(contract.user.me.get)
   async getMe(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.get, async () => {
       const result = await this.queryBus.execute(
-        new GetUserMeQuery({ userId: token.sub }, this.contextService.getMessageMetadata()),
+        new GetUserMeQuery(
+          { userId: token.sub },
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
+        ),
       );
       return result.match(
         (user) =>
@@ -54,7 +56,7 @@ export class UserMeHttpController {
             nickname: body.nickname,
             bio: body.bio,
           },
-          this.contextService.getMessageMetadata(),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -82,7 +84,7 @@ export class UserMeHttpController {
             userId: token.sub,
             newUsername: body.username,
           },
-          this.contextService.getMessageMetadata(),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 
@@ -101,20 +103,20 @@ export class UserMeHttpController {
   }
 
   @TsRestHandler(contract.user.me.delete)
-  async deleteMe(@Res({ passthrough: true }) res: Response, @Token() token: TokenPayload) {
+  async deleteMe(@Res({ passthrough: true }) res: FastifyReply, @Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.delete, async () => {
       const result = await this.commandBus.execute(
         new DeleteUserMeCommand(
           {
             userId: token.sub,
           },
-          this.contextService.getMessageMetadata(),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
 
       return result.match(
         () => {
-          void res.clearCookie('refreshToken', REFRESH_TOKEN_COOKIE_OPTIONS);
+          void res.clearCookie('refreshToken', { path: '/auth' });
           return apiOk(200, {});
         },
         (error) =>

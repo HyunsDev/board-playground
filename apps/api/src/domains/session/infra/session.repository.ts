@@ -3,9 +3,9 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
-import { BaseRepository, PrismaService, ContextService } from '@workspace/backend-core';
+import { BaseRepository, PrismaService } from '@workspace/backend-core';
 import {
-  DomainEventPublisher,
+  DomainEventPublisherPort,
   DomainResult,
   matchError,
   UnexpectedDomainErrorException,
@@ -27,10 +27,9 @@ export class SessionRepository
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
-    protected readonly context: ContextService,
     protected readonly mapper: SessionMapper,
     protected readonly refreshTokenMapper: RefreshTokenMapper,
-    protected readonly eventDispatcher: DomainEventPublisher,
+    protected readonly eventDispatcher: DomainEventPublisherPort,
   ) {
     super(prisma, txHost, mapper, eventDispatcher, new Logger(SessionRepository.name));
   }

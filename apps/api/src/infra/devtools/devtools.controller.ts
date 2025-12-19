@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { ContextService, Public } from '@workspace/backend-core';
+import { MessageContext, Public, TriggerCodeEnum } from '@workspace/backend-core';
 import { apiOk, matchPublicError, apiErr } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
 
@@ -14,7 +14,7 @@ import { ResetDBCommand } from './commands/reset-db.command';
 export class DevtoolsController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly contextService: ContextService,
+    private readonly messageContext: MessageContext,
   ) {}
 
   @TsRestHandler(contract.devtools.forceRegister)
@@ -28,7 +28,7 @@ export class DevtoolsController {
             username: body.username,
             nickname: body.nickname,
           },
-          this.contextService.getMessageMetadata(),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
       return result.match(
@@ -51,7 +51,7 @@ export class DevtoolsController {
           {
             email: body.email,
           },
-          this.contextService.getMessageMetadata(),
+          this.messageContext.createMetadata(TriggerCodeEnum.Http),
         ),
       );
       return result.match(
@@ -69,7 +69,7 @@ export class DevtoolsController {
   async resetDB() {
     return tsRestHandler(contract.devtools.resetDB, async () => {
       const result = await this.commandBus.execute(
-        new ResetDBCommand(undefined, this.contextService.getMessageMetadata()),
+        new ResetDBCommand(undefined, this.messageContext.createMetadata(TriggerCodeEnum.Http)),
       );
       return result.match(
         () => apiOk(200, undefined),

@@ -14,6 +14,10 @@ import {
   httpConfig,
   prismaConfig,
   redisConfig,
+  TaskQueueModule,
+  ssmConfig,
+  StorageModule,
+  StorageWorkerModule,
 } from '@workspace/backend-core';
 
 import { refreshTokenConfig } from './configs/refresh-token.config';
@@ -23,12 +27,22 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
 @Module({
   imports: [
     CoreConfigModule.forRoot({
-      extraLoad: [httpConfig, prismaConfig, accessTokenConfig, redisConfig, refreshTokenConfig],
+      extraLoad: [
+        httpConfig,
+        prismaConfig,
+        accessTokenConfig,
+        redisConfig,
+        refreshTokenConfig,
+        ssmConfig,
+      ],
     }),
     CqrsModule.forRoot(),
+    TaskQueueModule.forRoot(),
+    HttpContextModule.forRoot(),
     DatabaseModule,
     CacheModule,
-    HttpContextModule.forRoot(),
+    StorageModule,
+    StorageWorkerModule,
     EventBusModule,
     LoggingModule,
     SecurityModule.forRoot({
@@ -37,9 +51,19 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
     ExceptionFilterModule,
     HealthModule.forRoot({
       exposeHttp: true,
-      checkDatabase: true,
+      check: {
+        prisma: true,
+        redis: true,
+      },
     }),
   ],
-  exports: [HttpContextModule, DatabaseModule, EventBusModule, LoggingModule, SecurityModule],
+  exports: [
+    HttpContextModule,
+    DatabaseModule,
+    EventBusModule,
+    LoggingModule,
+    SecurityModule,
+    CqrsModule,
+  ],
 })
 export class CoreModule {}

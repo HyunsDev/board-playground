@@ -20,6 +20,7 @@ module.exports = {
         'eslint',
         'jest',
         'typescript',
+        'infra',
       ],
     ],
     'subject-case': [0],

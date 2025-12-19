@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
+import { BaseMapper } from '@workspace/backend-core';
 import { RefreshToken, Session } from '@workspace/database';
 
 import { RefreshTokenMapper } from './refresh-token.mapper';
 import { SessionEntity, SessionProps } from '../domain/session.entity';
 
-import { BaseMapper } from '@/shared/base';
 
 @Injectable()
 export class SessionMapper extends BaseMapper<SessionEntity, Session> {
