@@ -9,3 +9,4 @@ export * from './logging';
 export * from './security';
 export * from './storage';
 export * from './task-queue';
+export * from './notifications';
