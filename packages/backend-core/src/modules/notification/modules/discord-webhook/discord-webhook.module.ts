@@ -1,0 +1,22 @@
+import { DynamicModule, Module, Provider } from '@nestjs/common';
+
+import { DiscordWebhookModuleAsyncOptions } from './discord-webhook.interface';
+import { DiscordWebhookService, WEBHOOK_MODULE_OPTIONS } from './discord-webhook.service';
+
+@Module({})
+export class DiscordWebhookModule {
+  static forFeatureAsync(options: DiscordWebhookModuleAsyncOptions): DynamicModule {
+    const asyncProvider: Provider = {
+      provide: WEBHOOK_MODULE_OPTIONS,
+      useFactory: options.useFactory,
+      inject: options.inject || [],
+    };
+
+    return {
+      module: DiscordWebhookModule,
+      imports: options.imports || [],
+      providers: [asyncProvider, DiscordWebhookService],
+      exports: [DiscordWebhookService],
+    };
+  }
+}

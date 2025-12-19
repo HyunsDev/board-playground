@@ -48,6 +48,7 @@ export const DomainCodeEnums = uniqueDeepMerge(
       Infra: 'system:infra',
       Exception: 'system:exception',
       Devtools: 'system:devtools',
+      Notification: 'system:notification',
     },
   }),
 );
