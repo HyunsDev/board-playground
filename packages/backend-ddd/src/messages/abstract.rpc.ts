@@ -23,7 +23,7 @@ export abstract class AbstractRpc<
   constructor(
     resourceId: string | null,
     data: TProps['data'],
-    metadata: AbstractDrivenMessageMetadata<CausationCodeType, ResourceCodeType>,
+    metadata?: AbstractDrivenMessageMetadata<CausationCodeType, ResourceCodeType>,
     options?: TOptions,
   ) {
     super(resourceId, data, metadata);

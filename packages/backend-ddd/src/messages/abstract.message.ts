@@ -38,7 +38,7 @@ export abstract class AbstractMessage<
   MessageCodeType extends CausationCodeType = CausationCodeType,
   TProps extends AbstractMessageProps = AbstractMessageProps,
   TOk = unknown,
-  TRes extends DomainResult<TOk, DomainError> | void = void,
+  TRes extends DomainResult<TOk, DomainError> | void = DomainResult<TOk, DomainError> | void,
 > {
   declare readonly [RESULT_TYPE_SYMBOL]: TRes;
 
