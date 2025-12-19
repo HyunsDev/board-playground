@@ -1,23 +1,20 @@
-import { getQueueToken } from '@nestjs/bullmq';
 import { Injectable, Scope } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
 import { Queue } from 'bullmq';
 
-import { JobDispatcherPort, InternalServerErrorException } from '@workspace/backend-ddd';
+import { JobDispatcherPort } from '@workspace/backend-ddd';
 import { TaskQueueCode } from '@workspace/domain';
 
-import { toSafeQueueName } from './task-queue.utils';
 import { MessageContext, TransactionContext } from '../context';
+import { QueueRegistry } from './queue.registry';
 
 import { BaseJob, BaseJobProps } from '@/base';
 
 @Injectable({ scope: Scope.REQUEST }) // 요청(트랜잭션) 단위로 상태를 유지해야 하므로 REQUEST 스코프 필수
 export class JobDispatcher implements JobDispatcherPort {
   private jobs: BaseJob<BaseJobProps<unknown>>[] = [];
-  private queues = new Map<string, Queue>();
 
   constructor(
-    private readonly moduleRef: ModuleRef,
+    private readonly queueRegistry: QueueRegistry,
     private readonly txContext: TransactionContext,
     private readonly messageContext: MessageContext,
   ) {}
@@ -89,15 +86,6 @@ export class JobDispatcher implements JobDispatcherPort {
   }
 
   private getQueue(name: TaskQueueCode): Queue {
-    if (this.queues.has(name)) return this.queues.get(name)!;
-    try {
-      const queue = this.moduleRef.get<Queue>(getQueueToken(toSafeQueueName(name)), {
-        strict: false,
-      });
-      this.queues.set(name, queue);
-      return queue;
-    } catch {
-      throw new InternalServerErrorException(`Queue with name "${name}" not found`);
-    }
+    return this.queueRegistry.getQueue(name);
   }
 }
