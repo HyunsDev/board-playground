@@ -3,6 +3,7 @@ import { ClsService } from 'nestjs-cls';
 
 import { TriggerCode } from '@workspace/domain';
 
+import { DrivenMessageMetadataNotFoundException } from '../context.exceptions';
 import { AppStore } from '../context.types';
 
 import { DrivenMessageMetadata } from '@/base';
@@ -24,7 +25,11 @@ export class MessageContext {
     };
   }
 
-  get drivenMetadata(): DrivenMessageMetadata | undefined {
-    return this.cls.get('messageMetadata');
+  get drivenMetadata(): DrivenMessageMetadata {
+    const metadata = this.cls.get('messageMetadata');
+    if (!metadata) {
+      throw new DrivenMessageMetadataNotFoundException();
+    }
+    return metadata;
   }
 }

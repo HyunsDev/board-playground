@@ -18,7 +18,12 @@ const TARGET_BASE_CLASSES = new Set([
   // Job
   'AbstractJob',
   'BaseJob',
-  // 필요에 따라 추가...
+  // RPC
+  'AbstractRpc',
+  'BaseRpc',
+  // Pub
+  'AbstractPub',
+  'BasePub',
 ]);
 
 /** @type {import('eslint').Rule.RuleModule} */

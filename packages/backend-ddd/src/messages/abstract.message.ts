@@ -180,3 +180,15 @@ export abstract class AbstractMessage<
     };
   }
 }
+
+export interface MessageConstructor<T extends AbstractMessage> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  new (...args: any[]): T;
+  code: T['code'];
+  fromPlain(plain: {
+    id: string;
+    code: string;
+    data: unknown;
+    metadata: AbstractMessageMetadata;
+  }): T;
+}

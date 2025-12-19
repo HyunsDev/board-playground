@@ -4,6 +4,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { MESSAGING_SERVICE_TOKEN } from './messaging.constant';
 import { MessagingService } from './messaging.service';
 import { RedisConfig, redisConfig } from '../config';
+import { GlobalRpcExceptionFilter } from './rpc-exception.filter';
 import { CoreContextModule } from '../context/context.module';
 
 @Global()
@@ -18,7 +19,7 @@ import { CoreContextModule } from '../context/context.module';
         useFactory: (redisConfig: RedisConfig) => {
           const host = redisConfig.redisHost;
           const port = redisConfig.redisPort;
-          const password = redisConfig.redisPassword; // 필요 시
+          const password = redisConfig.redisPassword;
 
           return {
             transport: Transport.REDIS,
@@ -35,7 +36,7 @@ import { CoreContextModule } from '../context/context.module';
       },
     ]),
   ],
-  providers: [MessagingService],
+  providers: [MessagingService, GlobalRpcExceptionFilter],
   exports: [MessagingService],
 })
 export class MessagingModule {}
