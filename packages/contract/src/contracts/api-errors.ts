@@ -1,13 +1,15 @@
-import { AuthApiErrors } from './auth/auth.exceptions';
-import { BoardApiErrors } from './board/board.exceptions';
-import { CommentApiErrors } from './comment/comment.exceptions';
-import { CommonApiErrors } from './common/common.exceptions';
-import { ManagerApiErrors } from './manager/manager.exceptions';
-import { PostApiErrors } from './post/post.exceptions';
-import { SessionApiErrors } from './session/session.exceptions';
-import { UserApiErrors } from './user/user.exceptions';
+import { AuthApiErrors } from './auth/auth.errors';
+import { BoardApiErrors } from './board/board.errors';
+import { CommentApiErrors } from './comment/comment.errors';
+import { CommonApiErrors } from './common/common.errors';
+import { ManagerApiErrors } from './manager/manager.errors';
+import { PostApiErrors } from './post/post.errors';
+import { SessionApiErrors } from './session/session.errors';
+import { UserApiErrors } from './user/user.errors';
 
-export const ApiErrors = {
+import { defineApiErrors } from '@/internal/utils/define-api-errors.utils';
+
+export const ApiErrors = defineApiErrors({
   Common: CommonApiErrors,
   Auth: AuthApiErrors,
   Board: BoardApiErrors,
@@ -16,4 +18,4 @@ export const ApiErrors = {
   Manager: ManagerApiErrors,
   Post: PostApiErrors,
   User: UserApiErrors,
-} as const;
+});

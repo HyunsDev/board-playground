@@ -1,6 +1,6 @@
-import { type ApiErrorRecord } from '@/internal/types/api-error-record.type';
+import { defineErrorRecord } from '@/internal/utils/define-api-errors.utils';
 
-export const AuthApiErrors = {
+export const AuthApiErrors = defineErrorRecord({
   InvalidCredentials: {
     status: 400,
     code: 'INVALID_CREDENTIALS',
@@ -51,4 +51,4 @@ export const AuthApiErrors = {
     code: 'SESSION_EXPIRED',
     message: '세션이 만료되었습니다',
   },
-} as const satisfies ApiErrorRecord;
+});

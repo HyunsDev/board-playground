@@ -1,6 +1,6 @@
-import { type ApiErrorRecord } from '@/internal/types/api-error-record.type';
+import { defineErrorRecord } from '@/internal/utils/define-api-errors.utils';
 
-export const BoardApiErrors = {
+export const BoardApiErrors = defineErrorRecord({
   NotFound: {
     status: 404,
     code: 'BOARD_NOT_FOUND',
@@ -16,4 +16,4 @@ export const BoardApiErrors = {
     code: 'BOARD_PERMISSION_DENIED',
     message: '보드에 대한 권한이 없습니다',
   },
-} as const satisfies ApiErrorRecord;
+});

@@ -1,6 +1,6 @@
-import type { ApiErrorRecord } from '@/internal/types/api-error-record.type';
+import { defineErrorRecord } from '@/internal/utils/define-api-errors.utils';
 
-export const PostApiErrors = {
+export const PostApiErrors = defineErrorRecord({
   NotFound: {
     status: 404,
     code: 'POST_NOT_FOUND',
@@ -11,4 +11,4 @@ export const PostApiErrors = {
     code: 'POST_PERMISSION_DENIED',
     message: '게시글에 대한 권한이 없습니다',
   },
-} as const satisfies ApiErrorRecord;
+});

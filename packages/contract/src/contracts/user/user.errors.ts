@@ -1,6 +1,6 @@
-import { type ApiErrorRecord } from '@/internal/types/api-error-record.type';
+import { defineErrorRecord } from '@/internal/utils/define-api-errors.utils';
 
-export const UserApiErrors = {
+export const UserApiErrors = defineErrorRecord({
   NotFound: {
     status: 404,
     code: 'USER_NOT_FOUND',
@@ -26,4 +26,4 @@ export const UserApiErrors = {
     code: 'ADMIN_CANNOT_BE_DELETED',
     message: '관리자 계정은 삭제할 수 없습니다',
   },
-} as const satisfies ApiErrorRecord;
+});

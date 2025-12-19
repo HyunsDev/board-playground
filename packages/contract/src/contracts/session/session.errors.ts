@@ -1,6 +1,6 @@
-import type { ApiErrorRecord } from '@/internal/types/api-error-record.type';
+import { defineErrorRecord } from '@/internal/utils/define-api-errors.utils';
 
-export const SessionApiErrors = {
+export const SessionApiErrors = defineErrorRecord({
   NotFound: {
     status: 404,
     code: 'SESSION_NOT_FOUND',
@@ -11,4 +11,4 @@ export const SessionApiErrors = {
     code: 'CURRENT_SESSION_CANNOT_BE_DELETED',
     message: '현재 세션은 삭제할 수 없습니다',
   },
-} as const satisfies ApiErrorRecord;
+});

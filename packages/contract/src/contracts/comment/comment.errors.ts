@@ -1,6 +1,6 @@
-import type { ApiErrorRecord } from '@/internal/types/api-error-record.type';
+import { defineErrorRecord } from '@/internal/utils/define-api-errors.utils';
 
-export const CommentApiErrors = {
+export const CommentApiErrors = defineErrorRecord({
   NotFound: {
     status: 404,
     code: 'COMMENT_NOT_FOUND',
@@ -16,4 +16,4 @@ export const CommentApiErrors = {
     code: 'COMMENT_DEPTH_EXCEEDED',
     message: '댓글의 최대 깊이를 초과했습니다',
   },
-} as const satisfies ApiErrorRecord;
+});

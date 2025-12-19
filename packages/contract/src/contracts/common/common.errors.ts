@@ -1,11 +1,6 @@
-import type { ApiErrorRecord } from '@/internal/types/api-error-record.type';
+import { defineErrorRecord } from '@/internal/utils/define-api-errors.utils';
 
-export const CommonApiErrors = {
-  accessDenied: {
-    status: 403,
-    code: 'ACCESS_DENIED',
-    message: '접근이 금지되었습니다',
-  },
+export const CommonApiErrors = defineErrorRecord({
   InternalServerError: {
     status: 500,
     code: 'INTERNAL_SERVER_ERROR',
@@ -31,4 +26,4 @@ export const CommonApiErrors = {
     code: 'UNHANDLED_DOMAIN_ERROR',
     message: '처리되지 않은 도메인 오류가 발생했습니다',
   },
-} as const satisfies ApiErrorRecord;
+});

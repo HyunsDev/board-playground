@@ -1,6 +1,6 @@
-import type { ApiErrorRecord } from '@/internal/types/api-error-record.type';
+import { defineErrorRecord } from '@/internal/utils/define-api-errors.utils';
 
-export const ManagerApiErrors = {
+export const ManagerApiErrors = defineErrorRecord({
   NotFound: {
     status: 404,
     code: 'MANAGER_NOT_FOUND',
@@ -11,4 +11,4 @@ export const ManagerApiErrors = {
     code: 'MANAGER_FORBIDDEN',
     message: '매니저에 대한 권한이 없습니다',
   },
-} as const satisfies ApiErrorRecord;
+});
