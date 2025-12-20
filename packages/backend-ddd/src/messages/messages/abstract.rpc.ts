@@ -2,6 +2,7 @@ import z from 'zod';
 
 import { AbstractMessage, AbstractMessageProps } from './abstract.message';
 import { AbstractDrivenMessageMetadata } from '../abstract.message-metadata.type';
+import { RESULT_TYPE_SYMBOL } from '../message.constant';
 
 import { DomainResult, DomainError } from '@/error';
 
@@ -14,8 +15,10 @@ export abstract class AbstractRpc<
   TProps extends AbstractRpcProps = AbstractRpcProps,
   TOk = unknown,
   TRes extends DomainResult<TOk, DomainError> = DomainResult<TOk, DomainError>,
-  TOptions = void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  TOptions = any,
 > extends AbstractMessage<CausationCodeType, ResourceCodeType, RpcCodeType, TProps, TOk, TRes> {
+  declare [RESULT_TYPE_SYMBOL]: TRes;
   abstract override get schema(): z.ZodType<TProps['data']>;
 
   protected readonly _options?: TOptions;

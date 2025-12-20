@@ -1,6 +1,6 @@
 import { AbstractJob, AbstractJobProps } from '../messages/abstract.job';
 
-export abstract class JobDispatcherPort {
+export abstract class AbstractJobDispatcherPort {
   abstract dispatch(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     job: AbstractJob<string, string, string, AbstractJobProps<any>, unknown>,

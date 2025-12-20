@@ -1,7 +1,7 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { Queue } from 'bullmq';
 
-import { JobDispatcherPort } from '@workspace/backend-ddd';
+import { AbstractJobDispatcherPort } from '@workspace/backend-ddd';
 import { TaskQueueCode } from '@workspace/domain';
 
 import { MessageContext, TransactionContext } from '../context';
@@ -10,7 +10,7 @@ import { QueueRegistry } from './queue.registry';
 import { BaseJob, BaseJobProps } from '@/base';
 
 @Injectable({ scope: Scope.REQUEST }) // 요청(트랜잭션) 단위로 상태를 유지해야 하므로 REQUEST 스코프 필수
-export class JobDispatcher implements JobDispatcherPort {
+export class JobDispatcher implements AbstractJobDispatcherPort {
   private jobs: BaseJob<BaseJobProps<unknown>>[] = [];
 
   constructor(

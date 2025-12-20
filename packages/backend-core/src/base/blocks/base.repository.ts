@@ -10,7 +10,7 @@ import {
   EntityNotFoundError,
   EntityConflictError,
   DomainResult,
-  DomainEventPublisherPort,
+  AbstractDomainEventPublisherPort,
 } from '@workspace/backend-ddd';
 import { PrismaClient, Prisma } from '@workspace/database';
 
@@ -38,7 +38,7 @@ export abstract class BaseRepository<
     protected readonly prisma: PrismaClient,
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly mapper: AbstractMapper<TAggregate, TDbModel>,
-    protected readonly eventDispatcher: DomainEventPublisherPort,
+    protected readonly eventDispatcher: AbstractDomainEventPublisherPort,
     protected readonly logger: Logger,
   ) {}
 

@@ -1,7 +1,7 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module, Global, DynamicModule, Scope } from '@nestjs/common';
 
-import { JobDispatcherPort } from '@workspace/backend-ddd';
+import { AbstractJobDispatcherPort } from '@workspace/backend-ddd';
 import { TaskQueueCode } from '@workspace/domain';
 
 import { RedisConfig, redisConfig } from '../config';
@@ -49,12 +49,12 @@ export class TaskQueueModule {
       providers: [
         QueueRegistry,
         {
-          provide: JobDispatcherPort,
+          provide: AbstractJobDispatcherPort,
           useClass: JobDispatcher,
           scope: Scope.REQUEST,
         },
       ],
-      exports: [BullModule, JobDispatcherPort],
+      exports: [BullModule, AbstractJobDispatcherPort],
     };
   }
 

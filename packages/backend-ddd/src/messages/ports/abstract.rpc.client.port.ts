@@ -3,8 +3,8 @@
 import { MessageResult } from '../message.types';
 import { AbstractRpc, AbstractRpcProps } from '../messages';
 
-export abstract class RpcClientPort {
-  abstract send<C extends AbstractRpc<string, string, string, AbstractRpcProps<any>>>(
+export abstract class AbstractRpcClientPort {
+  abstract send<C extends AbstractRpc<any, any, any, AbstractRpcProps<any>, any, any>>(
     rpc: C,
   ): Promise<MessageResult<C>>;
 }

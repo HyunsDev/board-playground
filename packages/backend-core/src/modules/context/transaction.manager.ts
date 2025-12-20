@@ -5,9 +5,9 @@ import { err } from 'neverthrow';
 
 import {
   DomainError,
-  DomainEventPublisherPort,
+  AbstractDomainEventPublisherPort,
   DomainResult,
-  JobDispatcherPort,
+  AbstractJobDispatcherPort,
 } from '@workspace/backend-ddd';
 
 class TransactionRollbackError<E> extends Error {
@@ -22,8 +22,8 @@ class TransactionRollbackError<E> extends Error {
 export class TransactionManager {
   constructor(
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
-    private readonly eventDispatcher: DomainEventPublisherPort,
-    private readonly jobDispatcher: JobDispatcherPort,
+    private readonly eventDispatcher: AbstractDomainEventPublisherPort,
+    private readonly jobDispatcher: AbstractJobDispatcherPort,
   ) {}
 
   async run<Res extends DomainResult<unknown, DomainError>>(

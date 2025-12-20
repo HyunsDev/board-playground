@@ -1,12 +1,12 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 
-import { DomainEventPublisherPort, AbstractDomainEvent } from '@workspace/backend-ddd';
+import { AbstractDomainEventPublisherPort, AbstractDomainEvent } from '@workspace/backend-ddd';
 
 import { MessageContext, TransactionContext } from '../context';
 
 @Injectable({ scope: Scope.REQUEST })
-export class NestJSDomainEventPublisher implements DomainEventPublisherPort {
+export class NestJSDomainEventPublisher implements AbstractDomainEventPublisherPort {
   private events: AbstractDomainEvent<string, string, string>[] = [];
 
   constructor(

@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 
-import { DomainEventPublisherPort } from '@workspace/backend-ddd';
+import { AbstractDomainEventPublisherPort } from '@workspace/backend-ddd';
 
 import { NestJSDomainEventPublisher } from './domain-event.publisher';
 
@@ -12,10 +12,10 @@ import { CoreContextModule } from '@/modules/context/context.module';
   imports: [CqrsModule, CoreContextModule],
   providers: [
     {
-      provide: DomainEventPublisherPort,
+      provide: AbstractDomainEventPublisherPort,
       useClass: NestJSDomainEventPublisher,
     },
   ],
-  exports: [DomainEventPublisherPort],
+  exports: [AbstractDomainEventPublisherPort],
 })
 export class EventBusModule {}

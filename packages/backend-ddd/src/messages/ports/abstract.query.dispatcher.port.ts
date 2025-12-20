@@ -2,8 +2,8 @@
 import { MessageResult } from '../message.types';
 import { AbstractQuery, AbstractQueryProps } from '../messages/abstract.query';
 
-export abstract class QueryDispatcherPort {
-  abstract execute<C extends AbstractQuery<string, string, string, AbstractQueryProps<any>>>(
+export abstract class AbstractQueryDispatcherPort {
+  abstract execute<C extends AbstractQuery<any, any, any, AbstractQueryProps<any>, any, any>>(
     command: C,
   ): Promise<MessageResult<C>>;
 }

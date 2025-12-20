@@ -1,6 +1,7 @@
 import { PaginationQuery } from '@workspace/common';
 
 import { AbstractMessage, AbstractMessageProps } from './abstract.message';
+import { RESULT_TYPE_SYMBOL } from '../message.constant';
 
 import { DomainError, DomainResult } from '@/error';
 
@@ -22,4 +23,6 @@ export abstract class AbstractQuery<
   TProps extends AbstractQueryProps = AbstractQueryProps,
   TOk = unknown,
   TRes extends DomainResult<TOk, DomainError> = DomainResult<TOk, DomainError>,
-> extends AbstractMessage<CausationCodeType, ResourceCodeType, QueryCodeType, TProps, TOk, TRes> {}
+> extends AbstractMessage<CausationCodeType, ResourceCodeType, QueryCodeType, TProps, TOk, TRes> {
+  declare [RESULT_TYPE_SYMBOL]: TRes;
+}

@@ -4,7 +4,7 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
 import { err, ok } from 'neverthrow';
 
 import {
-  DomainEventPublisherPort,
+  AbstractDomainEventPublisherPort,
   DomainResult,
   matchError,
   UnexpectedDomainErrorException,
@@ -25,7 +25,7 @@ export class FileRepository extends BaseRepository<FileEntity, File> implements 
     protected readonly prisma: PrismaService,
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly mapper: FileMapper,
-    protected readonly eventDispatcher: DomainEventPublisherPort,
+    protected readonly eventDispatcher: AbstractDomainEventPublisherPort,
   ) {
     super(prisma, txHost, mapper, eventDispatcher, new Logger(FileRepository.name));
   }

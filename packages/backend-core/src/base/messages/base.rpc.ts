@@ -1,4 +1,10 @@
-import { AbstractRpcProps, AbstractRpc, DomainError, DomainResult } from '@workspace/backend-ddd';
+import {
+  AbstractRpcProps,
+  AbstractRpc,
+  DomainError,
+  DomainResult,
+  RESULT_TYPE_SYMBOL,
+} from '@workspace/backend-ddd';
 import { CausationCode, DomainCode, RpcCode } from '@workspace/domain';
 
 export type RpcOptions = {
@@ -12,6 +18,7 @@ export abstract class BaseRpc<
   TOk,
   TRes extends DomainResult<TOk, DomainError>,
 > extends AbstractRpc<CausationCode, DomainCode, RpcCode, TProps, TOk, TRes, RpcOptions> {
+  declare [RESULT_TYPE_SYMBOL]: TRes;
   static readonly code: RpcCode;
 
   get options(): RpcOptions {

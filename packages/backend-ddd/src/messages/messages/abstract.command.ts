@@ -1,3 +1,4 @@
+import { RESULT_TYPE_SYMBOL } from '../message.constant';
 import { AbstractMessage, AbstractMessageProps } from './abstract.message';
 
 import { DomainResult, DomainError } from '@/error';
@@ -16,11 +17,6 @@ export abstract class AbstractCommand<
   TProps extends AbstractCommandProps = AbstractCommandProps,
   TOk = unknown,
   TRes extends DomainResult<TOk, DomainError> = DomainResult<TOk, DomainError>,
-> extends AbstractMessage<
-  CausationCodeType,
-  ResourceCodeType,
-  CommandCodeType,
-  TProps,
-  TOk,
-  TRes
-> {}
+> extends AbstractMessage<CausationCodeType, ResourceCodeType, CommandCodeType, TProps, TOk, TRes> {
+  declare [RESULT_TYPE_SYMBOL]: TRes;
+}

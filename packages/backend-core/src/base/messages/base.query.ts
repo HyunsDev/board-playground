@@ -1,5 +1,4 @@
-import { Query } from '@nestjs/cqrs';
-import { RESULT_TYPE_SYMBOL } from '@nestjs/cqrs/dist/classes/constants';
+import { RESULT_TYPE_SYMBOL as CLS_RESULT_TYPE_SYMBOL } from '@nestjs/cqrs/dist/classes/constants';
 
 import {
   AbstractPaginatedQueryProps,
@@ -7,6 +6,7 @@ import {
   AbstractQueryProps,
   DomainError,
   DomainResult,
+  RESULT_TYPE_SYMBOL,
 } from '@workspace/backend-ddd';
 import { PaginationQuery } from '@workspace/common';
 import { CausationCode, DomainCode, QueryCode } from '@workspace/domain';
@@ -27,12 +27,10 @@ export abstract class BaseQuery<
   TProps extends BaseQueryProps<unknown>,
   TOk,
   TRes extends DomainResult<TOk, DomainError>,
->
-  extends AbstractQuery<CausationCode, DomainCode, QueryCode, TProps, TOk, TRes>
-  implements Query<TRes>
-{
+> extends AbstractQuery<CausationCode, DomainCode, QueryCode, TProps, TOk, TRes> {
   static readonly code: QueryCode;
   declare [RESULT_TYPE_SYMBOL]: TRes;
+  declare [CLS_RESULT_TYPE_SYMBOL]: TRes;
 
   constructor(
     resourceId: string | null,
