@@ -7,7 +7,8 @@ import { LoggerModule } from 'nestjs-pino';
 import { CoreContext, TokenContext } from '../context';
 import { getCommonPinoConfig } from './config/pino-common.config';
 import { createDevLoggerStream } from './config/pino-pretty.config';
-import { CqrsInstrumentation } from './instrumentations/cqrs.instrumentation';
+import { EventPublishInstrumentation } from './instrumentations/event-publish.instrumentation';
+import { HandlerInstrumentation } from './instrumentations/handler.instrumentation';
 
 import { CoreConfig, coreConfig } from '@/modules/config';
 import { CoreContextModule } from '@/modules/context/context.module';
@@ -42,7 +43,7 @@ import { CoreContextModule } from '@/modules/context/context.module';
       },
     }),
   ],
-  providers: [CqrsInstrumentation],
+  providers: [EventPublishInstrumentation, HandlerInstrumentation],
   exports: [LoggerModule],
 })
 export class LoggingModule {}

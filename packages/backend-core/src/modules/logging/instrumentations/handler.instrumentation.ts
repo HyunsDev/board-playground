@@ -3,20 +3,18 @@ import { performance } from 'perf_hooks';
 
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { DiscoveryService } from '@nestjs/core';
-import { EventBus } from '@nestjs/cqrs';
 
 import { DomainError, DomainResult, SystemException } from '@workspace/backend-ddd';
 import { DomainCodeEnums } from '@workspace/domain';
 
-import { LogTypeEnum } from '../log.enums';
-import { EventPublishedLogData, SystemLogActionEnum } from '../types';
+import { SystemLogActionEnum } from '../types';
 import { MeasureResult } from './instrumentation.types';
 import { toCommandLogData } from './toCommandLogData';
 import { toEventLogData } from './toEventLogData';
 import { toQueryLogData } from './toQueryLogData';
 import { systemLog } from '../helpers';
 
-import { BaseCommand, BaseDomainEvent, BaseDomainEventProps, BaseQuery } from '@/base';
+import { BaseCommand, BaseDomainEvent, BaseQuery } from '@/base';
 
 const COMMAND_HANDLER_METADATA = '__commandHandler__';
 const QUERY_HANDLER_METADATA = '__queryHandler__';
@@ -30,49 +28,20 @@ const resultLogLevel = {
 } as const;
 
 @Injectable()
-export class CqrsInstrumentation implements OnApplicationBootstrap {
-  private readonly logger = new Logger(CqrsInstrumentation.name);
+export class HandlerInstrumentation implements OnApplicationBootstrap {
+  private readonly logger = new Logger(HandlerInstrumentation.name);
 
-  constructor(
-    private readonly eventBus: EventBus,
-    private readonly discoveryService: DiscoveryService,
-  ) {}
+  constructor(private readonly discoveryService: DiscoveryService) {}
 
   onApplicationBootstrap() {
-    this.wrapEventBusPublish(this.eventBus);
     this.wrapHandlers(COMMAND_HANDLER_METADATA, 'Command');
     this.wrapHandlers(QUERY_HANDLER_METADATA, 'Query');
     this.wrapHandlers(EVENTS_HANDLER_METADATA, 'Event');
 
     this.logger.log(
       systemLog(DomainCodeEnums.System.Infra, SystemLogActionEnum.AppInitialize, {
-        msg: 'CQRS Instrumentation initialized: Handlers wrapped.',
+        msg: 'Handler Instrumentation initialized: Handlers wrapped.',
       }),
-    );
-  }
-
-  private wrapEventBusPublish(bus: EventBus) {
-    const originalPublish = bus.publish.bind(bus);
-    const originalPublishAll = bus.publishAll.bind(bus);
-    bus.publish = <T extends BaseDomainEvent<BaseDomainEventProps<unknown>>>(event: T) => {
-      this.logEventPublish(event);
-      return originalPublish(event);
-    };
-    bus.publishAll = <T extends BaseDomainEvent<BaseDomainEventProps<unknown>>>(events: T[]) => {
-      events.forEach((event) => this.logEventPublish(event));
-      return originalPublishAll(events);
-    };
-  }
-
-  private logEventPublish(event: BaseDomainEvent<BaseDomainEventProps<unknown>>) {
-    const eventName = event?.constructor?.name || 'UnknownEvent';
-    this.logger.debug(
-      {
-        type: LogTypeEnum.EventPublished,
-        code: event.code,
-        ...event.metadata,
-      } satisfies EventPublishedLogData,
-      eventName,
     );
   }
 
