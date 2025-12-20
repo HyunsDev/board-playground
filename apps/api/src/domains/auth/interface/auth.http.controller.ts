@@ -1,5 +1,4 @@
 import { Controller, Req, Res } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
@@ -7,8 +6,9 @@ import {
   Public,
   IpAddress,
   UserAgent,
-  TriggerCodeEnum,
   MessageContext,
+  QueryDispatcherPort,
+  CommandDispatcherPort,
 } from '@workspace/backend-core';
 import {
   apiOk,
@@ -17,6 +17,7 @@ import {
   InvariantViolationException,
 } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
+import { TriggerCodeEnum } from '@workspace/domain';
 
 import { LoginAuthCommand } from '../application/commands/login-auth.command';
 import { LogoutAuthCommand } from '../application/commands/logout-auth.command';
@@ -29,8 +30,8 @@ import { REFRESH_TOKEN_COOKIE_OPTIONS } from '@/shared/constants/cookie.constant
 @Controller()
 export class AuthHttpController {
   constructor(
-    private readonly queryBus: QueryBus,
-    private readonly commandBus: CommandBus,
+    private readonly queryDispatcher: QueryDispatcherPort,
+    private readonly commandDispatcher: CommandDispatcherPort,
     private readonly messageContext: MessageContext,
   ) {}
 
@@ -42,7 +43,7 @@ export class AuthHttpController {
     @UserAgent() ua: string,
   ) {
     return tsRestHandler(contract.auth.register, async ({ body }) => {
-      const result = await this.commandBus.execute(
+      const result = await this.commandDispatcher.execute(
         new RegisterAuthCommand(
           {
             email: body.email,
@@ -81,7 +82,7 @@ export class AuthHttpController {
     @UserAgent() ua: string,
   ) {
     return tsRestHandler(contract.auth.login, async ({ body }) => {
-      const result = await this.commandBus.execute(
+      const result = await this.commandDispatcher.execute(
         new LoginAuthCommand(
           {
             email: body.email,
@@ -118,7 +119,7 @@ export class AuthHttpController {
         return apiErr(ApiErrors.Auth.RefreshTokenMissing);
       }
 
-      const result = await this.commandBus.execute(
+      const result = await this.commandDispatcher.execute(
         new RefreshTokenAuthCommand(
           {
             refreshToken,
@@ -163,7 +164,7 @@ export class AuthHttpController {
         return apiOk(204, undefined);
       }
 
-      const result = await this.commandBus.execute(
+      const result = await this.commandDispatcher.execute(
         new LogoutAuthCommand(
           {
             refreshToken: refreshToken,
@@ -184,7 +185,7 @@ export class AuthHttpController {
   @TsRestHandler(contract.auth.checkUsername)
   async checkUsername() {
     return tsRestHandler(contract.auth.checkUsername, async ({ query }) => {
-      const result = await this.queryBus.execute(
+      const result = await this.queryDispatcher.execute(
         new CheckUsernameAvailableQuery(
           {
             username: query.username,

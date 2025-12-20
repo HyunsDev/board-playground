@@ -10,12 +10,11 @@ import {
   EntityNotFoundError,
   EntityConflictError,
   DomainResult,
-  DomainEventPublisherPort,
 } from '@workspace/backend-ddd';
 import { PrismaClient, Prisma } from '@workspace/database';
 
 import { UnexpectedPrismaErrorException } from '../core.errors';
-import { BaseDomainEvent, BaseDomainEventProps } from '../messages';
+import { BaseDomainEvent, BaseDomainEventProps, DomainEventPublisherPort } from '../messages';
 
 type AbstractCrudDelegate<R> = {
   findUnique(args: unknown): Promise<R | null>;

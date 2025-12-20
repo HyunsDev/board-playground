@@ -3,7 +3,7 @@ import {
   BaseDomainEventProps,
   DrivenMessageMetadata,
 } from '@workspace/backend-core';
-import { AggregateCodeEnum, defineEventCode } from '@workspace/domain';
+import { AggregateCodeEnum, asDomainEventCode } from '@workspace/domain';
 
 type IUserNameChangedEvent = BaseDomainEventProps<{
   userId: string;
@@ -12,7 +12,7 @@ type IUserNameChangedEvent = BaseDomainEventProps<{
 }>;
 
 export class UserUsernameChangedEvent extends BaseDomainEvent<IUserNameChangedEvent> {
-  static readonly code = defineEventCode('account:user:evt:username_changed');
+  static readonly code = asDomainEventCode('account:user:evt:username_changed');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
   constructor(data: IUserNameChangedEvent['data'], metadata?: DrivenMessageMetadata) {

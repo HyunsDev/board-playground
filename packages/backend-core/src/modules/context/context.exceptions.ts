@@ -7,3 +7,11 @@ export class DrivenMessageMetadataNotFoundException extends BaseInternalServerEx
     super(message, detail);
   }
 }
+
+export class MessageTriggerNotFoundException extends BaseInternalServerException<'MessageTriggerNotFound'> {
+  readonly code = 'MessageTriggerNotFound' as const;
+
+  constructor(message = '등록된 Trigger가 없습니다.', detail?: unknown) {
+    super(message, detail);
+  }
+}

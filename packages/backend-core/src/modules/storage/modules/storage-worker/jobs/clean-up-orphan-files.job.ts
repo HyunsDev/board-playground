@@ -3,7 +3,7 @@ import { err, ok } from 'neverthrow';
 import z from 'zod';
 
 import { IJobHandler } from '@workspace/backend-ddd';
-import { defineJobCode, DomainCodeEnums, TaskQueueCodeEnum } from '@workspace/domain';
+import { asJobCode, DomainCodeEnums, TaskQueueCodeEnum } from '@workspace/domain';
 
 import { StorageGCService } from '../../storage/storage-gc.service';
 
@@ -15,7 +15,7 @@ const cleanUpOrphanFilesJobSchema = z.object({});
 export type CleanUpOrphanFilesJobProps = BaseJobProps<Record<string, never>>;
 
 export class CleanUpOrphanFilesJob extends BaseJob<CleanUpOrphanFilesJobProps> {
-  static readonly code = defineJobCode('system:storage:job:clean_up_orphan_files');
+  static readonly code = asJobCode('system:storage:job:clean_up_orphan_files');
   readonly queueName = TaskQueueCodeEnum.System.Storage;
   readonly schema = cleanUpOrphanFilesJobSchema;
   readonly resourceType = DomainCodeEnums.System.Storage;

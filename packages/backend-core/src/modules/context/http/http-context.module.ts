@@ -1,5 +1,6 @@
 import {
   DynamicModule,
+  Global,
   MiddlewareConsumer,
   Module,
   NestModule,
@@ -13,10 +14,11 @@ import { ErrorLoggingInterceptor } from './error-logging.interceptor';
 
 export type HttpContextModuleOptions = CoreContextModuleOptions;
 
+@Global()
 @Module({})
 export class HttpContextModule implements NestModule {
   static forRoot(options: HttpContextModuleOptions = {}): DynamicModule {
-    const { enableDatabase } = options;
+    const { enableDatabase = true } = options;
 
     return {
       module: HttpContextModule,

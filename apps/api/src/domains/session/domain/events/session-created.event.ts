@@ -3,7 +3,7 @@ import {
   BaseDomainEventProps,
   DrivenMessageMetadata,
 } from '@workspace/backend-core';
-import { AggregateCodeEnum, defineEventCode } from '@workspace/domain';
+import { AggregateCodeEnum, asDomainEventCode } from '@workspace/domain';
 
 type ISessionCreatedEvent = BaseDomainEventProps<{
   userId: string;
@@ -11,7 +11,7 @@ type ISessionCreatedEvent = BaseDomainEventProps<{
   sessionName: string;
 }>;
 export class SessionCreatedEvent extends BaseDomainEvent<ISessionCreatedEvent> {
-  public static readonly code = defineEventCode('account:session:evt:created');
+  public static readonly code = asDomainEventCode('account:session:evt:created');
   public readonly resourceType = AggregateCodeEnum.Account.Session;
 
   constructor(data: ISessionCreatedEvent['data'], metadata?: DrivenMessageMetadata) {

@@ -1,16 +1,17 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
 import {
   AccessTokenProvider,
+  CommandHandler,
   DrivenMessageMetadata,
+  ICommandHandler,
   TransactionManager,
 } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { ValidationError } from '@workspace/backend-ddd';
 import { DEVICE_PLATFORM, passwordSchema } from '@workspace/contract';
-import { AggregateCodeEnum, defineCommandCode } from '@workspace/domain';
+import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
@@ -31,7 +32,7 @@ export class RegisterAuthCommand extends BaseCommand<
   AuthTokens,
   HandlerResult<RegisterAuthCommandHandler>
 > {
-  static readonly code = defineCommandCode('account:auth:cmd:register');
+  static readonly code = asCommandCode('account:auth:cmd:register');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
   constructor(data: IRegisterAuthCommand['data'], metadata: DrivenMessageMetadata) {
@@ -40,10 +41,7 @@ export class RegisterAuthCommand extends BaseCommand<
 }
 
 @CommandHandler(RegisterAuthCommand)
-export class RegisterAuthCommandHandler implements ICommandHandler<
-  RegisterAuthCommand,
-  HandlerResult<RegisterAuthCommandHandler>
-> {
+export class RegisterAuthCommandHandler implements ICommandHandler<RegisterAuthCommand> {
   constructor(
     private readonly userFacade: UserFacade,
     private readonly sessionFacade: SessionFacade,

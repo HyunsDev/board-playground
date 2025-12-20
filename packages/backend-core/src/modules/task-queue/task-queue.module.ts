@@ -1,13 +1,15 @@
 import { BullModule } from '@nestjs/bullmq';
-import { Module, Global, DynamicModule } from '@nestjs/common';
+import { Module, Global, DynamicModule, Scope } from '@nestjs/common';
 
-import { JobDispatcherPort } from '@workspace/backend-ddd';
 import { TaskQueueCode } from '@workspace/domain';
 
 import { RedisConfig, redisConfig } from '../config';
-import { CoreContextModule } from '../context';
 import { JobDispatcher } from './job.dispatcher';
+import { QueueRegistry } from './queue.registry';
 import { toSafeQueueName } from './task-queue.utils';
+import { CoreContextModule } from '../context/context.module';
+
+import { JobDispatcherPort } from '@/base/messages/ports/job.dispatcher.port';
 
 export interface TaskQueueOption {
   queue: {
@@ -21,7 +23,7 @@ export class TaskQueueModule {
   static forRoot(): DynamicModule {
     return {
       module: TaskQueueModule,
-      global: true, // 전역 모듈로 설정
+      global: true,
       imports: [
         CoreContextModule,
         BullModule.forRootAsync({
@@ -46,9 +48,11 @@ export class TaskQueueModule {
         }),
       ],
       providers: [
+        QueueRegistry,
         {
           provide: JobDispatcherPort,
           useClass: JobDispatcher,
+          scope: Scope.REQUEST,
         },
       ],
       exports: [BullModule, JobDispatcherPort],

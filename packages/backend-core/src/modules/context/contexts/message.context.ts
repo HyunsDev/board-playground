@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
 
+import { TriggerCode } from '@workspace/domain';
+
+import { DrivenMessageMetadataNotFoundException } from '../context.exceptions';
 import { AppStore } from '../context.types';
 
 import { DrivenMessageMetadata } from '@/base';
-import { TriggerCode } from '@/common';
 
 @Injectable()
 export class MessageContext {
@@ -15,15 +17,27 @@ export class MessageContext {
   }
 
   createMetadata(initialTriggerCode: TriggerCode): DrivenMessageMetadata {
-    return {
+    const metadata: DrivenMessageMetadata = {
       causationId: this.cls.get('requestId') || null,
       causationType: initialTriggerCode,
       correlationId: this.cls.get('requestId') || null,
       userId: this.cls.get('token')?.sub || null,
     };
+    this.setMetadata(metadata);
+    return metadata;
   }
 
-  get drivenMetadata(): DrivenMessageMetadata | undefined {
-    return this.cls.get('messageMetadata');
+  get drivenMetadata(): DrivenMessageMetadata | null {
+    const metadata = this.cls.get('messageMetadata');
+    if (!metadata) return null;
+    return metadata;
+  }
+
+  getOrThrowDrivenMetadata(): DrivenMessageMetadata {
+    const metadata = this.cls.get('messageMetadata');
+    if (!metadata) {
+      throw new DrivenMessageMetadataNotFoundException();
+    }
+    return metadata;
   }
 }

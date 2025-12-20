@@ -1,10 +1,9 @@
 import { Global, Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 
 import {
   CoreConfigModule,
   DatabaseModule,
-  EventBusModule,
+  DomainEventModule,
   HttpContextModule,
   LoggingModule,
   SecurityModule,
@@ -18,6 +17,8 @@ import {
   ssmConfig,
   StorageModule,
   StorageWorkerModule,
+  MessagingModule,
+  CoreCqrsModule,
 } from '@workspace/backend-core';
 
 import { refreshTokenConfig } from './configs/refresh-token.config';
@@ -36,15 +37,16 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
         ssmConfig,
       ],
     }),
-    CqrsModule.forRoot(),
     TaskQueueModule.forRoot(),
     HttpContextModule.forRoot(),
     DatabaseModule,
     CacheModule,
     StorageModule,
     StorageWorkerModule,
-    EventBusModule,
+    DomainEventModule,
     LoggingModule,
+    MessagingModule,
+    CoreCqrsModule,
     SecurityModule.forRoot({
       enableGlobalAuthGuard: true,
     }),
@@ -60,10 +62,10 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
   exports: [
     HttpContextModule,
     DatabaseModule,
-    EventBusModule,
+    DomainEventModule,
     LoggingModule,
     SecurityModule,
-    CqrsModule,
+    CoreCqrsModule,
   ],
 })
 export class CoreModule {}

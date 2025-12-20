@@ -1,8 +1,8 @@
 import { Logger } from '@nestjs/common';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import {
   DrivenMessageMetadata,
   PrismaService,
@@ -10,7 +10,7 @@ import {
   SystemLogActionEnum,
 } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
-import { AggregateCodeEnum, defineCommandCode, DomainCodeEnums } from '@workspace/domain';
+import { AggregateCodeEnum, asCommandCode, DomainCodeEnums } from '@workspace/domain';
 
 type ResetDbCommandProps = BaseCommandProps<void>;
 
@@ -19,7 +19,7 @@ export class ResetDBCommand extends BaseCommand<
   void,
   HandlerResult<ResetDBCommandHandler>
 > {
-  static readonly code = defineCommandCode('system:devtools:cmd:reset_db');
+  static readonly code = asCommandCode('system:devtools:cmd:reset_db');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
   constructor(data: ResetDbCommandProps['data'], metadata: DrivenMessageMetadata) {

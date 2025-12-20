@@ -11,7 +11,7 @@ import {
   TokenContext,
   TransactionContext,
 } from './contexts';
-import { MessageCausationInterceptor } from './message-causation.interceptor';
+import { MessageInterceptor } from './interceptors/message.interceptor';
 import { TransactionManager } from './transaction.manager';
 import { PrismaService } from '../database/prisma.service';
 
@@ -37,7 +37,7 @@ export class CoreContextModule {
       TokenContext,
       {
         provide: APP_INTERCEPTOR,
-        useClass: MessageCausationInterceptor,
+        useClass: MessageInterceptor,
       },
     ];
     const exports: Provider[] = [
