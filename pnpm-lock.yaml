@@ -68,9 +68,6 @@ importers:
       '@nestjs/platform-fastify':
         specifier: ^11.1.9
         version: 11.1.9(@fastify/static@8.3.0)(@fastify/view@11.1.1)(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)
-      '@prisma/client':
-        specifier: ^6.19.1
-        version: 6.19.1(prisma@6.19.1(typescript@5.9.3))(typescript@5.9.3)
       '@ts-rest/core':
         specifier: 3.53.0-rc.1
         version: 3.53.0-rc.1(@types/node@24.10.4)
@@ -116,9 +113,6 @@ importers:
       neverthrow:
         specifier: ^8.2.0
         version: 8.2.0
-      pino:
-        specifier: ^10.1.0
-        version: 10.1.0
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -397,6 +391,12 @@ importers:
       '@keyv/redis':
         specifier: ^5.1.5
         version: 5.1.5(keyv@5.5.5)
+      '@nestjs-cls/transactional':
+        specifier: ^3.1.1
+        version: 3.1.1(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(nestjs-cls@6.1.0(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs-cls/transactional-adapter-prisma':
+        specifier: ^1.3.1
+        version: 1.3.2(@nestjs-cls/transactional@3.1.1(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(nestjs-cls@6.1.0(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(@prisma/client@6.19.1(prisma@6.19.1(typescript@5.9.3))(typescript@5.9.3))(nestjs-cls@6.1.0(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2))(prisma@6.19.1(typescript@5.9.3))
       '@nestjs/bullmq':
         specifier: ^11.0.4
         version: 11.0.4(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(bullmq@5.66.2)
@@ -488,12 +488,6 @@ importers:
         specifier: ^4.1.13
         version: 4.2.1
     devDependencies:
-      '@nestjs-cls/transactional':
-        specifier: ^3.1.1
-        version: 3.1.1(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(nestjs-cls@6.1.0(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs-cls/transactional-adapter-prisma':
-        specifier: ^1.3.1
-        version: 1.3.2(@nestjs-cls/transactional@3.1.1(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(nestjs-cls@6.1.0(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(@prisma/client@6.19.1(prisma@6.19.1(typescript@5.9.3))(typescript@5.9.3))(nestjs-cls@6.1.0(@nestjs/common@11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2))(prisma@6.19.1(typescript@5.9.3))
       '@nestjs/common':
         specifier: ^11.1.9
         version: 11.1.9(reflect-metadata@0.2.2)(rxjs@7.8.2)
