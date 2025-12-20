@@ -1,7 +1,7 @@
-import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import { BaseCommandProps, BaseCommand, DrivenMessageMetadata } from '@workspace/backend-core';
 import { matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
 import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';

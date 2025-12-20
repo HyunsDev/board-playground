@@ -1,9 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { TransactionHost } from '@nestjs-cls/transactional';
-import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
-import { BaseRepository, DomainEventPublisherPort, PrismaService } from '@workspace/backend-core';
+import {
+  BaseRepository,
+  DomainEventPublisherPort,
+  PrismaService,
+  TransactionContext,
+} from '@workspace/backend-core';
 import { DomainResult, matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
 import { createPaginatedResult, PaginatedResult } from '@workspace/common';
 import { Prisma, PrismaClient, User } from '@workspace/database';
@@ -21,11 +24,11 @@ import { UserRepositoryPort } from '../domain/user.repository.port';
 export class UserRepository extends BaseRepository<UserEntity, User> implements UserRepositoryPort {
   constructor(
     protected readonly prisma: PrismaService,
-    protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+    protected readonly txContext: TransactionContext,
     protected readonly mapper: UserMapper,
     protected readonly eventDispatcher: DomainEventPublisherPort,
   ) {
-    super(prisma, txHost, mapper, eventDispatcher, new Logger(UserRepository.name));
+    super(prisma, txContext, mapper, eventDispatcher, new Logger(UserRepository.name));
   }
 
   protected get delegate(): PrismaClient['user'] {

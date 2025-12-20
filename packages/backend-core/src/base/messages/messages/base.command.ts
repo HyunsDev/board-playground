@@ -1,6 +1,3 @@
-import { Command } from '@nestjs/cqrs';
-import { RESULT_TYPE_SYMBOL as CLS_RESULT_TYPE_SYMBOL } from '@nestjs/cqrs/dist/classes/constants';
-
 import {
   AbstractCommand,
   AbstractCommandProps,
@@ -25,14 +22,10 @@ export abstract class BaseCommand<
   TProps extends BaseCommandProps<unknown>,
   TOk,
   TRes extends DomainResult<TOk, DomainError>,
->
-  extends AbstractCommand<CausationCode, DomainCode, CommandCode, TProps, TOk, TRes>
-  implements Command<TRes>
-{
+> extends AbstractCommand<CausationCode, DomainCode, CommandCode, TProps, TOk, TRes> {
   static readonly code: CommandCode;
 
   declare [RESULT_TYPE_SYMBOL]: TRes;
-  declare [CLS_RESULT_TYPE_SYMBOL]: TRes;
 
   constructor(
     resourceId: string | null,

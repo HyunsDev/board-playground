@@ -4,14 +4,17 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
 
 @Injectable()
 export class TransactionContext {
-  constructor(private readonly txHost: TransactionHost<TransactionalAdapterPrisma>) {}
+  constructor(private readonly _txHost: TransactionHost<TransactionalAdapterPrisma>) {}
 
   isTransactionActive(): boolean {
-    const { txHost } = this;
-    return txHost?.isTransactionActive() ?? false;
+    return this._txHost?.isTransactionActive() ?? false;
   }
 
-  getTx() {
-    return this.txHost?.tx;
+  get tx() {
+    return this._txHost?.tx;
+  }
+
+  get txHost(): TransactionHost<TransactionalAdapterPrisma> {
+    return this._txHost;
   }
 }

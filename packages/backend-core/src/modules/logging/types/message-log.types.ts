@@ -66,11 +66,32 @@ export type JobLogData = BaseMessageLogData &
     code: string;
   };
 
-export type MessageResultLogData = CommandLogData | QueryLogData | EventLogData | JobLogData;
+export type RpcLogData = BaseMessageLogData &
+  MessageResult & {
+    type: LogTypeEnum['Rpc'];
+    code: string;
+    handlerName: string;
+  };
+
+export type IntegrationEventLogData = BaseMessageLogData &
+  MessageResult & {
+    type: LogTypeEnum['IntegrationEvent'];
+    code: string;
+    handlerName: string;
+  };
+export type MessageResultLogData =
+  | CommandLogData
+  | QueryLogData
+  | EventLogData
+  | JobLogData
+  | RpcLogData
+  | IntegrationEventLogData;
 
 export type MessageLogData =
   | CommandLogData
   | QueryLogData
   | EventLogData
   | EventPublishedLogData
-  | JobLogData;
+  | JobLogData
+  | RpcLogData
+  | IntegrationEventLogData;

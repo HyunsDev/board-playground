@@ -33,6 +33,7 @@ export const TaskQueueCodeEnum = defineDomainCodeEnum({
   Community: {},
   System: {
     Storage: 'system:storage',
+    Test: 'system:test',
   },
 });
 

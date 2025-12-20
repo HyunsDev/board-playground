@@ -2,20 +2,21 @@ import { Controller, Get, Logger } from '@nestjs/common';
 import { ok } from 'neverthrow';
 
 import {
-  HandlePub,
+  HandleIntegrationEvent,
   HandleRpc,
-  IntegrationEventPublisher,
+  IntegrationEventPublisherPort,
   MessageContext,
   Pub,
   Public,
   Rpc,
   RpcClient,
+  Trigger,
 } from '@workspace/backend-core';
 import { MessageResult } from '@workspace/backend-ddd';
+import { TriggerCodeEnum } from '@workspace/domain';
 
-import { TestPub } from './messages/test.pub';
-import { TestRpc } from './messages/test.rpc';
-import { TestService } from './test.service';
+import { TestPub } from '../../messages/test.pub';
+import { TestRpc } from '../../messages/test.rpc';
 
 @Public()
 @Controller('_test')
@@ -23,15 +24,14 @@ export class TestController {
   readonly logger = new Logger(TestController.name);
 
   constructor(
-    private readonly testService: TestService,
-    private readonly integrationEventPublisher: IntegrationEventPublisher,
+    private readonly integrationEventPublisher: IntegrationEventPublisherPort,
     private readonly rpcClient: RpcClient,
     private readonly messageContext: MessageContext,
   ) {}
 
   @Get('pub')
+  @Trigger(TriggerCodeEnum.Http)
   async pub() {
-    void this.messageContext.createMetadata('system:infra:trg:test');
     void this.integrationEventPublisher.publish(
       new TestPub(null, {
         message: 'This is a test message from TestController.pub',
@@ -40,14 +40,14 @@ export class TestController {
     return { message: '펑!' };
   }
 
-  @HandlePub(TestPub)
+  @HandleIntegrationEvent(TestPub)
   async handleTestPub(@Pub() pub: TestPub) {
-    this.logger.log(`Received TestPub with message: ${pub.data.message}`);
+    this.logger.debug(`Received TestPub with message: ${pub.data.message}`);
   }
 
   @Get('ping')
+  @Trigger(TriggerCodeEnum.Http)
   async ping() {
-    void this.messageContext.createMetadata('system:infra:trg:test');
     const result = await this.rpcClient.send(
       new TestRpc(null, {
         ping: 'Ping from TestController.ping',
@@ -59,7 +59,7 @@ export class TestController {
 
   @HandleRpc(TestRpc)
   async handleTestRpc(@Rpc() rpc: TestRpc): Promise<MessageResult<TestRpc>> {
-    this.logger.log(`Received TestRpc with message: ${rpc.data.ping}`);
+    this.logger.debug(`Received TestRpc with message: ${rpc.data.ping}`);
 
     return ok({ pong: 'Pong from TestController.handleTestRpc' });
   }

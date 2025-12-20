@@ -1,6 +1,4 @@
 import { Logger } from '@nestjs/common';
-import { TransactionHost } from '@nestjs-cls/transactional';
-import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
 import {
@@ -15,6 +13,8 @@ import { PrismaClient, Prisma } from '@workspace/database';
 
 import { UnexpectedPrismaErrorException } from '../core.errors';
 import { BaseDomainEvent, BaseDomainEventProps, DomainEventPublisherPort } from '../messages';
+
+import { TransactionContext } from '@/modules';
 
 type AbstractCrudDelegate<R> = {
   findUnique(args: unknown): Promise<R | null>;
@@ -35,7 +35,7 @@ export abstract class BaseRepository<
 
   constructor(
     protected readonly prisma: PrismaClient,
-    protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+    protected readonly txContext: TransactionContext,
     protected readonly mapper: AbstractMapper<TAggregate, TDbModel>,
     protected readonly eventDispatcher: DomainEventPublisherPort,
     protected readonly logger: Logger,
@@ -46,8 +46,8 @@ export abstract class BaseRepository<
    * (nestjs-cls가 자동으로 처리하지만, 명시적인 제어를 위해 유지)
    */
   protected get client(): PrismaClient | Prisma.TransactionClient {
-    if (this.txHost.isTransactionActive()) {
-      return this.txHost.tx as unknown as Prisma.TransactionClient;
+    if (this.txContext.txHost.isTransactionActive()) {
+      return this.txContext.txHost.tx as unknown as Prisma.TransactionClient;
     }
     return this.prisma;
   }

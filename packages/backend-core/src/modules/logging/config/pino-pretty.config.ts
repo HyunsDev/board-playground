@@ -8,7 +8,9 @@ import {
   formatCommandAndQueryResultLog,
   formatEventPublishedLog,
   formatEventResultLog,
+  formatIntegrationEventResultLog,
   formatJobResultLog,
+  formatRpcResultLog,
 } from '../formatters/message.formatter';
 import {
   isCommandLog,
@@ -16,8 +18,10 @@ import {
   isEventLog,
   isEventPublishedLog,
   isHttpLog,
+  isIntegrationEventLog,
   isJobLog,
   isQueryLog,
+  isRpcLog,
 } from '../logging.predicates';
 
 export const createDevLoggerStream = async (): Promise<DestinationStream> => {
@@ -85,6 +89,14 @@ export const createDevLoggerStream = async (): Promise<DestinationStream> => {
 
       if (isJobLog(log)) {
         return formatJobResultLog(log);
+      }
+
+      if (isIntegrationEventLog(log)) {
+        return formatIntegrationEventResultLog(log);
+      }
+
+      if (isRpcLog(log)) {
+        return formatRpcResultLog(log);
       }
 
       if (isDomainLog(log)) {

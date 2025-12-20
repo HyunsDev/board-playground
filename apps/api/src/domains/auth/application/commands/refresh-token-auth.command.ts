@@ -1,7 +1,7 @@
-import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import { err } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import {
   AccessTokenProvider,
   DrivenMessageMetadata,

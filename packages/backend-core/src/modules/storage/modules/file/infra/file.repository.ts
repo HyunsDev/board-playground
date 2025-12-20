@@ -1,6 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { TransactionHost } from '@nestjs-cls/transactional';
-import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
 import { DomainResult, matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
@@ -13,17 +11,18 @@ import { FileRepositoryPort } from '../domain/file.repository.port';
 
 import { DomainEventPublisherPort } from '@/base';
 import { BaseRepository } from '@/base/blocks/base.repository';
+import { TransactionContext } from '@/modules/context';
 import { PrismaService } from '@/modules/database';
 
 @Injectable()
 export class FileRepository extends BaseRepository<FileEntity, File> implements FileRepositoryPort {
   constructor(
     protected readonly prisma: PrismaService,
-    protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+    protected readonly txContext: TransactionContext,
     protected readonly mapper: FileMapper,
     protected readonly eventPublisher: DomainEventPublisherPort,
   ) {
-    super(prisma, txHost, mapper, eventPublisher, new Logger(FileRepository.name));
+    super(prisma, txContext, mapper, eventPublisher, new Logger(FileRepository.name));
   }
 
   protected get delegate(): PrismaClient['file'] {

@@ -118,13 +118,13 @@ export abstract class AbstractMessage<
     // 1. ID 유효성 검사 (생성 전에 수행하여 비용 절약)
     const idResult = z.string().safeParse(plain.id);
     if (!idResult.success) {
-      throw new InvalidMessageException(idResult.error.issues);
+      throw new InvalidMessageException('Invalid Id', idResult.error.issues);
     }
 
     // 2. Metadata 유효성 검사
     const metadataResult = MessageMetadataSchema.safeParse(plain.metadata);
     if (!metadataResult.success) {
-      throw new InvalidMessageException(metadataResult.error.issues);
+      throw new InvalidMessageException('Invalid Metadata', metadataResult.error.issues);
     }
     const validatedMetadata = metadataResult.data;
 
@@ -147,7 +147,7 @@ export abstract class AbstractMessage<
     if (instance.schema) {
       const dataResult = instance.schema.safeParse(plain.data);
       if (!dataResult.success) {
-        throw new InvalidMessageException(dataResult.error.issues);
+        throw new InvalidMessageException('Invalid Data', dataResult.error.issues);
       }
 
       // Zod가 데이터를 변환(transform)했을 수 있으므로 정제된 데이터로 교체

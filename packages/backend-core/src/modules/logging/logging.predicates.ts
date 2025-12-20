@@ -4,8 +4,10 @@ import {
   EventLogData,
   EventPublishedLogData,
   HttpLogData,
+  IntegrationEventLogData,
   JobLogData,
   QueryLogData,
+  RpcLogData,
 } from './types';
 import { DomainLogData } from './types/domain-log.types';
 
@@ -38,4 +40,12 @@ export const isEventPublishedLog = (log: { type?: string }): log is EventPublish
 
 export const isJobLog = (log: { type?: string }): log is JobLogData => {
   return log?.type === LogTypeEnum.Job;
+};
+
+export const isIntegrationEventLog = (log: { type?: string }): log is IntegrationEventLogData => {
+  return log?.type === LogTypeEnum.IntegrationEvent;
+};
+
+export const isRpcLog = (log: { type?: string }): log is RpcLogData => {
+  return log?.type === LogTypeEnum.Rpc;
 };

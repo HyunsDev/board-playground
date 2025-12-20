@@ -14,6 +14,8 @@ export const MessageLogTypeEnum = {
   Query: 'QUERY',
   Event: 'EVENT',
   Job: 'JOB',
+  IntegrationEvent: 'INTEGRATION_EVENT',
+  Rpc: 'RPC',
   EventPublished: 'EVENT_PUBLISHED',
 } as const;
 export type MessageLogTypeEnum = typeof MessageLogTypeEnum;

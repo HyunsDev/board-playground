@@ -11,11 +11,19 @@ export class CoreContext {
     return this.cls.get('requestId');
   }
 
+  setRequestId(id: string) {
+    this.cls.set('requestId', id);
+  }
+
   get errorCode() {
     return this.cls.get('errorCode');
   }
 
   setErrorCode(code: string) {
     this.cls.set('errorCode', code);
+  }
+
+  run<T>(fn: () => T): T {
+    return this.cls.run(fn);
   }
 }

@@ -8,6 +8,8 @@ import { RpcClient } from './rpc-client';
 import { GlobalRpcExceptionFilter } from './rpc-exception.filter';
 import { CoreContextModule } from '../context/context.module';
 
+import { IntegrationEventPublisherPort } from '@/base';
+
 @Global()
 @Module({
   imports: [
@@ -37,7 +39,14 @@ import { CoreContextModule } from '../context/context.module';
       },
     ]),
   ],
-  providers: [IntegrationEventPublisher, RpcClient, GlobalRpcExceptionFilter],
-  exports: [IntegrationEventPublisher, RpcClient],
+  providers: [
+    {
+      provide: IntegrationEventPublisherPort,
+      useClass: IntegrationEventPublisher,
+    },
+    RpcClient,
+    GlobalRpcExceptionFilter,
+  ],
+  exports: [IntegrationEventPublisherPort, RpcClient],
 })
 export class MessagingModule {}

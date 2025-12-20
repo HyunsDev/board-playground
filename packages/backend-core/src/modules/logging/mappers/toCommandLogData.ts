@@ -1,57 +1,53 @@
+import { MeasureResult } from '../instrumentations/instrumentation.types';
 import { LogTypeEnum } from '../log.enums';
-import { EventLogData } from '../types';
-import { MeasureResult } from './instrumentation.types';
+import { CommandLogData } from '../types';
 
-import { BaseDomainEvent } from '@/base';
+import { BaseCommand } from '@/base';
 
-export const toEventLogData = (
+export const toCommandLogData = (
   result: MeasureResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  message: BaseDomainEvent<any>,
-  handlerName: string,
-): EventLogData => {
+  message: BaseCommand<any, any, any>,
+  _handlerName: string,
+): CommandLogData => {
   if (result.result === 'Success') {
     return {
-      type: LogTypeEnum.Event,
+      type: LogTypeEnum.Command,
       result: 'Success',
       code: message.code,
       duration: result.duration,
-      handlerName: handlerName,
       ...message.metadata,
     };
   }
 
   if (result.result === 'DomainError') {
     return {
-      type: LogTypeEnum.Event,
+      type: LogTypeEnum.Command,
       result: 'DomainError',
       code: message.code,
       duration: result.duration,
       error: result.error,
-      handlerName: handlerName,
       ...message.metadata,
     };
   }
 
   if (result.result === 'SystemException') {
     return {
-      type: LogTypeEnum.Event,
+      type: LogTypeEnum.Command,
       result: 'SystemException',
       code: message.code,
       duration: result.duration,
       error: result.error,
-      handlerName: handlerName,
       ...message.metadata,
     };
   }
 
   return {
-    type: LogTypeEnum.Event,
+    type: LogTypeEnum.Command,
     result: 'UnexpectedException',
     code: message.code,
     duration: result.duration,
     error: result.error,
-    handlerName: handlerName,
     ...message.metadata,
   };
 };
