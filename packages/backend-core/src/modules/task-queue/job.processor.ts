@@ -6,14 +6,21 @@ import { InvalidMessageException, MessageConstructor } from '@workspace/backend-
 
 import { JOB_HANDLER_METADATA } from './job.contants';
 import { JobCodeMismatchException } from './job.exceptions';
+import { CoreContext } from '../context';
 
 import { BaseJob, BaseJobProps, IJobHandler } from '@/base';
 
 export abstract class JobProcessor extends WorkerHost {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected readonly handlers = new Map<string, IJobHandler<any>>();
+  protected readonly handlers = new Map<
+    string,
+    {
+      handler: IJobHandler<any>;
+      jobClass: MessageConstructor<BaseJob<any>>;
+    }
+  >();
 
   constructor(
+    protected readonly coreContext: CoreContext,
     protected readonly logger: Logger,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handlers: IJobHandler<BaseJob<BaseJobProps<any>>>[],
@@ -44,46 +51,54 @@ export abstract class JobProcessor extends WorkerHost {
       }
 
       this.logger.log(`Registered JobHandler: ${handler.constructor.name} for [${jobCode}]`);
-      this.handlers.set(jobCode, handler);
+      this.handlers.set(jobCode, {
+        handler,
+        jobClass,
+      });
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async process(bullJob: Job<any, any, string>): Promise<void> {
-    const jobCode = bullJob.name; // BullMQ의 jobName을 code로 사용
-    const handler = this.handlers.get(jobCode);
+    return this.coreContext.run(async () => {
+      const jobCode = bullJob.name; // BullMQ의 jobName을 code로 사용
+      const handler = this.handlers.get(jobCode);
 
-    if (!handler) {
-      const registeredCodes = Array.from(this.handlers.keys()).join(', ');
-      throw new JobCodeMismatchException(jobCode, registeredCodes);
-    }
-
-    try {
-      this.logger.log(`[${jobCode}] Processing job ${bullJob.id}...`);
-
-      // 3. 실제 비즈니스 로직 실행
-      await handler.execute(bullJob.data);
-
-      this.logger.log(`[${jobCode}] Job ${bullJob.id} completed.`);
-    } catch (error) {
-      if (error instanceof JobCodeMismatchException) {
-        this.logger.error(
-          `[${jobCode}] Job ${bullJob.id} failed due to code mismatch: ${error.message}`,
-        );
+      if (!handler) {
+        const registeredCodes = Array.from(this.handlers.keys()).join(', ');
+        throw new JobCodeMismatchException(jobCode, registeredCodes);
       }
 
-      if (error instanceof InvalidMessageException) {
-        this.logger.error(
-          `[${jobCode}] Job ${bullJob.id} failed due to invalid message: ${error.message}`,
-        );
-      }
+      try {
+        const jobInstance = handler.jobClass.fromPlain(bullJob.data);
+        if (!jobInstance.metadata.correlationId) {
+          throw new InvalidMessageException('Job metadata must include a correlationId.');
+        }
 
-      if (error instanceof Error) {
-        this.logger.error(`[${jobCode}] Job ${bullJob.id} failed: ${error.message}`, error.stack);
+        this.coreContext.setRequestId(jobInstance.metadata.correlationId);
+
+        // 3. 실제 비즈니스 로직 실행
+        await handler.handler.execute(jobInstance);
+      } catch (error) {
+        if (error instanceof JobCodeMismatchException) {
+          this.logger.error(
+            `[${jobCode}] Job ${bullJob.id} failed due to code mismatch: ${error.message}`,
+          );
+        }
+
+        if (error instanceof InvalidMessageException) {
+          this.logger.error(
+            `[${jobCode}] Job ${bullJob.id} failed due to invalid message: ${error.message}`,
+          );
+        }
+
+        if (error instanceof Error) {
+          this.logger.error(`[${jobCode}] Job ${bullJob.id} failed: ${error.message}`, error.stack);
+          throw error; // BullMQ가 재시도(Retry) 할 수 있도록 에러를 다시 던짐
+        }
+        this.logger.error(`[${jobCode}] Job ${bullJob.id} failed: ${error}`, error);
         throw error; // BullMQ가 재시도(Retry) 할 수 있도록 에러를 다시 던짐
       }
-      this.logger.error(`[${jobCode}] Job ${bullJob.id} failed: ${error}`, error);
-      throw error; // BullMQ가 재시도(Retry) 할 수 있도록 에러를 다시 던짐
-    }
+    });
   }
 }

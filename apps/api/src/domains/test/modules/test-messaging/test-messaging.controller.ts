@@ -32,7 +32,6 @@ export class TestController {
   @Get('pub')
   @Trigger(TriggerCodeEnum.Http)
   async pub() {
-    void this.messageContext.createMetadata('system:infra:trg:test');
     void this.integrationEventPublisher.publish(
       new TestPub(null, {
         message: 'This is a test message from TestController.pub',
@@ -49,7 +48,6 @@ export class TestController {
   @Get('ping')
   @Trigger(TriggerCodeEnum.Http)
   async ping() {
-    void this.messageContext.createMetadata('system:infra:trg:test');
     const result = await this.rpcClient.send(
       new TestRpc(null, {
         ping: 'Ping from TestController.ping',

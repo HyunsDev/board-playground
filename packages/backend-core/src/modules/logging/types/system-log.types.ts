@@ -17,6 +17,9 @@ export const SystemLogActionEnum = {
 
   // Devtools
   DevtoolsUsage: 'DEVTOOLS_USAGE',
+
+  // Test
+  Test: 'TEST',
 } as const;
 export type SystemLogAction = (typeof SystemLogActionEnum)[keyof typeof SystemLogActionEnum];
 

@@ -22,4 +22,8 @@ export class CoreContext {
   setErrorCode(code: string) {
     this.cls.set('errorCode', code);
   }
+
+  run<T>(fn: () => T): T {
+    return this.cls.run(fn);
+  }
 }

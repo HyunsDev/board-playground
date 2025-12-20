@@ -1,23 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  applyDecorators,
-  Logger,
-  SetMetadata,
-  UseFilters,
-  UseInterceptors,
-  UsePipes,
-} from '@nestjs/common';
-import { ClsInterceptor } from 'nestjs-cls';
+import { applyDecorators, Logger, SetMetadata } from '@nestjs/common';
 
 import { MessageConstructor } from '@workspace/backend-ddd';
 
 import { InvalidHandlerException, LogTypeEnum, toJobLogData } from '../../logging';
 import { measureAndLog } from '../../logging/instrumentations/measure.utils';
-import { GlobalRpcExceptionFilter } from '../../messaging/rpc-exception.filter';
 import { JOB_HANDLER_METADATA } from '../job.contants';
 
 import { BaseJob } from '@/base';
-import { MessageTransformPipe, SetRequestIdFromMessagePipe } from '@/common/message';
 
 export const JobHandler = (job: MessageConstructor<BaseJob<any>>) => {
   const instrumentation: MethodDecorator = (
@@ -48,12 +38,5 @@ export const JobHandler = (job: MessageConstructor<BaseJob<any>>) => {
     };
   };
 
-  return applyDecorators(
-    SetMetadata(JOB_HANDLER_METADATA, job),
-    instrumentation,
-    UseInterceptors(ClsInterceptor),
-    UsePipes(MessageTransformPipe(job)),
-    UsePipes(SetRequestIdFromMessagePipe()),
-    UseFilters(new GlobalRpcExceptionFilter()),
-  );
+  return applyDecorators(SetMetadata(JOB_HANDLER_METADATA, job), instrumentation);
 };
