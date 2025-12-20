@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
@@ -22,17 +23,16 @@ export abstract class JobProcessor extends WorkerHost {
   constructor(
     protected readonly coreContext: CoreContext,
     protected readonly logger: Logger,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     handlers: IJobHandler<BaseJob<BaseJobProps<any>>>[],
   ) {
     super();
     this.registerHandlers(handlers);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private registerHandlers(handlers: IJobHandler<any>[]) {
     for (const handler of handlers) {
-      const jobClass = Reflect.getMetadata(JOB_HANDLER_METADATA, handler.constructor) as  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const jobClass = Reflect.getMetadata(JOB_HANDLER_METADATA, handler.constructor) as
         | MessageConstructor<BaseJob<any>>
         | undefined;
 
@@ -58,7 +58,6 @@ export abstract class JobProcessor extends WorkerHost {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async process(bullJob: Job<any, any, string>): Promise<void> {
     return this.coreContext.run(async () => {
       const jobCode = bullJob.name; // BullMQ의 jobName을 code로 사용
@@ -70,6 +69,7 @@ export abstract class JobProcessor extends WorkerHost {
       }
 
       try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         const jobInstance = handler.jobClass.fromPlain(bullJob.data);
         if (!jobInstance.metadata.correlationId) {
           throw new InvalidMessageException('Job metadata must include a correlationId.');

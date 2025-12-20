@@ -14,6 +14,7 @@ export class TriggerContextInterceptor implements NestInterceptor {
     private readonly messageContext: MessageContext,
   ) {}
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const trigger = this.reflector.get<TriggerCode | undefined>(TRIGGER_KEY, context.getHandler());
 
