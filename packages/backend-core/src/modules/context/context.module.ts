@@ -11,7 +11,7 @@ import {
   TokenContext,
   TransactionContext,
 } from './contexts';
-import { MessageInterceptor } from './message.interceptor';
+import { MessageInterceptor } from './interceptors/message.interceptor';
 import { TransactionManager } from './transaction.manager';
 import { PrismaService } from '../database/prisma.service';
 

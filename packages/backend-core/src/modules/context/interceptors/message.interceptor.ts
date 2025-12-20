@@ -5,9 +5,9 @@ import { Observable } from 'rxjs';
 import { AbstractMessage } from '@workspace/backend-ddd';
 import { TriggerCode } from '@workspace/domain';
 
-import { TRIGGER_KEY } from './context.constants';
-import { MessageTriggerNotFoundException } from './context.exceptions';
-import { MessageContext } from './contexts';
+import { TRIGGER_KEY } from '../context.constants';
+import { MessageTriggerNotFoundException } from '../context.exceptions';
+import { MessageContext } from '../contexts';
 
 @Injectable()
 export class MessageInterceptor implements NestInterceptor {
