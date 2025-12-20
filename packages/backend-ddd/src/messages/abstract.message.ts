@@ -158,6 +158,10 @@ export abstract class AbstractMessage<
     return instance;
   }
 
+  hasMetadata(): boolean {
+    return !!this._metadata.causationType;
+  }
+
   updateMetadata(
     metadata: Partial<AbstractDrivenMessageMetadata<CausationCodeType, ResourceCodeType>>,
   ): void {
