@@ -11,15 +11,15 @@ import { ClsInterceptor } from 'nestjs-cls';
 
 import { MessageConstructor } from '@workspace/backend-ddd';
 
-import { InvalidHandlerException, LogTypeEnum, toJobLogData } from '../logging';
-import { JOB_HANDLER_METADATA } from './job.contants';
-import { measureAndLog } from '../logging/instrumentations/measure.utils';
-import { GlobalRpcExceptionFilter } from '../messaging/rpc-exception.filter';
+import { InvalidHandlerException, LogTypeEnum, toJobLogData } from '../../logging';
+import { measureAndLog } from '../../logging/instrumentations/measure.utils';
+import { GlobalRpcExceptionFilter } from '../../messaging/rpc-exception.filter';
+import { JOB_HANDLER_METADATA } from '../job.contants';
 
 import { BaseJob } from '@/base';
 import { MessageTransformPipe, SetRequestIdFromMessagePipe } from '@/common/message';
 
-export const HandleJob = (job: MessageConstructor<BaseJob<any>>) => {
+export const JobHandler = (job: MessageConstructor<BaseJob<any>>) => {
   const instrumentation: MethodDecorator = (
     target: any,
     _propertyKey: string | symbol,

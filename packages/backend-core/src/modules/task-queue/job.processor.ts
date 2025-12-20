@@ -5,7 +5,7 @@ import { Job } from 'bullmq';
 import { InvalidMessageException, MessageConstructor } from '@workspace/backend-ddd';
 
 import { JOB_HANDLER_METADATA } from './job.contants';
-import { JobCodeMismatchException } from './job.errors';
+import { JobCodeMismatchException } from './job.exceptions';
 
 import { BaseJob, BaseJobProps, IJobHandler } from '@/base';
 
