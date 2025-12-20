@@ -1,19 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
+import { QueryBus } from '@nestjs/cqrs';
 
-import {
-  AbstractCommand,
-  MessageResult,
-  AbstractQueryDispatcherPort,
-} from '@workspace/backend-ddd';
+import { MessageResult } from '@workspace/backend-ddd';
+
+import { MessageContext } from '../context';
+
+import { BaseQuery, QueryDispatcherPort } from '@/base';
 
 @Injectable()
-export class QueryDispatcher implements AbstractQueryDispatcherPort {
-  constructor(private readonly commandBus: CommandBus) {}
+export class QueryDispatcher implements QueryDispatcherPort {
+  constructor(
+    private readonly queryBus: QueryBus,
+    private readonly messageContext: MessageContext,
+  ) {}
 
-  async execute<TCommand extends AbstractCommand>(
-    command: TCommand,
-  ): Promise<MessageResult<TCommand>> {
-    return this.commandBus.execute<TCommand>(command);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async execute<TQuery extends BaseQuery<any, any, any>>(
+    query: TQuery,
+  ): Promise<MessageResult<TQuery>> {
+    query.updateMetadata(this.messageContext.getOrThrowDrivenMetadata());
+    return this.queryBus.execute<TQuery>(query);
   }
 }
