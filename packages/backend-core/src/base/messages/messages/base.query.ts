@@ -1,5 +1,3 @@
-import { RESULT_TYPE_SYMBOL as CLS_RESULT_TYPE_SYMBOL } from '@nestjs/cqrs/dist/classes/constants';
-
 import {
   AbstractPaginatedQueryProps,
   AbstractQuery,
@@ -30,7 +28,6 @@ export abstract class BaseQuery<
 > extends AbstractQuery<CausationCode, DomainCode, QueryCode, TProps, TOk, TRes> {
   static readonly code: QueryCode;
   declare [RESULT_TYPE_SYMBOL]: TRes;
-  declare [CLS_RESULT_TYPE_SYMBOL]: TRes;
 
   constructor(
     resourceId: string | null,

@@ -1,8 +1,8 @@
 import { Logger } from '@nestjs/common';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import {
   DrivenMessageMetadata,
   PrismaService,

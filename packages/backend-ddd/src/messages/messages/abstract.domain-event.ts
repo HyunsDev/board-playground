@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AbstractMessage, AbstractMessageProps } from './abstract.message';
+
+import { DomainError, DomainResult } from '@/error';
 
 export type AbstractDomainEventProps<T = unknown> = AbstractMessageProps<T>;
 
@@ -12,6 +15,6 @@ export abstract class AbstractDomainEvent<
   ResourceCodeType,
   DomainEventCodeType,
   TProps,
-  unknown,
-  void
+  any,
+  DomainResult<any, DomainError>
 > {}

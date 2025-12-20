@@ -1,4 +1,4 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';

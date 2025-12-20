@@ -1,14 +1,14 @@
-import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { DomainEventsHandler, IDomainEventHandler } from '@workspace/backend-core';
 
 import { UserRepositoryPort } from '../../domain/user.repository.port';
 
 import { SessionCreatedEvent } from '@/domains/session/domain/events/session-created.event';
 import { SessionRefreshedEvent } from '@/domains/session/domain/events/session-refreshed.event';
 
-@EventsHandler(SessionCreatedEvent, SessionRefreshedEvent)
-export class UserActivityEventHandler
-  implements IEventHandler<SessionCreatedEvent | SessionRefreshedEvent>
-{
+@DomainEventsHandler(SessionCreatedEvent, SessionRefreshedEvent)
+export class UserActivityEventHandler implements IDomainEventHandler<
+  SessionCreatedEvent | SessionRefreshedEvent
+> {
   constructor(private readonly userRepo: UserRepositoryPort) {}
 
   async handle(event: SessionCreatedEvent | SessionRefreshedEvent) {

@@ -1,7 +1,7 @@
-import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { IQueryHandler, QueryHandler } from '@workspace/backend-core';
 import { BaseQueryProps, BaseQuery, DrivenMessageMetadata } from '@workspace/backend-core';
 import { matchError } from '@workspace/backend-ddd';
 import { asQueryCode, DomainCodeEnums } from '@workspace/domain';

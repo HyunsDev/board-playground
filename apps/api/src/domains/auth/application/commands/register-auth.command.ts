@@ -1,10 +1,11 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
 import {
   AccessTokenProvider,
+  CommandHandler,
   DrivenMessageMetadata,
+  ICommandHandler,
   TransactionManager,
 } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
@@ -40,10 +41,7 @@ export class RegisterAuthCommand extends BaseCommand<
 }
 
 @CommandHandler(RegisterAuthCommand)
-export class RegisterAuthCommandHandler implements ICommandHandler<
-  RegisterAuthCommand,
-  HandlerResult<RegisterAuthCommandHandler>
-> {
+export class RegisterAuthCommandHandler implements ICommandHandler<RegisterAuthCommand> {
   constructor(
     private readonly userFacade: UserFacade,
     private readonly sessionFacade: SessionFacade,

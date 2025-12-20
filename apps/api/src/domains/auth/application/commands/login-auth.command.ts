@@ -1,4 +1,3 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
@@ -8,6 +7,7 @@ import {
   TransactionManager,
 } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
+import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import { matchError } from '@workspace/backend-ddd';
 import { DEVICE_PLATFORM } from '@workspace/contract';
 import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';

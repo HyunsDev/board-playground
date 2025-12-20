@@ -1,8 +1,12 @@
 import { Controller } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { MessageContext, Token } from '@workspace/backend-core';
+import {
+  CommandDispatcherPort,
+  MessageContext,
+  QueryDispatcherPort,
+  Token,
+} from '@workspace/backend-core';
 import { apiOk, matchError, apiErr, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
 import { TriggerCodeEnum } from '@workspace/domain';
@@ -16,8 +20,8 @@ import { ListSessionsQuery } from '../application/queries/list-sessions.query';
 @Controller()
 export class SessionHttpController {
   constructor(
-    private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus,
+    private readonly commandDispatcher: CommandDispatcherPort,
+    private readonly queryDispatcher: QueryDispatcherPort,
     private readonly sessionDtoMapper: SessionDtoMapper,
     private readonly messageContext: MessageContext,
   ) {}
@@ -25,7 +29,7 @@ export class SessionHttpController {
   @TsRestHandler(contract.session.get)
   async getSession(@Token() token: TokenPayload) {
     return tsRestHandler(contract.session.get, async ({ params }) => {
-      const result = await this.queryBus.execute(
+      const result = await this.queryDispatcher.execute(
         new GetSessionQuery(
           { userId: token.sub, sessionId: params.sessionId },
           this.messageContext.createMetadata(TriggerCodeEnum.Http),
@@ -45,7 +49,7 @@ export class SessionHttpController {
   @TsRestHandler(contract.session.list)
   async listSessions(@Token() token: TokenPayload) {
     return tsRestHandler(contract.session.list, async () => {
-      const result = await this.queryBus.execute(
+      const result = await this.queryDispatcher.execute(
         new ListSessionsQuery(
           { userId: token.sub },
           this.messageContext.createMetadata(TriggerCodeEnum.Http),
@@ -67,7 +71,7 @@ export class SessionHttpController {
   @TsRestHandler(contract.session.delete)
   async deleteSession(@Token() token: TokenPayload) {
     return tsRestHandler(contract.session.delete, async ({ params }) => {
-      const result = await this.commandBus.execute(
+      const result = await this.commandDispatcher.execute(
         new DeleteSessionCommand(
           {
             sessionId: params.sessionId,

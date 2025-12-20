@@ -1,9 +1,13 @@
 import { Controller, Res } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { FastifyReply } from 'fastify';
 
-import { MessageContext, Token } from '@workspace/backend-core';
+import {
+  CommandDispatcherPort,
+  MessageContext,
+  QueryDispatcherPort,
+  Token,
+} from '@workspace/backend-core';
 import { apiOk, matchPublicError, apiErr } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
 import { TriggerCodeEnum } from '@workspace/domain';
@@ -18,8 +22,8 @@ import { GetUserMeQuery } from '../application/me/queries/get-user-me.query';
 @Controller()
 export class UserMeHttpController {
   constructor(
-    private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus,
+    private readonly commandDispatcher: CommandDispatcherPort,
+    private readonly queryDispatcher: QueryDispatcherPort,
     private readonly dtoMapper: UserDtoMapper,
 
     private readonly messageContext: MessageContext,
@@ -28,7 +32,7 @@ export class UserMeHttpController {
   @TsRestHandler(contract.user.me.get)
   async getMe(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.get, async () => {
-      const result = await this.queryBus.execute(
+      const result = await this.queryDispatcher.execute(
         new GetUserMeQuery(
           { userId: token.sub },
           this.messageContext.createMetadata(TriggerCodeEnum.Http),
@@ -50,7 +54,7 @@ export class UserMeHttpController {
   @TsRestHandler(contract.user.me.updateProfile)
   async updateProfile(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.updateProfile, async ({ body }) => {
-      const result = await this.commandBus.execute(
+      const result = await this.commandDispatcher.execute(
         new UpdateUserMeProfileCommand(
           {
             userId: token.sub,
@@ -79,7 +83,7 @@ export class UserMeHttpController {
   @TsRestHandler(contract.user.me.updateUsername)
   async updateUsername(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.updateUsername, async ({ body }) => {
-      const result = await this.commandBus.execute(
+      const result = await this.commandDispatcher.execute(
         new UpdateUserMeUsernameCommand(
           {
             userId: token.sub,
@@ -106,7 +110,7 @@ export class UserMeHttpController {
   @TsRestHandler(contract.user.me.delete)
   async deleteMe(@Res({ passthrough: true }) res: FastifyReply, @Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.delete, async () => {
-      const result = await this.commandBus.execute(
+      const result = await this.commandDispatcher.execute(
         new DeleteUserMeCommand(
           {
             userId: token.sub,

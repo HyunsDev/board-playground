@@ -1,8 +1,7 @@
 import { Controller } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { MessageContext, Public } from '@workspace/backend-core';
+import { CommandDispatcherPort, MessageContext, Public } from '@workspace/backend-core';
 import { apiOk, matchPublicError, apiErr } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
 import { TriggerCodeEnum } from '@workspace/domain';
@@ -14,7 +13,7 @@ import { ResetDBCommand } from './commands/reset-db.command';
 @Controller()
 export class DevtoolsController {
   constructor(
-    private readonly commandBus: CommandBus,
+    private readonly commandDispatcher: CommandDispatcherPort,
     private readonly messageContext: MessageContext,
   ) {}
 
@@ -22,7 +21,7 @@ export class DevtoolsController {
   @Public()
   async forceRegister() {
     return tsRestHandler(contract.devtools.forceRegister, async ({ body }) => {
-      const result = await this.commandBus.execute(
+      const result = await this.commandDispatcher.execute(
         new ForceRegisterCommand(
           {
             email: body.email,
@@ -47,7 +46,7 @@ export class DevtoolsController {
   @Public()
   async forceLogin() {
     return tsRestHandler(contract.devtools.forceLogin, async ({ body }) => {
-      const result = await this.commandBus.execute(
+      const result = await this.commandDispatcher.execute(
         new ForceLoginCommand(
           {
             email: body.email,
@@ -69,7 +68,7 @@ export class DevtoolsController {
   @Public()
   async resetDB() {
     return tsRestHandler(contract.devtools.resetDB, async () => {
-      const result = await this.commandBus.execute(
+      const result = await this.commandDispatcher.execute(
         new ResetDBCommand(undefined, this.messageContext.createMetadata(TriggerCodeEnum.Http)),
       );
       return result.match(

@@ -5,12 +5,22 @@ import {
   CommandHandler as NestCommandHandler,
 } from '@nestjs/cqrs';
 
-import { BaseCommand, BaseQuery } from '@/base';
+import { MessageConstructor } from '@workspace/backend-ddd';
 
-export const QueryHandler = (query: typeof BaseQuery<any, any, any>) => {
+import { BaseCommand, BaseCommandProps, BaseQuery, BaseQueryProps } from '@/base';
+
+export const QueryHandler = <
+  T extends MessageConstructor<BaseQuery<BaseQueryProps<any>, any, any>>,
+>(
+  query: T,
+) => {
   return applyDecorators(NestQueryHandler(query));
 };
 
-export const CommandHandler = (command: typeof BaseCommand<any, any, any>) => {
+export const CommandHandler = <
+  T extends MessageConstructor<BaseCommand<BaseCommandProps<any>, any, any>>,
+>(
+  command: T,
+) => {
   return applyDecorators(NestCommandHandler(command));
 };

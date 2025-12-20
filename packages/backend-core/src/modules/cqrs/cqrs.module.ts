@@ -9,7 +9,7 @@ import { CommandDispatcherPort, QueryDispatcherPort } from '@/base';
 
 @Global()
 @Module({
-  imports: [CqrsModule, CoreContextModule],
+  imports: [CqrsModule.forRoot(), CoreContextModule],
   providers: [
     {
       provide: CommandDispatcherPort,
@@ -20,5 +20,6 @@ import { CommandDispatcherPort, QueryDispatcherPort } from '@/base';
       useClass: QueryDispatcher,
     },
   ],
+  exports: [CommandDispatcherPort, QueryDispatcherPort],
 })
 export class CoreCqrsModule {}

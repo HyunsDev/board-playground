@@ -3,9 +3,10 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err } from 'neverthrow';
 
-import { DomainError, DomainResult, AbstractJobDispatcherPort } from '@workspace/backend-ddd';
+import { DomainError, DomainResult } from '@workspace/backend-ddd';
 
 import { DomainEventPublisherPort } from '@/base';
+import { JobDispatcherPort } from '@/base/messages/ports/job.dispatcher.port';
 
 class TransactionRollbackError<E> extends Error {
   originalError: E;
@@ -20,7 +21,7 @@ export class TransactionManager {
   constructor(
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     private readonly eventPublisher: DomainEventPublisherPort,
-    private readonly jobDispatcher: AbstractJobDispatcherPort,
+    private readonly jobDispatcher: JobDispatcherPort,
   ) {}
 
   async run<Res extends DomainResult<unknown, DomainError>>(

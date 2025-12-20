@@ -1,7 +1,11 @@
-import { QueryHandler } from '@nestjs/cqrs';
-
 import { HandlerResult } from '@workspace/backend-common';
-import { BaseQuery, BaseQueryProps, DrivenMessageMetadata } from '@workspace/backend-core';
+import {
+  BaseQuery,
+  BaseQueryProps,
+  DrivenMessageMetadata,
+  IQueryHandler,
+  QueryHandler,
+} from '@workspace/backend-core';
 import { asQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
@@ -24,7 +28,7 @@ export class GetUserMeQuery extends BaseQuery<
 }
 
 @QueryHandler(GetUserMeQuery)
-export class GetUserMeQueryHandler {
+export class GetUserMeQueryHandler implements IQueryHandler<GetUserMeQuery> {
   constructor(private readonly userRepo: UserRepositoryPort) {}
 
   async execute({ data }: IGetUserMeQuery) {

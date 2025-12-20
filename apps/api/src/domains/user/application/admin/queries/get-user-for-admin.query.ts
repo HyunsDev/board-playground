@@ -1,7 +1,11 @@
-import { QueryHandler } from '@nestjs/cqrs';
-
 import { HandlerResult } from '@workspace/backend-common';
-import { BaseQuery, BaseQueryProps, DrivenMessageMetadata } from '@workspace/backend-core';
+import {
+  BaseQuery,
+  BaseQueryProps,
+  DrivenMessageMetadata,
+  IQueryHandler,
+  QueryHandler,
+} from '@workspace/backend-core';
 import { asQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserEntity } from '../../../domain/user.entity';
@@ -24,7 +28,7 @@ export class GetUserForAdminQuery extends BaseQuery<
 }
 
 @QueryHandler(GetUserForAdminQuery)
-export class GetUserForAdminQueryHandler {
+export class GetUserForAdminQueryHandler implements IQueryHandler<GetUserForAdminQuery> {
   constructor(private readonly userRepo: UserRepositoryPort) {}
 
   async execute({ data }: IGetUserForAdminQuery) {

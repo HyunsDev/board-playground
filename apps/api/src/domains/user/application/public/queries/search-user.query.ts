@@ -1,4 +1,4 @@
-import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { IQueryHandler, QueryHandler } from '@workspace/backend-core';
 import { ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
