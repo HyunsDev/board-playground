@@ -1,17 +1,17 @@
 import z from 'zod';
 
-import { BasePubProps, BasePub } from '@workspace/backend-core';
-import { DomainCodeEnums, asPubCode } from '@workspace/domain';
+import { BaseIntegrationEvent, BaseIntegrationEventProps } from '@workspace/backend-core';
+import { asIntegrationEventCode, DomainCodeEnums } from '@workspace/domain';
 
-type TestPubProps = BasePubProps<{
+type TestPubProps = BaseIntegrationEventProps<{
   message: string;
 }>;
 const TestPubSchema = z.object({
   message: z.string(),
 });
-export class TestPub extends BasePub<TestPubProps> {
+export class TestPub extends BaseIntegrationEvent<TestPubProps> {
   readonly resourceType = DomainCodeEnums.System.Notification;
-  static readonly code = asPubCode('system:devtools:pub:test');
+  static readonly code = asIntegrationEventCode('system:devtools:pub:test');
   get schema() {
     return TestPubSchema;
   }

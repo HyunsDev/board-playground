@@ -8,7 +8,7 @@ export type QueryCode<T extends string = string> = UnitCode<T, 'qry'>;
 export type DomainEventCode<T extends string = string> = UnitCode<T, 'evt'>;
 export type JobCode<T extends string = string> = UnitCode<T, 'job'>;
 export type RpcCode<T extends string = string> = UnitCode<T, 'rpc'>;
-export type PubCode<T extends string = string> = UnitCode<T, 'pub'>;
+export type IntegrationEventCode<T extends string = string> = UnitCode<T, 'pub'>;
 export type MessageCode<T extends string = string> = UnitCode<T, MessageType>;
 export type CausationCode<T extends string = string> = MessageCode<T>;
 
@@ -56,7 +56,7 @@ export const asRpcCode = <const T extends string>(
  * Pub 코드를 정의하고 검증합니다.
  * @example const code = asPubCode('account:user:pub:process');
  */
-export const asPubCode = <const T extends string>(
+export const asIntegrationEventCode = <const T extends string>(
   code: ValidateUnitCode<T, 'pub'>,
 ): ValidateUnitCode<T, 'pub'> => code as unknown as T & ValidateUnitCode<T, 'pub'>;
 

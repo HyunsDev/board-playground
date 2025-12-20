@@ -7,7 +7,7 @@ import { MessageConstructor } from '@workspace/backend-ddd';
 import { MessageTransformPipe } from './message-transform.pipe';
 import { GlobalRpcExceptionFilter } from './rpc-exception.filter';
 
-import { BasePub, BaseRpc } from '@/base';
+import { BaseIntegrationEvent, BaseRpc } from '@/base';
 
 /**
  * [RPC] 요청에 대한 응답을 처리하는 핸들러 (동기성)
@@ -25,7 +25,7 @@ export const HandleRpc = (rpc: MessageConstructor<BaseRpc<any, any, any>>) => {
  * [PUB] 발생한 이벤트를 수신하는 핸들러 (비동기성)
  * 기존 @EventPattern 대체
  */
-export const HandlePub = (pub: MessageConstructor<BasePub<any>>) => {
+export const HandlePub = (pub: MessageConstructor<BaseIntegrationEvent<any>>) => {
   return applyDecorators(
     EventPattern(pub.code),
     UsePipes(new MessageTransformPipe(pub)),

@@ -3,14 +3,21 @@ import z from 'zod';
 import { AbstractMessage, AbstractMessageProps } from './abstract.message';
 import { AbstractDrivenMessageMetadata } from '../abstract.message-metadata.type';
 
-export type AbstractPubProps<T = unknown> = AbstractMessageProps<T>;
+export type AbstractIntegrationEventProps<T = unknown> = AbstractMessageProps<T>;
 
-export abstract class AbstractPub<
+export abstract class AbstractIntegrationEvent<
   CausationCodeType extends string = string,
   ResourceCodeType extends string = string,
-  PubCodeType extends CausationCodeType = CausationCodeType,
-  TProps extends AbstractPubProps = AbstractPubProps,
-> extends AbstractMessage<CausationCodeType, ResourceCodeType, PubCodeType, TProps, unknown, void> {
+  IntegrationEventCodeType extends CausationCodeType = CausationCodeType,
+  TProps extends AbstractIntegrationEventProps = AbstractIntegrationEventProps,
+> extends AbstractMessage<
+  CausationCodeType,
+  ResourceCodeType,
+  IntegrationEventCodeType,
+  TProps,
+  unknown,
+  void
+> {
   abstract override get schema(): z.ZodType<TProps['data']>;
 
   constructor(

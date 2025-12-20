@@ -5,7 +5,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { MESSAGING_SERVICE_TOKEN } from './messaging.constant';
 import { MessageContext } from '../context';
 
-import { BasePub } from '@/base';
+import { BaseIntegrationEvent } from '@/base';
 
 @Injectable()
 export class IntegrationEventPublisher {
@@ -16,7 +16,7 @@ export class IntegrationEventPublisher {
     private readonly messageContext: MessageContext,
   ) {}
 
-  publish<TPub extends BasePub<any>>(pub: TPub): void {
+  publish<TPub extends BaseIntegrationEvent<any>>(pub: TPub): void {
     const metadata = this.messageContext.getOrThrowDrivenMetadata();
     pub.updateMetadata(metadata);
 
