@@ -1,5 +1,5 @@
-import { AbstractJob, AbstractJobProps } from './abstract.job';
-import { MessageConstructor } from './abstract.message';
+import { MessageConstructor } from './message.types';
+import { AbstractJob, AbstractJobProps } from './messages/abstract.job';
 
 import { DomainError, DomainResult } from '@/error';
 

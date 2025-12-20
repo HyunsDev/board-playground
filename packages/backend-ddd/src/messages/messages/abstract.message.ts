@@ -5,8 +5,8 @@ import {
   AbstractCreateMessageMetadata,
   AbstractDrivenMessageMetadata,
   AbstractMessageMetadata,
-} from './abstract-message-metadata.type';
-import { RESULT_TYPE_SYMBOL } from './message.constant';
+} from '../abstract.message-metadata.type';
+import { RESULT_TYPE_SYMBOL } from '../message.constant';
 
 import {
   DomainError,
@@ -183,16 +183,4 @@ export abstract class AbstractMessage<
       ...overrides,
     };
   }
-}
-
-export interface MessageConstructor<T extends AbstractMessage> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  new (...args: any[]): T;
-  code: T['code'];
-  fromPlain(plain: {
-    id: string;
-    code: string;
-    data: unknown;
-    metadata: AbstractMessageMetadata;
-  }): T;
 }

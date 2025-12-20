@@ -1,7 +1,7 @@
 import z from 'zod';
 
-import { AbstractDrivenMessageMetadata } from './abstract-message-metadata.type';
 import { AbstractMessage, AbstractMessageProps } from './abstract.message';
+import { AbstractDrivenMessageMetadata } from '../abstract.message-metadata.type';
 
 export type AbstractPubProps<T = unknown> = AbstractMessageProps<T>;
 
