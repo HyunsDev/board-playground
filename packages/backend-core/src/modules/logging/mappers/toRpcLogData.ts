@@ -1,56 +1,57 @@
+import { MeasureResult } from '../instrumentations/instrumentation.types';
 import { LogTypeEnum } from '../log.enums';
-import { QueryLogData } from '../types';
-import { MeasureResult } from './instrumentation.types';
+import { RpcLogData } from '../types';
 
-import { BaseQuery } from '@/base';
+import { BaseRpc } from '@/base';
 
-export const toQueryLogData = (
+export const toRpcLogData = (
   result: MeasureResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  message: BaseQuery<any, any, any>,
-): QueryLogData => {
+  message: BaseRpc<any, any, any>,
+  handlerName: string,
+): RpcLogData => {
   if (result.result === 'Success') {
     return {
-      type: LogTypeEnum.Query,
+      type: LogTypeEnum.Rpc,
       result: 'Success',
       code: message.code,
       duration: result.duration,
-      queryData: message.data,
+      handlerName: handlerName,
       ...message.metadata,
     };
   }
 
   if (result.result === 'DomainError') {
     return {
-      type: LogTypeEnum.Query,
+      type: LogTypeEnum.Rpc,
       result: 'DomainError',
       code: message.code,
       duration: result.duration,
       error: result.error,
-      queryData: message.data,
+      handlerName: handlerName,
       ...message.metadata,
     };
   }
 
   if (result.result === 'SystemException') {
     return {
-      type: LogTypeEnum.Query,
+      type: LogTypeEnum.Rpc,
       result: 'SystemException',
       code: message.code,
       duration: result.duration,
       error: result.error,
-      queryData: message.data,
+      handlerName: handlerName,
       ...message.metadata,
     };
   }
 
   return {
-    type: LogTypeEnum.Query,
+    type: LogTypeEnum.Rpc,
     result: 'UnexpectedException',
     code: message.code,
     duration: result.duration,
     error: result.error,
-    queryData: message.data,
+    handlerName: handlerName,
     ...message.metadata,
   };
 };

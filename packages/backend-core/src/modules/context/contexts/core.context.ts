@@ -11,6 +11,10 @@ export class CoreContext {
     return this.cls.get('requestId');
   }
 
+  setRequestId(id: string) {
+    this.cls.set('requestId', id);
+  }
+
   get errorCode() {
     return this.cls.get('errorCode');
   }

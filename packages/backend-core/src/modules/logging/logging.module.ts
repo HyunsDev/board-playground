@@ -8,7 +8,6 @@ import { CoreContext, TokenContext } from '../context';
 import { getCommonPinoConfig } from './config/pino-common.config';
 import { createDevLoggerStream } from './config/pino-pretty.config';
 import { EventPublishInstrumentation } from './instrumentations/event-publish.instrumentation';
-import { HandlerInstrumentation } from './instrumentations/handler.instrumentation';
 
 import { CoreConfig, coreConfig } from '@/modules/config';
 import { CoreContextModule } from '@/modules/context/context.module';
@@ -43,7 +42,7 @@ import { CoreContextModule } from '@/modules/context/context.module';
       },
     }),
   ],
-  providers: [EventPublishInstrumentation, HandlerInstrumentation],
+  providers: [EventPublishInstrumentation],
   exports: [LoggerModule],
 })
 export class LoggingModule {}

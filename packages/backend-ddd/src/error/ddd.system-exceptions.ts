@@ -44,11 +44,11 @@ export class MessageCodeMismatchException extends BaseInternalServerException<
 
 export class InvalidMessageException extends BaseInternalServerException<
   'InvalidMessage',
-  { reasons: z.core.$ZodIssue[] }
+  { reasons?: z.core.$ZodIssue[] }
 > {
   readonly code = 'InvalidMessage';
-  constructor(reasons: z.core.$ZodIssue[]) {
-    super(`Invalid message metadata: ${reasons}`, { reasons });
+  constructor(message: string = 'Invalid message', reasons?: z.core.$ZodIssue[]) {
+    super(message, { reasons });
   }
 }
 

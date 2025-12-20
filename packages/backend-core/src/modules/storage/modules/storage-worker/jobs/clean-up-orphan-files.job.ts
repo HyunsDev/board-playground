@@ -2,12 +2,11 @@ import { Logger } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 import z from 'zod';
 
-import { IJobHandler } from '@workspace/backend-ddd';
 import { asJobCode, DomainCodeEnums, TaskQueueCodeEnum } from '@workspace/domain';
 
 import { StorageGCService } from '../../storage/storage-gc.service';
 
-import { BaseJob, BaseJobProps } from '@/base';
+import { BaseJob, BaseJobProps, IJobHandler } from '@/base';
 import { TransactionManager } from '@/modules/context';
 
 const cleanUpOrphanFilesJobSchema = z.object({});

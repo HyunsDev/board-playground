@@ -1,30 +1,50 @@
 import { WorkerHost } from '@nestjs/bullmq';
-import { Logger } from '@nestjs/common'; // 혹은 커스텀 LoggerPort
+import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 
-import { IJobHandler, InvalidMessageException } from '@workspace/backend-ddd';
+import { InvalidMessageException, MessageConstructor } from '@workspace/backend-ddd';
 
+import { JOB_HANDLER_METADATA } from './job.contants';
 import { JobCodeMismatchException } from './job.errors';
 
-import { BaseJob, BaseJobProps } from '@/base';
+import { BaseJob, BaseJobProps, IJobHandler } from '@/base';
 
 export abstract class JobProcessor extends WorkerHost {
-  // 제네릭 제거: 내부 구현에서는 구체적인 타입을 몰라도 Map으로 관리 가능
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected readonly handlers = new Map<string, IJobHandler<any>>();
 
   constructor(
-    protected readonly logger: Logger, // LoggerPort
+    protected readonly logger: Logger,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handlers: IJobHandler<BaseJob<BaseJobProps<any>>>[],
   ) {
     super();
-    // 핸들러 매핑 초기화
+    this.registerHandlers(handlers);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private registerHandlers(handlers: IJobHandler<any>[]) {
     for (const handler of handlers) {
-      if (this.handlers.has(handler.JobClass.code)) {
-        this.logger.warn(`Duplicate handler found for jobCode: ${handler.JobClass.code}`);
+      const jobClass = Reflect.getMetadata(JOB_HANDLER_METADATA, handler.constructor) as  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        | MessageConstructor<BaseJob<any>>
+        | undefined;
+
+      if (!jobClass) {
+        this.logger.error(
+          `Handler ${handler.constructor.name} has no mapped JobClass. Did you forget @HandleJob decorator?`,
+        );
+        continue;
       }
-      this.handlers.set(handler.JobClass.code, handler);
+
+      // 3. JobClass의 static property인 code를 가져옴
+      const jobCode = jobClass.code;
+
+      if (this.handlers.has(jobCode)) {
+        this.logger.warn(`Duplicate handler found for jobCode: ${jobCode}`);
+      }
+
+      this.logger.log(`Registered JobHandler: ${handler.constructor.name} for [${jobCode}]`);
+      this.handlers.set(jobCode, handler);
     }
   }
 
@@ -33,10 +53,7 @@ export abstract class JobProcessor extends WorkerHost {
     const jobCode = bullJob.name; // BullMQ의 jobName을 code로 사용
     const handler = this.handlers.get(jobCode);
 
-    // 1. 핸들러 존재 여부 확인
     if (!handler) {
-      // 핸들러가 없으면 처리할 수 없음.
-      // 등록된 모든 코드 목록을 에러 메시지에 포함 (디버깅 용)
       const registeredCodes = Array.from(this.handlers.keys()).join(', ');
       throw new JobCodeMismatchException(jobCode, registeredCodes);
     }
@@ -44,18 +61,8 @@ export abstract class JobProcessor extends WorkerHost {
     try {
       this.logger.log(`[${jobCode}] Processing job ${bullJob.id}...`);
 
-      // 2. [핵심] Raw Data -> Job Instance 변환 (fromPlain + Validation)
-      // 핸들러가 가지고 있는 JobClass 정보를 이용해 정적 메서드 호출
-      const jobInstance = handler.JobClass.fromPlain({
-        id: bullJob.data.id,
-        code: jobCode,
-        data: bullJob.data.data,
-        metadata: bullJob.data.metadata, // 우리가 메타데이터를 opts에 넣었다면 이렇게 복원
-        // 혹은 metadata가 data 안에 포함되어 있다면 bullJob.data.metadata
-      });
-
       // 3. 실제 비즈니스 로직 실행
-      await handler.execute(jobInstance);
+      await handler.execute(bullJob.data);
 
       this.logger.log(`[${jobCode}] Job ${bullJob.id} completed.`);
     } catch (error) {

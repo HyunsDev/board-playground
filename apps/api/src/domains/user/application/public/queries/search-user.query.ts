@@ -1,7 +1,7 @@
-import { IQueryHandler, QueryHandler } from '@workspace/backend-core';
 import { ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
+import { IQueryHandler, QueryHandler } from '@workspace/backend-core';
 import { BasePaginatedQueryProps, BaseQuery, DrivenMessageMetadata } from '@workspace/backend-core';
 import { PaginatedResult } from '@workspace/common';
 import { asQueryCode, DomainCodeEnums } from '@workspace/domain';
