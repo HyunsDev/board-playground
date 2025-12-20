@@ -15,9 +15,8 @@ import {
 import { MessageResult } from '@workspace/backend-ddd';
 import { TriggerCodeEnum } from '@workspace/domain';
 
-import { TestPub } from './messages/test.pub';
-import { TestRpc } from './messages/test.rpc';
-import { TestService } from './test.service';
+import { TestPub } from '../../messages/test.pub';
+import { TestRpc } from '../../messages/test.rpc';
 
 @Public()
 @Controller('_test')
@@ -25,7 +24,6 @@ export class TestController {
   readonly logger = new Logger(TestController.name);
 
   constructor(
-    private readonly testService: TestService,
     private readonly integrationEventPublisher: IntegrationEventPublisherPort,
     private readonly rpcClient: RpcClient,
     private readonly messageContext: MessageContext,
