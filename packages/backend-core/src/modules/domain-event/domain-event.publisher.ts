@@ -36,7 +36,7 @@ export class DomainEventPublisher implements DomainEventPublisherPort {
   }
 
   async flush(): Promise<void> {
-    // Context에서 메타데이터(TraceId, UserId 등) 가져오기
+    if (this.events.length === 0) return;
 
     // 모든 이벤트에 메타데이터 주입 (Causation 추적용)
     const metadata = this.messageContext.getOrThrowDrivenMetadata();

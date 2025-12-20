@@ -5,7 +5,7 @@ import { err } from 'neverthrow';
 
 import { DomainError, DomainResult } from '@workspace/backend-ddd';
 
-import { DomainEventPublisherPort } from '@/base';
+import { DomainEventPublisherPort, IntegrationEventPublisherPort } from '@/base';
 import { JobDispatcherPort } from '@/base/messages/ports/job.dispatcher.port';
 
 class TransactionRollbackError<E> extends Error {
@@ -22,6 +22,7 @@ export class TransactionManager {
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     private readonly eventPublisher: DomainEventPublisherPort,
     private readonly jobDispatcher: JobDispatcherPort,
+    private readonly integrationEventPublisher: IntegrationEventPublisherPort,
   ) {}
 
   async run<Res extends DomainResult<unknown, DomainError>>(
@@ -49,11 +50,13 @@ export class TransactionManager {
       // 트랜잭션이 성공적으로 커밋된 후에만 이벤트를 발행합니다 (Transactional Outbox 패턴의 단순화)
       await this.eventPublisher.flush();
       await this.jobDispatcher.flush();
+      await this.integrationEventPublisher.flush();
 
       return result;
     } catch (error) {
       this.eventPublisher.clear();
       this.jobDispatcher.clear();
+      this.integrationEventPublisher.clear();
       if (error instanceof TransactionRollbackError) {
         return err(error.originalError) as Res;
       }
