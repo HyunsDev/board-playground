@@ -1,4 +1,4 @@
-import { BaseDomainEvent, BaseDomainEventProps } from '../base.domain-event';
+import { BaseDomainEvent, BaseDomainEventProps } from '../messages/base.domain-event';
 
 export abstract class DomainEventPublisherPort {
   abstract publish(

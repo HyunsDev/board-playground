@@ -11,7 +11,7 @@ import {
 import { PaginationQuery } from '@workspace/common';
 import { CausationCode, DomainCode, QueryCode } from '@workspace/domain';
 
-import { DrivenMessageMetadata } from './message-metadata';
+import { DrivenMessageMetadata } from '../message-metadata';
 
 export type BaseQueryProps<T> = AbstractQueryProps<T>;
 export type BasePaginatedQueryProps<T> = AbstractPaginatedQueryProps<PaginationQuery<T>>;

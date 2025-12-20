@@ -1,4 +1,7 @@
-import { BaseIntegrationEvent, BaseIntegrationEventProps } from '../base.integration-event';
+import {
+  BaseIntegrationEvent,
+  BaseIntegrationEventProps,
+} from '../messages/base.integration-event';
 
 export abstract class IntegrationEventPublisherPort {
   abstract publish(
