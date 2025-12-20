@@ -4,7 +4,7 @@ export * from './config';
 export * from './context';
 export * from './cqrs';
 export * from './database';
-export * from './event-bus';
+export * from './domain-event';
 export * from './health';
 export * from './logging';
 export * from './messaging';

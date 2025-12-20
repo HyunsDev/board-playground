@@ -3,12 +3,7 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
-import {
-  AbstractDomainEventPublisherPort,
-  DomainResult,
-  matchError,
-  UnexpectedDomainErrorException,
-} from '@workspace/backend-ddd';
+import { DomainResult, matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
 import { File, PrismaClient } from '@workspace/database';
 
 import { FileMapper } from './file.mapper';
@@ -16,6 +11,7 @@ import { FileEntity } from '../domain/file.entity';
 import { FileAlreadyExistsError, FileNotFoundError } from '../domain/file.errors';
 import { FileRepositoryPort } from '../domain/file.repository.port';
 
+import { DomainEventPublisherPort } from '@/base';
 import { BaseRepository } from '@/base/blocks/base.repository';
 import { PrismaService } from '@/modules/database';
 
@@ -25,9 +21,9 @@ export class FileRepository extends BaseRepository<FileEntity, File> implements 
     protected readonly prisma: PrismaService,
     protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
     protected readonly mapper: FileMapper,
-    protected readonly eventDispatcher: AbstractDomainEventPublisherPort,
+    protected readonly eventPublisher: DomainEventPublisherPort,
   ) {
-    super(prisma, txHost, mapper, eventDispatcher, new Logger(FileRepository.name));
+    super(prisma, txHost, mapper, eventPublisher, new Logger(FileRepository.name));
   }
 
   protected get delegate(): PrismaClient['file'] {

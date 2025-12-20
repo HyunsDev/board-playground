@@ -4,7 +4,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import {
   CoreConfigModule,
   DatabaseModule,
-  EventBusModule,
+  DomainEventModule,
   HttpContextModule,
   LoggingModule,
   SecurityModule,
@@ -44,7 +44,7 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
     CacheModule,
     StorageModule,
     StorageWorkerModule,
-    EventBusModule,
+    DomainEventModule,
     LoggingModule,
     MessagingModule,
     SecurityModule.forRoot({
@@ -62,7 +62,7 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
   exports: [
     HttpContextModule,
     DatabaseModule,
-    EventBusModule,
+    DomainEventModule,
     LoggingModule,
     SecurityModule,
     CqrsModule,

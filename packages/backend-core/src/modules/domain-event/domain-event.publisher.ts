@@ -1,12 +1,14 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 
-import { AbstractDomainEventPublisherPort, AbstractDomainEvent } from '@workspace/backend-ddd';
+import { AbstractDomainEvent } from '@workspace/backend-ddd';
 
 import { MessageContext, TransactionContext } from '../context';
 
+import { DomainEventPublisherPort } from '@/base';
+
 @Injectable({ scope: Scope.REQUEST })
-export class NestJSDomainEventPublisher implements AbstractDomainEventPublisherPort {
+export class DomainEventPublisher implements DomainEventPublisherPort {
   private events: AbstractDomainEvent<string, string, string>[] = [];
 
   constructor(
@@ -35,12 +37,10 @@ export class NestJSDomainEventPublisher implements AbstractDomainEventPublisherP
 
   async flush(): Promise<void> {
     // Context에서 메타데이터(TraceId, UserId 등) 가져오기
-    const metadata = this.messageContext.drivenMetadata;
 
     // 모든 이벤트에 메타데이터 주입 (Causation 추적용)
-    if (metadata) {
-      this.events.forEach((event) => event.updateMetadata(metadata));
-    }
+    const metadata = this.messageContext.getOrThrowDrivenMetadata();
+    this.events.forEach((event) => event.updateMetadata(metadata));
 
     // 실제 발행 (NestJS CQRS EventBus)
     this.eventBus.publishAll(this.events);
