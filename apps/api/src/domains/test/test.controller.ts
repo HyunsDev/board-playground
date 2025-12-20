@@ -4,11 +4,12 @@ import { ok } from 'neverthrow';
 import {
   HandlePub,
   HandleRpc,
+  IntegrationEventPublisher,
   MessageContext,
-  MessagingService,
   Pub,
   Public,
   Rpc,
+  RpcClient,
 } from '@workspace/backend-core';
 import { MessageResult } from '@workspace/backend-ddd';
 
@@ -23,14 +24,15 @@ export class TestController {
 
   constructor(
     private readonly testService: TestService,
-    private readonly messagingService: MessagingService,
+    private readonly integrationEventPublisher: IntegrationEventPublisher,
+    private readonly rpcClient: RpcClient,
     private readonly messageContext: MessageContext,
   ) {}
 
   @Get('pub')
   async pub() {
     void this.messageContext.createMetadata('system:infra:trg:test');
-    void this.messagingService.emit(
+    void this.integrationEventPublisher.publish(
       new TestPub(null, {
         message: 'This is a test message from TestController.pub',
       }),
@@ -46,7 +48,7 @@ export class TestController {
   @Get('ping')
   async ping() {
     void this.messageContext.createMetadata('system:infra:trg:test');
-    const result = await this.messagingService.send(
+    const result = await this.rpcClient.send(
       new TestRpc(null, {
         ping: 'Ping from TestController.ping',
       }),

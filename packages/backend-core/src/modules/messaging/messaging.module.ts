@@ -2,8 +2,9 @@ import { Global, Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
 import { MESSAGING_SERVICE_TOKEN } from './messaging.constant';
-import { MessagingService } from './messaging.service';
 import { RedisConfig, redisConfig } from '../config';
+import { IntegrationEventPublisher } from './integration-event.publisher';
+import { RpcClient } from './rpc-client';
 import { GlobalRpcExceptionFilter } from './rpc-exception.filter';
 import { CoreContextModule } from '../context/context.module';
 
@@ -36,7 +37,7 @@ import { CoreContextModule } from '../context/context.module';
       },
     ]),
   ],
-  providers: [MessagingService, GlobalRpcExceptionFilter],
-  exports: [MessagingService],
+  providers: [IntegrationEventPublisher, RpcClient, GlobalRpcExceptionFilter],
+  exports: [IntegrationEventPublisher, RpcClient],
 })
 export class MessagingModule {}

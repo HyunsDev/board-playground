@@ -9,11 +9,11 @@ import { MessageResult } from '@workspace/backend-ddd';
 import { MESSAGING_SERVICE_TOKEN } from './messaging.constant';
 import { MessageContext } from '../context';
 
-import { BasePub, BaseRpc } from '@/base';
+import { BaseRpc } from '@/base';
 
 @Injectable()
-export class MessagingService {
-  private readonly logger = new Logger(MessagingService.name);
+export class RpcClient {
+  private readonly logger = new Logger(RpcClient.name);
 
   constructor(
     @Inject(MESSAGING_SERVICE_TOKEN) private readonly client: ClientProxy,
@@ -24,7 +24,7 @@ export class MessagingService {
     rpc: TRpc,
     { timeoutMs }: { timeoutMs?: number } = { timeoutMs: 5000 },
   ): Promise<TResult> {
-    const metadata = this.messageContext.drivenMetadata;
+    const metadata = this.messageContext.getOrThrowDrivenMetadata();
     const timeoutMsFinal = rpc.options.timeoutMs ?? timeoutMs ?? 5000;
     rpc.updateMetadata(metadata);
 
@@ -41,15 +41,6 @@ export class MessagingService {
       this.logger.error(`[RPC] Error processing pattern ${rpc.code}`, error);
       throw error;
     }
-  }
-
-  emit<TPub extends BasePub<any>>(pub: TPub): void {
-    const metadata = this.messageContext.drivenMetadata;
-    pub.updateMetadata(metadata);
-
-    this.logger.debug(`[Event] Emitting message to pattern: ${pub.code}`);
-
-    this.client.emit(pub.code, pub.toPlain());
   }
 
   private restoreNeverthrow<T>(response: any): T {
