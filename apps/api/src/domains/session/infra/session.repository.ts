@@ -1,9 +1,12 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
-import { TransactionHost } from '@nestjs-cls/transactional';
-import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err, ok } from 'neverthrow';
 
-import { BaseRepository, DomainEventPublisherPort, PrismaService } from '@workspace/backend-core';
+import {
+  BaseRepository,
+  DomainEventPublisherPort,
+  PrismaService,
+  TransactionContext,
+} from '@workspace/backend-core';
 import { DomainResult, matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
 import { Session, PrismaClient, Prisma } from '@workspace/database';
 
@@ -21,12 +24,12 @@ export class SessionRepository
 {
   constructor(
     protected readonly prisma: PrismaService,
-    protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+    protected readonly txContext: TransactionContext,
     protected readonly mapper: SessionMapper,
     protected readonly refreshTokenMapper: RefreshTokenMapper,
     protected readonly eventDispatcher: DomainEventPublisherPort,
   ) {
-    super(prisma, txHost, mapper, eventDispatcher, new Logger(SessionRepository.name));
+    super(prisma, txContext, mapper, eventDispatcher, new Logger(SessionRepository.name));
   }
 
   protected get delegate(): PrismaClient['session'] {

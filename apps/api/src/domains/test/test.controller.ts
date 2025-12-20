@@ -4,7 +4,7 @@ import { ok } from 'neverthrow';
 import {
   HandlePub,
   HandleRpc,
-  IntegrationEventPublisher,
+  IntegrationEventPublisherPort,
   MessageContext,
   Pub,
   Public,
@@ -24,7 +24,7 @@ export class TestController {
 
   constructor(
     private readonly testService: TestService,
-    private readonly integrationEventPublisher: IntegrationEventPublisher,
+    private readonly integrationEventPublisher: IntegrationEventPublisherPort,
     private readonly rpcClient: RpcClient,
     private readonly messageContext: MessageContext,
   ) {}

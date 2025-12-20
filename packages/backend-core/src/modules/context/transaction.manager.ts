@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { TransactionHost } from '@nestjs-cls/transactional';
-import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { err } from 'neverthrow';
 
 import { DomainError, DomainResult } from '@workspace/backend-ddd';
+
+import { TransactionContext } from './contexts';
 
 import { DomainEventPublisherPort, IntegrationEventPublisherPort } from '@/base';
 import { JobDispatcherPort } from '@/base/messages/ports/job.dispatcher.port';
@@ -19,7 +19,7 @@ class TransactionRollbackError<E> extends Error {
 @Injectable()
 export class TransactionManager {
   constructor(
-    private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+    private readonly txContext: TransactionContext,
     private readonly eventPublisher: DomainEventPublisherPort,
     private readonly jobDispatcher: JobDispatcherPort,
     private readonly integrationEventPublisher: IntegrationEventPublisherPort,
@@ -29,7 +29,7 @@ export class TransactionManager {
     operation: () => Promise<Res>,
   ): Promise<Res> {
     try {
-      const result = await this.txHost.withTransaction(async () => {
+      const result = await this.txContext.txHost.withTransaction(async () => {
         try {
           const res = await operation();
           if (res.isErr()) {
