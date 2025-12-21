@@ -10,7 +10,7 @@ import { HEALTH_OPTIONS, HealthModuleOptions } from './health.interface';
 import { CacheHealthIndicator } from './indicators/cache.indicator';
 
 import { PrismaService } from '@/modules/persistence/database';
-import { Public } from '@/modules/security';
+import { Public } from '@/modules/security/access-control';
 
 @Controller('health')
 export class HealthController {

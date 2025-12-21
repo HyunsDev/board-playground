@@ -26,7 +26,7 @@ export interface SecurityModuleOptions {
 }
 
 @Module({})
-export class SecurityModule {
+export class AccessControlModule {
   static forRoot(options: SecurityModuleOptions = {}): DynamicModule {
     const { enableGlobalAuthGuard = true } = options;
 
@@ -40,7 +40,7 @@ export class SecurityModule {
     }
 
     return {
-      module: SecurityModule,
+      module: AccessControlModule,
       imports: [
         PassportModule,
         JwtModule.registerAsync({
