@@ -1,21 +1,58 @@
 import fastifyCookie from '@fastify/cookie'; // 쿠키 플러그인 변경
+import helmet from '@fastify/helmet';
+import fastifyRateLimit from '@fastify/rate-limit';
 import { NestFastifyApplication } from '@nestjs/platform-fastify'; // 타입 변경
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 
-import { httpConfig, HttpConfig } from '@/modules/config';
+import { ApiError } from '@workspace/common';
+
+import { httpConfig, HttpConfig } from '@/modules/foundation/config';
 
 export interface BootstrapOptions {
   enableCors?: boolean;
 }
 
 export async function setupHttpApp(app: NestFastifyApplication, options: BootstrapOptions = {}) {
-  // Logger 연결
+  // Logger
   const logger = app.get(Logger);
   app.useLogger(logger);
   app.flushLogs();
 
   // Global Interceptors
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
+
+  // helmet
+  await app.register(helmet, {
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: [`'self'`],
+        styleSrc: [`'self'`, `'unsafe-inline'`],
+        imgSrc: [`'self'`, 'data:', 'validator.swagger.io'],
+        scriptSrc: [`'self'`, `'unsafe-inline'`],
+      },
+    },
+  });
+
+  // config
+  const config = app.get<HttpConfig>(httpConfig.KEY);
+
+  // rate-limit
+  await app.register(fastifyRateLimit, {
+    max: config.throttleLimit,
+    timeWindow: config.throttleTtl * 1000,
+
+    keyGenerator: (req) => {
+      return req.ip;
+    },
+    errorResponseBuilder: (req, context) => {
+      return {
+        status: 429,
+        code: 'TOO_MANY_REQUESTS',
+        message: `요청이 너무 많습니다. ${context.after}초 후에 다시 시도해주세요.`,
+      } satisfies ApiError;
+    },
+    allowList: ['127.0.0.1', '::1'],
+  });
 
   // CORS
   if (options.enableCors) {
@@ -25,12 +62,9 @@ export async function setupHttpApp(app: NestFastifyApplication, options: Bootstr
     });
   }
 
-  // Cookie Parser 교체 -> Fastify Plugin 등록
-  const { cookieSecret } = app.get<HttpConfig>(httpConfig.KEY);
-
-  // app.use(cookieParser()) 대신 app.register 사용
+  // Cookie
   await app.register(fastifyCookie, {
-    secret: cookieSecret, // 서명(signed) 쿠키 사용 시 필요
+    secret: config.cookieSecret,
   });
 
   // Graceful Shutdown
