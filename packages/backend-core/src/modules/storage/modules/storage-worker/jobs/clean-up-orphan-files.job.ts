@@ -7,7 +7,7 @@ import { asJobCode, DomainCodeEnums, TaskQueueCodeEnum } from '@workspace/domain
 import { StorageGCService } from '../../storage/storage-gc.service';
 
 import { BaseJob, BaseJobProps, IJobHandler } from '@/base';
-import { TransactionManager } from '@/modules/context';
+import { TransactionManager } from '@/modules/foundation/context';
 
 const cleanUpOrphanFilesJobSchema = z.object({});
 

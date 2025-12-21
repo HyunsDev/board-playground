@@ -6,7 +6,7 @@ import { UserRole } from '@workspace/domain';
 
 import { ROLES_KEY } from '../decorators/roles.decorator';
 
-import { TokenContext } from '@/modules/context';
+import { TokenContext } from '@/modules/foundation/context';
 
 @Injectable()
 export class RolesGuard implements CanActivate {

@@ -4,9 +4,9 @@ import { TaskQueueCodeEnum } from '@workspace/domain';
 
 import { CleanUpOrphanFilesJobHandler } from './jobs/clean-up-orphan-files.job';
 
-import { CoreContext } from '@/modules/context';
-import { Processor } from '@/modules/task-queue/decorators';
-import { JobProcessor } from '@/modules/task-queue/job.processor';
+import { CoreContext } from '@/modules/foundation/context';
+import { Processor } from '@/modules/messaging/task-queue/decorators';
+import { JobProcessor } from '@/modules/messaging/task-queue/job.processor';
 
 @Processor(TaskQueueCodeEnum.System.Storage)
 export class StorageProcessor extends JobProcessor {

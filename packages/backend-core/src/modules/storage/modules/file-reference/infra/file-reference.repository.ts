@@ -14,7 +14,7 @@ import {
 } from '../domain/file-reference.repository.port';
 
 import { BaseDirectRepository } from '@/base';
-import { PrismaService } from '@/modules/database';
+import { PrismaService } from '@/modules/persistence/database';
 
 @Injectable()
 export class FileReferenceRepository

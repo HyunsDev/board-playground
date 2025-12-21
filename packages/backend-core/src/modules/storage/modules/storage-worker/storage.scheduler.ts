@@ -9,8 +9,8 @@ import { TriggerCodeEnum } from '@workspace/domain';
 import { CleanUpOrphanFilesJob } from './jobs/clean-up-orphan-files.job';
 
 import { DrivenMessageMetadata } from '@/base';
-import { MessageContext } from '@/modules/context';
-import { InjectTaskQueue } from '@/modules/task-queue/decorators';
+import { MessageContext } from '@/modules/foundation/context';
+import { InjectTaskQueue } from '@/modules/messaging/task-queue/decorators';
 
 @Injectable()
 export class StorageScheduler implements OnApplicationBootstrap {

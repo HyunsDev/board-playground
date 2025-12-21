@@ -7,7 +7,7 @@ import { StorageProcessor } from './storage.processor';
 import { StorageScheduler } from './storage.scheduler';
 import { StorageModule } from '../storage/storage.module';
 
-import { TaskQueueModule } from '@/modules/task-queue';
+import { TaskQueueModule } from '@/modules/messaging/task-queue';
 
 @Module({
   imports: [

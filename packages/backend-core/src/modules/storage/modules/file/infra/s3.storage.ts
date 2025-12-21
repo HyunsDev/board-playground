@@ -15,7 +15,7 @@ import { FileNotFoundError } from '../domain';
 import { InvalidS3MetadataException, UnexpectedS3Exception } from '../domain/file.exceptions';
 import { FileStoragePort, PresignedUrlOptions } from '../domain/file.storage.port';
 
-import { SsmConfig, ssmConfig } from '@/modules/config';
+import { SsmConfig, ssmConfig } from '@/modules/foundation/config';
 
 @Injectable()
 export class S3Storage implements FileStoragePort {

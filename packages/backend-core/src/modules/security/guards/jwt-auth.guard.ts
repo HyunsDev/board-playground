@@ -13,8 +13,8 @@ import { DomainCodeEnums, TokenPayload, TokenPayloadSchema } from '@workspace/do
 
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
-import { TokenContext } from '@/modules/context';
-import { systemLog, SystemLogActionEnum } from '@/modules/logging';
+import { TokenContext } from '@/modules/foundation/context';
+import { systemLog, SystemLogActionEnum } from '@/modules/observability/logging';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {

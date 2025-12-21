@@ -4,7 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { TokenPayload } from '@workspace/domain';
 
-import { AccessTokenConfig, accessTokenConfig } from '@/modules/config';
+import { AccessTokenConfig, accessTokenConfig } from '@/modules/foundation/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
