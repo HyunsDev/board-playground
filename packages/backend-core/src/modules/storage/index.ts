@@ -1,1 +1,2 @@
-export * from './modules';
+export * from './storage';
+export * from './storage-worker';

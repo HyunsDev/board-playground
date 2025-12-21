@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
 import { ReferencedFileCannotBeDeletedError } from './storage.errors';
-import { FileService, InitializeUploadParam } from '../file/application/file.service';
+import { FileService, InitializeUploadParam } from './modules/file/application/file.service';
 import {
   CreateFileReferenceParam,
   FileReferenceRepositoryPort,
-} from '../file-reference/domain/file-reference.repository.port';
+} from './modules/file-reference/domain/file-reference.repository.port';
 
 @Injectable()
 export class StorageService {

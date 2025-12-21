@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
-import { FileService } from '../file/application/file.service';
+import { FileService } from './modules/file/application/file.service';
 
 @Injectable()
 export class StorageGCService {
