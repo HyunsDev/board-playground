@@ -6,7 +6,7 @@ import {
   DomainEventModule,
   HttpContextModule,
   LoggingModule,
-  SecurityModule,
+  AccessControlModule,
   HealthModule,
   CacheModule,
   accessTokenConfig,
@@ -47,7 +47,7 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
     LoggingModule,
     MessagingModule,
     CoreCqrsModule,
-    SecurityModule.forRoot({
+    AccessControlModule.forRoot({
       enableGlobalAuthGuard: true,
     }),
     ExceptionFilterModule,
@@ -64,7 +64,7 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
     DatabaseModule,
     DomainEventModule,
     LoggingModule,
-    SecurityModule,
+    AccessControlModule,
     CoreCqrsModule,
   ],
 })
