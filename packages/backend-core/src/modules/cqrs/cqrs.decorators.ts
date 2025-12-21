@@ -7,10 +7,14 @@ import {
 
 import { MessageConstructor } from '@workspace/backend-ddd';
 
-import { InvalidHandlerException, LogTypeEnum, toCommandLogData, toQueryLogData } from '../logging';
-import { measureAndLog } from '../logging/instrumentations/measure.utils';
-
 import { BaseCommand, BaseCommandProps, BaseQuery, BaseQueryProps } from '@/base';
+import {
+  InvalidHandlerException,
+  LogTypeEnum,
+  toCommandLogData,
+  toQueryLogData,
+  measureAndLog,
+} from '@/modules/logging';
 
 export const QueryHandler = <
   T extends MessageConstructor<BaseQuery<BaseQueryProps<any>, any, any>>,

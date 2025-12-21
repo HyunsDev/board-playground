@@ -4,7 +4,8 @@ import { Global, Module } from '@nestjs/common';
 import { Keyv } from 'keyv';
 
 import { CacheService } from './cache.service';
-import { RedisConfig, redisConfig } from '../config';
+
+import { RedisConfig, redisConfig } from '@/modules/config';
 
 @Global()
 @Module({

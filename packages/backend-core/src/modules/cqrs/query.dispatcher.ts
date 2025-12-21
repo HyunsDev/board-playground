@@ -3,9 +3,8 @@ import { QueryBus } from '@nestjs/cqrs';
 
 import { MessageResult } from '@workspace/backend-ddd';
 
-import { MessageContext } from '../context';
-
 import { BaseQuery, QueryDispatcherPort } from '@/base';
+import { MessageContext } from '@/modules/context';
 
 @Injectable()
 export class QueryDispatcher implements QueryDispatcherPort {

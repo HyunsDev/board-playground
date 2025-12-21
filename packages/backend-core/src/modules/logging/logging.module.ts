@@ -4,12 +4,12 @@ import { DiscoveryModule } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 import { LoggerModule } from 'nestjs-pino';
 
-import { CoreContext, TokenContext } from '../context';
 import { getCommonPinoConfig } from './config/pino-common.config';
 import { createDevLoggerStream } from './config/pino-pretty.config';
 import { EventPublishInstrumentation } from './instrumentations/event-publish.instrumentation';
 
 import { CoreConfig, coreConfig } from '@/modules/config';
+import { CoreContext, TokenContext } from '@/modules/context';
 import { CoreContextModule } from '@/modules/context/context.module';
 
 @Module({

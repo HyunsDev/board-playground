@@ -3,9 +3,10 @@ import { TerminusModule, PrismaHealthIndicator } from '@nestjs/terminus';
 
 import { HealthController } from './health.controller';
 import { HEALTH_OPTIONS, HealthModuleOptions } from './health.interface';
-import { CacheModule } from '../cache';
-import { DatabaseModule } from '../database';
 import { CacheHealthIndicator } from './indicators/cache.indicator';
+
+import { CacheModule } from '@/modules/cache';
+import { DatabaseModule } from '@/modules/database';
 
 @Module({})
 export class HealthModule {

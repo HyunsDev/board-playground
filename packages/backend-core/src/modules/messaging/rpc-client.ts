@@ -7,9 +7,9 @@ import { firstValueFrom, map, timeout } from 'rxjs';
 import { MessageResult } from '@workspace/backend-ddd';
 
 import { MESSAGING_SERVICE_TOKEN } from './messaging.constant';
-import { MessageContext } from '../context';
 
 import { BaseRpc } from '@/base';
+import { MessageContext } from '@/modules/context';
 
 @Injectable()
 export class RpcClient {

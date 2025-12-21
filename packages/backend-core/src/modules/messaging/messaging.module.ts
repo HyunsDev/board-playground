@@ -1,14 +1,14 @@
 import { Global, Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
-import { MESSAGING_SERVICE_TOKEN } from './messaging.constant';
-import { RedisConfig, redisConfig } from '../config';
 import { IntegrationEventPublisher } from './integration-event.publisher';
+import { MESSAGING_SERVICE_TOKEN } from './messaging.constant';
 import { RpcClient } from './rpc-client';
 import { GlobalRpcExceptionFilter } from './rpc-exception.filter';
-import { CoreContextModule } from '../context/context.module';
 
 import { IntegrationEventPublisherPort } from '@/base';
+import { RedisConfig, redisConfig } from '@/modules/config';
+import { CoreContextModule } from '@/modules/context';
 
 @Global()
 @Module({

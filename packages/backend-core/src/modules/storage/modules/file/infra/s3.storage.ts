@@ -11,10 +11,11 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Inject, Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
-import { SsmConfig, ssmConfig } from '../../../../config';
 import { FileNotFoundError } from '../domain';
 import { InvalidS3MetadataException, UnexpectedS3Exception } from '../domain/file.exceptions';
 import { FileStoragePort, PresignedUrlOptions } from '../domain/file.storage.port';
+
+import { SsmConfig, ssmConfig } from '@/modules/config';
 
 @Injectable()
 export class S3Storage implements FileStoragePort {

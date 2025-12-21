@@ -3,11 +3,15 @@ import { applyDecorators, Logger, SetMetadata } from '@nestjs/common';
 
 import { MessageConstructor } from '@workspace/backend-ddd';
 
-import { InvalidHandlerException, LogTypeEnum, toJobLogData } from '../../logging';
-import { measureAndLog } from '../../logging/instrumentations/measure.utils';
 import { JOB_HANDLER_METADATA } from '../job.contants';
 
 import { BaseJob } from '@/base';
+import {
+  InvalidHandlerException,
+  LogTypeEnum,
+  toJobLogData,
+  measureAndLog,
+} from '@/modules/logging';
 
 export const JobHandler = (job: MessageConstructor<BaseJob<any>>) => {
   const instrumentation: MethodDecorator = (

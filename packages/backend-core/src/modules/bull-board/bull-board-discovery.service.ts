@@ -7,7 +7,7 @@ import { Queue } from 'bullmq';
 
 import { DomainCodeEnums } from '@workspace/domain';
 
-import { systemLog, SystemLogActionEnum } from '../logging';
+import { systemLog, SystemLogActionEnum } from '@/modules/logging';
 
 const BullBoardBasePath = '/_devtools/queues';
 

@@ -3,10 +3,9 @@ import { CommandBus } from '@nestjs/cqrs';
 
 import { MessageResult } from '@workspace/backend-ddd';
 
-import { MessageContext } from '../context';
-
 import { BaseCommand } from '@/base';
 import { CommandDispatcherPort } from '@/base/messages/ports';
+import { MessageContext } from '@/modules/context';
 
 @Injectable()
 export class CommandDispatcher implements CommandDispatcherPort {

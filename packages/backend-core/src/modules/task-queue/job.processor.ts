@@ -7,9 +7,9 @@ import { InvalidMessageException, MessageConstructor } from '@workspace/backend-
 
 import { JOB_HANDLER_METADATA } from './job.contants';
 import { JobCodeMismatchException } from './job.exceptions';
-import { CoreContext } from '../context';
 
 import { BaseJob, BaseJobProps, IJobHandler } from '@/base';
+import { CoreContext } from '@/modules/context';
 
 export abstract class JobProcessor extends WorkerHost {
   protected readonly handlers = new Map<

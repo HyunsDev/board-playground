@@ -3,9 +3,8 @@ import { EventBus } from '@nestjs/cqrs';
 
 import { AbstractDomainEvent } from '@workspace/backend-ddd';
 
-import { MessageContext, TransactionContext } from '../context';
-
 import { DomainEventPublisherPort } from '@/base';
+import { MessageContext, TransactionContext } from '@/modules/context';
 
 @Injectable({ scope: Scope.REQUEST })
 export class DomainEventPublisher implements DomainEventPublisherPort {

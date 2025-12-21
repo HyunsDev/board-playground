@@ -3,13 +3,13 @@ import { Inject, Injectable, Logger, Scope } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 
 import { MESSAGING_SERVICE_TOKEN } from './messaging.constant';
-import { MessageContext, TransactionContext } from '../context';
 
 import {
   BaseIntegrationEvent,
   BaseIntegrationEventProps,
   IntegrationEventPublisherPort,
 } from '@/base';
+import { MessageContext, TransactionContext } from '@/modules/context';
 
 @Injectable({ scope: Scope.REQUEST })
 export class IntegrationEventPublisher implements IntegrationEventPublisherPort {

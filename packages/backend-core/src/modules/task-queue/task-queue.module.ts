@@ -3,13 +3,13 @@ import { Module, Global, DynamicModule, Scope } from '@nestjs/common';
 
 import { TaskQueueCode } from '@workspace/domain';
 
-import { RedisConfig, redisConfig } from '../config';
 import { JobDispatcher } from './job.dispatcher';
 import { QueueRegistry } from './queue.registry';
 import { toSafeQueueName } from './task-queue.utils';
-import { CoreContextModule } from '../context/context.module';
 
 import { JobDispatcherPort } from '@/base/messages/ports/job.dispatcher.port';
+import { RedisConfig, redisConfig } from '@/modules/config';
+import { CoreContextModule } from '@/modules/context';
 
 export interface TaskQueueOption {
   queue: {

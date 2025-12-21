@@ -4,10 +4,13 @@ import { EventsHandler as NestEventHandler } from '@nestjs/cqrs';
 
 import { MessageConstructor } from '@workspace/backend-ddd';
 
-import { InvalidHandlerException, LogTypeEnum, toEventLogData } from '../logging';
-import { measureAndLog } from '../logging/instrumentations/measure.utils';
-
 import { BaseDomainEvent } from '@/base';
+import {
+  InvalidHandlerException,
+  LogTypeEnum,
+  toEventLogData,
+  measureAndLog,
+} from '@/modules/logging';
 
 export const DomainEventsHandler = (...events: MessageConstructor<BaseDomainEvent<any>>[]) => {
   const instrumentation: MethodDecorator = (

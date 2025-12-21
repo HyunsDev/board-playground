@@ -5,12 +5,16 @@ import { ClsInterceptor } from 'nestjs-cls';
 
 import { MessageConstructor } from '@workspace/backend-ddd';
 
-import { LogTypeEnum, toIntegrationEventLogData, toRpcLogData } from '../logging';
 import { GlobalRpcExceptionFilter } from './rpc-exception.filter';
-import { measureAndLog } from '../logging/instrumentations/measure.utils';
 
 import { BaseIntegrationEvent, BaseRpc } from '@/base';
 import { MessageTransformPipe, SetRequestIdFromMessagePipe } from '@/common/message';
+import {
+  LogTypeEnum,
+  toIntegrationEventLogData,
+  toRpcLogData,
+  measureAndLog,
+} from '@/modules/logging';
 
 /**
  * [RPC] 요청에 대한 응답을 처리하는 핸들러 (동기성)

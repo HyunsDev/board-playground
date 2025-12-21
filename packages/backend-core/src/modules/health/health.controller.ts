@@ -6,10 +6,11 @@ import {
   PrismaHealthIndicator,
 } from '@nestjs/terminus';
 
-import { PrismaService } from '../database';
 import { HEALTH_OPTIONS, HealthModuleOptions } from './health.interface';
-import { Public } from '../security';
 import { CacheHealthIndicator } from './indicators/cache.indicator';
+
+import { PrismaService } from '@/modules/database';
+import { Public } from '@/modules/security';
 
 @Controller('health')
 export class HealthController {

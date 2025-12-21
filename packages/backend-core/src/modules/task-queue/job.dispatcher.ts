@@ -3,11 +3,11 @@ import { Queue } from 'bullmq';
 
 import { TaskQueueCode } from '@workspace/domain';
 
-import { MessageContext, TransactionContext } from '../context';
 import { QueueRegistry } from './queue.registry';
 
 import { BaseJob, BaseJobProps } from '@/base';
 import { JobDispatcherPort } from '@/base/messages/ports/job.dispatcher.port';
+import { MessageContext, TransactionContext } from '@/modules/context';
 
 @Injectable({ scope: Scope.REQUEST }) // 요청(트랜잭션) 단위로 상태를 유지해야 하므로 REQUEST 스코프 필수
 export class JobDispatcher implements JobDispatcherPort {
