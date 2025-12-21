@@ -25,7 +25,6 @@ export class BullBoardDiscoveryService implements OnApplicationBootstrap {
   }
 
   private setupBullBoard() {
-    // 1. 애플리케이션의 모든 Provider 스캔 및 큐 필터링
     const providers = this.discoveryService.getProviders();
     const queues = providers
       .filter((wrapper) => wrapper.instance && wrapper.instance instanceof Queue)

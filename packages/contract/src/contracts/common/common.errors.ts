@@ -26,4 +26,9 @@ export const CommonApiErrors = defineErrorRecord({
     code: 'UNHANDLED_DOMAIN_ERROR',
     message: '처리되지 않은 도메인 오류가 발생했습니다',
   },
+  TooManyRequests: {
+    status: 429,
+    code: 'TOO_MANY_REQUESTS',
+    message: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.',
+  },
 });
