@@ -19,7 +19,7 @@ export const toHttpRequestLogData = <TMessage extends BaseHttpRequest<any, any>>
       duration: result.duration,
       method: message.data.method,
       url: message.data.url,
-      status: result.value?.value?.status,
+      status: result.value?._unsafeUnwrap()?.status,
       ...message.metadata,
     };
   }
@@ -33,7 +33,7 @@ export const toHttpRequestLogData = <TMessage extends BaseHttpRequest<any, any>>
       error: result.error,
       method: message.data.method,
       url: message.data.url,
-      status: result.value?.value?.status,
+      status: result.value?._unsafeUnwrap()?.status,
       ...message.metadata,
     };
   }
