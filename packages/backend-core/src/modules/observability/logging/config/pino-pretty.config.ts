@@ -8,6 +8,7 @@ import {
   formatCommandAndQueryResultLog,
   formatEventPublishedLog,
   formatEventResultLog,
+  formatHttpRequestResultLog,
   formatIntegrationEventResultLog,
   formatJobResultLog,
   formatRpcResultLog,
@@ -18,6 +19,7 @@ import {
   isEventLog,
   isEventPublishedLog,
   isHttpLog,
+  isHttpRequestLog,
   isIntegrationEventLog,
   isJobLog,
   isQueryLog,
@@ -68,7 +70,7 @@ export const createDevLoggerStream = async (): Promise<DestinationStream> => {
       },
     },
     ignore:
-      'pid,hostname,req,res,responseTime,context,reqId,userId,sessionId,httpMethod,reqUrl,resStatus,duration,errorCode,event,type,action,isError,correlationId,causationId,causationType,createdAt,queryData,error,handlerName,resourceId,resourceType,code,result',
+      'pid,hostname,req,res,responseTime,context,reqId,userId,sessionId,httpMethod,reqUrl,resStatus,duration,errorCode,event,type,action,isError,correlationId,causationId,causationType,createdAt,queryData,error,handlerName,resourceId,resourceType,code,result,domain',
 
     messageFormat: (log: any) => {
       if (isCommandLog(log)) {
@@ -97,6 +99,10 @@ export const createDevLoggerStream = async (): Promise<DestinationStream> => {
 
       if (isRpcLog(log)) {
         return formatRpcResultLog(log);
+      }
+
+      if (isHttpRequestLog(log)) {
+        return formatHttpRequestResultLog(log);
       }
 
       if (isDomainLog(log)) {

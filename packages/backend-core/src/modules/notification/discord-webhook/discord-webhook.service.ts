@@ -1,15 +1,18 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { APIEmbed } from 'discord-api-types/v10';
 
+import { DomainCodeEnums } from '@workspace/domain';
+
 import {
   DiscordWebhookUnregisteredException,
   InvalidDiscordWebhookUrlException,
 } from './discord-webhook.exceptions';
 import { DiscordWebhookModuleOptions } from './discord-webhook.interface';
 import { GetWebhookHttpRequest } from './http-requests/get-webhook.http-request';
-import { SendWebhookHttpRequest } from './http-requests/send-webhook.http-request copy';
+import { SendWebhookHttpRequest } from './http-requests/send-webhook.http-request';
 
 import { HttpClient } from '@/modules/messaging';
+import { systemLog, SystemLogActionEnum } from '@/modules/observability';
 
 export const WEBHOOK_MODULE_OPTIONS = Symbol('WEBHOOK_MODULE_OPTIONS');
 
@@ -32,20 +35,21 @@ export class DiscordWebhookService<TName extends string = string> implements OnM
   ) {}
 
   async onModuleInit() {
-    if (!this.options.webhooks || this.options.webhooks.length === 0) {
+    if (!this.options.webhooks || Object.keys(this.options.webhooks).length === 0) {
       this.logger.warn('No Discord webhooks configured.');
       return;
     }
 
-    for (const webhookOption of this.options.webhooks) {
+    for (const webhookName in this.options.webhooks) {
+      const webhookOption = this.options.webhooks[webhookName];
       const response = await this.httpClient.request(new GetWebhookHttpRequest(webhookOption.url));
 
       if (response.isErr()) {
-        throw new InvalidDiscordWebhookUrlException(webhookOption.name, webhookOption.url);
+        throw new InvalidDiscordWebhookUrlException(webhookName, webhookOption.url);
       }
 
       const data = response.value;
-      this.webhooks.set(webhookOption.name, {
+      this.webhooks.set(webhookName, {
         url: webhookOption.url,
         username: webhookOption.defaultUsername || data.data.name,
         avatarUrl: webhookOption.defaultAvatarUrl || data.data.avatar_url,
@@ -53,6 +57,15 @@ export class DiscordWebhookService<TName extends string = string> implements OnM
         guildId: data.data.guild_id,
       });
     }
+
+    this.logger.log(
+      systemLog(DomainCodeEnums.System.Lifecycle, SystemLogActionEnum.AppInitialize, {
+        msg: `Registered ${this.webhooks.size} Discord webhooks`,
+        data: {
+          webhookNames: Array.from(this.webhooks.keys()),
+        },
+      }),
+    );
   }
 
   async send(

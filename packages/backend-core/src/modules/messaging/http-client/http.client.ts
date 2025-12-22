@@ -4,6 +4,7 @@ import { AxiosError } from 'axios';
 import { err, ok } from 'neverthrow';
 
 import { DomainResult, InternalServerErrorException } from '@workspace/backend-ddd';
+import { TriggerCodeEnum } from '@workspace/domain';
 
 import {
   BaseHttpRequest,
@@ -30,7 +31,7 @@ export class HttpClient {
     TResult extends DomainResult<TOk, HttpRequestError>,
     TReq extends BaseHttpRequest<BaseHttpRequestProps<BaseHttpRequestData>, TOk>,
   >(httpRequest: TReq): Promise<TResult> {
-    const metadata = this.messageContext.getOrThrowDrivenMetadata();
+    const metadata = this.messageContext.getOrCreateDrivenMetadata(TriggerCodeEnum.SystemBoot);
     httpRequest.updateMetadata(metadata);
 
     const axiosRequest = async () => {

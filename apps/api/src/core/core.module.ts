@@ -22,6 +22,7 @@ import {
   ContextModule,
 } from '@workspace/backend-core';
 
+import { discordWebhookConfig } from './configs';
 import { refreshTokenConfig } from './configs/refresh-token.config';
 import { ExceptionFilterModule } from './exception-filter/exception-filter.module';
 
@@ -34,8 +35,10 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
         prismaConfig,
         accessTokenConfig,
         redisConfig,
-        refreshTokenConfig,
         ssmConfig,
+
+        refreshTokenConfig,
+        discordWebhookConfig,
       ],
     }),
     TaskQueueModule.forRoot(),

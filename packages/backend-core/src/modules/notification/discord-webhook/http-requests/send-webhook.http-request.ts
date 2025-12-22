@@ -19,9 +19,8 @@ type SendWebhookHttpRequestProps = BaseHttpRequestProps<{
 export class SendWebhookHttpRequest extends BaseHttpRequest<
   SendWebhookHttpRequestProps,
   {
-    status: 200;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: any;
+    status: 204;
+    data: '';
   }
 > {
   readonly resourceType = DomainCodeEnums.System.Notification;
