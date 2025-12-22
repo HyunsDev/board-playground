@@ -1,19 +1,22 @@
 import { ModuleMetadata, InjectionToken } from '@nestjs/common';
 
-export interface WebhookOption {
-  name: string;
+export interface WebhookOption<TName extends string = string> {
+  name: TName;
   url: string;
   defaultUsername?: string;
   defaultAvatarUrl?: string;
 }
 
-export interface DiscordWebhookModuleOptions {
-  webhooks: WebhookOption[];
+export interface DiscordWebhookModuleOptions<TName extends string = string> {
+  webhooks: WebhookOption<TName>[];
 }
 
-export interface DiscordWebhookModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
+export interface DiscordWebhookModuleAsyncOptions<TName extends string = string> extends Pick<
+  ModuleMetadata,
+  'imports'
+> {
   useFactory: (
     ...args: unknown[]
-  ) => Promise<DiscordWebhookModuleOptions> | DiscordWebhookModuleOptions;
+  ) => Promise<DiscordWebhookModuleOptions<TName>> | DiscordWebhookModuleOptions<TName>;
   inject?: InjectionToken[];
 }

@@ -5,7 +5,7 @@ import { DiscordWebhookService, WEBHOOK_MODULE_OPTIONS } from './discord-webhook
 
 @Module({})
 export class DiscordWebhookModule {
-  static forFeatureAsync(options: DiscordWebhookModuleAsyncOptions): DynamicModule {
+  static forAsync(options: DiscordWebhookModuleAsyncOptions): DynamicModule {
     const asyncProvider: Provider = {
       provide: WEBHOOK_MODULE_OPTIONS,
       useFactory: options.useFactory,
