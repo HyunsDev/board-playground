@@ -4,6 +4,7 @@ import {
   EventLogData,
   EventPublishedLogData,
   HttpLogData,
+  HttpRequestLogData,
   IntegrationEventLogData,
   JobLogData,
   QueryLogData,
@@ -48,4 +49,8 @@ export const isIntegrationEventLog = (log: { type?: string }): log is Integratio
 
 export const isRpcLog = (log: { type?: string }): log is RpcLogData => {
   return log?.type === LogTypeEnum.Rpc;
+};
+
+export const isHttpRequestLog = (log: { type?: string }): log is HttpRequestLogData => {
+  return log?.type === LogTypeEnum.HttpRequest;
 };

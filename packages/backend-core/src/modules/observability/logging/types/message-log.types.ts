@@ -79,13 +79,24 @@ export type IntegrationEventLogData = BaseMessageLogData &
     code: string;
     handlerName: string;
   };
+
+export type HttpRequestLogData = BaseMessageLogData &
+  MessageResult & {
+    type: LogTypeEnum['HttpRequest'];
+    code: string;
+    method: string;
+    url: string;
+    status?: number;
+  };
+
 export type MessageResultLogData =
   | CommandLogData
   | QueryLogData
   | EventLogData
   | JobLogData
   | RpcLogData
-  | IntegrationEventLogData;
+  | IntegrationEventLogData
+  | HttpRequestLogData;
 
 export type MessageLogData =
   | CommandLogData
@@ -94,4 +105,5 @@ export type MessageLogData =
   | EventPublishedLogData
   | JobLogData
   | RpcLogData
-  | IntegrationEventLogData;
+  | IntegrationEventLogData
+  | HttpRequestLogData;

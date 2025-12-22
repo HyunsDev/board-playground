@@ -5,3 +5,4 @@ export * from './abstract.message';
 export * from './abstract.query';
 export * from './abstract.rpc';
 export * from './abstract.integration-event';
+export * from './abstract.http-request';
