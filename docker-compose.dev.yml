@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   # 1. PostgreSQL
@@ -43,27 +43,9 @@ services:
   #     - "./packages/infra/localstack:/etc/localstack/init/ready.d"
   #     - "/var/run/docker.sock:/var/run/docker.sock"
   #     - localstack_data:/var/lib/localstack
-      
-  otel-collector:
-    image: otel/opentelemetry-collector-contrib:latest
-    container_name: board_playground_otel_collector
-    command: ["--config=/etc/otel-collector.yaml"]
-    volumes:
-      - ./otel-collector.yaml:/etc/otel-collector.yaml
-    ports:
-      - "4317:4317" # OTLP gRPC Receiver
-      - "4318:4318" # OTLP HTTP Receiver
-    depends_on:
-      - jaeger
 
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    container_name: board_playground_jaeger
-    ports:
-      - "16686:16686" 
-      - "14250:14250" 
-    environment:
-      - COLLECTOR_OTLP_ENABLED=true
+
+    
 
 volumes:
   postgres_data:

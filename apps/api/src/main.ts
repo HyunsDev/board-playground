@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import '@workspace/backend-core/instrumentation';
 
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
