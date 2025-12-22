@@ -5,7 +5,7 @@ import { SseEventController } from './sse.event.controller';
 import { SseHttpController } from './sse.http.controller';
 import { SsePublisher } from './sse.publisher';
 
-import { MessagingModule } from '@/modules/messaging';
+import { MicroservicesModule } from '@/modules/messaging';
 import { AccessControlModule } from '@/modules/security';
 
 const SSE_MODULE_OPTIONS = Symbol('SSE_MODULE_OPTIONS');
@@ -31,7 +31,7 @@ export class SseModule {
   static forServer(): DynamicModule {
     return {
       module: SseModule,
-      imports: [AccessControlModule, MessagingModule],
+      imports: [AccessControlModule, MicroservicesModule],
       providers: [
         SseConnectionService,
         SsePublisher,
@@ -53,7 +53,7 @@ export class SseModule {
   static forPublisher(): DynamicModule {
     return {
       module: SseModule,
-      imports: [MessagingModule],
+      imports: [MicroservicesModule],
       controllers: [],
       providers: [
         SsePublisher,

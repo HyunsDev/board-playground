@@ -16,7 +16,7 @@ import {
   ssmConfig,
   StorageModule,
   StorageWorkerModule,
-  MessagingModule,
+  MicroservicesModule,
   CqrsModule,
   SseModule,
   ContextModule,
@@ -52,7 +52,7 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
     StorageWorkerModule,
     DomainEventModule,
     LoggingModule,
-    MessagingModule,
+    MicroservicesModule,
     CqrsModule,
     AccessControlModule.forRoot({
       enableGlobalAuthGuard: true,
