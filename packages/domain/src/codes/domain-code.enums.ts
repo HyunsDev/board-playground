@@ -34,6 +34,7 @@ export const TaskQueueCodeEnum = defineDomainCodeEnum({
   System: {
     Storage: 'system:storage',
     Test: 'system:test',
+    Mail: 'system:mail',
   },
 });
 
