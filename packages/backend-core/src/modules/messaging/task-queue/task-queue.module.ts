@@ -9,7 +9,6 @@ import { toSafeQueueName } from './task-queue.utils';
 
 import { JobDispatcherPort } from '@/base/messages/ports/job.dispatcher.port';
 import { RedisConfig, redisConfig } from '@/modules/foundation/config';
-import { CoreContextModule } from '@/modules/foundation/context';
 
 export interface TaskQueueOption {
   queue: {
@@ -25,7 +24,6 @@ export class TaskQueueModule {
       module: TaskQueueModule,
       global: true,
       imports: [
-        CoreContextModule,
         BullModule.forRootAsync({
           inject: [redisConfig.KEY],
           useFactory: async (config: RedisConfig) => ({

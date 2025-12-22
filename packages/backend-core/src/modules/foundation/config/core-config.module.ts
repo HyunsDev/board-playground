@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { ConfigFactory, ConfigModule } from '@nestjs/config';
+import { ConfigFactory, ConfigModule as NestConfigModule } from '@nestjs/config';
 
 import { coreConfig } from './configs/core.config';
 
@@ -8,22 +8,22 @@ export interface CoreConfigOptions {
 }
 
 @Module({})
-export class CoreConfigModule {
+export class ConfigModule {
   static forRoot(options: CoreConfigOptions = {}): DynamicModule {
     const { extraLoad = [] } = options;
 
     const finalLoad = [coreConfig, ...extraLoad];
 
     return {
-      module: CoreConfigModule,
+      module: ConfigModule,
       imports: [
-        ConfigModule.forRoot({
+        NestConfigModule.forRoot({
           isGlobal: true,
           load: finalLoad,
           envFilePath: ['.env.local', '.env'],
         }),
       ],
-      exports: [ConfigModule],
+      exports: [NestConfigModule],
     };
   }
 }

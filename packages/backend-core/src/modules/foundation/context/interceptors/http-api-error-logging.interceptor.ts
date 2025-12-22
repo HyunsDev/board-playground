@@ -5,7 +5,7 @@ import { tap } from 'rxjs/operators';
 import { CoreContext } from '../contexts';
 
 @Injectable()
-export class ErrorLoggingInterceptor implements NestInterceptor {
+export class HttpApiErrorLoggingInterceptor implements NestInterceptor {
   constructor(private readonly coreCtx: CoreContext) {}
 
   intercept(_context: ExecutionContext, next: CallHandler): Observable<unknown> {
