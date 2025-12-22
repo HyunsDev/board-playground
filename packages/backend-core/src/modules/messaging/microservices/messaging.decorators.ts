@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { applyDecorators, Logger, UseFilters, UseInterceptors, UsePipes } from '@nestjs/common';
-import { MessagePattern, Payload, Ctx, RedisContext } from '@nestjs/microservices';
+import { MessagePattern, Payload, Ctx, RedisContext, EventPattern } from '@nestjs/microservices';
 import { ClsInterceptor } from 'nestjs-cls';
 
 import { MessageConstructor } from '@workspace/backend-ddd';
@@ -84,7 +84,7 @@ export const HandleIntegrationEvent = (pub: MessageConstructor<BaseIntegrationEv
   // 2. 데코레이터 합성
   return applyDecorators(
     instrumentation,
-    MessagePattern(pub.code),
+    EventPattern(pub.code),
     UseInterceptors(ClsInterceptor),
     UsePipes(MessageTransformPipe(pub)),
     UsePipes(SetRequestIdFromMessagePipe()),
