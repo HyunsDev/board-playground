@@ -37,17 +37,15 @@ export abstract class JobProcessor extends WorkerHost {
         | undefined;
 
       if (!jobClass) {
-        this.logger.error(
-          `Handler ${handler.constructor.name} has no mapped JobClass. Did you forget @HandleJob decorator?`,
+        throw new Error(
+          `Handler ${handler.constructor.name} has no mapped JobClass. Did you forget @JobHandler decorator?`,
         );
-        continue;
       }
 
-      // 3. JobClass의 static property인 code를 가져옴
       const jobCode = jobClass.code;
 
       if (this.handlers.has(jobCode)) {
-        this.logger.warn(`Duplicate handler found for jobCode: ${jobCode}`);
+        throw new Error(`Duplicate handler for jobCode: ${jobCode}`);
       }
 
       this.logger.log(`Registered JobHandler: ${handler.constructor.name} for [${jobCode}]`);
