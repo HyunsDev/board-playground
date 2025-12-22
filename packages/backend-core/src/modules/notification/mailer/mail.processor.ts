@@ -9,11 +9,14 @@ import { JobProcessor, Processor } from '@/modules/messaging';
 
 @Processor(TaskQueueCodeEnum.System.Mail)
 export class MailProcessor extends JobProcessor {
+  logger = new Logger(MailProcessor.name);
+
   constructor(
     readonly coreContext: CoreContext,
-    readonly logger: Logger,
     readonly sendMailJobHandler: SendMailJobHandler,
   ) {
+    const logger = new Logger(MailProcessor.name);
     super(coreContext, logger, [sendMailJobHandler]);
+    this.logger = logger;
   }
 }

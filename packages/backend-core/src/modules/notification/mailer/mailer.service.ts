@@ -15,7 +15,7 @@ export class MailerService {
   ) {
     // OAuth2 설정
     this.transporter = nodemailer.createTransport({
-      service: 'gmail', // Google Workspace/Gmail 사용 시 편리한 단축 설정
+      service: 'gmail',
       auth: {
         type: 'OAuth2',
         user: this.config.mailUser,

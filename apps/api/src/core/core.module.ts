@@ -20,6 +20,8 @@ import {
   CqrsModule,
   SseModule,
   ContextModule,
+  mailerConfig,
+  MailerModule,
 } from '@workspace/backend-core';
 
 import { discordWebhookConfig } from './configs';
@@ -36,6 +38,7 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
         accessTokenConfig,
         redisConfig,
         ssmConfig,
+        mailerConfig,
 
         refreshTokenConfig,
         discordWebhookConfig,
@@ -66,6 +69,7 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
       },
     }),
     SseModule.forServer(),
+    MailerModule.forSend(),
   ],
   exports: [
     ContextModule,
