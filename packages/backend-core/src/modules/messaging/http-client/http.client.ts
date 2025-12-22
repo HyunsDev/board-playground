@@ -17,8 +17,8 @@ import { LogTypeEnum, measureAndLog } from '@/modules/observability';
 import { toHttpRequestLogData } from '@/modules/observability/logging/mappers/toHttpRequestLogData';
 
 @Injectable()
-export class HttpRequestService {
-  private logger = new Logger(HttpRequestService.name);
+export class HttpClient {
+  private logger = new Logger(HttpClient.name);
 
   constructor(
     private readonly httpService: HttpService,
@@ -28,7 +28,7 @@ export class HttpRequestService {
   async request<
     TOk extends HttpRequestResponseData,
     TResult extends DomainResult<TOk, HttpRequestError>,
-    TReq extends BaseHttpRequest<BaseHttpRequestProps<BaseHttpRequestData>, TOk, TResult>,
+    TReq extends BaseHttpRequest<BaseHttpRequestProps<BaseHttpRequestData>, TOk>,
   >(httpRequest: TReq): Promise<TResult> {
     const metadata = this.messageContext.getOrThrowDrivenMetadata();
     httpRequest.updateMetadata(metadata);

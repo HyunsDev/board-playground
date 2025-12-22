@@ -67,7 +67,7 @@ export type MeasureMessage =
   | BaseJob<any>
   | BaseIntegrationEvent<any>
   | BaseRpc<any, any, any>
-  | BaseHttpRequest<any, any, any>;
+  | BaseHttpRequest<any, any>;
 
 export type LogDataMapper<
   TMessage extends MeasureMessage,
