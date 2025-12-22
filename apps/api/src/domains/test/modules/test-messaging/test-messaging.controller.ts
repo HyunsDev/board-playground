@@ -15,8 +15,8 @@ import {
 import { MessageResult } from '@workspace/backend-ddd';
 import { TriggerCodeEnum } from '@workspace/domain';
 
-import { TestPub } from '../../messages/test.pub';
-import { TestRpc } from '../../messages/test.rpc';
+import { TestPub } from './test.pub';
+import { TestRpc } from './test.rpc';
 
 @Public()
 @Controller('_test')
