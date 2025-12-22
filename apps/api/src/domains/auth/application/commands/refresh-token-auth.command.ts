@@ -37,7 +37,7 @@ export class RefreshTokenAuthCommand extends BaseCommand<
   static readonly code = asCommandCode('account:auth:cmd:refresh_token');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: IRefreshTokenAuthCommand['data'], metadata: DrivenMessageMetadata) {
+  constructor(data: IRefreshTokenAuthCommand['data'], metadata?: DrivenMessageMetadata) {
     super(null, data, metadata);
   }
 }

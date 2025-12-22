@@ -22,6 +22,7 @@ import {
   ContextModule,
   mailerConfig,
   MailerModule,
+  otelConfig,
 } from '@workspace/backend-core';
 
 import { discordWebhookConfig } from './configs';
@@ -39,6 +40,7 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
         redisConfig,
         ssmConfig,
         mailerConfig,
+        otelConfig,
 
         refreshTokenConfig,
         discordWebhookConfig,

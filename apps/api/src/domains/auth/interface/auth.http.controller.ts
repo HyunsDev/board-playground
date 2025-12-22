@@ -9,6 +9,7 @@ import {
   MessageContext,
   QueryDispatcherPort,
   CommandDispatcherPort,
+  Trigger,
 } from '@workspace/backend-core';
 import {
   apiOk,
@@ -35,6 +36,7 @@ export class AuthHttpController {
     private readonly messageContext: MessageContext,
   ) {}
 
+  @Trigger(TriggerCodeEnum.Http)
   @Public()
   @TsRestHandler(contract.auth.register)
   async register(
@@ -44,17 +46,14 @@ export class AuthHttpController {
   ) {
     return tsRestHandler(contract.auth.register, async ({ body }) => {
       const result = await this.commandDispatcher.execute(
-        new RegisterAuthCommand(
-          {
-            email: body.email,
-            username: body.username,
-            nickname: body.nickname,
-            password: body.password,
-            ipAddress: ipAddress,
-            userAgent: ua,
-          },
-          this.messageContext.createMetadata(TriggerCodeEnum.Http),
-        ),
+        new RegisterAuthCommand({
+          email: body.email,
+          username: body.username,
+          nickname: body.nickname,
+          password: body.password,
+          ipAddress: ipAddress,
+          userAgent: ua,
+        }),
       );
 
       return result.match(
@@ -74,6 +73,7 @@ export class AuthHttpController {
     });
   }
 
+  @Trigger(TriggerCodeEnum.Http)
   @Public()
   @TsRestHandler(contract.auth.login)
   async login(
@@ -83,15 +83,12 @@ export class AuthHttpController {
   ) {
     return tsRestHandler(contract.auth.login, async ({ body }) => {
       const result = await this.commandDispatcher.execute(
-        new LoginAuthCommand(
-          {
-            email: body.email,
-            password: body.password,
-            ipAddress: ipAddress,
-            userAgent: ua,
-          },
-          this.messageContext.createMetadata(TriggerCodeEnum.Http),
-        ),
+        new LoginAuthCommand({
+          email: body.email,
+          password: body.password,
+          ipAddress: ipAddress,
+          userAgent: ua,
+        }),
       );
 
       return result.match(
@@ -109,6 +106,7 @@ export class AuthHttpController {
     });
   }
 
+  @Trigger(TriggerCodeEnum.Http)
   @Public()
   @TsRestHandler(contract.auth.refreshToken)
   async refreshToken(@Req() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
@@ -120,12 +118,9 @@ export class AuthHttpController {
       }
 
       const result = await this.commandDispatcher.execute(
-        new RefreshTokenAuthCommand(
-          {
-            refreshToken,
-          },
-          this.messageContext.createMetadata(TriggerCodeEnum.Http),
-        ),
+        new RefreshTokenAuthCommand({
+          refreshToken,
+        }),
       );
 
       return result.match(
@@ -154,6 +149,7 @@ export class AuthHttpController {
     });
   }
 
+  @Trigger(TriggerCodeEnum.Http)
   @Public()
   @TsRestHandler(contract.auth.logout)
   async logout(@Req() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
@@ -165,12 +161,9 @@ export class AuthHttpController {
       }
 
       const result = await this.commandDispatcher.execute(
-        new LogoutAuthCommand(
-          {
-            refreshToken: refreshToken,
-          },
-          this.messageContext.createMetadata(TriggerCodeEnum.Http),
-        ),
+        new LogoutAuthCommand({
+          refreshToken: refreshToken,
+        }),
       );
 
       void res.clearCookie('refreshToken', { path: '/auth' });
@@ -181,17 +174,15 @@ export class AuthHttpController {
     });
   }
 
+  @Trigger(TriggerCodeEnum.Http)
   @Public()
   @TsRestHandler(contract.auth.checkUsername)
   async checkUsername() {
     return tsRestHandler(contract.auth.checkUsername, async ({ query }) => {
       const result = await this.queryDispatcher.execute(
-        new CheckUsernameAvailableQuery(
-          {
-            username: query.username,
-          },
-          this.messageContext.createMetadata(TriggerCodeEnum.Http),
-        ),
+        new CheckUsernameAvailableQuery({
+          username: query.username,
+        }),
       );
 
       return result.match(

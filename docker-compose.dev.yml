@@ -26,23 +26,44 @@ services:
       - redis_data:/data
 
   # 3. AWS LocalStack
-  localstack:
-    image: localstack/localstack:latest
-    container_name: board_playground_localstack
-    ports:
-      - "4566:4566"
-      - "4510-4559:4510-4559"
-    environment:
-      - SERVICES=s3,sqs,lambda
-      - DEBUG=1
-      - DOCKER_HOST=unix:///var/run/docker.sock
-      - AWS_DEFAULT_REGION=${AWS_REGION}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+  # localstack:
+  #   image: localstack/localstack:latest
+  #   container_name: board_playground_localstack
+  #   ports:
+  #     - "4566:4566"
+  #     - "4510-4559:4510-4559"
+  #   environment:
+  #     - SERVICES=s3,sqs,lambda
+  #     - DEBUG=1
+  #     - DOCKER_HOST=unix:///var/run/docker.sock
+  #     - AWS_DEFAULT_REGION=${AWS_REGION}
+  #     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+  #     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+  #   volumes:
+  #     - "./packages/infra/localstack:/etc/localstack/init/ready.d"
+  #     - "/var/run/docker.sock:/var/run/docker.sock"
+  #     - localstack_data:/var/lib/localstack
+      
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: board_playground_otel_collector
+    command: ["--config=/etc/otel-collector.yaml"]
     volumes:
-      - "./packages/infra/localstack:/etc/localstack/init/ready.d"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - localstack_data:/var/lib/localstack
+      - ./otel-collector.yaml:/etc/otel-collector.yaml
+    ports:
+      - "4317:4317" # OTLP gRPC Receiver
+      - "4318:4318" # OTLP HTTP Receiver
+    depends_on:
+      - jaeger
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: board_playground_jaeger
+    ports:
+      - "16686:16686" 
+      - "14250:14250" 
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
 
 volumes:
   postgres_data:

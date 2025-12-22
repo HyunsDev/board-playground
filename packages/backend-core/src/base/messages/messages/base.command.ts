@@ -30,7 +30,7 @@ export abstract class BaseCommand<
   constructor(
     resourceId: string | null,
     data: TProps['data'],
-    metadata: DrivenMessageMetadata,
+    metadata?: DrivenMessageMetadata,
     id?: string | null,
   ) {
     super(resourceId, data, metadata, id);

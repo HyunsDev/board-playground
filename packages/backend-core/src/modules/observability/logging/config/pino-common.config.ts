@@ -1,5 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
+import { trace, context } from '@opentelemetry/api'; // [추가 1] OTel API 임포트
 import { Params } from 'nestjs-pino';
 
 import { CoreContext, TokenContext } from '@/modules/foundation/context';
@@ -23,15 +24,32 @@ export const getCommonPinoConfig = (
       return `${req.method} ${req.url} ${res.statusCode}`;
     },
 
-    // [참고] 에러 메시지("request errored")도 덮어쓰고 싶다면:
     customErrorMessage: (req, res, err) => {
       return `${req.method} ${req.url} ${res.statusCode} - ${err.message}`;
     },
 
     genReqId: (req) => coreContext.requestId || req.headers['x-request-id'] || 'unknown',
+
+    // [수정 2] mixin: 모든 로그 라인에 공통 필드(traceId, spanId)를 병합합니다.
     mixin: () => {
+      // 1. 현재 활성화된 Span 가져오기
+      const span = trace.getSpan(context.active());
+
+      // 2. Span이 없으면(추적되지 않는 요청 등) 빈 객체
+      if (!span) {
+        return {
+          reqId: coreContext.requestId,
+        };
+      }
+
+      // 3. Span Context에서 ID 추출
+      const { traceId, spanId, traceFlags } = span.spanContext();
+
       return {
-        reqId: coreContext.requestId,
+        reqId: coreContext.requestId, // 기존 로직 유지
+        traceId, // 로그와 트레이스를 연결하는 핵심 키
+        spanId,
+        traceFlags: `0${traceFlags.toString(16)}`, // (선택) 샘플링 여부 등을 확인
       };
     },
 
@@ -44,7 +62,6 @@ export const getCommonPinoConfig = (
         errorCode: errorCode ?? undefined,
       };
 
-      // 개발 환경에서는 Pretty Print에 필요한 추가 정보를 최상위 레벨로 끌어올림
       if (!isProduction) {
         return {
           ...baseProps,

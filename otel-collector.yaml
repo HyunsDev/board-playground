@@ -1,0 +1,27 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "0.0.0.0:4317" # 모든 인터페이스에서 수신
+      http:
+        endpoint: "0.0.0.0:4318" # 모든 인터페이스에서 수신
+
+processors:
+  batch: # 데이터를 모아서 한 번에 보냄 (성능 최적화)
+
+exporters:
+  otlp:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true
+
+  debug:
+    verbosity: detailed
+
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp, debug]

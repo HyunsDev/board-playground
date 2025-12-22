@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { CommandDispatcherPort, MessageContext, Public } from '@workspace/backend-core';
+import { CommandDispatcherPort, MessageContext, Public, Trigger } from '@workspace/backend-core';
 import { apiOk, matchPublicError, apiErr } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
 import { TriggerCodeEnum } from '@workspace/domain';
@@ -17,19 +17,17 @@ export class DevtoolsController {
     private readonly messageContext: MessageContext,
   ) {}
 
+  @Trigger(TriggerCodeEnum.Http)
   @TsRestHandler(contract.devtools.forceRegister)
   @Public()
   async forceRegister() {
     return tsRestHandler(contract.devtools.forceRegister, async ({ body }) => {
       const result = await this.commandDispatcher.execute(
-        new ForceRegisterCommand(
-          {
-            email: body.email,
-            username: body.username,
-            nickname: body.nickname,
-          },
-          this.messageContext.createMetadata(TriggerCodeEnum.Http),
-        ),
+        new ForceRegisterCommand({
+          email: body.email,
+          username: body.username,
+          nickname: body.nickname,
+        }),
       );
       return result.match(
         (tokens) => apiOk(200, tokens),
@@ -42,6 +40,7 @@ export class DevtoolsController {
     });
   }
 
+  @Trigger(TriggerCodeEnum.Http)
   @TsRestHandler(contract.devtools.forceLogin)
   @Public()
   async forceLogin() {
@@ -64,6 +63,7 @@ export class DevtoolsController {
     });
   }
 
+  @Trigger(TriggerCodeEnum.Http)
   @TsRestHandler(contract.devtools.resetDB)
   @Public()
   async resetDB() {

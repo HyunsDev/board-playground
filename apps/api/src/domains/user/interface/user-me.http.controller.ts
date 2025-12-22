@@ -7,6 +7,7 @@ import {
   MessageContext,
   QueryDispatcherPort,
   Token,
+  Trigger,
 } from '@workspace/backend-core';
 import { apiOk, matchPublicError, apiErr } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
@@ -29,15 +30,11 @@ export class UserMeHttpController {
     private readonly messageContext: MessageContext,
   ) {}
 
+  @Trigger(TriggerCodeEnum.Http)
   @TsRestHandler(contract.user.me.get)
   async getMe(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.get, async () => {
-      const result = await this.queryDispatcher.execute(
-        new GetUserMeQuery(
-          { userId: token.sub },
-          this.messageContext.createMetadata(TriggerCodeEnum.Http),
-        ),
-      );
+      const result = await this.queryDispatcher.execute(new GetUserMeQuery({ userId: token.sub }));
       return result.match(
         (user) =>
           apiOk(200, {
@@ -51,18 +48,16 @@ export class UserMeHttpController {
     });
   }
 
+  @Trigger(TriggerCodeEnum.Http)
   @TsRestHandler(contract.user.me.updateProfile)
   async updateProfile(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.updateProfile, async ({ body }) => {
       const result = await this.commandDispatcher.execute(
-        new UpdateUserMeProfileCommand(
-          {
-            userId: token.sub,
-            nickname: body.nickname,
-            bio: body.bio,
-          },
-          this.messageContext.createMetadata(TriggerCodeEnum.Http),
-        ),
+        new UpdateUserMeProfileCommand({
+          userId: token.sub,
+          nickname: body.nickname,
+          bio: body.bio,
+        }),
       );
 
       return result.match(
@@ -80,6 +75,7 @@ export class UserMeHttpController {
     });
   }
 
+  @Trigger(TriggerCodeEnum.Http)
   @TsRestHandler(contract.user.me.updateUsername)
   async updateUsername(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.updateUsername, async ({ body }) => {
@@ -107,6 +103,7 @@ export class UserMeHttpController {
     });
   }
 
+  @Trigger(TriggerCodeEnum.Http)
   @TsRestHandler(contract.user.me.delete)
   async deleteMe(@Res({ passthrough: true }) res: FastifyReply, @Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.delete, async () => {

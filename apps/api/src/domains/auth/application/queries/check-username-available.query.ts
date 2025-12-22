@@ -20,7 +20,7 @@ export class CheckUsernameAvailableQuery extends BaseQuery<
   static readonly code = asQueryCode('account:auth:qry:check_username_available');
   readonly resourceType = DomainCodeEnums.Account.User;
 
-  constructor(data: ICheckUsernameAvailableQuery['data'], metadata: DrivenMessageMetadata) {
+  constructor(data: ICheckUsernameAvailableQuery['data'], metadata?: DrivenMessageMetadata) {
     super(null, data, metadata);
   }
 }
