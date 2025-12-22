@@ -8,6 +8,7 @@ import { StorageGCService } from '../../storage/storage-gc.service';
 
 import { BaseJob, BaseJobProps, IJobHandler } from '@/base';
 import { TransactionManager } from '@/modules/foundation/context';
+import { JobHandler } from '@/modules/messaging';
 
 const cleanUpOrphanFilesJobSchema = z.object({});
 
@@ -24,9 +25,10 @@ const BATCH_SIZE = 100;
 const RETENTION_HOURS = 24;
 const MAX_ITERATIONS = 20;
 
+// TODO: 테스트 필요
+@JobHandler(CleanUpOrphanFilesJob)
 export class CleanUpOrphanFilesJobHandler implements IJobHandler<CleanUpOrphanFilesJob> {
   private logger = new Logger(CleanUpOrphanFilesJobHandler.name);
-  readonly JobClass = CleanUpOrphanFilesJob;
 
   constructor(
     private readonly storageGCService: StorageGCService,
