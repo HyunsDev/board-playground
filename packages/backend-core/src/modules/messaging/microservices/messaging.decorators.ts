@@ -20,7 +20,7 @@ import {
  * [RPC] 요청에 대한 응답을 처리하는 핸들러 (동기성)
  * 기존 @MessagePattern 대체
  */
-export const HandleRpc = (rpc: MessageConstructor<BaseRpc<any, any, any>>) => {
+export const RpcHandler = (rpc: MessageConstructor<BaseRpc<any, any, any>>) => {
   const instrumentation: MethodDecorator = (
     target: any,
     propertyKey: string | symbol,
@@ -58,7 +58,7 @@ export const HandleRpc = (rpc: MessageConstructor<BaseRpc<any, any, any>>) => {
  * [PUB] 발생한 이벤트를 수신하는 핸들러 (비동기성)
  * 기존 @EventPattern 대체
  */
-export const HandleIntegrationEvent = (pub: MessageConstructor<BaseIntegrationEvent<any>>) => {
+export const IntegrationEventHandler = (pub: MessageConstructor<BaseIntegrationEvent<any>>) => {
   const instrumentation: MethodDecorator = (
     target: any,
     propertyKey: string | symbol,

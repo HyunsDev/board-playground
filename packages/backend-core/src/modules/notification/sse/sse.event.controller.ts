@@ -5,13 +5,13 @@ import { SseConnectionService } from './sse-connection.service';
 import { SseIntegrationEvent } from './sse.integration-event';
 import { SseScopeEnum } from './sse.types';
 
-import { HandleIntegrationEvent } from '@/modules/messaging';
+import { IntegrationEventHandler } from '@/modules/messaging';
 
 @Controller()
 export class SseEventController {
   constructor(private readonly sseService: SseConnectionService) {}
 
-  @HandleIntegrationEvent(SseIntegrationEvent)
+  @IntegrationEventHandler(SseIntegrationEvent)
   async handleNotification(event: SseIntegrationEvent) {
     this.sseService.emit({
       scope: SseScopeEnum.Broadcast,

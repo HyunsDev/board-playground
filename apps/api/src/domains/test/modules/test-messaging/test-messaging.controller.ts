@@ -2,8 +2,8 @@ import { Controller, Get, Logger } from '@nestjs/common';
 import { ok } from 'neverthrow';
 
 import {
-  HandleIntegrationEvent,
-  HandleRpc,
+  IntegrationEventHandler,
+  RpcHandler,
   IntegrationEventPublisherPort,
   MessageContext,
   Pub,
@@ -40,7 +40,7 @@ export class TestController {
     return { message: '펑!' };
   }
 
-  @HandleIntegrationEvent(TestPub)
+  @IntegrationEventHandler(TestPub)
   async handleTestPub(@Pub() pub: TestPub) {
     this.logger.debug(`Received TestPub with message: ${pub.data.message}`);
   }
@@ -57,7 +57,7 @@ export class TestController {
     return { result: result._unsafeUnwrap() };
   }
 
-  @HandleRpc(TestRpc)
+  @RpcHandler(TestRpc)
   async handleTestRpc(@Rpc() rpc: TestRpc): Promise<MessageResult<TestRpc>> {
     this.logger.debug(`Received TestRpc with message: ${rpc.data.ping}`);
 
