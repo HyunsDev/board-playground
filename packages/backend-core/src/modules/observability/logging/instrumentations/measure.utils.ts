@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Logger } from '@nestjs/common';
 
 import { DomainError, DomainResult, SystemException } from '@workspace/backend-ddd';
@@ -10,22 +11,23 @@ import { MeasureResult } from './instrumentation.types';
 import {
   BaseCommand,
   BaseDomainEvent,
+  BaseHttpRequest,
   BaseIntegrationEvent,
   BaseJob,
   BaseQuery,
   BaseRpc,
 } from '@/base';
 
-export const measure = async (
-  executor: () => Promise<DomainResult<unknown, DomainError>>,
-): Promise<MeasureResult> => {
+export const measure = async <TResult extends DomainResult<any, DomainError>>(
+  executor: () => Promise<TResult>,
+): Promise<MeasureResult<TResult>> => {
   const start = performance.now();
 
   try {
     const result = await executor();
     const duration = (performance.now() - start).toFixed(0);
 
-    if (result?.isErr()) {
+    if (result?.isErr?.()) {
       return {
         duration,
         result: 'DomainError',
@@ -64,12 +66,13 @@ export type MeasureMessage =
   | BaseDomainEvent<any>
   | BaseJob<any>
   | BaseIntegrationEvent<any>
-  | BaseRpc<any, any, any>;
+  | BaseRpc<any, any, any>
+  | BaseHttpRequest<any, any>;
 
 export type LogDataMapper<
   TMessage extends MeasureMessage,
   TLogData extends MessageResultLogData,
-> = (result: MeasureResult, message: TMessage, handlerName: string) => TLogData;
+> = (result: MeasureResult<any>, message: TMessage, handlerName: string) => TLogData;
 
 const resultLogLevel = {
   Success: 'log',
@@ -81,10 +84,7 @@ const resultLogLevel = {
 export const measureAndLog = async <
   const TLogType extends MessageLogType,
   const TMessage extends MeasureMessage,
-  const TLogMapper extends LogDataMapper<
-    TMessage,
-    Extract<MessageResultLogData, { type: TLogType }>
-  >,
+  const TResult extends DomainResult<any, DomainError>,
 >({
   message,
   executor,
@@ -94,18 +94,25 @@ export const measureAndLog = async <
 }: {
   logType: TLogType;
   message: TMessage;
-  executor: () => Promise<any>;
-  toLogData: TLogMapper;
+  executor: () => Promise<TResult>;
+  toLogData: (
+    result: MeasureResult<TResult>,
+    message: TMessage,
+    handlerName: string,
+  ) => Extract<MessageResultLogData, { type: TLogType }>;
   logger: Logger;
   handlerName: string;
 }) => {
   const result = await measure(executor);
+
   const targetName = message?.constructor?.name || 'UnknownMessage';
   const logLevel = resultLogLevel[result.result];
+
   logger[logLevel](toLogData(result, message, handlerName), targetName);
 
   if (result.result !== 'Success' && result.result !== 'DomainError') {
     throw result.error;
   }
+
   return result.value;
 };

@@ -24,6 +24,9 @@ const TARGET_BASE_CLASSES = new Set([
   // Pub
   'AbstractPub',
   'BasePub',
+  // Http Request
+  'AbstractHttpRequest',
+  'BaseHttpRequest',
 ]);
 
 /** @type {import('eslint').Rule.RuleModule} */

@@ -2,8 +2,8 @@ import { Controller, Get, Logger } from '@nestjs/common';
 import { ok } from 'neverthrow';
 
 import {
-  HandleIntegrationEvent,
-  HandleRpc,
+  IntegrationEventHandler,
+  RpcHandler,
   IntegrationEventPublisherPort,
   MessageContext,
   Pub,
@@ -15,8 +15,8 @@ import {
 import { MessageResult } from '@workspace/backend-ddd';
 import { TriggerCodeEnum } from '@workspace/domain';
 
-import { TestPub } from '../../messages/test.pub';
-import { TestRpc } from '../../messages/test.rpc';
+import { TestPub } from './test.pub';
+import { TestRpc } from './test.rpc';
 
 @Public()
 @Controller('_test')
@@ -40,7 +40,7 @@ export class TestController {
     return { message: '펑!' };
   }
 
-  @HandleIntegrationEvent(TestPub)
+  @IntegrationEventHandler(TestPub)
   async handleTestPub(@Pub() pub: TestPub) {
     this.logger.debug(`Received TestPub with message: ${pub.data.message}`);
   }
@@ -57,7 +57,7 @@ export class TestController {
     return { result: result._unsafeUnwrap() };
   }
 
-  @HandleRpc(TestRpc)
+  @RpcHandler(TestRpc)
   async handleTestRpc(@Rpc() rpc: TestRpc): Promise<MessageResult<TestRpc>> {
     this.logger.debug(`Received TestRpc with message: ${rpc.data.ping}`);
 

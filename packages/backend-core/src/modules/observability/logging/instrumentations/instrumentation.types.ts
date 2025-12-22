@@ -1,14 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DomainError, DomainResult, SystemException } from '@workspace/backend-ddd';
 
-export type MeasureSuccessResult = {
+export type MeasureSuccessResult<TValue = DomainResult<any, DomainError>> = {
   duration: string;
   result: 'Success';
-  value: DomainResult<unknown, DomainError>;
+  value: TValue;
 };
-export type MeasureDomainErrorResult = {
+
+export type MeasureDomainErrorResult<TValue = DomainResult<any, DomainError>> = {
   duration: string;
   result: 'DomainError';
-  value: DomainResult<unknown, DomainError>;
+  value: TValue;
   error: DomainError;
 };
 export type MeasureSystemExceptionResult = {
@@ -21,8 +23,11 @@ export type MeasureUnexpectedExceptionResult = {
   result: 'UnexpectedException';
   error: unknown;
 };
-export type MeasureResult =
-  | MeasureSuccessResult
-  | MeasureDomainErrorResult
+
+export type MeasureResult<
+  TValue extends DomainResult<any, DomainError> = DomainResult<any, DomainError>,
+> =
+  | MeasureSuccessResult<TValue>
+  | MeasureDomainErrorResult<TValue>
   | MeasureSystemExceptionResult
   | MeasureUnexpectedExceptionResult;

@@ -23,7 +23,6 @@ export class MessageContext {
       correlationId: this.cls.get('requestId') || null,
       userId: this.cls.get('token')?.sub || null,
     };
-    this.setMetadata(metadata);
     return metadata;
   }
 
@@ -37,6 +36,14 @@ export class MessageContext {
     const metadata = this.cls.get('messageMetadata');
     if (!metadata) {
       throw new DrivenMessageMetadataNotFoundException();
+    }
+    return metadata;
+  }
+
+  getOrCreateDrivenMetadata(initialTriggerCode: TriggerCode): DrivenMessageMetadata {
+    const metadata = this.cls.get('messageMetadata');
+    if (!metadata) {
+      return this.createMetadata(initialTriggerCode);
     }
     return metadata;
   }

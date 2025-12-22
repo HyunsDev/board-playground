@@ -1,15 +1,14 @@
 import { Global, Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
+import { CqrsModule as NestCqrsModule } from '@nestjs/cqrs';
 
 import { CommandDispatcher } from './command.dispatcher';
 import { QueryDispatcher } from './query.dispatcher';
 
 import { CommandDispatcherPort, QueryDispatcherPort } from '@/base';
-import { CoreContextModule } from '@/modules/foundation/context';
 
 @Global()
 @Module({
-  imports: [CqrsModule.forRoot(), CoreContextModule],
+  imports: [NestCqrsModule.forRoot()],
   providers: [
     {
       provide: CommandDispatcherPort,
@@ -22,4 +21,4 @@ import { CoreContextModule } from '@/modules/foundation/context';
   ],
   exports: [CommandDispatcherPort, QueryDispatcherPort],
 })
-export class CoreCqrsModule {}
+export class CqrsModule {}

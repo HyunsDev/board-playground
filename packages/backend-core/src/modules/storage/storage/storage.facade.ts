@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { StorageService } from './storage.service';
 import { InitializeUploadParam } from './modules/file/application/file.service';
+import { StorageService } from './storage.service';
 
 @Injectable()
 export class StorageFacade {

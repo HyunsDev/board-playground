@@ -11,7 +11,7 @@ import {
 } from '@workspace/backend-ddd';
 import { PrismaClient, Prisma } from '@workspace/database';
 
-import { UnexpectedPrismaErrorException } from '../core.errors';
+import { UnexpectedPrismaErrorException } from '../core.exceptions';
 import { BaseDomainEvent, BaseDomainEventProps, DomainEventPublisherPort } from '../messages';
 
 import { TransactionContext } from '@/modules';

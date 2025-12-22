@@ -1,7 +1,7 @@
 import type { ExtractEnumValues } from '@workspace/common';
 
 import type { ValidateUnitCode } from './unit-code.utils';
-import type { DomainCodeEnums } from 'dist';
+import type { DomainCodeEnums } from '../domain-code.enums';
 
 const defineTriggerCode = <const T extends string>(
   code: ValidateUnitCode<T, 'trg', DomainCodeEnums['System']['Infra']>,

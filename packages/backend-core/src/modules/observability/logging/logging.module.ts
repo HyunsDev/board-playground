@@ -10,15 +10,13 @@ import { EventPublishInstrumentation } from './instrumentations/event-publish.in
 
 import { CoreConfig, coreConfig } from '@/modules/foundation/config';
 import { CoreContext, TokenContext } from '@/modules/foundation/context';
-import { CoreContextModule } from '@/modules/foundation/context/context.module';
 
 @Module({
   imports: [
     CqrsModule,
     DiscoveryModule,
-    CoreContextModule,
     LoggerModule.forRootAsync({
-      imports: [ConfigModule, CoreContextModule],
+      imports: [ConfigModule],
       inject: [coreConfig.KEY, CoreContext, TokenContext],
       useFactory: async (
         coreConfig: CoreConfig,

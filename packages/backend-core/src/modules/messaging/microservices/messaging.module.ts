@@ -8,16 +8,13 @@ import { GlobalRpcExceptionFilter } from './rpc-exception.filter';
 
 import { IntegrationEventPublisherPort } from '@/base';
 import { RedisConfig, redisConfig } from '@/modules/foundation/config';
-import { CoreContextModule } from '@/modules/foundation/context';
 
 @Global()
 @Module({
   imports: [
-    CoreContextModule,
     ClientsModule.registerAsync([
       {
         name: MESSAGING_SERVICE_TOKEN,
-        imports: [CoreContextModule],
         inject: [redisConfig.KEY],
         useFactory: (redisConfig: RedisConfig) => {
           const host = redisConfig.redisHost;

@@ -4,3 +4,4 @@ export * from './base.job';
 export * from './base.query';
 export * from './base.rpc';
 export * from './base.integration-event';
+export * from './base.http-request';

@@ -9,8 +9,8 @@ export class InternalServerErrorException extends BaseInternalServerException<
   any
 > {
   readonly code = 'InternalServerError';
-  constructor(message?: string, details?: any) {
-    super(message ?? 'An internal server error occurred', details);
+  constructor(message?: string, details?: any, error?: unknown) {
+    super(message ?? 'An internal server error occurred', details, error);
   }
 }
 
