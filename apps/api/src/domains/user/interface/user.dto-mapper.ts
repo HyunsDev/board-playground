@@ -11,7 +11,6 @@ import {
 
 import { UserEntity } from '../domain/user.entity';
 
-
 @Injectable()
 export class UserDtoMapper extends BaseDtoMapper<UserEntity> {
   toPublicProfileDto(entity: UserEntity): UserPublicProfileDto {

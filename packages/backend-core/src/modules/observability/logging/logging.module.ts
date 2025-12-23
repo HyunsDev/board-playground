@@ -31,7 +31,6 @@ import { CoreContext, TokenContext } from '@/modules/foundation/context';
 
         // 1. [Production] 표준 출력 (JSON) - Promtail이 수집하도록 둠
         if (isProduction) {
-          // stream을 지정하지 않으면 기본적으로 process.stdout (JSON) 사용
           return { pinoHttp: commonConfig };
         }
 
@@ -48,11 +47,10 @@ import { CoreContext, TokenContext } from '@/modules/foundation/context';
           const lokiStream = transport({
             target: 'pino-loki',
             options: {
-              batching: true, // 성능을 위해 배치 전송
-              interval: 5, // 5초마다 전송
+              batching: true,
+              interval: 5,
               host: 'http://localhost:3100', // Docker Compose의 Loki 주소 (로컬 호스트 기준)
-              labels: { application: 'board-playground-local' }, // Loki에서 식별할 레이블
-              // 필요 시 basicAuth: { username: "...", password: "..." } 추가
+              labels: { application: 'board-playground-local' },
             },
           });
           streams.push({ stream: lokiStream });

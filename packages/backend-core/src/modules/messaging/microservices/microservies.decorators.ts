@@ -96,7 +96,7 @@ export const IntegrationEventHandler = (pub: MessageConstructor<BaseIntegrationE
  * 메시지의 본문(Data)을 추출합니다.
  * 기존 @Payload 대체
  */
-export const MsgPayload = () => Payload();
+const MsgPayload = () => Payload();
 
 export const Rpc = MsgPayload;
 export const Pub = MsgPayload;

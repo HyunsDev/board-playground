@@ -5,6 +5,8 @@ export * from './manager';
 export * from './post';
 export * from './session';
 export * from './user';
+export * from './devtools';
+export * from './sse';
 
 export * from './contract';
 export * from './sse-contract';

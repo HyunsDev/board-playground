@@ -5,7 +5,6 @@ import { RefreshToken } from '@workspace/database';
 
 import { RefreshTokenEntity, RefreshTokenProps } from '../domain/refresh-token.entity';
 
-
 @Injectable()
 export class RefreshTokenMapper extends BaseMapper<RefreshTokenEntity, RefreshToken> {
   toDomain(record: RefreshToken): RefreshTokenEntity {
