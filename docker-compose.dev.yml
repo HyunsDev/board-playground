@@ -1,12 +1,9 @@
-version: '3.8'
-
 services:
-  # 1. PostgreSQL
   postgres:
     image: postgres:15-alpine
     container_name: board_playground_postgres
     ports:
-      - "${POSTGRES_PORT:-5432}:5432" # .env에 값이 없으면 기본값 5432 사용
+      - "${POSTGRES_PORT:-5432}:5432" 
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -14,35 +11,58 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  # 2. Redis
   redis:
     image: redis:7-alpine
     container_name: board_playground_redis
     ports:
       - "${REDIS_PORT:-6379}:6379"
-    # Redis 비밀번호 설정 (command로 실행 시 인자 전달)
     command: redis-server --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis_data:/data
 
   # 3. AWS LocalStack
-  localstack:
-    image: localstack/localstack:latest
-    container_name: board_playground_localstack
+  # localstack:
+  #   image: localstack/localstack:latest
+  #   container_name: board_playground_localstack
+  #   ports:
+  #     - "4566:4566"
+  #     - "4510-4559:4510-4559"
+  #   environment:
+  #     - SERVICES=s3,sqs,lambda
+  #     - DEBUG=1
+  #     - DOCKER_HOST=unix:///var/run/docker.sock
+  #     - AWS_DEFAULT_REGION=${AWS_REGION}
+  #     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+  #     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+  #   volumes:
+  #     - "./packages/infra/localstack:/etc/localstack/init/ready.d"
+  #     - "/var/run/docker.sock:/var/run/docker.sock"
+  #     - localstack_data:/var/lib/localstack
+
+  loki:
+    image: grafana/loki:2.9.2
     ports:
-      - "4566:4566"
-      - "4510-4559:4510-4559"
-    environment:
-      - SERVICES=s3,sqs,lambda
-      - DEBUG=1
-      - DOCKER_HOST=unix:///var/run/docker.sock
-      - AWS_DEFAULT_REGION=${AWS_REGION}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
     volumes:
-      - "./packages/infra/localstack:/etc/localstack/init/ready.d"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - localstack_data:/var/lib/localstack
+      - ./infra/monitoring/loki-config.yaml:/etc/loki/local-config.yaml
+
+  promtail:
+    image: grafana/promtail:2.9.2
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers 
+      - ./infra/monitoring/promtail-config.yaml:/etc/promtail/config.yaml
+    command: -config.file=/etc/promtail/config.yaml
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "4100:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - loki
+    
 
 volumes:
   postgres_data:

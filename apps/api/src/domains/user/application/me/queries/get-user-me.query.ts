@@ -1,11 +1,5 @@
 import { HandlerResult } from '@workspace/backend-common';
-import {
-  BaseQuery,
-  BaseQueryProps,
-  DrivenMessageMetadata,
-  IQueryHandler,
-  QueryHandler,
-} from '@workspace/backend-core';
+import { BaseQuery, BaseQueryProps, IQueryHandler, QueryHandler } from '@workspace/backend-core';
 import { asQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
@@ -22,8 +16,8 @@ export class GetUserMeQuery extends BaseQuery<
   static readonly code = asQueryCode('account:user:qry:get_me');
   readonly resourceType = DomainCodeEnums.Account.User;
 
-  constructor(data: IGetUserMeQuery['data'], metadata: DrivenMessageMetadata) {
-    super(data.userId, data, metadata);
+  constructor(data: IGetUserMeQuery['data']) {
+    super(data.userId, data);
   }
 }
 

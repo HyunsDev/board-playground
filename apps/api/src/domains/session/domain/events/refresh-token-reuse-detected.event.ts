@@ -11,10 +11,9 @@ type IRefreshTokenReuseDetectedEvent = BaseDomainEventProps<{
   reusedTokenId: string;
 }>;
 export class RefreshTokenReuseDetectedEvent extends BaseDomainEvent<IRefreshTokenReuseDetectedEvent> {
-  public static readonly code = asDomainEventCode(
-    'account:session:evt:refresh_token_reuse_detected',
-  );
-  public readonly resourceType = AggregateCodeEnum.Account.Session;
+  static readonly code = asDomainEventCode('account:session:evt:refresh_token_reuse_detected');
+  readonly resourceType = AggregateCodeEnum.Account.Session;
+  readonly audit = true;
 
   constructor(data: IRefreshTokenReuseDetectedEvent['data'], metadata?: DrivenMessageMetadata) {
     super(data.sessionId, data, metadata);

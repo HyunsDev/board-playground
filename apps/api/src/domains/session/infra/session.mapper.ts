@@ -6,7 +6,6 @@ import { RefreshToken, Session } from '@workspace/database';
 import { RefreshTokenMapper } from './refresh-token.mapper';
 import { SessionEntity, SessionProps } from '../domain/session.entity';
 
-
 @Injectable()
 export class SessionMapper extends BaseMapper<SessionEntity, Session> {
   constructor(private readonly refreshTokenMapper: RefreshTokenMapper) {

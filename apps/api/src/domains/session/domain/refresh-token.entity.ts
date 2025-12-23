@@ -6,7 +6,6 @@ import { ExpiredTokenError } from '@workspace/backend-ddd';
 
 import { TokenReuseDetectedError } from './token.domain-errors';
 
-
 export interface RefreshTokenProps extends BaseEntityProps {
   id: string;
   hashedToken: string;

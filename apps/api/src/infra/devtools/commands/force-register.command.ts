@@ -24,7 +24,7 @@ export class ForceRegisterCommand extends BaseCommand<
   static readonly code = asCommandCode('system:devtools:cmd:force_register');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: ForceRegisterCommandProps['data'], metadata: DrivenMessageMetadata) {
+  constructor(data: ForceRegisterCommandProps['data'], metadata?: DrivenMessageMetadata) {
     super(null, data, metadata);
   }
 }

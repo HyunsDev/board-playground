@@ -12,8 +12,9 @@ type ISessionRefreshedEvent = BaseDomainEventProps<{
 }>;
 
 export class SessionRefreshedEvent extends BaseDomainEvent<ISessionRefreshedEvent> {
-  public static readonly code = asDomainEventCode('account:session:evt:refreshed');
-  public readonly resourceType = AggregateCodeEnum.Account.Session;
+  static readonly code = asDomainEventCode('account:session:evt:refreshed');
+  readonly resourceType = AggregateCodeEnum.Account.Session;
+  readonly audit = true;
 
   constructor(data: ISessionRefreshedEvent['data'], metadata?: DrivenMessageMetadata) {
     super(data.sessionId, data, metadata);

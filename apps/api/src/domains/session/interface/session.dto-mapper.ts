@@ -5,7 +5,6 @@ import { SessionDto } from '@workspace/contract';
 
 import { SessionEntity } from '../domain/session.entity';
 
-
 @Injectable()
 export class SessionDtoMapper extends BaseDtoMapper<SessionEntity> {
   toDto(entity: SessionEntity): SessionDto {

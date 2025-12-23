@@ -16,10 +16,14 @@ import {
   ssmConfig,
   StorageModule,
   StorageWorkerModule,
-  MessagingModule,
+  MicroservicesModule,
   CqrsModule,
   SseModule,
   ContextModule,
+  mailerConfig,
+  MailerModule,
+  otelConfig,
+  AuditLogModule,
 } from '@workspace/backend-core';
 
 import { discordWebhookConfig } from './configs';
@@ -36,23 +40,25 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
         accessTokenConfig,
         redisConfig,
         ssmConfig,
+        mailerConfig,
+        otelConfig,
 
         refreshTokenConfig,
         discordWebhookConfig,
       ],
     }),
-    TaskQueueModule.forRoot(),
     ContextModule.forRoot({
       enableDatabase: true,
       type: 'http',
     }),
+    TaskQueueModule.forRoot(),
     DatabaseModule,
     CacheModule,
     StorageModule,
     StorageWorkerModule,
     DomainEventModule,
     LoggingModule,
-    MessagingModule,
+    MicroservicesModule,
     CqrsModule,
     AccessControlModule.forRoot({
       enableGlobalAuthGuard: true,
@@ -66,6 +72,8 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
       },
     }),
     SseModule.forServer(),
+    MailerModule.forSend(),
+    AuditLogModule,
   ],
   exports: [
     ContextModule,

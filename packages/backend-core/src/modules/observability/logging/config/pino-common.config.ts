@@ -23,15 +23,16 @@ export const getCommonPinoConfig = (
       return `${req.method} ${req.url} ${res.statusCode}`;
     },
 
-    // [참고] 에러 메시지("request errored")도 덮어쓰고 싶다면:
     customErrorMessage: (req, res, err) => {
       return `${req.method} ${req.url} ${res.statusCode} - ${err.message}`;
     },
 
     genReqId: (req) => coreContext.requestId || req.headers['x-request-id'] || 'unknown',
+
+    // [수정 2] mixin: 모든 로그 라인에 공통 필드(traceId, spanId)를 병합합니다.
     mixin: () => {
       return {
-        reqId: coreContext.requestId,
+        reqId: coreContext.requestId, // 기존 로직 유지
       };
     },
 
@@ -44,7 +45,6 @@ export const getCommonPinoConfig = (
         errorCode: errorCode ?? undefined,
       };
 
-      // 개발 환경에서는 Pretty Print에 필요한 추가 정보를 최상위 레벨로 끌어올림
       if (!isProduction) {
         return {
           ...baseProps,

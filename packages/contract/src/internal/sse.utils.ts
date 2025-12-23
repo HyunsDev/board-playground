@@ -2,13 +2,13 @@ import { createSSEMessageContract, type SSEMessageContract } from '@workspace/co
 
 import type z from 'zod';
 
-export type SSERoute = {
+type SSERoute = {
   [key: string]: SSEMessageContract<string, z.ZodTypeAny> | SSERoute;
 };
 
-function SSERouter<const T extends SSERoute>(sses: T) {
+const SSERouter = <const T extends SSERoute>(sses: T) => {
   return sses;
-}
+};
 
 export const e = {
   define: createSSEMessageContract,

@@ -15,3 +15,5 @@ export interface MessageConstructor<T extends AbstractMessage> {
     metadata: AbstractMessageMetadata;
   }): T;
 }
+
+export type PlainMessage<T extends AbstractMessage> = ReturnType<T['toPlain']>;

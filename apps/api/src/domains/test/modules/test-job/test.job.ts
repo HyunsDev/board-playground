@@ -16,7 +16,7 @@ const TestJobSchema = z.object({
   message: z.string(),
 });
 
-export type TestJobProps = BaseJobProps<{
+type TestJobProps = BaseJobProps<{
   message: string;
 }>;
 

@@ -1,48 +1,49 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 
-import { AbstractDomainEvent } from '@workspace/backend-ddd';
+import { BaseDomainEvent, DomainEventPublisherPort } from '@/base';
+import { MessageContext, OutboxContext, TransactionContext } from '@/modules/foundation/context';
 
-import { DomainEventPublisherPort } from '@/base';
-import { MessageContext, TransactionContext } from '@/modules/foundation/context';
-
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class DomainEventPublisher implements DomainEventPublisherPort {
-  private events: AbstractDomainEvent<string, string, string>[] = [];
-
   constructor(
     private readonly eventBus: EventBus,
     private readonly txContext: TransactionContext,
     private readonly messageContext: MessageContext,
+    private readonly outbox: OutboxContext,
   ) {}
 
-  async publish(event: AbstractDomainEvent<string, string, string>): Promise<void> {
-    this.events.push(event);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async publish(event: BaseDomainEvent<any>): Promise<void> {
+    this.outbox.domainEventStore.push(event);
     if (!this.txContext.isTransactionActive()) {
       await this.flush();
     }
   }
 
-  async publishMany(events: AbstractDomainEvent<string, string, string>[]): Promise<void> {
-    this.events.push(...events);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async publishMany(events: BaseDomainEvent<any>[]): Promise<void> {
+    this.outbox.domainEventStore.push(...events);
     if (!this.txContext.isTransactionActive()) {
       await this.flush();
     }
   }
 
   clear(): void {
-    this.events = [];
+    this.outbox.domainEventStore.clear();
   }
 
   async flush(): Promise<void> {
-    if (this.events.length === 0) return;
-
+    if (this.outbox.domainEventStore.length() === 0) return;
     // 모든 이벤트에 메타데이터 주입 (Causation 추적용)
     const metadata = this.messageContext.getOrThrowDrivenMetadata();
-    this.events.forEach((event) => event.updateMetadata(metadata));
+    const events = this.outbox.domainEventStore.list().map((event) => {
+      event.updateMetadata(metadata);
+      return event;
+    });
 
     // 실제 발행 (NestJS CQRS EventBus)
-    this.eventBus.publishAll(this.events);
+    this.eventBus.publishAll(events);
 
     // 버퍼 비우기
     this.clear();

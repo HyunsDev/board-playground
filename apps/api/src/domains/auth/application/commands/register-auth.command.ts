@@ -35,7 +35,7 @@ export class RegisterAuthCommand extends BaseCommand<
   static readonly code = asCommandCode('account:auth:cmd:register');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: IRegisterAuthCommand['data'], metadata: DrivenMessageMetadata) {
+  constructor(data: IRegisterAuthCommand['data'], metadata?: DrivenMessageMetadata) {
     super(null, data, metadata);
   }
 }

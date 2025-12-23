@@ -19,7 +19,7 @@ export class LogoutAuthCommand extends BaseCommand<
   static readonly code = asCommandCode('account:auth:cmd:logout');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: ILogoutAuthCommand['data'], metadata: DrivenMessageMetadata) {
+  constructor(data: ILogoutAuthCommand['data'], metadata?: DrivenMessageMetadata) {
     super(null, data, metadata);
   }
 }

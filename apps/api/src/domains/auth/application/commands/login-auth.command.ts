@@ -34,7 +34,7 @@ export class LoginAuthCommand extends BaseCommand<
   static readonly code = asCommandCode('account:auth:cmd:login');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: ILoginAuthCommand['data'], metadata: DrivenMessageMetadata) {
+  constructor(data: ILoginAuthCommand['data'], metadata?: DrivenMessageMetadata) {
     super(null, data, metadata);
   }
 }

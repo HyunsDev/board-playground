@@ -11,5 +11,6 @@ export type BaseDomainEventProps<T> = AbstractDomainEventProps<T>;
 export abstract class BaseDomainEvent<
   TProps extends BaseDomainEventProps<unknown>,
 > extends AbstractDomainEvent<CausationCode, DomainCode, DomainEventCode, TProps> {
+  abstract readonly audit: boolean;
   static readonly code: DomainEventCode;
 }
