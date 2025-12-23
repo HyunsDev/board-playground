@@ -1,12 +1,9 @@
-
-
 services:
-  # 1. PostgreSQL
   postgres:
     image: postgres:15-alpine
     container_name: board_playground_postgres
     ports:
-      - "${POSTGRES_PORT:-5432}:5432" # .env에 값이 없으면 기본값 5432 사용
+      - "${POSTGRES_PORT:-5432}:5432" 
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -14,13 +11,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  # 2. Redis
   redis:
     image: redis:7-alpine
     container_name: board_playground_redis
     ports:
       - "${REDIS_PORT:-6379}:6379"
-    # Redis 비밀번호 설정 (command로 실행 시 인자 전달)
     command: redis-server --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis_data:/data

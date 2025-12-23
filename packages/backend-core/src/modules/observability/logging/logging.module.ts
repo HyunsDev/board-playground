@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DiscoveryModule } from '@nestjs/core';
 import { CqrsModule } from '@nestjs/cqrs';
 import { LoggerModule } from 'nestjs-pino';
-import { multistream, transport } from 'pino'; // [수정] pino 유틸리티 import
+import { multistream, transport } from 'pino';
 
 import { getCommonPinoConfig } from './config/pino-common.config';
 import { createDevLoggerStream } from './config/pino-pretty.config';
@@ -36,6 +36,7 @@ import { CoreContext, TokenContext } from '@/modules/foundation/context';
         }
 
         // 2. [Development] 개발 환경 설정 (Pretty Console + Optional Loki)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const streams: { stream: any }[] = [];
 
         // 2-1. 기존 Pretty Logger Stream (콘솔용)
@@ -60,7 +61,6 @@ import { CoreContext, TokenContext } from '@/modules/foundation/context';
         return {
           pinoHttp: {
             ...commonConfig,
-            // [핵심] 여러 스트림을 하나로 합쳐서 전달
             stream: multistream(streams),
           },
         };
