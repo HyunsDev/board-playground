@@ -17,6 +17,7 @@ import {
   ClientContext,
   CoreContext,
   MessageContext,
+  OutboxContext,
   TokenContext,
   TransactionContext,
 } from './contexts';
@@ -62,6 +63,7 @@ export class ContextModule implements NestModule {
       CoreContext,
       MessageContext,
       TokenContext,
+      OutboxContext,
       {
         provide: CONTEXT_MODULE_OPTIONS,
         useValue: options,
@@ -78,6 +80,7 @@ export class ContextModule implements NestModule {
       MessageContext,
       TokenContext,
       ClsModule,
+      OutboxContext,
     ];
 
     // 2. HTTP 전용 Interceptor 추가

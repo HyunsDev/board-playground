@@ -1,5 +1,5 @@
 import { BullModule } from '@nestjs/bullmq';
-import { Module, Global, DynamicModule, Scope } from '@nestjs/common';
+import { Module, Global, DynamicModule } from '@nestjs/common';
 
 import { TaskQueueCode } from '@workspace/domain';
 
@@ -50,7 +50,6 @@ export class TaskQueueModule {
         {
           provide: JobDispatcherPort,
           useClass: JobDispatcher,
-          scope: Scope.REQUEST,
         },
       ],
       exports: [BullModule, JobDispatcherPort],

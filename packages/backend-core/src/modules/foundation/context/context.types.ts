@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ClsStore } from 'nestjs-cls';
 
 import { Prisma } from '@workspace/database';
 import { TokenPayload } from '@workspace/domain';
 
-import { DrivenMessageMetadata } from '@/base';
+import { BaseDomainEvent, BaseIntegrationEvent, BaseJob, DrivenMessageMetadata } from '@/base';
 
 export interface CoreStore {
   requestId: string;
@@ -29,9 +30,18 @@ export interface MessageMetadataStore {
   messageMetadata?: DrivenMessageMetadata;
 }
 
+export interface OutboxStore {
+  outbox: {
+    jobs: BaseJob<any>[];
+    domainEvents: BaseDomainEvent<any>[];
+    integrationEvents: BaseIntegrationEvent<any>[];
+  };
+}
+
 export type AppStore = ClsStore &
   CoreStore &
   TokenStore &
   ClientStore &
   TransactionStore &
-  MessageMetadataStore;
+  MessageMetadataStore &
+  OutboxStore;
