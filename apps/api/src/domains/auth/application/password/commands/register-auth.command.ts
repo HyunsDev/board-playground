@@ -3,6 +3,7 @@ import { err, ok } from 'neverthrow';
 import { HandlerResult } from '@workspace/backend-common';
 import {
   AccessTokenProvider,
+  CacheService,
   CommandHandler,
   DrivenMessageMetadata,
   ICommandHandler,
@@ -13,6 +14,8 @@ import { ValidationError } from '@workspace/backend-ddd';
 import { DEVICE_PLATFORM, passwordSchema } from '@workspace/contract';
 import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
+import { InvalidEmailVerificationCodeError } from '@/domains/auth/auth.domain-error';
+import { getEmailVerificationCodeKey } from '@/domains/auth/auth.utils';
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { PasswordProvider } from '@/infra/crypto';
@@ -25,6 +28,7 @@ type IRegisterAuthCommand = BaseCommandProps<{
   password: string;
   ipAddress: string;
   userAgent: string;
+  emailVerificationCode: string;
 }>;
 
 export class RegisterAuthCommand extends BaseCommand<
@@ -47,6 +51,7 @@ export class RegisterAuthCommandHandler implements ICommandHandler<RegisterAuthC
     private readonly sessionFacade: SessionFacade,
     private readonly accessTokenProvider: AccessTokenProvider,
     private readonly passwordProvider: PasswordProvider,
+    private readonly cacheService: CacheService,
     private readonly txManager: TransactionManager,
   ) {}
 
@@ -64,6 +69,15 @@ export class RegisterAuthCommandHandler implements ICommandHandler<RegisterAuthC
         );
       }
 
+      // 이메일 인증
+      const cachedCode = await this.cacheService.get<string>(
+        getEmailVerificationCodeKey(command.data.email),
+      );
+      if (cachedCode !== command.data.emailVerificationCode) {
+        return err(new InvalidEmailVerificationCodeError());
+      }
+
+      // 사용자 생성 로직
       const hashedPassword = await this.passwordProvider.hash(passwordValidation.data);
       const createUserResult = await this.userFacade.create({
         email: command.data.email,

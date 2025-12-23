@@ -29,11 +29,6 @@ export class SessionFacade {
     return this.sessionRepo.getOneById(id);
   }
 
-  getExpiresAtDate(): Date {
-    const expirationDays = this.tokenConfig.refreshTokenExpirationDays;
-    return dayjs().add(expirationDays, 'day').toDate();
-  }
-
   async create(props: {
     userId: string;
     userAgent: string;
@@ -109,5 +104,40 @@ export class SessionFacade {
     if (updateResult.isErr()) return updateResult;
 
     return ok(updateResult.value);
+  }
+
+  async closeAll(userId: string, exceptSessionId?: string) {
+    const sessions = await this.sessionRepo.listActiveByUserId(userId);
+    const closeResults = await Promise.all(
+      sessions
+        .filter((s) => s.id !== exceptSessionId && s.isActive)
+        .map(async (session) => {
+          const closeResult = session.close();
+          if (closeResult.isErr()) return closeResult;
+          return this.sessionRepo.update(session);
+        }),
+    );
+
+    for (const result of closeResults) {
+      if (result.isErr())
+        return matchError(result.error, {
+          SessionNotFound: (e) => {
+            throw new UnexpectedDomainErrorException(e);
+          },
+          SessionClosed: (e) => {
+            throw new UnexpectedDomainErrorException(e);
+          },
+          SessionRevoked: (e) => {
+            throw new UnexpectedDomainErrorException(e);
+          },
+        });
+    }
+
+    return ok(undefined);
+  }
+
+  private getExpiresAtDate(): Date {
+    const expirationDays = this.tokenConfig.refreshTokenExpirationDays;
+    return dayjs().add(expirationDays, 'day').toDate();
   }
 }

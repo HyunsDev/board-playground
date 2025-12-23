@@ -12,14 +12,10 @@ export const sendVerificationEmail = c.mutation({
   path: '/auth/register/request-email-verification-code',
   body: z.object({
     email: z.email(),
-    username: z.string(),
   }),
   responses: {
     204: c.noBody(),
-    ...toApiErrorResponses([
-      ApiErrors.User.UsernameAlreadyExists,
-      ApiErrors.User.EmailAlreadyExists,
-    ]),
+    ...toApiErrorResponses([ApiErrors.User.UsernameAlreadyExists]),
   },
   metadata: {
     access: ACCESS.public,
@@ -43,6 +39,7 @@ export const registerWithPassword = c.mutation({
     ...toApiErrorResponses([
       ApiErrors.User.EmailAlreadyExists,
       ApiErrors.User.UsernameAlreadyExists,
+      ApiErrors.Auth.InvalidEmailVerificationCode,
       ApiErrors.Common.ValidationError,
     ]),
   },
@@ -75,6 +72,7 @@ export const changePassword = c.mutation({
   body: z.object({
     oldPassword: passwordSchema,
     newPassword: passwordSchema,
+    logoutAllSessions: z.boolean().optional(),
   }),
   responses: {
     204: c.noBody(),

@@ -22,7 +22,6 @@ import {
   ContextModule,
   mailerConfig,
   MailerModule,
-  otelConfig,
   AuditLogModule,
 } from '@workspace/backend-core';
 
@@ -41,7 +40,6 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
         redisConfig,
         ssmConfig,
         mailerConfig,
-        otelConfig,
 
         refreshTokenConfig,
         discordWebhookConfig,

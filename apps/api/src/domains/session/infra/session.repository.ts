@@ -64,6 +64,13 @@ export class SessionRepository
     return this.mapper.toDomainMany(records);
   }
 
+  async listActiveByUserId(userId: string): Promise<SessionEntity[]> {
+    const records = await this.delegate.findMany({
+      where: { userId, status: 'ACTIVE' },
+    });
+    return this.mapper.toDomainMany(records);
+  }
+
   async create(session: SessionEntity) {
     const result = await this.createEntity(session);
     if (result.isErr()) {

@@ -12,35 +12,35 @@ import { matchError } from '@workspace/backend-ddd';
 import { DEVICE_PLATFORM } from '@workspace/contract';
 import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
-import { InvalidCredentialsError } from '../../auth.domain-error';
+import { InvalidCredentialsError } from '../../../auth.domain-error';
 
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { PasswordProvider } from '@/infra/crypto';
 import { AuthTokens } from '@/shared/types/tokens';
 
-type ILoginAuthCommand = BaseCommandProps<{
+type LoginWithPasswordCommandProps = BaseCommandProps<{
   email: string;
   password: string;
   ipAddress: string;
   userAgent: string;
 }>;
 
-export class LoginAuthCommand extends BaseCommand<
-  ILoginAuthCommand,
+export class LoginWithPasswordCommand extends BaseCommand<
+  LoginWithPasswordCommandProps,
   AuthTokens,
-  HandlerResult<LoginAuthCommandHandler>
+  HandlerResult<LoginWithPasswordCommandHandler>
 > {
   static readonly code = asCommandCode('account:auth:cmd:login');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: ILoginAuthCommand['data'], metadata?: DrivenMessageMetadata) {
+  constructor(data: LoginWithPasswordCommandProps['data'], metadata?: DrivenMessageMetadata) {
     super(null, data, metadata);
   }
 }
 
-@CommandHandler(LoginAuthCommand)
-export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand> {
+@CommandHandler(LoginWithPasswordCommand)
+export class LoginWithPasswordCommandHandler implements ICommandHandler<LoginWithPasswordCommand> {
   constructor(
     private readonly userFacade: UserFacade,
     private readonly sessionFacade: SessionFacade,
@@ -49,7 +49,7 @@ export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand
     private readonly txManager: TransactionManager,
   ) {}
 
-  async execute(command: ILoginAuthCommand) {
+  async execute(command: LoginWithPasswordCommandProps) {
     return await this.txManager.run(async () => {
       const userResult = await this.userFacade.getOneByEmail(command.data.email);
       if (userResult.isErr()) {
@@ -63,11 +63,11 @@ export class LoginAuthCommandHandler implements ICommandHandler<LoginAuthCommand
         return err(new InvalidCredentialsError());
       }
 
-      const validResult = await this.passwordProvider.compare(
+      const isPasswordValid = await this.passwordProvider.compare(
         command.data.password,
         user.password.hashedValue,
       );
-      if (!validResult) return err(new InvalidCredentialsError());
+      if (!isPasswordValid) return err(new InvalidCredentialsError());
 
       const sessionResult = await this.sessionFacade.create({
         userId: user.id,

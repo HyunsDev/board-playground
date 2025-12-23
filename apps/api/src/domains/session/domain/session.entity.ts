@@ -95,6 +95,10 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps> {
     return this.props.userId;
   }
 
+  get isActive(): boolean {
+    return this.props.status === SESSION_STATUS.ACTIVE;
+  }
+
   public rotateRefreshToken({
     currentTokenHash,
     newTokenHash,

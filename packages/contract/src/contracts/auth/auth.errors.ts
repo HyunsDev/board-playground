@@ -56,4 +56,9 @@ export const AuthApiErrors = defineErrorRecord({
     code: 'INVALID_REDIRECT_URL',
     message: '유효하지 않은 리다이렉트 URL입니다',
   },
+  InvalidEmailVerificationCode: {
+    status: 400,
+    code: 'INVALID_EMAIL_VERIFICATION_CODE',
+    message: '유효하지 않은 이메일 인증 코드입니다',
+  },
 });

@@ -11,6 +11,7 @@ export abstract class SessionRepositoryPort extends RepositoryPort<SessionEntity
     userId: string,
   ): Promise<DomainResult<SessionEntity, SessionNotFoundError>>;
   abstract listAllByUserId(userId: string): Promise<SessionEntity[]>;
+  abstract listActiveByUserId(userId: string): Promise<SessionEntity[]>;
   abstract create(session: SessionEntity): Promise<DomainResult<SessionEntity, never>>;
   abstract update(
     session: SessionEntity,

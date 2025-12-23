@@ -4,6 +4,7 @@ import { v7 as uuidv7 } from 'uuid';
 import { BaseAggregateRoot, BaseEntityProps } from '@workspace/backend-core';
 import { USER_ROLE, USER_STATUS, UserRole, UserStatus } from '@workspace/contract';
 
+import { UserPasswordChangedEvent } from './events';
 import { UserCreatedEvent } from './events/user-created.event';
 import { UserUsernameChangedEvent } from './events/user-username-changed.event';
 import { UserPasswordVO } from './user-password.vo';
@@ -112,6 +113,18 @@ export class UserEntity extends BaseAggregateRoot<UserProps> {
         userId: this.id,
         oldUsername: this.props.username,
         newUsername: username,
+      }),
+    );
+  }
+
+  public changePassword(newHashedPassword: string) {
+    this.props.password = UserPasswordVO.fromHash(newHashedPassword);
+    this.props.updatedAt = new Date();
+
+    this.addEvent(
+      new UserPasswordChangedEvent({
+        userEmail: this.email,
+        userId: this.id,
       }),
     );
   }

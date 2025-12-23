@@ -72,6 +72,13 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     return count > 0;
   }
 
+  async userEmailExists(email: string): Promise<boolean> {
+    const count = await this.delegate.count({
+      where: { email },
+    });
+    return count > 0;
+  }
+
   async searchUsers(params: {
     nickname?: string;
     page: number;

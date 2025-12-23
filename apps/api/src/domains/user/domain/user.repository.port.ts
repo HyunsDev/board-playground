@@ -14,6 +14,7 @@ export abstract class UserRepositoryPort extends RepositoryPort<UserEntity> {
   abstract findOneByEmail(email: string): Promise<UserEntity | null>;
   abstract findOneByUsername(username: string): Promise<UserEntity | null>;
   abstract usernameExists(username: string): Promise<boolean>;
+  abstract userEmailExists(email: string): Promise<boolean>;
   abstract searchUsers(params: {
     nickname?: string;
     page: number;
