@@ -11,8 +11,9 @@ type ISessionDeletedEvent = BaseDomainEventProps<{
   sessionName: string;
 }>;
 export class SessionDeletedEvent extends BaseDomainEvent<ISessionDeletedEvent> {
-  public static readonly code = asDomainEventCode('account:session:evt:deleted');
-  public readonly resourceType = AggregateCodeEnum.Account.Session;
+  readonly audit = true;
+  static readonly code = asDomainEventCode('account:session:evt:deleted');
+  readonly resourceType = AggregateCodeEnum.Account.Session;
 
   constructor(data: ISessionDeletedEvent['data'], metadata?: DrivenMessageMetadata) {
     super(data.sessionId, data, metadata);

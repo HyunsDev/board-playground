@@ -11,8 +11,9 @@ type ISessionCreatedEvent = BaseDomainEventProps<{
   sessionName: string;
 }>;
 export class SessionCreatedEvent extends BaseDomainEvent<ISessionCreatedEvent> {
-  public static readonly code = asDomainEventCode('account:session:evt:created');
-  public readonly resourceType = AggregateCodeEnum.Account.Session;
+  static readonly code = asDomainEventCode('account:session:evt:created');
+  readonly resourceType = AggregateCodeEnum.Account.Session;
+  readonly audit = true;
 
   constructor(data: ISessionCreatedEvent['data'], metadata?: DrivenMessageMetadata) {
     super(data.sessionId, data, metadata);
