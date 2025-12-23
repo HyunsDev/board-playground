@@ -2,7 +2,7 @@ import { ConfigType, registerAs } from '@nestjs/config';
 import { z } from 'zod';
 
 export const coreConfigSchema = z.object({
-  NODE_ENV: z.enum(['development', 'production', 'test']).prefault('development'),
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   USE_LOCAL_LOKI: z.string().default('false'),
 });
 

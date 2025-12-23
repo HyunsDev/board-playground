@@ -2,7 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
 import { IntegrationEventPublisher } from './integration-event.publisher';
-import { MESSAGING_SERVICE_TOKEN } from './microservies.constant';
+import { MESSAGING_SERVICE_TOKEN } from './microservices.constant';
 import { RpcClient } from './rpc-client';
 import { GlobalRpcExceptionFilter } from './rpc-exception.filter';
 

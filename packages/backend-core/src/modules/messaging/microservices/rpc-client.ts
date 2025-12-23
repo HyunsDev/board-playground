@@ -6,7 +6,7 @@ import { firstValueFrom, map, timeout } from 'rxjs';
 
 import { MessageResult } from '@workspace/backend-ddd';
 
-import { MESSAGING_SERVICE_TOKEN } from './microservies.constant';
+import { MESSAGING_SERVICE_TOKEN } from './microservices.constant';
 
 import { BaseRpc } from '@/base';
 import { MessageContext } from '@/modules/foundation/context';
