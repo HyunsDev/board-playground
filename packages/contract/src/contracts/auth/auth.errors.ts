@@ -51,4 +51,9 @@ export const AuthApiErrors = defineErrorRecord({
     code: 'SESSION_EXPIRED',
     message: '세션이 만료되었습니다',
   },
+  InvalidRedirectUrl: {
+    status: 400,
+    code: 'INVALID_REDIRECT_URL',
+    message: '유효하지 않은 리다이렉트 URL입니다',
+  },
 });
