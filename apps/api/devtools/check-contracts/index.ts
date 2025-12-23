@@ -1,12 +1,12 @@
 /* eslint-disable functional/no-expression-statements */
 import 'dotenv/config';
+import 'reflect-metadata';
 
 import { performance } from 'perf_hooks';
 
-import { INestApplication, LoggerService, Type } from '@nestjs/common';
-import { METHOD_METADATA, PATH_METADATA } from '@nestjs/common/constants';
-import { ModulesContainer, Reflector } from '@nestjs/core';
-import { Test } from '@nestjs/testing';
+import { DynamicModule, ForwardReference, LoggerService, Type } from '@nestjs/common';
+import { METHOD_METADATA, MODULE_METADATA, PATH_METADATA } from '@nestjs/common/constants';
+import { Reflector } from '@nestjs/core';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 
@@ -79,35 +79,91 @@ class SilentLogger implements LoggerService {
 // --- Core Logic Classes ---
 
 class NestRouteExtractor {
-  constructor(private readonly app: INestApplication) {}
+  constructor(private readonly rootModule: Type<any>) {}
 
   public getRoutes(): RouteInfo[] {
-    const modulesContainer = this.app.get(ModulesContainer);
-    const reflector = this.app.get(Reflector);
+    const reflector = new Reflector();
     const routes: RouteInfo[] = [];
-    const modules = [...modulesContainer.entries()];
 
-    for (const [token, module] of modules) {
-      const controllers = [...module.controllers.values()];
-      for (const controller of controllers) {
-        if (!controller.instance) continue;
-        this.extractRoutesFromController(controller, module, token, reflector, routes);
-      }
+    const visitedModules = new Set<Type<any>>();
+    const queue: Array<Type<any> | DynamicModule> = [this.rootModule];
+
+    while (queue.length > 0) {
+      const current = queue.shift();
+      if (!current) continue;
+
+      const resolved = this.unwrapForwardRef(current);
+      if (!resolved) continue;
+
+      const { moduleClass, imports, controllers } = this.resolveModule(resolved);
+      if (!moduleClass || visitedModules.has(moduleClass)) continue;
+
+      visitedModules.add(moduleClass);
+
+      controllers.forEach((controller) =>
+        this.extractRoutesFromController(controller, moduleClass, reflector, routes),
+      );
+
+      imports.forEach((m) => {
+        const unwrapped = this.unwrapForwardRef(m);
+        if (unwrapped) queue.push(unwrapped as Type<any> | DynamicModule);
+      });
     }
+
     return routes;
   }
 
+  private isForwardRef(moduleLike: any): moduleLike is ForwardReference<any> {
+    return typeof moduleLike === 'object' && moduleLike !== null && 'forwardRef' in moduleLike;
+  }
+
+  private unwrapForwardRef(moduleLike?: ForwardReference | Type<any> | DynamicModule) {
+    if (!moduleLike) return undefined;
+    if (this.isForwardRef(moduleLike) && typeof moduleLike.forwardRef === 'function') {
+      return moduleLike.forwardRef();
+    }
+    return moduleLike as Type<any> | DynamicModule;
+  }
+
+  private isDynamicModule(moduleLike: Type<any> | DynamicModule): moduleLike is DynamicModule {
+    return typeof moduleLike === 'object' && moduleLike !== null && 'module' in moduleLike;
+  }
+
+  private resolveModule(moduleLike: Type<any> | DynamicModule): {
+    moduleClass: Type<any> | undefined;
+    imports: Array<Type<any> | DynamicModule>;
+    controllers: Type<any>[];
+  } {
+    const dynamicImports =
+      (this.isDynamicModule(moduleLike) ? moduleLike.imports : undefined) ?? [];
+    const dynamicControllers =
+      (this.isDynamicModule(moduleLike) ? moduleLike.controllers : undefined) ?? [];
+
+    const moduleClass = this.isDynamicModule(moduleLike) ? moduleLike.module : moduleLike;
+
+    const metaImports =
+      Reflect.getMetadata(MODULE_METADATA.IMPORTS, moduleClass) ??
+      ([] as Array<Type<any> | DynamicModule>);
+    const metaControllers =
+      Reflect.getMetadata(MODULE_METADATA.CONTROLLERS, moduleClass) ?? ([] as Type<any>[]);
+
+    return {
+      moduleClass,
+      imports: [...metaImports, ...dynamicImports],
+      controllers: [...metaControllers, ...dynamicControllers],
+    };
+  }
+
   private extractRoutesFromController(
-    controller: any,
-    module: any,
-    token: any,
+    controllerClass: Type<any>,
+    moduleClass: Type<any>,
     reflector: Reflector,
     routes: RouteInfo[],
   ) {
-    const controllerName = controller.metatype?.name || 'UnknownController';
-    const controllerPaths = this.getPaths(reflector, controller.metatype);
+    const controllerName = controllerClass?.name || 'UnknownController';
+    const controllerPaths = this.getPaths(reflector, controllerClass);
 
-    const prototype = Object.getPrototypeOf(controller.instance);
+    const prototype = controllerClass.prototype;
     const methods = Object.getOwnPropertyNames(prototype);
 
     for (const methodName of methods) {
@@ -118,7 +174,7 @@ class NestRouteExtractor {
       if (methodMetadata !== undefined) {
         const httpMethod = this.getHttpMethodName(methodMetadata);
         const methodPaths = this.getPaths(reflector, methodRef);
-        const accessInfo = this.getAccessStatus(reflector, methodRef, controller.metatype);
+        const accessInfo = this.getAccessStatus(reflector, methodRef, controllerClass);
 
         controllerPaths.forEach((cPath) => {
           methodPaths.forEach((mPath) => {
@@ -127,7 +183,7 @@ class NestRouteExtractor {
               method: httpMethod,
               path: fullPath,
               controllerName,
-              moduleName: module.metatype?.name || String(token),
+              moduleName: moduleClass?.name || 'UnknownModule',
               accessInfo,
             });
           });
@@ -323,36 +379,13 @@ class ContractAnalyzer {
 
 // --- Main Execution ---
 
-async function bootstrapTestApp() {
-  const moduleBuilder = Test.createTestingModule({ imports: [AppModule] });
-
-  moduleBuilder.useMocker(() => ({
-    onModuleInit: () => {},
-    onApplicationBootstrap: () => {},
-    onModuleDestroy: () => {},
-    connect: () => {},
-  }));
-
-  moduleBuilder.setLogger(new SilentLogger());
-
-  const moduleRef = await moduleBuilder.compile();
-  const app = moduleRef.createNestApplication();
-
-  app.useLogger(new SilentLogger());
-
-  await app.init();
-  return app;
-}
-
 async function run() {
   const startTime = performance.now();
 
   clearConsole();
 
-  const app = await bootstrapTestApp();
-  const extractor = new NestRouteExtractor(app);
+  const extractor = new NestRouteExtractor(AppModule);
   const nestRoutes = extractor.getRoutes();
-  await app.close();
 
   const analyzer = new ContractAnalyzer(nestRoutes);
   const { result, matchedIndices } = analyzer.analyze(contract);
