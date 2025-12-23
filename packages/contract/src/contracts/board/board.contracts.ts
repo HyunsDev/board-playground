@@ -5,7 +5,7 @@ import {
   changeManagerRole,
   dismissManagerFromBoard,
   listManagersOfBoard,
-} from '@/contracts/manager';
+} from '@/contracts/manager/manager.endpoints';
 import { c } from '@/internal/c';
 
 export const boardContract = c.router({
