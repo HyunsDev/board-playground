@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 import { ok } from 'neverthrow';
 import z from 'zod';
 
-import { matchError } from '@workspace/backend-ddd';
+import { matchError, PlainMessage } from '@workspace/backend-ddd';
 import { asJobCode, DomainCodeEnums, TaskQueueCodeEnum } from '@workspace/domain';
 
 import { AuditLogRepositoryPort } from './audit-log.repository.port';
@@ -11,13 +11,13 @@ import { BaseDomainEvent, BaseDomainEventProps, BaseJob, BaseJobProps, IJobHandl
 import { JobHandler } from '@/modules/messaging';
 
 const AuditLogJobSchema = z.object({
-  event: z.any(),
+  plainEvent: z.any(),
   ipAddress: z.string().optional(),
   userAgent: z.string().optional(),
 });
 
 type AuditLogJobProps = BaseJobProps<{
-  event: BaseDomainEvent<BaseDomainEventProps<unknown>>;
+  plainEvent: PlainMessage<BaseDomainEvent<BaseDomainEventProps<unknown>>>;
   ipAddress?: string;
   userAgent?: string;
   sessionId?: string;
@@ -39,29 +39,31 @@ export class AuditLogJobHandler implements IJobHandler<AuditLogJob> {
 
   async execute(job: AuditLogJob) {
     const {
-      data: { event, ipAddress, userAgent, sessionId },
+      data: { plainEvent, ipAddress, userAgent, sessionId },
     } = job;
 
     const result = await this.auditLogRepository.create({
-      actorId: event.metadata.userId ?? null,
-      targetType: event.metadata.resourceType || 'unknown',
-      targetId: event.metadata.resourceId ?? null,
-      eventCode: event.code,
-      correlationId: event.metadata.correlationId ?? null,
+      actorId: plainEvent.metadata.userId ?? null,
+      targetType: plainEvent.metadata.resourceType || 'unknown',
+      targetId: plainEvent.metadata.resourceId ?? null,
+      eventCode: plainEvent.code,
+      correlationId: plainEvent.metadata.correlationId ?? null,
       ipAddress: ipAddress ?? null,
-      data: event.data ?? {},
+      data: plainEvent.data ?? {},
       metadata: {
-        causationId: event.metadata.causationId,
-        causationType: event.metadata.causationType,
+        causationId: plainEvent.metadata.causationId,
+        causationType: plainEvent.metadata.causationType,
         userAgent: userAgent ?? null,
         sessionId: sessionId ?? null,
       },
-      occurredAt: event.metadata.createdAt ? new Date(event.metadata.createdAt) : undefined,
+      occurredAt: plainEvent.metadata.createdAt
+        ? new Date(plainEvent.metadata.createdAt)
+        : undefined,
     });
 
     if (result.isErr()) return matchError(result.error, {});
 
-    this.logger.log(`Audit log recorded for event code: ${event.code}`);
+    this.logger.log(`Audit log recorded for event code: ${plainEvent.code}`);
     return ok(undefined);
   }
 }

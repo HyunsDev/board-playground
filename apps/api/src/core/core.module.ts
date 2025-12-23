@@ -23,6 +23,7 @@ import {
   mailerConfig,
   MailerModule,
   otelConfig,
+  AuditLogModule,
 } from '@workspace/backend-core';
 
 import { discordWebhookConfig } from './configs';
@@ -46,11 +47,11 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
         discordWebhookConfig,
       ],
     }),
-    TaskQueueModule.forRoot(),
     ContextModule.forRoot({
       enableDatabase: true,
       type: 'http',
     }),
+    TaskQueueModule.forRoot(),
     DatabaseModule,
     CacheModule,
     StorageModule,
@@ -72,6 +73,7 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
     }),
     SseModule.forServer(),
     MailerModule.forSend(),
+    AuditLogModule,
   ],
   exports: [
     ContextModule,
