@@ -1,5 +1,7 @@
 import { Module, Provider } from '@nestjs/common';
 
+import { MailerModule } from '@workspace/backend-core';
+
 import { GetUserForAdminQueryHandler } from './admin/queries/get-user-for-admin.query';
 import { UserActivityEventHandler } from './events/user-activity.event-handler';
 import { UserPasswordChangedEventHandler } from './events/user-password-chaged.event-handler';
@@ -38,7 +40,7 @@ const eventHandlers: Provider[] = [UserActivityEventHandler, UserPasswordChanged
 const facades: Provider[] = [UserFacade];
 
 @Module({
-  imports: [UserInfraModule],
+  imports: [UserInfraModule, MailerModule.forFeature()],
   providers: [...commonHandlers, ...meHandlers, ...adminHandlers, ...eventHandlers, ...facades],
   exports: [UserFacade],
 })

@@ -22,6 +22,8 @@ import { TokenPayload, TriggerCodeEnum } from '@workspace/domain';
 import { ChangePasswordCommand } from '../application/password/commands/change-password.command';
 import { LoginWithPasswordCommand } from '../application/password/commands/login-with-password.command';
 import { RegisterAuthCommand } from '../application/password/commands/register-auth.command';
+import { ResetPasswordCommand } from '../application/password/commands/reset-password.command';
+import { SendResetEmailCommand } from '../application/password/commands/send-reset-email.command';
 import { SendVerificationEmailCommand } from '../application/password/commands/send-verification-email.command';
 
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from '@/shared/constants/cookie.constant';
@@ -143,6 +145,47 @@ export class AuthPasswordHttpController {
             UserNotFound: (e) => {
               throw new UnexpectedDomainErrorException(e);
             },
+          }),
+      );
+    });
+  }
+
+  @Trigger(TriggerCodeEnum.Http)
+  @Public()
+  @TsRestHandler(contract.auth.password.sendResetEmail)
+  async sendResetEmail() {
+    return tsRestHandler(contract.auth.password.sendResetEmail, async ({ body }) => {
+      const result = await this.commandDispatcher.execute(
+        new SendResetEmailCommand({
+          email: body.email,
+        }),
+      );
+
+      return result.match(
+        () => apiOk(204, undefined),
+        (error) => matchPublicError(error, {}),
+      );
+    });
+  }
+
+  @Trigger(TriggerCodeEnum.Http)
+  @Public()
+  @TsRestHandler(contract.auth.password.reset)
+  async resetPassword() {
+    return tsRestHandler(contract.auth.password.reset, async ({ body }) => {
+      const result = await this.commandDispatcher.execute(
+        new ResetPasswordCommand({
+          email: body.email,
+          emailVerificationCode: body.emailVerificationCode,
+          newPassword: body.newPassword,
+        }),
+      );
+      return result.match(
+        () => apiOk(204, undefined),
+        (error) =>
+          matchPublicError(error, {
+            InvalidCredentials: () => apiErr(ApiErrors.Auth.InvalidCredentials),
+            ValidationError: () => apiErr(ApiErrors.Common.ValidationError),
           }),
       );
     });
