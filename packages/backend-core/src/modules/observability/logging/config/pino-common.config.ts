@@ -1,6 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
-import { trace, context } from '@opentelemetry/api'; // [추가 1] OTel API 임포트
 import { Params } from 'nestjs-pino';
 
 import { CoreContext, TokenContext } from '@/modules/foundation/context';
@@ -32,24 +31,8 @@ export const getCommonPinoConfig = (
 
     // [수정 2] mixin: 모든 로그 라인에 공통 필드(traceId, spanId)를 병합합니다.
     mixin: () => {
-      // 1. 현재 활성화된 Span 가져오기
-      const span = trace.getSpan(context.active());
-
-      // 2. Span이 없으면(추적되지 않는 요청 등) 빈 객체
-      if (!span) {
-        return {
-          reqId: coreContext.requestId,
-        };
-      }
-
-      // 3. Span Context에서 ID 추출
-      const { traceId, spanId, traceFlags } = span.spanContext();
-
       return {
         reqId: coreContext.requestId, // 기존 로직 유지
-        traceId, // 로그와 트레이스를 연결하는 핵심 키
-        spanId,
-        traceFlags: `0${traceFlags.toString(16)}`, // (선택) 샘플링 여부 등을 확인
       };
     },
 
