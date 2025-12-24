@@ -1,12 +1,12 @@
 'use client';
 
-import { createContext, useContext, useMemo, useState } from 'react';
+import * as React from 'react';
 
 export type WindowContextType = {
   currentPageId: string;
   setCurrentPageId: (pageId: string) => void;
 };
-export const WindowContext = createContext<WindowContextType | null>(null);
+export const WindowContext = React.createContext<WindowContextType | null>(null);
 
 export function WindowContextProvider({
   children,
@@ -15,9 +15,9 @@ export function WindowContextProvider({
   children: React.ReactNode;
   defaultPageId: string;
 }) {
-  const [currentPageId, setCurrentPageId] = useState(defaultPageId);
+  const [currentPageId, setCurrentPageId] = React.useState(defaultPageId);
 
-  const contextValue = useMemo<WindowContextType>(
+  const contextValue = React.useMemo<WindowContextType>(
     () => ({
       currentPageId,
       setCurrentPageId,
@@ -29,7 +29,7 @@ export function WindowContextProvider({
 }
 
 export function useWindow() {
-  const context = useContext(WindowContext);
+  const context = React.useContext(WindowContext);
   if (!context) {
     throw new Error('useWindow must be used within a WindowContextProvider.');
   }

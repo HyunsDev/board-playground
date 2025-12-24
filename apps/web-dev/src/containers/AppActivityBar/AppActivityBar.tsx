@@ -16,7 +16,7 @@ import { WorkbenchActivityBar, WorkbenchActivityBarMenuItem } from '@workspace/u
 
 import { NavUser } from './NavUser';
 
-import { DashIcon } from '@/components/DashIcon';
+import { DashIcon } from '@/components/BoardIcon';
 import { useView } from '@/contexts/ViewContext';
 
 const ViewNotice: { [key: string]: boolean } = {

@@ -8,7 +8,7 @@ import {
   WorkbenchPanelGroup,
 } from '@workspace/ui';
 
-import { DashActivityBar } from '@/containers/DashActivityBar';
+import { DashActivityBar } from '@/containers/AppActivityBar';
 import { MainProvider } from '@/containers/Provider/MainProvider';
 
 const fontSans = localFont({

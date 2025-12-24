@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 import {
   CircleCheck,
   Flag,
@@ -7,8 +9,7 @@ import {
   ScrollText,
   Shapes,
   StickyNote,
-} from "lucide-react";
-import { ReactNode } from "react";
+} from 'lucide-react';
 
 export type View = {
   /** Unique identifier used by the view context */
@@ -25,58 +26,58 @@ export type View = {
 
 export const views: View[] = [
   {
-    id: "inbox",
-    title: "Inbox",
-    href: "/inbox",
+    id: 'inbox',
+    title: 'Inbox',
+    href: '/inbox',
     icon: <Inbox />,
     isVisibleInViewList: true,
   },
   {
-    id: "dashboard",
-    title: "Dashboard",
-    href: "/dashboard",
+    id: 'dashboard',
+    title: 'Dashboard',
+    href: '/dashboard',
     icon: <LayoutDashboard />,
     isVisibleInViewList: true,
   },
   {
-    id: "journal",
-    title: "Journal",
-    href: "/journal",
+    id: 'journal',
+    title: 'Journal',
+    href: '/journal',
     icon: <ScrollText />,
     isVisibleInViewList: true,
   },
   {
-    id: "memo",
-    title: "Memo",
-    href: "/memo",
+    id: 'memo',
+    title: 'Memo',
+    href: '/memo',
     icon: <StickyNote />,
     isVisibleInViewList: true,
   },
   {
-    id: "todo",
-    title: "Todo",
-    href: "/todo",
+    id: 'todo',
+    title: 'Todo',
+    href: '/todo',
     icon: <CircleCheck />,
     isVisibleInViewList: true,
   },
   {
-    id: "project",
-    title: "Project",
-    href: "/project",
+    id: 'project',
+    title: 'Project',
+    href: '/project',
     icon: <Flag />,
     isVisibleInViewList: true,
   },
   {
-    id: "area",
-    title: "Area",
-    href: "/area",
+    id: 'area',
+    title: 'Area',
+    href: '/area',
     icon: <Shapes />,
     isVisibleInViewList: true,
   },
   {
-    id: "creation",
-    title: "Creation",
-    href: "/creation",
+    id: 'creation',
+    title: 'Creation',
+    href: '/creation',
     icon: <Layers3 />,
     isVisibleInViewList: true,
   },
@@ -85,9 +86,9 @@ export const views: View[] = [
 const TRAILING_SLASH_REGEX = /\/+$/;
 
 const normalizePath = (path: string): string => {
-  if (!path) return "/";
-  if (path === "/") return path;
-  return path.replace(TRAILING_SLASH_REGEX, "");
+  if (!path) return '/';
+  if (path === '/') return path;
+  return path.replace(TRAILING_SLASH_REGEX, '');
 };
 
 const defaultMatch = (href: string, pathname: string) => {
@@ -101,9 +102,7 @@ const defaultMatch = (href: string, pathname: string) => {
   return cleanPathname.startsWith(`${cleanHref}/`);
 };
 
-export const findViewByPath = (
-  pathname: string | null | undefined
-): View | null => {
+export const findViewByPath = (pathname: string | null | undefined): View | null => {
   if (!pathname) return null;
 
   const cleanPathname = normalizePath(pathname);
