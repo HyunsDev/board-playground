@@ -11,6 +11,7 @@
     "./nest-js": "./nest.js",
     "./nestjs-library": "./nestjs-library.js",
     "./prettier-base": "./prettier-base.js",
+    "./prettier-web": "./prettier-web.js",
     "./react-internal": "./react-internal.js"
   },
   "dependencies": {
@@ -31,6 +32,7 @@
     "eslint-plugin-unused-imports": "^4.3.0",
     "globals": "^16.5.0",
     "prettier": "^3.7.4",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "typescript-eslint": "^8.49.0"
   }
 }

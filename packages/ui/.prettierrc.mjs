@@ -1,3 +1,5 @@
-import config from '@workspace/eslint-config/prettier-base';
+import config from '@workspace/eslint-config/prettier-web';
 
-export default config;
+export default {
+  ...config,
+};

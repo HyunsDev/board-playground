@@ -41,6 +41,7 @@
     "knip": "^5.73.3",
     "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "rimraf": "^6.1.2",
     "sort-package-json": "^3.5.1",
     "syncpack": "^13.0.4",

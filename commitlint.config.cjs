@@ -22,6 +22,7 @@ module.exports = {
         'jest',
         'typescript',
         'infra',
+        'ui',
       ],
     ],
     'subject-case': [0],
