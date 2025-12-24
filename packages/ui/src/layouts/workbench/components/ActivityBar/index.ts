@@ -1,1 +1,1 @@
-export * from './WorkbenchActivityBar.js';
+export * from './WorkbenchActivityBar';

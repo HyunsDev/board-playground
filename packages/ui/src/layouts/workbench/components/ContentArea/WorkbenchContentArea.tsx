@@ -1,6 +1,6 @@
-import { cn } from '@/utils/cn.js';
+import { cn } from '../../../../utils/cn';
 
-export function WorkbenchContentArea({ className, ...props }: React.ComponentProps<'main'>) {
+export function WorkbenchContentArea({ className, ...props }: React.ComponentPropsWithoutRef<'main'>) {
   return (
     <main
       data-slot="sidebar-inset"

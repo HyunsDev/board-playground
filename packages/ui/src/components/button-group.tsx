@@ -1,8 +1,9 @@
+import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 
-import { Separator } from '@/components/separator.js';
-import { cn } from '@/utils/cn.js';
+import { Separator } from './separator';
+import { cn } from '../utils/cn';
 
 const buttonGroupVariants = cva(
   "flex w-fit items-stretch [&>*]:focus-visible:z-10 [&>*]:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md has-[>[data-slot=button-group]]:gap-2",
@@ -25,7 +26,7 @@ function ButtonGroup({
   className,
   orientation,
   ...props
-}: React.ComponentProps<'div'> & VariantProps<typeof buttonGroupVariants>) {
+}: React.ComponentPropsWithoutRef<'div'> & VariantProps<typeof buttonGroupVariants>) {
   return (
     <div
       role="group"
@@ -41,13 +42,27 @@ function ButtonGroupText({
   className,
   asChild = false,
   ...props
-}: React.ComponentProps<'div'> & {
+}: React.HTMLAttributes<HTMLDivElement> & {
   asChild?: boolean;
 }) {
-  const Comp = asChild ? Slot : 'div';
+  if (asChild) {
+    const SlotComponent = Slot as React.ComponentType<
+      React.ComponentPropsWithoutRef<typeof Slot>
+    >;
+
+    return (
+      <SlotComponent
+        className={cn(
+          "bg-muted flex items-center gap-2 rounded-md border px-4 text-sm font-medium shadow-xs [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4",
+          className,
+        )}
+        {...(props as React.ComponentPropsWithoutRef<typeof Slot>)}
+      />
+    );
+  }
 
   return (
-    <Comp
+    <div
       className={cn(
         "bg-muted flex items-center gap-2 rounded-md border px-4 text-sm font-medium shadow-xs [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4",
         className,
@@ -61,7 +76,7 @@ function ButtonGroupSeparator({
   className,
   orientation = 'vertical',
   ...props
-}: React.ComponentProps<typeof Separator>) {
+}: React.ComponentPropsWithoutRef<typeof Separator>) {
   return (
     <Separator
       data-slot="button-group-separator"

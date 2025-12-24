@@ -1,1 +1,1 @@
-export * from './WorkbenchSidebarArea.js';
+export * from './WorkbenchSidebarArea';

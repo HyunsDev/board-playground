@@ -1,4 +1,4 @@
-import { Sidebar } from '@/components/sidebar.js';
+import { Sidebar } from '../../../../components/sidebar';
 
 export function WorkbenchSidebar({ children }: { children: React.ReactNode }) {
   return (

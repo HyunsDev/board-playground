@@ -19,10 +19,10 @@ export function WindowContextProvider({
 
   const contextValue = useMemo<WindowContextType>(
     () => ({
-      currentPageId: currentPageId,
-      setCurrentPageId: setCurrentPageId,
+      currentPageId,
+      setCurrentPageId,
     }),
-    [currentPageId, setCurrentPageId],
+    [currentPageId],
   );
 
   return <WindowContext.Provider value={contextValue}>{children}</WindowContext.Provider>;

@@ -1,1 +1,1 @@
-export * from './windowContext.js';
+export * from './windowContext';

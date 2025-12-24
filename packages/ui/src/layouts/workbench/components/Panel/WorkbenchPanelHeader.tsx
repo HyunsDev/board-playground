@@ -1,7 +1,7 @@
 'use client';
 
-import { Separator } from '@/components/separator.js';
-import { SidebarTrigger, useSidebar } from '@/components/sidebar.js';
+import { Separator } from '../../../../components/separator';
+import { SidebarTrigger, useSidebar } from '../../../../components/sidebar';
 
 export function WorkbenchPanelHeader({
   children,

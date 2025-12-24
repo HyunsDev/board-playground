@@ -4,6 +4,8 @@
   "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "paths": {
       "@/*": ["src/*"]
     }

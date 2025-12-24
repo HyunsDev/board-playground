@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 
 import '@workspace/ui/globals.css';
 import {
@@ -11,13 +11,13 @@ import {
 import { DashActivityBar } from '@/containers/DashActivityBar';
 import { MainProvider } from '@/containers/Provider/MainProvider';
 
-const fontSans = Geist({
-  subsets: ['latin'],
+const fontSans = localFont({
+  src: '../fonts/GeistVF.woff',
   variable: '--font-sans',
 });
 
-const fontMono = Geist_Mono({
-  subsets: ['latin'],
+const fontMono = localFont({
+  src: '../fonts/GeistMonoVF.woff',
   variable: '--font-mono',
 });
 

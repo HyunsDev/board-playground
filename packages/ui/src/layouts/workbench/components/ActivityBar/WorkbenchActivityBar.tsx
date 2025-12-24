@@ -1,11 +1,13 @@
 'use client';
 
+import * as React from 'react';
+
 import { Slot } from '@radix-ui/react-slot';
 import { cva, VariantProps } from 'class-variance-authority';
 
-import { Sidebar, SidebarMenuItem, useSidebar } from '@/components/sidebar.js';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/tooltip.js';
-import { cn } from '@/utils/cn.js';
+import { Sidebar, SidebarMenuItem, useSidebar } from '../../../../components/sidebar';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../../../../components/tooltip';
+import { cn } from '../../../../utils/cn';
 
 export function WorkbenchActivityBar({ children }: { children: React.ReactNode }) {
   return (
@@ -45,23 +47,26 @@ function SidebarMenuButton({
   tooltip,
   className,
   ...props
-}: React.ComponentProps<'button'> & {
+}: React.ComponentPropsWithoutRef<'button'> & {
   asChild?: boolean;
   isActive?: boolean;
-  tooltip?: string | React.ComponentProps<typeof TooltipContent>;
+  tooltip?: string | React.ComponentPropsWithoutRef<typeof TooltipContent>;
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
-  const Comp = asChild ? Slot : 'button';
   const { isMobile, state } = useSidebar();
+  const SlotComponent = Slot as React.ComponentType<React.ComponentPropsWithoutRef<typeof Slot>>;
 
-  const button = (
-    <Comp
-      data-slot="sidebar-menu-button"
-      data-sidebar="menu-button"
-      data-size={size}
-      data-active={isActive}
-      className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
-      {...props}
-    />
+  const commonProps = {
+    'data-slot': 'sidebar-menu-button',
+    'data-sidebar': 'menu-button',
+    'data-size': size,
+    'data-active': isActive,
+    className: cn(sidebarMenuButtonVariants({ variant, size }), className),
+  };
+
+  const button = asChild ? (
+    <SlotComponent {...commonProps} {...(props as React.ComponentPropsWithoutRef<typeof Slot>)} />
+  ) : (
+    <button {...commonProps} {...props} />
   );
 
   if (!tooltip) {
@@ -87,7 +92,7 @@ function SidebarMenuButton({
   );
 }
 
-export type WorkbenchActivityBarMenuItemProps = React.ComponentProps<'button'> & {
+export type WorkbenchActivityBarMenuItemProps = React.ComponentPropsWithoutRef<'button'> & {
   title: string;
   icon: React.ReactNode;
   isActive: boolean;

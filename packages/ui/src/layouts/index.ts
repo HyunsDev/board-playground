@@ -1,2 +1,2 @@
-export * from './window/index.js';
-export * from './workbench/index.js';
+export * from './window/index';
+export * from './workbench/index';

@@ -1,6 +1,6 @@
-import { cn } from '@/utils/cn.js';
+import { cn } from '../utils/cn';
 
-function Skeleton({ className, ...props }: React.ComponentProps<'div'>) {
+function Skeleton({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <div
       data-slot="skeleton"

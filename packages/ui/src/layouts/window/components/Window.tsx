@@ -1,10 +1,10 @@
 'use client';
 
-import { WindowContextProvider } from 'src/layouts/window/contexts/index.js';
+import { WindowContextProvider } from '../contexts/index';
 
-import { WindowSidebarProvider } from './WindowSidebar.js';
+import { WindowSidebarProvider } from './WindowSidebar';
 
-import { DialogContent, DialogTitle } from '@/components/dialog.js';
+import { DialogContent, DialogTitle } from '../../../components/dialog';
 
 export type WindowProps = {
   children: React.ReactNode;

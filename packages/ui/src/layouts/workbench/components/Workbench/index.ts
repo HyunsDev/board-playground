@@ -1,1 +1,1 @@
-export * from './Workbench.js';
+export * from './Workbench';

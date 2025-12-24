@@ -2,10 +2,10 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { useWorkbenchContext } from 'src/layouts/workbench/contexts/workbenchContext.js';
+import { useWorkbenchContext } from '../../contexts/workbenchContext';
 
-import { Sidebar, useSidebar } from '@/components/sidebar.js';
-import { cn } from '@/utils/cn.js';
+import { Sidebar, useSidebar } from '../../../../components/sidebar';
+import { cn } from '../../../../utils/cn';
 
 export function WorkbenchSidebarArea({ children }: { children: React.ReactNode }) {
   return (

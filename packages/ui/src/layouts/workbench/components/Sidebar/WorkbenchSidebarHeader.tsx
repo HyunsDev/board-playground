@@ -1,8 +1,8 @@
 'use client';
 
-import { Kbd } from '@/components/kbd.js';
-import { SidebarHeader, SidebarTrigger } from '@/components/sidebar.js';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/tooltip.js';
+import { Kbd } from '../../../../components/kbd';
+import { SidebarHeader, SidebarTrigger } from '../../../../components/sidebar';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../../../../components/tooltip';
 
 export function WorkbenchSidebarHeader({ title }: { title: string }) {
   return (

@@ -1,6 +1,6 @@
 import { Loader2Icon, LucideProps } from 'lucide-react';
 
-import { cn } from '@/utils/cn.js';
+import { cn } from '../utils/cn';
 
 function Spinner({ className, ...props }: LucideProps) {
   return (

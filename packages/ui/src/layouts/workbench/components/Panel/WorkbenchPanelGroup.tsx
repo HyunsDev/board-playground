@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { cn } from '@/utils/cn.js';
+import { cn } from '../../../../utils/cn';
 
 const HANDLE_SIZE_PX = 12;
 const DEFAULT_MIN_PANEL_WIDTH = 200;

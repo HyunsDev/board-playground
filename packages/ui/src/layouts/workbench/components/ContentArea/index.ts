@@ -1,1 +1,1 @@
-export * from './WorkbenchContentArea.js';
+export * from './WorkbenchContentArea';
