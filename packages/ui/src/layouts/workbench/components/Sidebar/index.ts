@@ -1,2 +1,2 @@
-export * from './WorkbenchSidebar';
-export * from './WorkbenchSidebarHeader';
+export * from './WorkbenchSidebar.js';
+export * from './WorkbenchSidebarHeader.js';

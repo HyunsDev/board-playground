@@ -1,6 +1,6 @@
 import { fn } from 'storybook/test';
 
-import { Button } from './button';
+import { Button } from './button.js';
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
 

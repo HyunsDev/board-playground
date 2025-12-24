@@ -3,9 +3,9 @@
 import { Slot } from '@radix-ui/react-slot';
 import { cva, VariantProps } from 'class-variance-authority';
 
-import { Sidebar, SidebarMenuItem, useSidebar } from '@/components/sidebar';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/tooltip';
-import { cn } from '@/lib/utils';
+import { Sidebar, SidebarMenuItem, useSidebar } from '@/components/sidebar.js';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/tooltip.js';
+import { cn } from '@/lib/utils.js';
 
 export function WorkbenchActivityBar({ children }: { children: React.ReactNode }) {
   return (

@@ -1,1 +1,1 @@
-export * from './WorkbenchProvider';
+export * from './WorkbenchProvider.js';

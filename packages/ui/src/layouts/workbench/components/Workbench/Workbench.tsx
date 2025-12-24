@@ -2,8 +2,8 @@
 
 import React from 'react';
 
-import { SidebarProvider } from '@/components/sidebar';
-import { useWorkbenchContext } from '@/layouts/workbench/contexts/workbenchContext';
+import { SidebarProvider } from '@/components/sidebar.js';
+import { useWorkbenchContext } from '@/layouts/workbench/contexts/workbenchContext.js';
 
 export function Workbench({ children }: { children: React.ReactNode }) {
   const { sidebarWidth } = useWorkbenchContext();
