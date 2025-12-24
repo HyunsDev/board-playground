@@ -19,7 +19,7 @@ import {
 import { Skeleton } from '@/components/skeleton.js';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/tooltip.js';
 import { useIsMobile } from '@/hooks/use-mobile.js';
-import { cn } from '@/lib/utils.js';
+import { cn } from '@/utils/cn.js';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;

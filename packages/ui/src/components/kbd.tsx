@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils.js';
+import { cn } from '@/utils/cn.js';
 
 function Kbd({ className, ...props }: React.ComponentProps<'kbd'>) {
   return (

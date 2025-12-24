@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils.js';
+import { cn } from '@/utils/cn.js';
 
 export function WorkbenchContentArea({ className, ...props }: React.ComponentProps<'main'>) {
   return (

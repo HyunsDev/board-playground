@@ -5,7 +5,7 @@ import { cva, VariantProps } from 'class-variance-authority';
 
 import { Sidebar, SidebarMenuItem, useSidebar } from '@/components/sidebar.js';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/tooltip.js';
-import { cn } from '@/lib/utils.js';
+import { cn } from '@/utils/cn.js';
 
 export function WorkbenchActivityBar({ children }: { children: React.ReactNode }) {
   return (

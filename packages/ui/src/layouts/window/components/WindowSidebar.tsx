@@ -20,7 +20,7 @@ import {
 import { Skeleton } from '@/components/skeleton.js';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/tooltip.js';
 import { useIsMobile } from '@/hooks/use-mobile.js';
-import { cn } from '@/lib/utils.js';
+import { cn } from '@/utils/cn.js';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -164,7 +164,7 @@ function WindowSidebar({
       <div
         data-slot="sidebar"
         className={cn(
-          'bg-sidebar text-sidebar-foreground max-w-[250px]=overflow-hidden flex h-full w-(--sidebar-width) min-w-[250px] flex-col rounded-lg',
+          'bg-sidebar text-sidebar-foreground max-w-[250px]=overflow-hidden flex h-full w-(--sidebar-width) min-w-62.5 flex-col rounded-lg',
           className,
         )}
         {...props}

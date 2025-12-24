@@ -1,6 +1,6 @@
 import { useWindow } from 'src/layouts/window/contexts/index.js';
 
-import { cn } from '@/lib/utils.js';
+import { cn } from '@/utils/cn.js';
 
 export function WindowPage({
   children,
