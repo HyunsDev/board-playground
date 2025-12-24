@@ -15,6 +15,13 @@ import { contract } from '@workspace/contract';
 
 import { AppModule } from '../../src/app.module';
 
+/**
+ * ===============================
+ *    Deprecated Legacy Code
+ *    use {@sse main.ts} instead
+ * ===============================
+ */
+
 // --- Constants ---
 const ROLES_KEY = 'roles';
 const IS_PUBLIC_KEY = 'isPublic';
@@ -163,7 +170,7 @@ class NestRouteExtractor {
     const controllerName = controllerClass?.name || 'UnknownController';
     const controllerPaths = this.getPaths(reflector, controllerClass);
 
-    const prototype = controllerClass.prototype;
+    const { prototype } = controllerClass;
     const methods = Object.getOwnPropertyNames(prototype);
 
     for (const methodName of methods) {
