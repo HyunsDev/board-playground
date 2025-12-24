@@ -9,6 +9,7 @@ module.exports = {
         'api',
         'api-e2e',
         'web',
+        'web-dev',
         'be-common',
         'be-core',
         'ddd',

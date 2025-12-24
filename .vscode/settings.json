@@ -34,6 +34,7 @@
     "typescript-config": "typescript",
     "backend-common": "lib",
     "backend-ddd": "cluster",
-    "backend-core": "core"
+    "backend-core": "core",
+    "web-dev": "public"
   }
 }
