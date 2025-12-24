@@ -1,13 +1,17 @@
 model Manager {
-    id        String      @id @default(uuid()) @db.Uuid
-    role      ManagerRole @default(SUB_MANAGER)
-    createdAt DateTime    @default(now())
+    id   String      @id @default(uuid()) @db.Uuid
+    role ManagerRole @default(SUB_MANAGER)
 
     boardId String @db.Uuid
     board   Board  @relation(fields: [boardId], references: [id])
 
     userId String @db.Uuid
     user   User   @relation(fields: [userId], references: [id])
+
+    appointedById String @db.Uuid
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@unique([boardId, userId])
     @@index([userId])
