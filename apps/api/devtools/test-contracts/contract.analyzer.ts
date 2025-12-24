@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable functional/no-expression-statements */
-import chalk from 'chalk';
-
 import { AnalysisResult, CheckResult, RouteInfo } from './types';
-import { normalizePath, stripAnsi } from './utils';
+import { normalizePath } from './utils';
 
 export class ContractAnalyzer {
   constructor(private readonly nestRoutes: RouteInfo[]) {}
@@ -25,7 +23,7 @@ export class ContractAnalyzer {
   }
 
   private updateMaxWidth(result: CheckResult, str1: string, str2: string, str3: string): void {
-    const len = stripAnsi(str1).length + stripAnsi(str2).length + stripAnsi(str3).length + 20;
+    const len = str1.length + str2.length + str3.length + 20;
     if (len > result.maxContentWidth) {
       result.maxContentWidth = len;
     }
@@ -81,22 +79,20 @@ export class ContractAnalyzer {
         const routeInfo = this.nestRoutes[matchIndex];
         const implAccess = routeInfo?.accessInfo;
         const rowKey = `${indent}✔ ${currentKey} ${routeStr}`;
-        const controller = routeInfo?.controllerName as string;
+        const controller = routeInfo?.controllerName ?? '';
         const isAccessMatch = contractAccess === implAccess;
 
         let accessDisplay = '';
 
         if (contractAccess === 'undefined') {
           result.accessMissing++;
-          accessDisplay = chalk.red('undefined');
+          accessDisplay = 'undefined';
         } else if (isAccessMatch) {
           result.accessImplemented++;
-          accessDisplay = chalk.gray(implAccess);
+          accessDisplay = implAccess;
         } else {
           result.accessMissing++;
-          const expectedStr = chalk.gray(contractAccess);
-          const receivedStr = chalk.yellow(implAccess);
-          accessDisplay = `${expectedStr}/${receivedStr}`;
+          accessDisplay = `${contractAccess}/${implAccess}`;
         }
 
         this.updateMaxWidth(result, rowKey, controller, accessDisplay);
@@ -106,8 +102,8 @@ export class ContractAnalyzer {
           status: 'pass',
           accessStatus: isAccessMatch ? 'match' : 'mismatch',
           key: currentKey,
-          routeStr: chalk.gray(routeStr),
-          controller: chalk.gray(controller),
+          routeStr,
+          controller,
           accessDisplay,
           indent,
         });
@@ -121,7 +117,7 @@ export class ContractAnalyzer {
           status: 'fail',
           accessStatus: 'mismatch',
           key: currentKey,
-          routeStr: chalk.gray(routeStr),
+          routeStr,
           controller: '',
           accessDisplay: '',
           indent,
