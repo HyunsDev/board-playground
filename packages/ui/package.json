@@ -4,12 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./globals.css": "./src/styles/globals.css",
-    "./postcss.config": "./postcss.config.js",
-    "./lib/*": "./src/lib/*.ts",
-    "./components/*": "./src/components/*.tsx",
-    "./layouts/*": "./src/layouts/*.tsx",
-    "./hooks/*": "./src/hooks/*.ts"
+    ".": "./src/index.ts",
+    "./globals.css": "./src/styles/globals.css"
   },
   "scripts": {
     "build-storybook": "storybook build",
