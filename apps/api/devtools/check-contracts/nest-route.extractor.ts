@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DynamicModule, ForwardReference, Type } from '@nestjs/common';
@@ -30,7 +31,7 @@ export class NestRouteExtractor {
       const { moduleClass, imports, controllers } = this.resolveModule(resolved);
       if (!moduleClass || visitedModules.has(moduleClass)) continue;
 
-      visitedModules.add(moduleClass);
+      void visitedModules.add(moduleClass);
 
       controllers.forEach((controller) =>
         this.extractRoutesFromController(controller, moduleClass, reflector, routes),
@@ -38,7 +39,7 @@ export class NestRouteExtractor {
 
       imports.forEach((m) => {
         const unwrapped = this.unwrapForwardRef(m);
-        if (unwrapped) queue.push(unwrapped);
+        if (unwrapped) void queue.push(unwrapped);
       });
     }
 

@@ -1,10 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable functional/no-expression-statements */
 import 'dotenv/config';
 import 'reflect-metadata';
 
 import { performance } from 'perf_hooks';
 
-import { DynamicModule, ForwardReference, LoggerService, Type } from '@nestjs/common';
+import { DynamicModule, ForwardReference, Type } from '@nestjs/common';
 import { METHOD_METADATA, MODULE_METADATA, PATH_METADATA } from '@nestjs/common/constants';
 import { Reflector } from '@nestjs/core';
 import chalk from 'chalk';
@@ -73,14 +76,6 @@ function normalizePath(path: string): string {
 function stripAnsi(str: string): string {
   // eslint-disable-next-line no-control-regex
   return str.replace(/\u001b\[\d+m/g, '');
-}
-
-class SilentLogger implements LoggerService {
-  log() {}
-  error() {}
-  warn() {}
-  debug() {}
-  verbose() {}
 }
 
 // --- Core Logic Classes ---

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable functional/no-expression-statements */
 import chalk from 'chalk';
 
