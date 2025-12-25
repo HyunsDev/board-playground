@@ -1,11 +1,14 @@
+import { BrandId } from '@workspace/common';
+
 import { AbstractEntity } from './abstract.entity';
 
 import { AbstractDomainEvent } from '@/messages';
 
 export abstract class AbstractAggregateRoot<
-  TDomainEvent extends AbstractDomainEvent,
   TProps,
-> extends AbstractEntity<TProps> {
+  TId extends BrandId,
+  TDomainEvent extends AbstractDomainEvent,
+> extends AbstractEntity<TProps, TId> {
   private _domainEvents: TDomainEvent[] = [];
 
   get domainEvents(): TDomainEvent[] {

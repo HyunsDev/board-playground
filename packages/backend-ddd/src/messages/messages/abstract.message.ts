@@ -1,6 +1,8 @@
 import { v7 as uuidv7 } from 'uuid';
 import { z } from 'zod';
 
+import { BrandId } from '@workspace/common';
+
 import {
   AbstractCreateMessageMetadata,
   AbstractDrivenMessageMetadata,
@@ -71,7 +73,7 @@ export abstract class AbstractMessage<
   }
 
   constructor(
-    resourceId: string | null,
+    resourceId: BrandId | null,
     data: TProps['data'],
     metadata?: AbstractCreateMessageMetadata<CausationCodeType, ResourceCodeType>,
     id?: string | null,

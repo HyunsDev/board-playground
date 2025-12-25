@@ -1,5 +1,7 @@
 import z from 'zod';
 
+import { BrandId } from '@workspace/common';
+
 import { AbstractMessage, AbstractMessageProps } from './abstract.message';
 import { AbstractDrivenMessageMetadata } from '../abstract.message-metadata.type';
 
@@ -21,7 +23,7 @@ export abstract class AbstractIntegrationEvent<
   abstract override get schema(): z.ZodType<TProps['data']>;
 
   constructor(
-    resourceId: string | null,
+    resourceId: BrandId | null,
     data: TProps['data'],
     metadata?: AbstractDrivenMessageMetadata<CausationCodeType, ResourceCodeType>,
   ) {

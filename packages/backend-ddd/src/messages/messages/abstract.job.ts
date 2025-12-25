@@ -1,5 +1,7 @@
 import z from 'zod';
 
+import { BrandId } from '@workspace/common';
+
 import { AbstractMessage, AbstractMessageProps } from './abstract.message';
 import { AbstractDrivenMessageMetadata } from '../abstract.message-metadata.type';
 
@@ -18,7 +20,7 @@ export abstract class AbstractJob<
   protected readonly _options?: TOptions;
 
   constructor(
-    resourceId: string | null,
+    resourceId: BrandId | null,
     data: TProps['data'],
     metadata?: AbstractDrivenMessageMetadata<CausationCodeType, ResourceCodeType>,
     options?: TOptions,

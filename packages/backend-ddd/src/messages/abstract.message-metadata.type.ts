@@ -1,3 +1,5 @@
+import { BrandId, UserId } from '@workspace/common';
+
 /**
  * @property createdAt - 이벤트 발생 시각 (Unix Timestamp)
  * @property correlationId - 요청 Id requestId 사용
@@ -16,8 +18,8 @@ export type AbstractMessageMetadata<
   readonly causationType: CausationCodeType | null;
   readonly causationId: string | null;
   readonly resourceType: ResourceCodeType | null;
-  readonly resourceId: string | null;
-  readonly userId: string | null;
+  readonly resourceId: BrandId | null;
+  readonly userId: UserId | null;
 };
 
 export type AbstractDrivenMessageMetadata<
@@ -37,6 +39,6 @@ export type AbstractCreateMessageMetadata<
   readonly causationType: CausationCodeType | null;
   readonly causationId: string | null;
   readonly resourceType?: ResourceCodeType | null;
-  readonly resourceId?: string | null;
-  readonly userId: string | null;
+  readonly resourceId?: BrandId | null;
+  readonly userId: UserId | null;
 };

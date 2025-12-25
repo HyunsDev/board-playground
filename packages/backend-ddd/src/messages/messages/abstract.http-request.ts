@@ -1,3 +1,5 @@
+import { BrandId } from '@workspace/common';
+
 import { AbstractMessage, AbstractMessageProps } from './abstract.message';
 import { AbstractDrivenMessageMetadata } from '../abstract.message-metadata.type';
 import { RESULT_TYPE_SYMBOL } from '../message.constant';
@@ -21,7 +23,7 @@ export abstract class AbstractHttpRequest<
   protected readonly _options?: TOptions;
 
   constructor(
-    resourceId: string | null,
+    resourceId: BrandId | null,
     data: TProps['data'],
     metadata?: AbstractDrivenMessageMetadata<CausationCodeType, ResourceCodeType>,
     options?: TOptions,
