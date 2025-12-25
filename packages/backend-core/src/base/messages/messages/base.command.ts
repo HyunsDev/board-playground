@@ -5,7 +5,7 @@ import {
   DomainResult,
   RESULT_TYPE_SYMBOL,
 } from '@workspace/backend-ddd';
-import { CausationCode, CommandCode, DomainCode } from '@workspace/domain';
+import { CausationCode, CommandCode, DomainCode, ModelId } from '@workspace/domain';
 
 import { DrivenMessageMetadata } from '../message-metadata';
 
@@ -27,12 +27,7 @@ export abstract class BaseCommand<
 
   declare [RESULT_TYPE_SYMBOL]: TRes;
 
-  constructor(
-    resourceId: string | null,
-    data: TProps['data'],
-    metadata?: DrivenMessageMetadata,
-    id?: string | null,
-  ) {
-    super(resourceId, data, metadata, id);
+  constructor(resourceId: ModelId | null, data: TProps['data'], metadata?: DrivenMessageMetadata) {
+    super(resourceId, data, metadata);
   }
 }

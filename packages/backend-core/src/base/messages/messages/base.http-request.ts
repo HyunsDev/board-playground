@@ -7,7 +7,7 @@ import {
   DomainResult,
   RESULT_TYPE_SYMBOL,
 } from '@workspace/backend-ddd';
-import { CausationCode, DomainCode, HttpRequestCode } from '@workspace/domain';
+import { CausationCode, DomainCode, HttpRequestCode, ModelId } from '@workspace/domain';
 
 import { DrivenMessageMetadata } from '../message-metadata';
 
@@ -70,11 +70,12 @@ export abstract class BaseHttpRequest<
   static readonly code: HttpRequestCode;
 
   constructor(
+    resourceId: ModelId | null,
     data: TProps['data'],
     metadata?: DrivenMessageMetadata,
     options?: HttpRequestOptions,
   ) {
-    super(null, data, metadata, options);
+    super(resourceId, data, metadata, options);
   }
 
   get options(): HttpRequestOptions {

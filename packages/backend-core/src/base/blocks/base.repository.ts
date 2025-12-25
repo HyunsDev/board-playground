@@ -10,6 +10,7 @@ import {
   DomainResult,
 } from '@workspace/backend-ddd';
 import { PrismaClient, Prisma } from '@workspace/database';
+import { ModelId } from '@workspace/domain';
 
 import { UnexpectedPrismaErrorException } from '../core.exceptions';
 import { BaseDomainEvent, BaseDomainEventProps, DomainEventPublisherPort } from '../messages';
@@ -27,8 +28,12 @@ type AbstractCrudDelegate<R> = {
 };
 
 export abstract class BaseRepository<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  TAggregate extends AbstractAggregateRoot<BaseDomainEvent<BaseDomainEventProps<any>>, unknown>,
+  TAggregate extends AbstractAggregateRoot<
+    unknown,
+    ModelId,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    BaseDomainEvent<BaseDomainEventProps<any>>
+  >,
   TDbModel extends { id: string },
 > implements RepositoryPort<TAggregate> {
   protected abstract get delegate(): AbstractCrudDelegate<TDbModel>;
@@ -204,6 +209,7 @@ export abstract class BaseRepository<
   protected async publishEvents(entity: TAggregate): Promise<void> {
     const events = entity.pullEvents();
     if (events.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await this.eventDispatcher.publishMany(events);
     }
   }

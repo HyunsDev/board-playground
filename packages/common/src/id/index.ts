@@ -1,2 +1,2 @@
 export * from './brand.type';
-export * from './common.ids';
+export * from './core.ids';

@@ -7,7 +7,7 @@ import {
   RESULT_TYPE_SYMBOL,
 } from '@workspace/backend-ddd';
 import { PaginationQuery } from '@workspace/common';
-import { CausationCode, DomainCode, QueryCode } from '@workspace/domain';
+import { CausationCode, DomainCode, ModelId, QueryCode } from '@workspace/domain';
 
 import { DrivenMessageMetadata } from '../message-metadata';
 
@@ -30,7 +30,7 @@ export abstract class BaseQuery<
   declare [RESULT_TYPE_SYMBOL]: TRes;
 
   constructor(
-    resourceId: string | null,
+    resourceId: ModelId | null,
     data: TProps['data'],
     metadata?: DrivenMessageMetadata,
     id?: string | null,

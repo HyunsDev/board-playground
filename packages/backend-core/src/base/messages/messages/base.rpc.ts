@@ -5,7 +5,9 @@ import {
   DomainResult,
   RESULT_TYPE_SYMBOL,
 } from '@workspace/backend-ddd';
-import { CausationCode, DomainCode, RpcCode } from '@workspace/domain';
+import { CausationCode, DomainCode, ModelId, RpcCode } from '@workspace/domain';
+
+import { DrivenMessageMetadata } from '../message-metadata';
 
 export type RpcOptions = {
   timeoutMs?: number;
@@ -25,5 +27,14 @@ export abstract class BaseRpc<
     return {
       ...this._options,
     };
+  }
+
+  constructor(
+    resourceId: ModelId | null,
+    data: TProps['data'],
+    metadata?: DrivenMessageMetadata,
+    options?: RpcOptions,
+  ) {
+    super(resourceId, data, metadata, options);
   }
 }
