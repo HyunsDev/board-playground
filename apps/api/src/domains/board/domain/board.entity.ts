@@ -7,7 +7,7 @@ import { BoardDeletedEvent } from './events/board-deleted.event';
 import { BoardNameChangedEvent } from './events/board-name-changed.event';
 
 export interface BoardProps extends BaseEntityProps {
-  slug: string;
+  slug: string; // 변경 불가
   name: string;
   description: string | null;
   managerId: string;
@@ -66,7 +66,7 @@ export class BoardEntity extends BaseAggregateRoot<BoardProps> {
     return entity;
   }
 
-  public updateName(newName: string): void {
+  public updateName(newName: string, actorId: string): void {
     const oldName = this.props.name;
     this.props.name = newName;
     this.props.updatedAt = new Date();
@@ -74,7 +74,7 @@ export class BoardEntity extends BaseAggregateRoot<BoardProps> {
     this.addEvent(
       new BoardNameChangedEvent({
         boardId: this.id,
-        actorId: this.props.managerId,
+        actorId,
         oldName,
         newName,
       }),

@@ -9,7 +9,7 @@ import { DevtoolsController } from './devtools.controller';
 
 import { AuthModule } from '@/domains/auth/auth.module';
 import { SessionModule } from '@/domains/session/session.module';
-import { UserModule } from '@/domains/user/user.module';
+import { UserFacadeModule } from '@/domains/user/user.facade.module';
 
 const commandHandlers: Provider[] = [
   ForceLoginCommandHandler,
@@ -19,7 +19,7 @@ const commandHandlers: Provider[] = [
 const services: Provider[] = [];
 
 @Module({
-  imports: [UserModule, AuthModule, SessionModule, CoreBullBoardModule],
+  imports: [UserFacadeModule, AuthModule, SessionModule, CoreBullBoardModule],
   controllers: [DevtoolsController],
   providers: [Logger, ...commandHandlers, ...services],
 })

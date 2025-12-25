@@ -56,8 +56,12 @@ export const appointManagerToBoard = c.mutation({
     200: z.object({
       manager: ManagerWithUserDtoSchema,
     }),
-    ...toApiErrorResponses([ApiErrors.Manager.Forbidden]),
-    ...toApiErrorResponses([ApiErrors.Board.NotFound, ApiErrors.User.NotFound]),
+    ...toApiErrorResponses([
+      ApiErrors.Manager.NotMainManager,
+      ApiErrors.Board.NotFound,
+      ApiErrors.User.NotFound,
+      ApiErrors.Manager.AlreadyManager,
+    ]),
   },
   metadata: {
     ...ACCESS.signedIn,
@@ -75,7 +79,7 @@ export const dismissManagerFromBoard = c.mutation({
   responses: {
     204: c.noBody(),
     ...toApiErrorResponses([
-      ApiErrors.Manager.Forbidden,
+      ApiErrors.Manager.NotMainManager,
       ApiErrors.Board.NotFound,
       ApiErrors.User.NotFound,
       ApiErrors.Manager.NotFound,
@@ -101,7 +105,7 @@ export const changeManagerRole = c.mutation({
       manager: ManagerWithUserDtoSchema,
     }),
     ...toApiErrorResponses([
-      ApiErrors.Manager.Forbidden,
+      ApiErrors.Manager.NotMainManager,
       ApiErrors.Board.NotFound,
       ApiErrors.User.NotFound,
       ApiErrors.Manager.NotFound,
