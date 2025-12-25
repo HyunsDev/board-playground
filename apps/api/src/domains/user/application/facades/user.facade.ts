@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
 import { matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
+import { UserEmail, UserId, Username } from '@workspace/common';
 
 import { CreateUserProps, UserEntity } from '../../domain/user.entity';
 import { UserRepositoryPort } from '../../domain/user.repository.port';
@@ -16,27 +17,27 @@ export class UserFacade {
     return created;
   }
 
-  async findOneById(id: string) {
+  async findOneById(id: UserId) {
     return await this.userRepo.findOneById(id);
   }
 
-  async getOneById(id: string) {
+  async getOneById(id: UserId) {
     return await this.userRepo.getOneById(id);
   }
 
-  async getOneByEmail(email: string) {
+  async getOneByEmail(email: UserEmail) {
     return await this.userRepo.getOneByEmail(email);
   }
 
-  async usernameExists(username: string) {
+  async usernameExists(username: Username) {
     return await this.userRepo.usernameExists(username);
   }
 
-  async userEmailExists(email: string) {
+  async userEmailExists(email: UserEmail) {
     return await this.userRepo.userEmailExists(email);
   }
 
-  async updatePassword(userId: string, newHashedPassword: string) {
+  async updatePassword(userId: UserId, newHashedPassword: string) {
     const userResult = await this.userRepo.getOneById(userId);
     if (userResult.isErr()) return userResult;
 

@@ -13,6 +13,7 @@ import {
   MailPublisher,
   TransactionManager,
 } from '@workspace/backend-core';
+import { UserEmail } from '@workspace/common';
 import { asCommandCode, DomainCodeEnums } from '@workspace/domain';
 
 import { getPasswordResetCodeKey } from '@/domains/auth/auth.utils';
@@ -21,7 +22,7 @@ import { UserLessResetEmailSentEvent } from '@/domains/auth/domain/events/userle
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 
 type SendResetEmailCommandProps = BaseCommandProps<{
-  email: string;
+  email: UserEmail;
 }>;
 
 export class SendResetEmailCommand extends BaseCommand<

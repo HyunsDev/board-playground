@@ -11,6 +11,7 @@ import {
   TransactionManager,
 } from '@workspace/backend-core';
 import { HandlerResult } from '@workspace/backend-ddd';
+import { UserEmail } from '@workspace/common';
 import { asCommandCode, DomainCodeEnums } from '@workspace/domain';
 
 import { getEmailVerificationCodeKey } from '@/domains/auth/auth.utils';
@@ -18,7 +19,7 @@ import { EmailVerificationSentEvent } from '@/domains/auth/domain/events/email-v
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 
 type sendVerificationEmailProps = BaseCommandProps<{
-  email: string;
+  email: UserEmail;
 }>;
 
 export class SendVerificationEmailCommand extends BaseCommand<

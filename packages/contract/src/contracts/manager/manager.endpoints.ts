@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { UserIdSchema } from '@workspace/common';
+import { UserEmailSchema, UserIdSchema } from '@workspace/common';
 import { BoardSlugSchema } from '@workspace/domain';
 
 import { ManagerWithBoardDtoSchema, ManagerWithUserDtoSchema } from './manager.dto';
@@ -51,7 +51,7 @@ export const appointManagerToBoard = c.mutation({
     boardSlug: BoardSlugSchema,
   }),
   body: z.object({
-    targetUserEmail: z.email(),
+    targetUserEmail: UserEmailSchema,
   }),
   responses: {
     200: z.object({

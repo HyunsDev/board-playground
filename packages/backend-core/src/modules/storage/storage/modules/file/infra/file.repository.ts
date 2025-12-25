@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
 import { DomainResult, matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
+import { FileId } from '@workspace/common';
 import { File, PrismaClient } from '@workspace/database';
 
 import { FileMapper } from './file.mapper';
@@ -39,7 +40,7 @@ export class FileRepository extends BaseRepository<FileEntity, File> implements 
     return this.mapper.toDomain(record);
   }
 
-  async getOneById(id: string): Promise<DomainResult<FileEntity, FileNotFoundError>> {
+  async getOneById(id: FileId): Promise<DomainResult<FileEntity, FileNotFoundError>> {
     const result = await this.findOneById(id);
     if (!result) {
       return err(new FileNotFoundError());
@@ -105,7 +106,7 @@ export class FileRepository extends BaseRepository<FileEntity, File> implements 
     return records.map((record) => this.mapper.toDomain(record));
   }
 
-  async deleteManyDirectly(ids: string[]): Promise<void> {
+  async deleteManyDirectly(ids: FileId[]): Promise<void> {
     await this.delegate.deleteMany({
       where: {
         id: {

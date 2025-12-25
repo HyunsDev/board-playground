@@ -1,12 +1,13 @@
 type BoardNameChangedEventProps = BaseDomainEventProps<{
-  actorId: string;
-  boardId: string;
+  actorId: UserId;
+  boardId: BoardId;
   oldName: string;
   newName: string;
 }>;
 
 import { BaseDomainEvent, BaseDomainEventProps } from '@workspace/backend-core';
-import { AggregateCodeEnum, asDomainEventCode } from '@workspace/domain';
+import { UserId } from '@workspace/common';
+import { AggregateCodeEnum, asDomainEventCode, BoardId } from '@workspace/domain';
 
 export class BoardNameChangedEvent extends BaseDomainEvent<BoardNameChangedEventProps> {
   static readonly code = asDomainEventCode('community:board:evt:name_changed');

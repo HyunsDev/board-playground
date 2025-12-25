@@ -2,12 +2,13 @@ import { ok } from 'neverthrow';
 
 import { BaseQueryProps, BaseQuery, QueryHandler } from '@workspace/backend-core';
 import { HandlerResult } from '@workspace/backend-ddd';
+import { UserId } from '@workspace/common';
 import { asQueryCode, AggregateCodeEnum } from '@workspace/domain';
 
 import { ManagerEntity, ManagerRepositoryPort } from '../../domain';
 
 type ListUserManagersQueryProps = BaseQueryProps<{
-  userId: string;
+  userId: UserId;
 }>;
 
 export class ListUserManagersQuery extends BaseQuery<

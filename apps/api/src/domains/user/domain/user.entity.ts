@@ -2,6 +2,7 @@ import { err, ok } from 'neverthrow';
 import { v7 as uuidv7 } from 'uuid';
 
 import { BaseAggregateRoot, BaseEntityProps } from '@workspace/backend-core';
+import { UserEmail, UserId, Username } from '@workspace/common';
 import { USER_ROLE, USER_STATUS, UserRole, UserStatus } from '@workspace/contract';
 
 import { UserPasswordChangedEvent } from './events';
@@ -10,10 +11,10 @@ import { UserUsernameChangedEvent } from './events/user-username-changed.event';
 import { UserPasswordVO } from './user-password.vo';
 import { UserAdminCannotBeDeletedError } from './user.domain-errors';
 
-export interface UserProps extends BaseEntityProps {
-  username: string;
+export interface UserProps extends BaseEntityProps<UserId> {
+  username: Username;
   nickname: string;
-  email: string;
+  email: UserEmail;
   bio: string | null;
   avatarUrl: string | null;
   role: UserRole;
@@ -25,21 +26,21 @@ export interface UserProps extends BaseEntityProps {
 }
 
 export interface CreateUserProps {
-  username: string;
+  username: Username;
   nickname: string;
-  email: string;
+  email: UserEmail;
   hashedPassword: string | null;
 }
 
-export class UserEntity extends BaseAggregateRoot<UserProps> {
+export class UserEntity extends BaseAggregateRoot<UserProps, UserId> {
   private constructor(props: UserProps) {
     super({
-      id: props.id || uuidv7(),
+      id: props.id || (uuidv7() as UserId),
       props,
     });
   }
 
-  get username(): string {
+  get username(): Username {
     return this.props.username;
   }
 
@@ -47,7 +48,7 @@ export class UserEntity extends BaseAggregateRoot<UserProps> {
     return this.props.nickname;
   }
 
-  get email(): string {
+  get email(): UserEmail {
     return this.props.email;
   }
 
@@ -60,7 +61,7 @@ export class UserEntity extends BaseAggregateRoot<UserProps> {
   }
 
   public static create(createProps: CreateUserProps): UserEntity {
-    const id = uuidv7();
+    const id = uuidv7() as UserId;
     const props: UserProps = {
       id,
       username: createProps.username,
@@ -104,7 +105,7 @@ export class UserEntity extends BaseAggregateRoot<UserProps> {
     this.props.updatedAt = new Date();
   }
 
-  public updateUsername(username: string) {
+  public updateUsername(username: Username) {
     this.props.username = username;
     this.props.updatedAt = new Date();
 

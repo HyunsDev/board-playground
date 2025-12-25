@@ -2,14 +2,15 @@ import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
 import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
-import { BaseCommand, BaseCommandProps, DrivenMessageMetadata } from '@workspace/backend-core';
+import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { matchError } from '@workspace/backend-ddd';
+import { UserId } from '@workspace/common';
 import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 
 type IDeleteUserMeCommand = BaseCommandProps<{
-  userId: string;
+  userId: UserId;
 }>;
 
 export class DeleteUserMeCommand extends BaseCommand<
@@ -20,8 +21,8 @@ export class DeleteUserMeCommand extends BaseCommand<
   static readonly code = asCommandCode('account:user:cmd:delete_me');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: IDeleteUserMeCommand['data'], metadata: DrivenMessageMetadata) {
-    super(data.userId, data, metadata);
+  constructor(data: IDeleteUserMeCommand['data']) {
+    super(data.userId, data);
   }
 }
 

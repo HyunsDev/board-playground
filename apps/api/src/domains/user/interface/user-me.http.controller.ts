@@ -80,13 +80,10 @@ export class UserMeHttpController {
   async updateUsername(@Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.updateUsername, async ({ body }) => {
       const result = await this.commandDispatcher.execute(
-        new UpdateUserMeUsernameCommand(
-          {
-            userId: token.sub,
-            newUsername: body.username,
-          },
-          this.messageContext.createMetadata(TriggerCodeEnum.Http),
-        ),
+        new UpdateUserMeUsernameCommand({
+          userId: token.sub,
+          newUsername: body.username,
+        }),
       );
 
       return result.match(
@@ -108,12 +105,9 @@ export class UserMeHttpController {
   async deleteMe(@Res({ passthrough: true }) res: FastifyReply, @Token() token: TokenPayload) {
     return tsRestHandler(contract.user.me.delete, async () => {
       const result = await this.commandDispatcher.execute(
-        new DeleteUserMeCommand(
-          {
-            userId: token.sub,
-          },
-          this.messageContext.createMetadata(TriggerCodeEnum.Http),
-        ),
+        new DeleteUserMeCommand({
+          userId: token.sub,
+        }),
       );
 
       return result.match(

@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
 import { BaseMapper } from '@workspace/backend-core';
+import { UserId } from '@workspace/common';
 import { Manager, Prisma } from '@workspace/database';
+import { BoardId, ManagerId } from '@workspace/domain';
 
 import { ManagerEntity } from '../domain';
 
@@ -27,11 +29,11 @@ export class ManagerMapper extends BaseMapper<ManagerEntity, Manager> {
 
   toDomain(record: Manager | ManagerWithBoard | ManagerWithUser): ManagerEntity {
     return ManagerEntity.reconstruct({
-      id: record.id,
-      boardId: record.boardId,
-      userId: record.userId,
+      id: record.id as ManagerId,
+      boardId: record.boardId as BoardId,
+      userId: record.userId as UserId,
       role: record.role,
-      appointedById: record.appointedById,
+      appointedById: record.appointedById as UserId,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
       user: 'user' in record && record.user ? this.userMapper.toDomain(record.user) : undefined,

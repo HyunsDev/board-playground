@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
 import { BaseMapper } from '@workspace/backend-core';
+import { UserId } from '@workspace/common';
 import { RefreshToken, Session } from '@workspace/database';
+import { SessionId } from '@workspace/domain';
 
 import { RefreshTokenMapper } from './refresh-token.mapper';
 import { SessionEntity, SessionProps } from '../domain/session.entity';
@@ -18,8 +20,8 @@ export class SessionMapper extends BaseMapper<SessionEntity, Session> {
     },
   ): SessionEntity {
     const props: SessionProps = {
-      id: record.id,
-      userId: record.userId,
+      id: record.id as SessionId,
+      userId: record.userId as UserId,
       name: record.name,
       userAgent: record.userAgent,
       os: record.os,

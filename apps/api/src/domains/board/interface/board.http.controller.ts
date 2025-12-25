@@ -26,7 +26,7 @@ export class BoardHttpController {
           slug: body.slug,
           name: body.name,
           description: body.description,
-          managerId: token.sub,
+          creatorId: token.sub,
         }),
       );
 

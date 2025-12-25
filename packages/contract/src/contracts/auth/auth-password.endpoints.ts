@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { UserEmailSchema, UsernameSchema } from '@workspace/common';
+
 import { ApiErrors } from '../api-errors';
 import { passwordSchema } from './auth.schemas';
 
@@ -11,7 +13,7 @@ export const sendVerificationEmail = c.mutation({
   method: 'POST',
   path: '/auth/register/request-email-verification-code',
   body: z.object({
-    email: z.email(),
+    email: UserEmailSchema,
   }),
   responses: {
     204: c.noBody(),
@@ -26,10 +28,10 @@ export const registerWithPassword = c.mutation({
   method: 'POST',
   path: '/auth/register/password',
   body: z.object({
-    email: z.email(),
+    email: UserEmailSchema,
     password: passwordSchema,
     emailVerificationCode: z.string().length(6),
-    username: z.string().min(3).max(30),
+    username: UsernameSchema,
     nickname: z.string().min(2).max(20),
   }),
   responses: {
@@ -52,7 +54,7 @@ export const loginWithPassword = c.mutation({
   method: 'POST',
   path: '/auth/login/password',
   body: z.object({
-    email: z.email(),
+    email: UserEmailSchema,
     password: passwordSchema,
   }),
   responses: {
@@ -87,7 +89,7 @@ export const sendResetEmail = c.mutation({
   method: 'POST',
   path: '/auth/password/request-email',
   body: z.object({
-    email: z.email(),
+    email: UserEmailSchema,
   }),
   responses: {
     204: c.noBody(),
@@ -101,7 +103,7 @@ export const resetPassword = c.mutation({
   method: 'POST',
   path: '/auth/password/reset',
   body: z.object({
-    email: z.email(),
+    email: UserEmailSchema,
     newPassword: passwordSchema,
     emailVerificationCode: z.uuid(),
   }),

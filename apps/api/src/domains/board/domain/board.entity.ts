@@ -1,35 +1,37 @@
 import { v7 } from 'uuid';
 
 import { BaseAggregateRoot, BaseEntityProps } from '@workspace/backend-core';
+import { UserId } from '@workspace/common';
+import { BoardId, BoardSlug } from '@workspace/domain';
 
 import { BoardCreatedEvent } from './events/board-created.event';
 import { BoardDeletedEvent } from './events/board-deleted.event';
 import { BoardNameChangedEvent } from './events/board-name-changed.event';
 
-export interface BoardProps extends BaseEntityProps {
-  slug: string; // 변경 불가
+export interface BoardProps extends BaseEntityProps<BoardId> {
+  slug: BoardSlug; // 변경 불가
   name: string;
   description: string | null;
-  managerId: string;
+  creatorId: UserId;
   createdAt: Date;
 }
 
 export interface CreateBoardProps {
-  slug: string;
+  slug: BoardSlug;
   name: string;
   description?: string | null;
-  managerId: string;
+  creatorId: UserId;
 }
 
-export class BoardEntity extends BaseAggregateRoot<BoardProps> {
+export class BoardEntity extends BaseAggregateRoot<BoardProps, BoardId> {
   private constructor(props: BoardProps) {
     super({
-      id: props.id || v7(),
+      id: props.id || (v7() as BoardId),
       props,
     });
   }
 
-  get slug(): string {
+  get slug(): BoardSlug {
     return this.props.slug;
   }
 
@@ -42,13 +44,12 @@ export class BoardEntity extends BaseAggregateRoot<BoardProps> {
   }
 
   public static create(props: CreateBoardProps): BoardEntity {
-    const id = v7();
     const boardProps: BoardProps = {
-      id,
+      id: v7() as BoardId,
       slug: props.slug,
       name: props.name,
       description: props.description || null,
-      managerId: props.managerId,
+      creatorId: props.creatorId,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -59,14 +60,14 @@ export class BoardEntity extends BaseAggregateRoot<BoardProps> {
         boardId: entity.id,
         slug: entity.slug,
         name: entity.name,
-        actorId: props.managerId,
+        creatorId: props.creatorId,
       }),
     );
 
     return entity;
   }
 
-  public updateName(newName: string, actorId: string): void {
+  public updateName(newName: string, actorId: UserId): void {
     const oldName = this.props.name;
     this.props.name = newName;
     this.props.updatedAt = new Date();
@@ -86,7 +87,7 @@ export class BoardEntity extends BaseAggregateRoot<BoardProps> {
     this.props.updatedAt = new Date();
   }
 
-  public beforeDelete(actorId: string): void {
+  public beforeDelete(actorId: UserId): void {
     this.addEvent(
       new BoardDeletedEvent({
         boardId: this.id,

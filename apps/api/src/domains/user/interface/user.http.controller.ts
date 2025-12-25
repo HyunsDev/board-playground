@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 
-import { MessageContext, QueryDispatcherPort } from '@workspace/backend-core';
+import { MessageContext, QueryDispatcherPort, Trigger } from '@workspace/backend-core';
 import { apiOk, matchPublicError, apiErr } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
 import { TriggerCodeEnum } from '@workspace/domain';
@@ -11,6 +11,7 @@ import { GetUserQuery } from '../application/public/queries/get-user.query';
 import { SearchUserQuery } from '../application/public/queries/search-user.query';
 
 @Controller()
+@Trigger(TriggerCodeEnum.Http)
 export class UserHttpController {
   constructor(
     private readonly queryDispatcher: QueryDispatcherPort,
@@ -22,10 +23,7 @@ export class UserHttpController {
   async getUser() {
     return tsRestHandler(contract.user.get, async ({ params }) => {
       const result = await this.queryDispatcher.execute(
-        new GetUserQuery(
-          { userId: params.userId },
-          this.messageContext.createMetadata(TriggerCodeEnum.Http),
-        ),
+        new GetUserQuery({ userId: params.userId }),
       );
 
       return result.match(
@@ -42,14 +40,11 @@ export class UserHttpController {
   async searchUsers() {
     return tsRestHandler(contract.user.search, async ({ query }) => {
       const result = await this.queryDispatcher.execute(
-        new SearchUserQuery(
-          {
-            nickname: query.nickname,
-            page: query.page,
-            limit: query.limit,
-          },
-          this.messageContext.createMetadata(TriggerCodeEnum.Http),
-        ),
+        new SearchUserQuery({
+          nickname: query.nickname,
+          page: query.page,
+          limit: query.limit,
+        }),
       );
 
       return result.match(

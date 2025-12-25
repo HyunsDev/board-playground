@@ -7,14 +7,15 @@ import {
   CommandHandler,
   TransactionManager,
 } from '@workspace/backend-core';
-import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
+import { UserId } from '@workspace/common';
+import { AggregateCodeEnum, asCommandCode, BoardSlug } from '@workspace/domain';
 
 import { ManagerEntity, ManagerRepositoryPort } from '../../domain';
 
 type TransferMainManagerCommandProps = BaseCommandProps<{
-  fromManagerUserId: string;
-  toManagerUserId: string;
-  boardSlug: string;
+  fromManagerUserId: UserId;
+  toManagerUserId: UserId;
+  boardSlug: BoardSlug;
 }>;
 
 export class TransferMainManagerCommand extends BaseCommand<

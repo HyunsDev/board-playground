@@ -11,6 +11,7 @@ import {
 } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { ValidationError } from '@workspace/backend-ddd';
+import { UserEmail, Username } from '@workspace/common';
 import { DEVICE_PLATFORM, passwordSchema } from '@workspace/contract';
 import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
@@ -22,8 +23,8 @@ import { PasswordProvider } from '@/infra/crypto';
 import { AuthTokens } from '@/shared/types/tokens';
 
 type IRegisterAuthCommand = BaseCommandProps<{
-  email: string;
-  username: string;
+  email: UserEmail;
+  username: Username;
   nickname: string;
   password: string;
   ipAddress: string;

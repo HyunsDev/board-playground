@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { BaseMapper } from '@workspace/backend-core';
+import { UserEmail, UserId, Username } from '@workspace/common';
 import { User, UserRole, UserStatus } from '@workspace/database';
 
 import { UserPasswordVO } from '../domain/user-password.vo';
@@ -10,10 +11,10 @@ import { UserEntity, UserProps } from '../domain/user.entity';
 export class UserMapper extends BaseMapper<UserEntity, User> {
   toDomain(record: User): UserEntity {
     const props: UserProps = {
-      id: record.id,
-      username: record.username,
+      id: record.id as UserId,
+      username: record.username as Username,
       nickname: record.nickname,
-      email: record.email,
+      email: record.email as UserEmail,
       bio: record.bio,
       avatarUrl: record.avatarUrl,
       role: record.role,

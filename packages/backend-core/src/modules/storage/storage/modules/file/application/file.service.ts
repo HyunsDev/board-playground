@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
+import { FileId } from '@workspace/common';
+
 import { FileEntity } from '../domain/file.entity';
 import { FileAccessType } from '../domain/file.enums';
 import { FileRepositoryPort } from '../domain/file.repository.port';
@@ -52,7 +54,7 @@ export class FileService {
     });
   }
 
-  async confirmUpload(fileId: string) {
+  async confirmUpload(fileId: FileId) {
     const fileResult = await this.fileRepo.getOneById(fileId);
     if (fileResult.isErr()) {
       return err(fileResult.error);
@@ -82,7 +84,7 @@ export class FileService {
     return ok(file);
   }
 
-  async getDownloadUrl(fileId: string) {
+  async getDownloadUrl(fileId: FileId) {
     const fileResult = await this.fileRepo.getOneById(fileId);
     if (fileResult.isErr()) {
       return err(fileResult.error);
@@ -101,7 +103,7 @@ export class FileService {
    * 주의! FileService는 FileReference 관리를 하지 않습니다.
    * StorageService 를 사용하세요.
    */
-  async deleteFile(fileId: string) {
+  async deleteFile(fileId: FileId) {
     const fileResult = await this.fileRepo.getOneById(fileId);
     if (fileResult.isErr()) {
       return err(fileResult.error);
@@ -131,7 +133,7 @@ export class FileService {
     }
 
     const keysToDelete: string[] = [];
-    const idsToDelete: string[] = [];
+    const idsToDelete: FileId[] = [];
 
     for (const orphan of orphans) {
       keysToDelete.push(orphan.key);

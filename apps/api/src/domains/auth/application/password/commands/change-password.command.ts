@@ -9,8 +9,9 @@ import {
   TransactionManager,
 } from '@workspace/backend-core';
 import { matchError, ValidationError } from '@workspace/backend-ddd';
+import { UserId } from '@workspace/common';
 import { passwordSchema } from '@workspace/contract';
-import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
+import { AggregateCodeEnum, asCommandCode, SessionId } from '@workspace/domain';
 
 import { InvalidCredentialsError } from '@/domains/auth/auth.domain-error';
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
@@ -19,11 +20,11 @@ import { UserNotFoundError } from '@/domains/user/domain/user.domain-errors';
 import { PasswordProvider } from '@/infra/crypto';
 
 type ChangePasswordCommandProps = BaseCommandProps<{
-  userId: string;
+  userId: UserId;
   oldPassword?: string;
   newPassword: string;
   logoutAllSessions: boolean;
-  currentSessionId: string;
+  currentSessionId: SessionId;
 }>;
 
 export class ChangePasswordCommand extends BaseCommand<

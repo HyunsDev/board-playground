@@ -1,12 +1,16 @@
 import { z } from 'zod';
 
+import { UserEmailSchema, UserIdSchema } from '@workspace/common';
+
 import { UserRoleSchema } from './user-role.schema';
 
+import { SessionIdSchema } from '@/ids';
+
 export const TokenPayloadSchema = z.object({
-  sub: z.uuid(),
+  sub: UserIdSchema,
   role: UserRoleSchema,
-  email: z.email(),
-  sessionId: z.string(),
+  email: UserEmailSchema,
+  sessionId: SessionIdSchema,
 });
 
 export type TokenPayload = z.infer<typeof TokenPayloadSchema>;

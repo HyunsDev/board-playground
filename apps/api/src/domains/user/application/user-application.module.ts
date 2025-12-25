@@ -4,7 +4,7 @@ import { MailerModule } from '@workspace/backend-core';
 
 import { GetUserForAdminQueryHandler } from './admin/queries/get-user-for-admin.query';
 import { UserActivityEventHandler } from './events/user-activity.event-handler';
-import { UserPasswordChangedEventHandler } from './events/user-password-chaged.event-handler';
+import { UserPasswordChangedEventHandler } from './events/user-password-changed.event-handler';
 import { UserFacade } from './facades/user.facade';
 import { UserInfraModule } from '../infra/user-infra.module';
 import { DeleteUserMeCommandHandler } from './me/commands/delete-user-me.command';

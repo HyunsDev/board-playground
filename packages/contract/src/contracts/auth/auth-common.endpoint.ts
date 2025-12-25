@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { UsernameSchema } from '@workspace/common';
+
 import { ApiErrors } from '../api-errors';
 
 import { ACCESS } from '@/common';
@@ -10,7 +12,7 @@ export const checkUsernameAvailability = c.query({
   method: 'GET',
   path: '/auth/username/availability',
   query: z.object({
-    username: z.string(),
+    username: UsernameSchema,
   }),
   responses: {
     200: z.object({

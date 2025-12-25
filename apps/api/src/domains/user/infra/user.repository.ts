@@ -8,7 +8,15 @@ import {
   TransactionContext,
 } from '@workspace/backend-core';
 import { DomainResult, matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
-import { createPaginatedResult, PaginatedResult } from '@workspace/common';
+import {
+  createPaginatedResult,
+  getPaginationSkip,
+  PaginatedResult,
+  PaginationQuery,
+  UserEmail,
+  UserId,
+  Username,
+} from '@workspace/common';
 import { Prisma, PrismaClient, User } from '@workspace/database';
 
 import { UserMapper } from './user.mapper';
@@ -35,7 +43,7 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     return this.client.user;
   }
 
-  async getOneById(id: string): Promise<DomainResult<UserEntity, UserNotFoundError>> {
+  async getOneById(id: UserId): Promise<DomainResult<UserEntity, UserNotFoundError>> {
     const result = await this.findOneById(id);
     if (!result) {
       return err(new UserNotFoundError());
@@ -43,7 +51,7 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     return ok(result);
   }
 
-  async getOneByEmail(email: string): Promise<DomainResult<UserEntity, UserNotFoundError>> {
+  async getOneByEmail(email: UserEmail): Promise<DomainResult<UserEntity, UserNotFoundError>> {
     const result = await this.findOneByEmail(email);
     if (!result) {
       return err(new UserNotFoundError());
@@ -51,39 +59,37 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     return ok(result);
   }
 
-  async findOneByEmail(email: string): Promise<UserEntity | null> {
+  async findOneByEmail(email: UserEmail): Promise<UserEntity | null> {
     const record = await this.delegate.findUnique({
       where: { email },
     });
     return record ? this.mapper.toDomain(record) : null;
   }
 
-  async findOneByUsername(username: string): Promise<UserEntity | null> {
+  async findOneByUsername(username: Username): Promise<UserEntity | null> {
     const record = await this.delegate.findUnique({
       where: { username },
     });
     return record ? this.mapper.toDomain(record) : null;
   }
 
-  async usernameExists(username: string): Promise<boolean> {
+  async usernameExists(username: Username): Promise<boolean> {
     const count = await this.delegate.count({
       where: { username },
     });
     return count > 0;
   }
 
-  async userEmailExists(email: string): Promise<boolean> {
+  async userEmailExists(email: UserEmail): Promise<boolean> {
     const count = await this.delegate.count({
       where: { email },
     });
     return count > 0;
   }
 
-  async searchUsers(params: {
-    nickname?: string;
-    page: number;
-    take: number;
-  }): Promise<PaginatedResult<UserEntity>> {
+  async searchUsers(
+    params: PaginationQuery<{ nickname?: string }>,
+  ): Promise<PaginatedResult<UserEntity>> {
     const whereClause = params.nickname
       ? {
           nickname: {
@@ -93,10 +99,12 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
         }
       : {};
 
+    const options = getPaginationSkip(params);
+
     const users = await this.delegate.findMany({
       where: whereClause,
-      skip: (params.page - 1) * params.take,
-      take: params.take,
+      skip: options.skip,
+      take: options.take,
       orderBy: { createdAt: 'desc' },
     });
     const total = await this.delegate.count({ where: whereClause });
@@ -104,7 +112,7 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     return createPaginatedResult({
       items: this.mapper.toDomainMany(users),
       totalItems: total,
-      options: { page: params.page, limit: params.take },
+      options: { page: params.page, limit: params.limit },
     });
   }
 

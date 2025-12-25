@@ -1,8 +1,9 @@
 import { BaseDomainEventProps, BaseDomainEvent } from '@workspace/backend-core';
+import { UserId } from '@workspace/common';
 import { asDomainEventCode, DomainCodeEnums } from '@workspace/domain';
 
 type EmailResetEventProps = BaseDomainEventProps<{
-  userId: string;
+  userId: UserId;
 }>;
 
 export class PasswordResetEvent extends BaseDomainEvent<EmailResetEventProps> {

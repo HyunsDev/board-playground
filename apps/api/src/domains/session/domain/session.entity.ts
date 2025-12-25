@@ -4,7 +4,9 @@ import { v7 as uuidv7 } from 'uuid';
 
 import { BaseAggregateRoot, BaseEntityProps } from '@workspace/backend-core';
 import { matchError, typedOk } from '@workspace/backend-ddd';
+import { UserId } from '@workspace/common';
 import { DevicePlatform, SESSION_STATUS, SessionStatus } from '@workspace/contract';
+import { SessionId } from '@workspace/domain';
 
 import { RefreshTokenReuseDetectedEvent } from './events/refresh-token-reuse-detected.event';
 import { SessionCreatedEvent } from './events/session-created.event';
@@ -14,8 +16,8 @@ import { RefreshTokenEntity } from './refresh-token.entity';
 import { SessionClosedError, SessionRevokedError } from './session.domain-errors';
 import { InvalidRefreshTokenError } from './token.domain-errors';
 
-export interface SessionProps extends BaseEntityProps {
-  userId: string;
+export interface SessionProps extends BaseEntityProps<SessionId> {
+  userId: UserId;
   name: string;
   userAgent: string;
   os: string;
@@ -34,7 +36,7 @@ export interface SessionProps extends BaseEntityProps {
 }
 
 export interface CreateSessionProps {
-  userId: string;
+  userId: UserId;
   userAgent: string;
   platform: DevicePlatform;
   ipAddress: string;
@@ -42,16 +44,16 @@ export interface CreateSessionProps {
   expiresAt: Date;
 }
 
-export class SessionEntity extends BaseAggregateRoot<SessionProps> {
+export class SessionEntity extends BaseAggregateRoot<SessionProps, SessionId> {
   private constructor(props: SessionProps) {
     super({
-      id: props.id || uuidv7(),
+      id: props.id || (uuidv7() as SessionId),
       props,
     });
   }
 
   public static create(createProps: CreateSessionProps): SessionEntity {
-    const id = uuidv7();
+    const id = uuidv7() as SessionId;
     const userAgentResult = new UAParser(createProps.userAgent).getResult();
     const props: SessionProps = {
       id,
@@ -91,7 +93,7 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps> {
     return session;
   }
 
-  get userId(): string {
+  get userId(): UserId {
     return this.props.userId;
   }
 

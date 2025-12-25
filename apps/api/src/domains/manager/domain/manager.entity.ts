@@ -2,7 +2,9 @@ import { err, ok } from 'neverthrow';
 import { v7 } from 'uuid';
 
 import { BaseAggregateRoot, BaseEntityProps } from '@workspace/backend-core';
+import { UserId } from '@workspace/common';
 import { MANAGER_ROLE, ManagerRole } from '@workspace/contract';
+import { BoardId, ManagerId } from '@workspace/domain';
 
 import { ManagerAppointedEvent } from './events/manager-appointed.event';
 import { ManagerDismissedEvent } from './events/manager-dismissed.event';
@@ -18,10 +20,10 @@ import {
 import { BoardEntity } from '@/domains/board/domain';
 import { UserEntity } from '@/domains/user';
 
-export interface ManagerProps extends BaseEntityProps {
-  boardId: string;
-  userId: string;
-  appointedById: string;
+export interface ManagerProps extends BaseEntityProps<ManagerId> {
+  boardId: BoardId;
+  userId: UserId;
+  appointedById: UserId;
   role: ManagerRole;
 
   user?: UserEntity;
@@ -29,17 +31,17 @@ export interface ManagerProps extends BaseEntityProps {
 }
 
 export interface CreateMainManagerProps {
-  boardId: string;
-  userId: string;
+  boardId: BoardId;
+  userId: UserId;
 }
 
 export interface CreateSubManagerProps {
-  boardId: string;
-  userId: string;
-  appointedById: string;
+  boardId: BoardId;
+  userId: UserId;
+  actorManager: ManagerEntity;
 }
 
-export class ManagerEntity extends BaseAggregateRoot<ManagerProps> {
+export class ManagerEntity extends BaseAggregateRoot<ManagerProps, ManagerId> {
   private constructor(props: ManagerProps) {
     super({
       id: props.id,
@@ -47,11 +49,11 @@ export class ManagerEntity extends BaseAggregateRoot<ManagerProps> {
     });
   }
 
-  get boardId(): string {
+  get boardId(): BoardId {
     return this.props.boardId;
   }
 
-  get userId(): string {
+  get userId(): UserId {
     return this.props.userId;
   }
 
@@ -68,7 +70,7 @@ export class ManagerEntity extends BaseAggregateRoot<ManagerProps> {
   }
 
   public static createMainManager(props: CreateMainManagerProps): ManagerEntity {
-    const id = v7();
+    const id = v7() as ManagerId;
     const managerProps: ManagerProps = {
       id,
       boardId: props.boardId,
@@ -93,28 +95,28 @@ export class ManagerEntity extends BaseAggregateRoot<ManagerProps> {
     return entity;
   }
 
-  public static createSubManager(props: CreateSubManagerProps, actorManager: ManagerEntity) {
+  public static createSubManager(props: CreateSubManagerProps) {
     // 같은 보드에 속해있어야 함
-    if (actorManager.boardId !== props.boardId) {
+    if (props.actorManager.boardId !== props.boardId) {
       return err(new InvalidTargetManagerError());
     }
 
     // 자기 자신은 SubManager로 임명할 수 없음
-    if (actorManager.userId !== props.userId) {
+    if (props.actorManager.userId !== props.userId) {
       return err(new InvalidTargetManagerError());
     }
 
     // 임명하는 사용자는 MainManager여야 함
-    if (actorManager.role !== MANAGER_ROLE.MAIN_MANAGER) {
+    if (props.actorManager.role !== MANAGER_ROLE.MAIN_MANAGER) {
       return err(new UserNotMainManagerError());
     }
 
-    const id = v7();
+    const id = v7() as ManagerId;
     const managerProps: ManagerProps = {
       id,
       boardId: props.boardId,
       userId: props.userId,
-      appointedById: props.appointedById,
+      appointedById: props.actorManager.userId,
       role: MANAGER_ROLE.SUB_MANAGER,
       createdAt: new Date(),
       updatedAt: new Date(),

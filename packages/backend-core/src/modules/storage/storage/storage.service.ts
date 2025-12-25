@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
+import { FileId } from '@workspace/common';
+import { ModelId } from '@workspace/domain';
+
 import { FileService, InitializeUploadParam } from './modules/file/application/file.service';
 import {
   CreateFileReferenceParam,
@@ -23,7 +26,7 @@ export class StorageService {
     return ok(result.value);
   }
 
-  async confirmUpload(fileId: string) {
+  async confirmUpload(fileId: FileId) {
     const result = await this.fileService.confirmUpload(fileId);
     if (result.isErr()) {
       return err(result.error);
@@ -31,7 +34,7 @@ export class StorageService {
     return ok(result.value);
   }
 
-  async getDownloadUrl(fileId: string) {
+  async getDownloadUrl(fileId: FileId) {
     const result = await this.fileService.getDownloadUrl(fileId);
     if (result.isErr()) {
       return err(result.error);
@@ -39,7 +42,7 @@ export class StorageService {
     return ok(result.value);
   }
 
-  async bindFiles(fileIds: string[], targetType: string, targetId: string) {
+  async bindFiles(fileIds: FileId[], targetType: string, targetId: ModelId) {
     const refs = fileIds.map(
       (fileId) =>
         ({
@@ -67,7 +70,7 @@ export class StorageService {
     return ok(undefined);
   }
 
-  async unbindFilesByTarget(targetType: string, targetId: string) {
+  async unbindFilesByTarget(targetType: string, targetId: ModelId) {
     const deleteResult = await this.fileReferenceRepo.deleteByTarget(targetType, targetId);
     if (deleteResult.isErr()) {
       return err(deleteResult.error);
@@ -75,7 +78,7 @@ export class StorageService {
     return ok(undefined);
   }
 
-  async deleteFile(fileId: string) {
+  async deleteFile(fileId: FileId) {
     const refExists = await this.fileReferenceRepo.checkExistenceByFileId(fileId);
     if (refExists) {
       return err(new ReferencedFileCannotBeDeletedError());

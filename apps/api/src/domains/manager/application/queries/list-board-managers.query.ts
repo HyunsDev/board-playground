@@ -2,12 +2,12 @@ import { ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
 import { BaseQuery, BaseQueryProps, QueryHandler } from '@workspace/backend-core';
-import { AggregateCodeEnum, asQueryCode } from '@workspace/domain';
+import { AggregateCodeEnum, asQueryCode, BoardSlug } from '@workspace/domain';
 
 import { ManagerEntity, ManagerRepositoryPort } from '../../domain';
 
 type ListBoardManagersQueryProps = BaseQueryProps<{
-  boardSlug: string;
+  boardSlug: BoardSlug;
 }>;
 
 export class ListBoardManagersQuery extends BaseQuery<

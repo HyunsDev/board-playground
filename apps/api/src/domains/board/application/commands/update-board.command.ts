@@ -7,7 +7,8 @@ import {
   TransactionManager,
 } from '@workspace/backend-core';
 import { HandlerResult, matchError } from '@workspace/backend-ddd';
-import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
+import { UserId } from '@workspace/common';
+import { AggregateCodeEnum, asCommandCode, BoardSlug } from '@workspace/domain';
 
 import { BoardEntity, BoardRepositoryPort } from '../../domain';
 
@@ -15,10 +16,10 @@ import { ManagerFacade } from '@/domains/manager/application/manager.facade';
 import { UserNotManagerError } from '@/domains/manager/domain';
 
 type UpdateBoardCommandProps = BaseCommandProps<{
-  boardSlug: string;
+  boardSlug: BoardSlug;
   name?: string;
   description?: string | null;
-  actorId: string;
+  actorId: UserId;
 }>;
 
 export class UpdateBoardCommand extends BaseCommand<

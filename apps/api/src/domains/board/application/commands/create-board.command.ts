@@ -8,15 +8,16 @@ import {
   TransactionManager,
 } from '@workspace/backend-core';
 import { HandlerResult, matchError } from '@workspace/backend-ddd';
-import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
+import { UserId } from '@workspace/common';
+import { AggregateCodeEnum, asCommandCode, BoardSlug } from '@workspace/domain';
 
 import { BoardEntity, BoardRepositoryPort } from '../../domain';
 
 type CreateBoardCommandProps = BaseCommandProps<{
-  slug: string;
+  slug: BoardSlug;
   name: string;
   description?: string | null;
-  managerId: string;
+  creatorId: UserId;
 }>;
 
 export class CreateBoardCommand extends BaseCommand<
@@ -45,7 +46,7 @@ export class CreateBoardCommandHandler implements ICommandHandler<CreateBoardCom
         slug: data.slug,
         name: data.name,
         description: data.description ?? null,
-        managerId: data.managerId,
+        creatorId: data.creatorId,
       });
 
       return (await this.repo.create(board)).match(

@@ -8,7 +8,8 @@ import {
   ICommandHandler,
   TransactionManager,
 } from '@workspace/backend-core';
-import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
+import { UserEmail, UserId } from '@workspace/common';
+import { AggregateCodeEnum, asCommandCode, BoardSlug } from '@workspace/domain';
 
 import { ManagerEntity, ManagerRepositoryPort } from '../../domain';
 
@@ -16,9 +17,9 @@ import { BoardFacade } from '@/domains/board/application/board.facade';
 import { UserFacade } from '@/domains/user';
 
 type AppointSubManagerCommandProps = BaseCommandProps<{
-  boardSlug: string;
-  targetUserEmail: string;
-  actorUserId: string;
+  boardSlug: BoardSlug;
+  targetUserEmail: UserEmail;
+  actorUserId: UserId;
 }>;
 
 export class AppointSubManagerCommand extends BaseCommand<
@@ -60,14 +61,11 @@ export class AppointSubManagerCommandHandler implements ICommandHandler<AppointS
       if (boardResult.isErr()) return err(boardResult.error);
       const board = boardResult.value;
 
-      const managerResult = ManagerEntity.createSubManager(
-        {
-          boardId: board.id,
-          userId: targetUser.id,
-          appointedById: actor.id,
-        },
-        actor,
-      );
+      const managerResult = ManagerEntity.createSubManager({
+        boardId: board.id,
+        userId: targetUser.id,
+        actorManager: actor,
+      });
       if (managerResult.isErr()) return err(managerResult.error);
       const manager = managerResult.value;
 

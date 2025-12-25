@@ -14,7 +14,6 @@ export class BoardDtoMapper extends BaseDtoMapper<BoardEntity> {
       name: entity.name,
       description: entity.description,
       createdAt: entity.createdAt.toISOString(),
-      managerId: entity.getProps().managerId,
     };
   }
 }

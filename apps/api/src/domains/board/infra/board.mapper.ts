@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
 import { BaseMapper } from '@workspace/backend-core';
+import { UserId } from '@workspace/common';
 import { Board } from '@workspace/database';
+import { BoardId, BoardSlug } from '@workspace/domain';
 
 import { BoardEntity } from '../domain';
 
@@ -9,13 +11,13 @@ import { BoardEntity } from '../domain';
 export class BoardMapper extends BaseMapper<BoardEntity, Board> {
   toDomain(record: Board): BoardEntity {
     return BoardEntity.reconstruct({
-      id: record.id,
-      slug: record.slug,
+      id: record.id as BoardId,
+      slug: record.slug as BoardSlug,
       name: record.name,
       description: record.description,
-      managerId: record.managerId,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
+      creatorId: record.creatorId as UserId,
     });
   }
 
@@ -26,7 +28,7 @@ export class BoardMapper extends BaseMapper<BoardEntity, Board> {
       slug: props.slug,
       name: props.name,
       description: props.description,
-      managerId: props.managerId,
+      creatorId: props.creatorId,
       createdAt: props.createdAt,
       updatedAt: props.updatedAt,
     };

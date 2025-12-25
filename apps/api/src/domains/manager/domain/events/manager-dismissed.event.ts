@@ -1,11 +1,12 @@
 import { BaseDomainEventProps, BaseDomainEvent } from '@workspace/backend-core';
-import { asDomainEventCode, AggregateCodeEnum } from '@workspace/domain';
+import { UserId } from '@workspace/common';
+import { asDomainEventCode, AggregateCodeEnum, ManagerId, BoardId } from '@workspace/domain';
 
 type ManagerDismissedEventProps = BaseDomainEventProps<{
-  managerId: string;
-  boardId: string;
-  userId: string;
-  dismissedById: string;
+  managerId: ManagerId;
+  boardId: BoardId;
+  userId: UserId;
+  dismissedById: UserId;
 }>;
 
 export class ManagerDismissedEvent extends BaseDomainEvent<ManagerDismissedEventProps> {

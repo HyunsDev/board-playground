@@ -8,14 +8,15 @@ import {
   ICommandHandler,
   TransactionManager,
 } from '@workspace/backend-core';
-import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
+import { UserId } from '@workspace/common';
+import { AggregateCodeEnum, asCommandCode, BoardSlug } from '@workspace/domain';
 
 import { ManagerRepositoryPort } from '../../domain';
 
 type DismissSubManagerCommandProps = BaseCommandProps<{
-  targetManagerUserId: string;
-  actManagerUserId: string;
-  boardSlug: string;
+  targetManagerUserId: UserId;
+  actManagerUserId: UserId;
+  boardSlug: BoardSlug;
 }>;
 
 export class DismissSubManagerCommand extends BaseCommand<

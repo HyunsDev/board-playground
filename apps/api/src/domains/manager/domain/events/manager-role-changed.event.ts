@@ -1,12 +1,14 @@
 import { BaseDomainEvent, BaseDomainEventProps } from '@workspace/backend-core';
-import { AggregateCodeEnum, asDomainEventCode } from '@workspace/domain';
+import { UserId } from '@workspace/common';
+import { ManagerRole } from '@workspace/contract';
+import { AggregateCodeEnum, asDomainEventCode, BoardId, ManagerId } from '@workspace/domain';
 
 export type ManagerRoleChangedEventProps = BaseDomainEventProps<{
-  managerId: string;
-  boardId: string;
-  oldRole: string;
-  newRole: string;
-  actorId: string;
+  managerId: ManagerId;
+  boardId: BoardId;
+  oldRole: ManagerRole;
+  newRole: ManagerRole;
+  actorId: UserId;
 }>;
 
 export class ManagerRoleChangedEvent extends BaseDomainEvent<ManagerRoleChangedEventProps> {

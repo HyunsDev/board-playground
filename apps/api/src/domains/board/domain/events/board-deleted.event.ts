@@ -1,11 +1,12 @@
 import { BaseDomainEvent, BaseDomainEventProps } from '@workspace/backend-core';
-import { asDomainEventCode, AggregateCodeEnum } from '@workspace/domain';
+import { UserId } from '@workspace/common';
+import { asDomainEventCode, AggregateCodeEnum, BoardId, BoardSlug } from '@workspace/domain';
 
 type BoardDeletedEventProps = BaseDomainEventProps<{
-  boardId: string;
-  slug: string;
+  boardId: BoardId;
+  slug: BoardSlug;
   name: string;
-  actorId: string;
+  actorId: UserId;
 }>;
 
 export class BoardDeletedEvent extends BaseDomainEvent<BoardDeletedEventProps> {

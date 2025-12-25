@@ -5,7 +5,9 @@ import { err, ok } from 'neverthrow';
 import { v7 } from 'uuid';
 
 import { DomainResult, matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
+import { FileId } from '@workspace/common';
 import { FileReference, PrismaClient } from '@workspace/database';
+import { ModelId } from '@workspace/domain';
 
 import { FileReferenceNotFoundError } from '../domain/file-reference.errors';
 import {
@@ -95,9 +97,9 @@ export class FileReferenceRepository
   }
 
   async deleteByFileIdAndTarget(
-    fileId: string,
+    fileId: FileId,
     targetType: string,
-    targetId: string,
+    targetId: ModelId,
   ): Promise<DomainResult<void, FileReferenceNotFoundError>> {
     const deleteCount = await this.delegate.deleteMany({
       where: {
@@ -125,9 +127,9 @@ export class FileReferenceRepository
   }
 
   async checkExistenceByFileIdAndTarget(
-    fileId: string,
+    fileId: FileId,
     targetType: string,
-    targetId: string,
+    targetId: ModelId,
   ): Promise<boolean> {
     const count = await this.delegate.count({
       where: {

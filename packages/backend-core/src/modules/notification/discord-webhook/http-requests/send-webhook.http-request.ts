@@ -35,7 +35,7 @@ export class SendWebhookHttpRequest extends BaseHttpRequest<
       avatar_url?: string;
     },
   ) {
-    super({
+    super(null, {
       url,
       method: 'POST',
       data: {

@@ -11,6 +11,7 @@ import {
   TransactionManager,
 } from '@workspace/backend-core';
 import { matchError, ValidationError } from '@workspace/backend-ddd';
+import { UserEmail } from '@workspace/common';
 import { passwordSchema } from '@workspace/contract';
 import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
@@ -21,7 +22,7 @@ import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { PasswordProvider } from '@/infra/crypto';
 
 type ResetPasswordCommandProps = BaseCommandProps<{
-  email: string;
+  email: UserEmail;
   newPassword: string;
   emailVerificationCode: string;
 }>;

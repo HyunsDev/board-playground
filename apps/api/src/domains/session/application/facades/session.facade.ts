@@ -8,7 +8,9 @@ import {
   typedOk,
   UnexpectedDomainErrorException,
 } from '@workspace/backend-ddd';
+import { UserId } from '@workspace/common';
 import { DevicePlatform } from '@workspace/contract';
+import { SessionId } from '@workspace/domain';
 
 import { SessionEntity } from '../../domain/session.entity';
 import { SessionRepositoryPort } from '../../domain/session.repository.port';
@@ -25,12 +27,12 @@ export class SessionFacade {
     private readonly tokenConfig: RefreshTokenConfig,
   ) {}
 
-  async getOneById(id: string) {
+  async getOneById(id: SessionId) {
     return this.sessionRepo.getOneById(id);
   }
 
   async create(props: {
-    userId: string;
+    userId: UserId;
     userAgent: string;
     platform: DevicePlatform;
     ipAddress: string;
@@ -106,7 +108,7 @@ export class SessionFacade {
     return ok(updateResult.value);
   }
 
-  async closeAll(userId: string, exceptSessionId?: string) {
+  async closeAll(userId: UserId, exceptSessionId?: SessionId) {
     const sessions = await this.sessionRepo.listActiveByUserId(userId);
     const closeResults = await Promise.all(
       sessions

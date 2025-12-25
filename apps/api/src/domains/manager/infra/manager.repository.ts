@@ -8,7 +8,9 @@ import {
   TransactionContext,
 } from '@workspace/backend-core';
 import { matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
+import { UserId } from '@workspace/common';
 import { Manager, PrismaClient } from '@workspace/database';
+import { BoardId, BoardSlug, ManagerId } from '@workspace/domain';
 
 import { ManagerEntity, ManagerNotFoundError, ManagerRepositoryPort } from '../domain';
 import { ManagerMapper } from './manager.mapper';
@@ -31,7 +33,7 @@ export class ManagerRepository
     return this.client.manager;
   }
 
-  async getOneById(id: string) {
+  async getOneById(id: ManagerId) {
     const result = await this.findOneById(id);
     if (!result) {
       return err(new ManagerNotFoundError());
@@ -39,7 +41,7 @@ export class ManagerRepository
     return ok(result);
   }
 
-  async findAllByBoardSlug(boardSlug: string): Promise<ManagerEntity[]> {
+  async findAllByBoardSlug(boardSlug: BoardSlug): Promise<ManagerEntity[]> {
     const board = await this.prisma.board.findUnique({
       where: { slug: boardSlug },
       select: { id: true },
@@ -56,7 +58,7 @@ export class ManagerRepository
     return records.map((record) => this.mapper.toDomain(record));
   }
 
-  async findAllByUserId(userId: string): Promise<ManagerEntity[]> {
+  async findAllByUserId(userId: UserId): Promise<ManagerEntity[]> {
     const records = await this.delegate.findMany({
       where: { userId },
       include: { board: true },
@@ -64,7 +66,7 @@ export class ManagerRepository
     return records.map((record) => this.mapper.toDomain(record));
   }
 
-  async getOneByBoardSlugAndUserId(boardSlug: string, userId: string) {
+  async getOneByBoardSlugAndUserId(boardSlug: BoardSlug, userId: UserId) {
     const board = await this.prisma.board.findUnique({
       where: { slug: boardSlug },
       select: { id: true },
@@ -72,12 +74,12 @@ export class ManagerRepository
     if (!board) {
       return err(new ManagerNotFoundError());
     }
-    const boardId = board.id;
+    const boardId = board.id as BoardId;
 
     return await this.getOneByBoardIdAndUserId(boardId, userId);
   }
 
-  async getOneByBoardIdAndUserId(boardId: string, userId: string) {
+  async getOneByBoardIdAndUserId(boardId: BoardId, userId: UserId) {
     const record = await this.delegate.findFirst({
       where: { boardId, userId },
     });

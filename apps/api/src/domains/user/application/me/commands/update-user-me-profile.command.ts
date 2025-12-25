@@ -3,12 +3,13 @@ import { err, ok } from 'neverthrow';
 import { HandlerResult } from '@workspace/backend-common';
 import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
+import { UserId } from '@workspace/common';
 import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 type IUpdateUserMeProfileCommand = BaseCommandProps<{
-  userId: string;
+  userId: UserId;
   nickname?: string;
   bio?: string | null;
 }>;

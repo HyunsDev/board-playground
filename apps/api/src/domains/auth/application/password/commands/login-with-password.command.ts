@@ -9,6 +9,7 @@ import {
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import { matchError } from '@workspace/backend-ddd';
+import { UserEmail } from '@workspace/common';
 import { DEVICE_PLATFORM } from '@workspace/contract';
 import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
@@ -20,7 +21,7 @@ import { PasswordProvider } from '@/infra/crypto';
 import { AuthTokens } from '@/shared/types/tokens';
 
 type LoginWithPasswordCommandProps = BaseCommandProps<{
-  email: string;
+  email: UserEmail;
   password: string;
   ipAddress: string;
   userAgent: string;
