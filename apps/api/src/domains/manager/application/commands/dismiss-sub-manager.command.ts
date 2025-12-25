@@ -13,8 +13,9 @@ import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 import { ManagerRepositoryPort } from '../../domain';
 
 type DismissSubManagerCommandProps = BaseCommandProps<{
-  targetManagerId: string;
-  actManagerId: string;
+  targetManagerUserId: string;
+  actManagerUserId: string;
+  boardSlug: string;
 }>;
 
 export class DismissSubManagerCommand extends BaseCommand<
@@ -23,10 +24,10 @@ export class DismissSubManagerCommand extends BaseCommand<
   HandlerResult<DismissSubManagerCommandHandler>
 > {
   static readonly code = asCommandCode('community:manager:cmd:dismiss_sub_manager');
-  readonly resourceType = AggregateCodeEnum.Community.Manager;
+  readonly resourceType = AggregateCodeEnum.Community.Board;
 
   constructor(data: DismissSubManagerCommandProps['data']) {
-    super(data.targetManagerId, data);
+    super(data.boardSlug, data);
   }
 }
 
@@ -39,14 +40,17 @@ export class DismissSubManagerCommandHandler implements ICommandHandler<DismissS
 
   async execute({ data }: DismissSubManagerCommandProps) {
     return await this.txManager.run(async () => {
-      const actManagerResult = await this.repo.getOneByBoardIdAndUserId(
-        data.targetManagerId,
-        data.actManagerId,
+      const actManagerResult = await this.repo.getOneByBoardSlugAndUserId(
+        data.boardSlug,
+        data.actManagerUserId,
       );
       if (actManagerResult.isErr()) return err(actManagerResult.error);
       const actManager = actManagerResult.value;
 
-      const targetManagerResult = await this.repo.getOneById(data.targetManagerId);
+      const targetManagerResult = await this.repo.getOneByBoardSlugAndUserId(
+        data.boardSlug,
+        data.targetManagerUserId,
+      );
       if (targetManagerResult.isErr()) return err(targetManagerResult.error);
       const targetManager = targetManagerResult.value;
 

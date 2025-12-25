@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { ManagerWithBoardDtoSchema, ManagerWithUserDtoSchema } from './manager.dto';
-import { ManagerRole } from './manager.enums';
 
 import { ACCESS, ID } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';
@@ -50,7 +49,7 @@ export const appointManagerToBoard = c.mutation({
     boardSlug: BoardSlug,
   }),
   body: z.object({
-    userId: ID,
+    targetUserEmail: z.email(),
   }),
   responses: {
     200: z.object({
@@ -90,16 +89,14 @@ export const dismissManagerFromBoard = c.mutation({
   },
 });
 
-export const changeManagerRole = c.mutation({
+export const transferMainManager = c.mutation({
   method: 'PATCH',
-  path: '/boards/:boardSlug/managers/:userId/role',
+  path: '/boards/:boardSlug/managers/:userId/transfer-main-manager',
   pathParams: z.object({
     boardSlug: BoardSlug,
     userId: ID,
   }),
-  body: z.object({
-    role: ManagerRole,
-  }),
+  body: c.noBody(),
   responses: {
     200: z.object({
       manager: ManagerWithUserDtoSchema,

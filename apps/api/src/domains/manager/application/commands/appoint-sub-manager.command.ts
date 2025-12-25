@@ -12,12 +12,13 @@ import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
 import { ManagerEntity, ManagerRepositoryPort } from '../../domain';
 
+import { BoardFacade } from '@/domains/board/application/board.facade';
 import { UserFacade } from '@/domains/user';
 
 type AppointSubManagerCommandProps = BaseCommandProps<{
-  boardId: string;
-  userEmail: string;
-  actorId: string;
+  boardSlug: string;
+  targetUserEmail: string;
+  actorUserId: string;
 }>;
 
 export class AppointSubManagerCommand extends BaseCommand<
@@ -26,10 +27,10 @@ export class AppointSubManagerCommand extends BaseCommand<
   HandlerResult<AppointSubManagerCommandHandler>
 > {
   static readonly code = asCommandCode('community:manager:cmd:appoint_sub_manager');
-  readonly resourceType = AggregateCodeEnum.Community.Manager;
+  readonly resourceType = AggregateCodeEnum.Community.Board;
 
   constructor(data: AppointSubManagerCommandProps['data']) {
-    super(null, data);
+    super(data.boardSlug, data);
   }
 }
 
@@ -39,23 +40,31 @@ export class AppointSubManagerCommandHandler implements ICommandHandler<AppointS
     private readonly txManager: TransactionManager,
     private readonly user: UserFacade,
     private readonly repo: ManagerRepositoryPort,
+    private readonly boardFacade: BoardFacade,
   ) {}
 
   async execute({ data }: AppointSubManagerCommandProps) {
     return await this.txManager.run(async () => {
-      const actorResult = await this.repo.getOneByBoardIdAndUserId(data.boardId, data.actorId);
+      const actorResult = await this.repo.getOneByBoardSlugAndUserId(
+        data.boardSlug,
+        data.actorUserId,
+      );
       if (actorResult.isErr()) return err(actorResult.error);
       const actor = actorResult.value;
 
-      const targetUserResult = await this.user.getOneByEmail(data.userEmail);
+      const targetUserResult = await this.user.getOneByEmail(data.targetUserEmail);
       if (targetUserResult.isErr()) return err(targetUserResult.error);
       const targetUser = targetUserResult.value;
 
+      const boardResult = await this.boardFacade.getOneBySlug(data.boardSlug);
+      if (boardResult.isErr()) return err(boardResult.error);
+      const board = boardResult.value;
+
       const managerResult = ManagerEntity.createSubManager(
         {
-          boardId: data.boardId,
+          boardId: board.id,
           userId: targetUser.id,
-          appointedById: data.actorId,
+          appointedById: actor.id,
         },
         actor,
       );

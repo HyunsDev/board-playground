@@ -7,6 +7,10 @@ export abstract class ManagerRepositoryPort extends RepositoryPort<ManagerEntity
   abstract getOneById(id: string): Promise<DomainResult<ManagerEntity, ManagerNotFoundError>>;
   abstract findAllByBoardSlug(boardSlug: string): Promise<ManagerEntity[]>;
   abstract findAllByUserId(userId: string): Promise<ManagerEntity[]>;
+  abstract getOneByBoardSlugAndUserId(
+    boardSlug: string,
+    userId: string,
+  ): Promise<DomainResult<ManagerEntity, ManagerNotFoundError>>;
   abstract getOneByBoardIdAndUserId(
     boardId: string,
     userId: string,

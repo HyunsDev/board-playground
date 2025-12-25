@@ -12,8 +12,9 @@ import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 import { ManagerEntity, ManagerRepositoryPort } from '../../domain';
 
 type TransferMainManagerCommandProps = BaseCommandProps<{
-  fromManagerId: string;
-  toManagerId: string;
+  fromManagerUserId: string;
+  toManagerUserId: string;
+  boardSlug: string;
 }>;
 
 export class TransferMainManagerCommand extends BaseCommand<
@@ -25,7 +26,7 @@ export class TransferMainManagerCommand extends BaseCommand<
   readonly resourceType = AggregateCodeEnum.Community.Manager;
 
   constructor(data: TransferMainManagerCommandProps['data']) {
-    super(data.fromManagerId, data);
+    super(data.fromManagerUserId, data);
   }
 }
 
@@ -38,11 +39,17 @@ export class TransferMainManagerCommandHandler {
 
   async execute({ data }: TransferMainManagerCommandProps) {
     return await this.txManager.run(async () => {
-      const fromManagerResult = await this.repo.getOneById(data.fromManagerId);
+      const fromManagerResult = await this.repo.getOneByBoardSlugAndUserId(
+        data.boardSlug,
+        data.fromManagerUserId,
+      );
       if (fromManagerResult.isErr()) return err(fromManagerResult.error);
       const fromManager = fromManagerResult.value;
 
-      const toManagerResult = await this.repo.getOneById(data.toManagerId);
+      const toManagerResult = await this.repo.getOneByBoardSlugAndUserId(
+        data.boardSlug,
+        data.toManagerUserId,
+      );
       if (toManagerResult.isErr()) return err(toManagerResult.error);
       const toManager = toManagerResult.value;
 

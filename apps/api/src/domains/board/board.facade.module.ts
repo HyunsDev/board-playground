@@ -1,5 +1,6 @@
 import { Module, Provider } from '@nestjs/common';
 
+import { BoardFacade } from './application/board.facade';
 import { BoardRepositoryPort } from './domain';
 import { BoardMapper } from './infra/board.mapper';
 import { BoardRepository } from './infra/board.repository';
@@ -15,8 +16,8 @@ const mappers = [BoardMapper, BoardDtoMapper];
 
 @Module({
   imports: [],
-  providers: [...mappers, ...repositories],
+  providers: [...mappers, ...repositories, BoardFacade],
   controllers: [],
-  exports: [...mappers],
+  exports: [...mappers, BoardFacade],
 })
 export class BoardFacadeModule {}

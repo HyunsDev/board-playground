@@ -2,7 +2,7 @@ import { createBoard, deleteBoard, getBoard, searchBoards, updateBoard } from '.
 
 import {
   appointManagerToBoard,
-  changeManagerRole,
+  transferMainManager,
   dismissManagerFromBoard,
   listManagersOfBoard,
 } from '@/contracts/manager/manager.endpoints';
@@ -19,6 +19,6 @@ export const boardContract = c.router({
     list: listManagersOfBoard,
     appoint: appointManagerToBoard,
     dismiss: dismissManagerFromBoard,
-    changeRole: changeManagerRole,
+    transferMainManager: transferMainManager,
   }),
 });

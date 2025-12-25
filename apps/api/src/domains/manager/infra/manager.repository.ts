@@ -64,6 +64,19 @@ export class ManagerRepository
     return records.map((record) => this.mapper.toDomain(record));
   }
 
+  async getOneByBoardSlugAndUserId(boardSlug: string, userId: string) {
+    const board = await this.prisma.board.findUnique({
+      where: { slug: boardSlug },
+      select: { id: true },
+    });
+    if (!board) {
+      return err(new ManagerNotFoundError());
+    }
+    const boardId = board.id;
+
+    return await this.getOneByBoardIdAndUserId(boardId, userId);
+  }
+
   async getOneByBoardIdAndUserId(boardId: string, userId: string) {
     const record = await this.delegate.findFirst({
       where: { boardId, userId },
