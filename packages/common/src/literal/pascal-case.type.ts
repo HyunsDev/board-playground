@@ -91,7 +91,7 @@ export type IsPascalCase<S extends string> = S extends ''
  */
 type PascalCaseError<S extends string> = S extends ''
   ? `Error: String cannot be empty`
-  : S extends `${infer First}${infer Rest}`
+  : S extends `${infer First}${string}`
     ? First extends UpperAlphabet
       ? `Error: Contains invalid characters (only a-z, A-Z, 0-9 allowed)` // 첫 글자는 맞는데 뒤에서 실패한 경우
       : `Error: Must start with an Uppercase letter` // 첫 글자부터 틀린 경우

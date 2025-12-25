@@ -209,7 +209,6 @@ export abstract class BaseRepository<
   protected async publishEvents(entity: TAggregate): Promise<void> {
     const events = entity.pullEvents();
     if (events.length > 0) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await this.eventDispatcher.publishMany(events);
     }
   }

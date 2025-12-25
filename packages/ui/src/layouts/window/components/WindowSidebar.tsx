@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, VariantProps } from 'class-variance-authority';
 import { PanelLeftIcon } from 'lucide-react';
-import { useWindow } from '../contexts/index';
+
 
 import { Button } from '../../../components/button/button';
 import { Input } from '../../../components/input/input';
@@ -21,6 +21,7 @@ import { Skeleton } from '../../../components/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../components/tooltip';
 import { useIsMobile } from '../../../hooks/use-mobile';
 import { cn } from '../../../utils/cn';
+import { useWindow } from '../contexts/index';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
