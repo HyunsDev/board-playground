@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { UsernameSchema } from '@workspace/common';
+
 import { UserPrivateProfileDtoSchema } from '../user.dto';
 
 import { ACCESS } from '@/common/access';
@@ -59,7 +61,7 @@ export const updateUserMeUsername = c.mutation({
   method: 'PUT',
   path: '/me/username',
   body: z.object({
-    username: z.string().min(3).max(30),
+    username: UsernameSchema,
   }),
   responses: {
     200: z.object({

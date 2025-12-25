@@ -1,10 +1,12 @@
 import { z } from 'zod';
 
+import { UserIdSchema } from '@workspace/common';
+import { BoardSlugSchema } from '@workspace/domain';
+
 import { ManagerWithBoardDtoSchema, ManagerWithUserDtoSchema } from './manager.dto';
 
-import { ACCESS, ID } from '@/common';
+import { ACCESS } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';
-import { BoardSlug } from '@/contracts/board/board.schemas';
 import { c } from '@/internal/c';
 import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 
@@ -12,7 +14,7 @@ export const listManagersOfBoard = c.query({
   method: 'GET',
   path: '/boards/:boardSlug/managers',
   pathParams: z.object({
-    boardSlug: BoardSlug,
+    boardSlug: BoardSlugSchema,
   }),
   responses: {
     200: z.object({
@@ -29,7 +31,7 @@ export const listManagerOfMe = c.query({
   method: 'GET',
   path: '/me/managers',
   pathParams: z.object({
-    userId: ID,
+    userId: UserIdSchema,
   }),
   responses: {
     200: z.object({
@@ -46,7 +48,7 @@ export const appointManagerToBoard = c.mutation({
   method: 'POST',
   path: '/boards/:boardSlug/managers',
   pathParams: z.object({
-    boardSlug: BoardSlug,
+    boardSlug: BoardSlugSchema,
   }),
   body: z.object({
     targetUserEmail: z.email(),
@@ -72,8 +74,8 @@ export const dismissManagerFromBoard = c.mutation({
   path: '/boards/:boardSlug/managers/:userId',
   body: c.noBody(),
   pathParams: z.object({
-    boardSlug: BoardSlug,
-    userId: ID,
+    boardSlug: BoardSlugSchema,
+    userId: UserIdSchema,
   }),
   responses: {
     204: c.noBody(),
@@ -93,8 +95,8 @@ export const transferMainManager = c.mutation({
   method: 'PATCH',
   path: '/boards/:boardSlug/managers/:userId/transfer-main-manager',
   pathParams: z.object({
-    boardSlug: BoardSlug,
-    userId: ID,
+    boardSlug: BoardSlugSchema,
+    userId: UserIdSchema,
   }),
   body: c.noBody(),
   responses: {

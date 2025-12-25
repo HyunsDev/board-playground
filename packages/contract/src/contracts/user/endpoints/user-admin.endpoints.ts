@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
-import { withPagination, paginatedResultSchemaOf } from '@workspace/common';
+import {
+  withPagination,
+  paginatedResultSchemaOf,
+  UserIdSchema,
+  UserEmailSchema,
+  UsernameSchema,
+} from '@workspace/common';
 
 import { UserAdminDtoSchema } from '../user.dto';
 import { UserRole, UserStatus } from '../user.enums';
@@ -14,7 +20,7 @@ export const getUserForAdmin = c.query({
   method: 'GET',
   path: '/admin/users/:userId',
   pathParams: z.object({
-    userId: z.uuid(),
+    userId: UserIdSchema,
   }),
   responses: {
     200: z.object({
@@ -32,9 +38,9 @@ export const queryUsersForAdmin = c.query({
   path: '/admin/users',
   query: withPagination(
     z.object({
-      userId: z.uuid().optional(),
-      email: z.email().optional(),
-      username: z.string().min(3).max(30).optional(),
+      userId: UserIdSchema.optional(),
+      email: UserEmailSchema.optional(),
+      username: UsernameSchema.optional(),
       nickname: z.string().min(2).max(20).optional(),
       role: UserRole.optional(),
       status: UserStatus.optional(),
@@ -52,11 +58,11 @@ export const updateUserForAdmin = c.mutation({
   method: 'PATCH',
   path: '/admin/users/:userId',
   pathParams: z.object({
-    userId: z.uuid(),
+    userId: UserIdSchema,
   }),
   body: z.object({
     nickname: z.string().min(2).max(20).optional(),
-    username: z.string().min(3).max(30).optional(),
+    username: UsernameSchema.optional(),
     bio: z.string().max(160).nullable().optional(),
     avatarUrl: z.url().nullable().optional(),
     status: UserStatus.optional(),
@@ -77,7 +83,7 @@ export const deleteUserForAdmin = c.mutation({
   method: 'DELETE',
   path: '/admin/users/:userId',
   pathParams: z.object({
-    userId: z.uuid(),
+    userId: UserIdSchema,
   }),
   body: c.noBody(),
   responses: {
