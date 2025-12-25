@@ -39,9 +39,19 @@ export class ManagerRepository
     return ok(result);
   }
 
-  async findAllByBoardId(boardId: string): Promise<ManagerEntity[]> {
+  async findAllByBoardSlug(boardSlug: string): Promise<ManagerEntity[]> {
+    const board = await this.prisma.board.findUnique({
+      where: { slug: boardSlug },
+      select: { id: true },
+    });
+    if (!board) {
+      return [];
+    }
+    const boardId = board.id;
+
     const records = await this.delegate.findMany({
       where: { boardId },
+      include: { user: true },
     });
     return records.map((record) => this.mapper.toDomain(record));
   }
@@ -49,6 +59,7 @@ export class ManagerRepository
   async findAllByUserId(userId: string): Promise<ManagerEntity[]> {
     const records = await this.delegate.findMany({
       where: { userId },
+      include: { board: true },
     });
     return records.map((record) => this.mapper.toDomain(record));
   }

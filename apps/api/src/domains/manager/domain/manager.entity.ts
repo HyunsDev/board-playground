@@ -15,11 +15,17 @@ import {
   UserNotMainManagerError,
 } from './manager.errors';
 
+import { BoardEntity } from '@/domains/board/domain';
+import { UserEntity } from '@/domains/user';
+
 export interface ManagerProps extends BaseEntityProps {
   boardId: string;
   userId: string;
   appointedById: string;
   role: ManagerRole;
+
+  user?: UserEntity;
+  board?: BoardEntity;
 }
 
 export interface CreateMainManagerProps {
@@ -53,6 +59,14 @@ export class ManagerEntity extends BaseAggregateRoot<ManagerProps> {
     return this.props.role;
   }
 
+  get user(): UserEntity | undefined {
+    return this.props.user;
+  }
+
+  get board(): BoardEntity | undefined {
+    return this.props.board;
+  }
+
   public static createMainManager(props: CreateMainManagerProps): ManagerEntity {
     const id = v7();
     const managerProps: ManagerProps = {
@@ -79,7 +93,22 @@ export class ManagerEntity extends BaseAggregateRoot<ManagerProps> {
     return entity;
   }
 
-  public static createSubManager(props: CreateSubManagerProps): ManagerEntity {
+  public static createSubManager(props: CreateSubManagerProps, actorManager: ManagerEntity) {
+    // 같은 보드에 속해있어야 함
+    if (actorManager.boardId !== props.boardId) {
+      return err(new InvalidTargetManagerError());
+    }
+
+    // 자기 자신은 SubManager로 임명할 수 없음
+    if (actorManager.userId !== props.userId) {
+      return err(new InvalidTargetManagerError());
+    }
+
+    // 임명하는 사용자는 MainManager여야 함
+    if (actorManager.role !== MANAGER_ROLE.MAIN_MANAGER) {
+      return err(new UserNotMainManagerError());
+    }
+
     const id = v7();
     const managerProps: ManagerProps = {
       id,
@@ -102,7 +131,7 @@ export class ManagerEntity extends BaseAggregateRoot<ManagerProps> {
       }),
     );
 
-    return entity;
+    return ok(entity);
   }
 
   protected updateRole(newRole: ManagerRole): void {
@@ -111,18 +140,22 @@ export class ManagerEntity extends BaseAggregateRoot<ManagerProps> {
   }
 
   public static transferMainManager(from: ManagerEntity, to: ManagerEntity) {
+    // 같은 보드에 속해있어야 함
     if (from.boardId !== to.boardId) {
       return err(new InvalidTargetManagerError());
     }
 
+    // from은 MainManager여야 함
     if (from.role !== MANAGER_ROLE.MAIN_MANAGER) {
       return err(new UserNotMainManagerError());
     }
 
+    // 스스로에게 양도할 수 없음
     if (from.id === to.id) {
       return err(new ManagerCannotTransferToSelfError());
     }
 
+    // to는 SubManager여야 함
     if (to.role !== MANAGER_ROLE.SUB_MANAGER) {
       return err(new ManagerNotSubManagerError());
     }

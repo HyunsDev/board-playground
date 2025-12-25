@@ -1,13 +1,31 @@
 import { Injectable } from '@nestjs/common';
 
 import { BaseMapper } from '@workspace/backend-core';
-import { Manager } from '@workspace/database';
+import { Manager, Prisma } from '@workspace/database';
 
 import { ManagerEntity } from '../domain';
 
+import { BoardMapper } from '@/domains/board/infra/board.mapper';
+import { UserMapper } from '@/domains/user/infra/user.mapper';
+
+export type ManagerWithBoard = Prisma.ManagerGetPayload<{
+  include: { board: true };
+}>;
+
+export type ManagerWithUser = Prisma.ManagerGetPayload<{
+  include: { user: true };
+}>;
+
 @Injectable()
 export class ManagerMapper extends BaseMapper<ManagerEntity, Manager> {
-  toDomain(record: Manager): ManagerEntity {
+  constructor(
+    private readonly userMapper: UserMapper,
+    private readonly boardMapper: BoardMapper,
+  ) {
+    super();
+  }
+
+  toDomain(record: Manager | ManagerWithBoard | ManagerWithUser): ManagerEntity {
     return ManagerEntity.reconstruct({
       id: record.id,
       boardId: record.boardId,
@@ -16,6 +34,9 @@ export class ManagerMapper extends BaseMapper<ManagerEntity, Manager> {
       appointedById: record.appointedById,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
+      user: 'user' in record && record.user ? this.userMapper.toDomain(record.user) : undefined,
+      board:
+        'board' in record && record.board ? this.boardMapper.toDomain(record.board) : undefined,
     });
   }
 
