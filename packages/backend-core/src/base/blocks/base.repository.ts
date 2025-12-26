@@ -35,8 +35,6 @@ export abstract class BaseRepository<
   TDbModel extends { id: string },
   TDelegate extends AbstractCrudDelegate<TDbModel> = AbstractCrudDelegate<TDbModel>,
 > implements RepositoryPort<TAggregate> {
-  protected abstract get delegate(): TDelegate;
-
   constructor(
     protected readonly prisma: PrismaClient,
     protected readonly txContext: TransactionContext,
@@ -44,6 +42,10 @@ export abstract class BaseRepository<
     protected readonly eventDispatcher: DomainEventPublisherPort,
     protected readonly logger: Logger,
   ) {}
+
+  protected get entityName(): string {
+    return this.constructor.name.replace('Repository', '');
+  }
 
   /**
    * 현재 트랜잭션 컨텍스트가 있으면 트랜잭션 클라이언트를, 없으면 기본 클라이언트를 반환합니다.
@@ -55,6 +57,8 @@ export abstract class BaseRepository<
     }
     return this.prisma;
   }
+
+  protected abstract get delegate(): TDelegate;
 
   async findOneById(id: string): Promise<TAggregate | null> {
     const record = await this.delegate.findUnique({
@@ -162,24 +166,11 @@ export abstract class BaseRepository<
       return ok(this.mapper.toDomain(result));
     } catch (error: unknown) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        // Unique Constraint Violation
-        if (error.code === 'P2002') {
-          const targets = (error.meta?.target as string[]) || [];
-          const details = targets.map((field) => ({
-            field,
-            value: (record as Record<string, unknown>)[field],
-          }));
-
-          return err(
-            new EntityConflictError({
-              entityName: entity.constructor.name,
-              conflicts: details,
-            }),
-          );
-        }
+        const conflictResult = this.handleP2002(record, error);
+        if (conflictResult) return conflictResult;
       }
 
-      throw new UnexpectedPrismaErrorException(error);
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'createEntity', error);
     }
   }
 
@@ -218,7 +209,7 @@ export abstract class BaseRepository<
           );
         }
       }
-      throw new UnexpectedPrismaErrorException(error);
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'createManyEntities', error);
     }
   }
 
@@ -236,31 +227,29 @@ export abstract class BaseRepository<
       return ok(this.mapper.toDomain(result));
     } catch (error: unknown) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        // Unique Constraint Violation
-        if (error.code === 'P2002') {
-          const targets = (error.meta?.target as string[]) || [];
-          const details = targets.map((field) => ({
-            field,
-            value: (record as Record<string, unknown>)[field],
-          }));
-          return err(
-            new EntityConflictError({
-              entityName: entity.constructor.name,
-              conflicts: details,
-            }),
-          );
-        }
-        // Record Not Found (update 대상 없음)
-        if (error.code === 'P2025') {
-          return err(
-            new EntityNotFoundError({
-              entityName: entity.constructor.name,
-              entityId: entity.id,
-            }),
-          );
-        }
+        const notFoundResult = this.handleP2025(entity.id, error);
+        if (notFoundResult) return notFoundResult;
+
+        const conflictResult = this.handleP2002(record, error);
+        if (conflictResult) return conflictResult;
       }
-      throw new UnexpectedPrismaErrorException(error);
+
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'updateEntity', error);
+    }
+  }
+
+  protected async updateManyDirectly(
+    where: Parameters<TDelegate['updateMany']>[0]['where'],
+    data: Parameters<TDelegate['updateMany']>[0]['data'],
+  ) {
+    try {
+      const { count } = await this.delegate.updateMany({
+        where,
+        data,
+      });
+      return ok(count);
+    } catch (error) {
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'updateManyDirectly', error);
     }
   }
 
@@ -272,19 +261,15 @@ export abstract class BaseRepository<
         where: { id: entity.id },
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      await this.publishEvents(entity);
+      await this.publishEvents(entity as TAggregate);
       return ok(undefined);
     } catch (error: unknown) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-        return err(
-          new EntityNotFoundError({
-            entityName: entity.constructor.name,
-            entityId: entity.id,
-          }),
-        );
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        const notFoundResult = this.handleP2025((entity as TAggregate).id, error);
+        if (notFoundResult) return notFoundResult;
       }
-      throw new UnexpectedPrismaErrorException(error);
+
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'deleteEntity', error);
     }
   }
 
@@ -292,6 +277,37 @@ export abstract class BaseRepository<
     const events = entity.pullEvents();
     if (events.length > 0) {
       await this.eventDispatcher.publishMany(events);
+    }
+  }
+
+  protected handleP2025(id: ModelId, error: Prisma.PrismaClientKnownRequestError) {
+    if (error.code === 'P2025') {
+      return err(
+        new EntityNotFoundError({
+          entityName: this.entityName,
+          entityId: id,
+        }),
+      );
+    }
+  }
+
+  protected handleP2002(
+    data: Record<string, unknown>,
+    error: Prisma.PrismaClientKnownRequestError,
+  ) {
+    if (error.code === 'P2002') {
+      const targets = (error.meta?.target as string[]) || [];
+      const details = targets.map((field) => ({
+        field,
+        value: data[field],
+      }));
+
+      return err(
+        new EntityConflictError({
+          entityName: this.entityName,
+          conflicts: details,
+        }),
+      );
     }
   }
 }

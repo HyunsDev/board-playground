@@ -56,7 +56,7 @@ export abstract class AbstractAggregateRoot<
     return events;
   }
 
-  abstract delete(): DomainResult<DeletedAggregate<this>, DomainError>;
+  abstract delete(...args: unknown[]): DomainResult<DeletedAggregate<this>, DomainError>;
 
   protected toDeleted() {
     this[AggregateStatusSymbol] = AggregateStatusEnum.Deleted;
