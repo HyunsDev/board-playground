@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Logger } from '@nestjs/common';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
@@ -9,22 +8,16 @@ import {
   EntityConflictError,
   DirectRepositoryPort,
 } from '@workspace/backend-ddd';
+import {
+  createPaginatedResult,
+  getPaginationSkip,
+  PaginatedResult,
+  PaginationOptions,
+} from '@workspace/common';
 import { PrismaClient, Prisma } from '@workspace/database';
 
 import { UnexpectedPrismaErrorException } from '../core.exceptions';
-
-type AbstractCrudDelegate<R> = {
-  findUnique(args: any): Promise<R | null>;
-  findMany(args: any): Promise<R[]>;
-  create(args: any): Promise<R>;
-  createMany(args: any): Promise<{
-    count: number;
-  }>;
-  update(args: any): Promise<R>;
-  delete(args: any): Promise<R>;
-  deleteMany(args: any): Promise<{ count: number }>;
-  count(args: any): Promise<number>;
-};
+import { AbstractCrudDelegate } from './base.types';
 
 /**
  * Entity, Mapper, EventPublisher를 거치지 않고
@@ -60,7 +53,88 @@ export abstract class BaseDirectRepository<
     return record ?? null;
   }
 
-  protected async safeCreate(
+  protected async findManyPaginatedRecord(
+    options: PaginationOptions,
+    args: Omit<Parameters<TDelegate['findMany']>[0], 'skip' | 'take'>,
+  ): Promise<PaginatedResult<TDbModel>> {
+    const { skip, take } = getPaginationSkip(options);
+
+    const [records, totalItems] = await Promise.all([
+      this.delegate.findMany({
+        ...args,
+        skip,
+        take,
+      }),
+      this.delegate.count({
+        where: args.where,
+      }),
+    ]);
+
+    return createPaginatedResult({
+      items: records,
+      totalItems,
+      options,
+    });
+  }
+
+  protected async findOneEntity(
+    args: Omit<Parameters<TDelegate['findUnique']>[0], 'where'> & {
+      where: Record<string, unknown>;
+    },
+  ): Promise<TDbModel | null> {
+    const record = await this.delegate.findUnique({
+      ...args,
+    });
+    return record ?? null;
+  }
+
+  protected async getOneRecord(
+    args: Omit<Parameters<TDelegate['findUnique']>[0], 'where'> & {
+      where: Record<string, unknown>;
+    },
+  ): Promise<Result<TDbModel, EntityNotFoundError>> {
+    const record = await this.delegate.findUnique({
+      ...args,
+    });
+    if (!record) {
+      return err(
+        new EntityNotFoundError({
+          entityName: this.constructor.name.replace('Repository', ''),
+          entityId: JSON.stringify(args.where),
+        }),
+      );
+    }
+    return ok(record);
+  }
+
+  protected async findAllRecords(
+    args: Omit<Parameters<TDelegate['findMany']>[0], 'skip' | 'take'>,
+  ): Promise<TDbModel[]> {
+    const records = await this.delegate.findMany({
+      ...args,
+    });
+    return records;
+  }
+
+  protected async countRecords(
+    args: Omit<Parameters<TDelegate['count']>[0], 'where'>,
+  ): Promise<number> {
+    const count = await this.delegate.count({
+      ...args,
+    });
+    return count;
+  }
+
+  protected async existsRecord(
+    args: Omit<Parameters<TDelegate['count']>[0], 'where'>,
+  ): Promise<boolean> {
+    const count = await this.delegate.count({
+      ...args,
+    });
+    return count > 0;
+  }
+
+  protected async createRecord(
     data: Parameters<TDelegate['create']>[0]['data'],
   ): Promise<Result<TDbModel, EntityConflictError>> {
     try {
@@ -89,7 +163,7 @@ export abstract class BaseDirectRepository<
     }
   }
 
-  protected async safeCreateMany(
+  protected async createManyRecord(
     data: Parameters<TDelegate['createMany']>[0]['data'],
   ): Promise<Result<void, EntityConflictError>> {
     try {
@@ -121,7 +195,7 @@ export abstract class BaseDirectRepository<
     }
   }
 
-  protected async safeUpdate(
+  protected async updateRecord(
     id: string,
     data: Parameters<TDelegate['update']>[0]['data'],
   ): Promise<Result<TDbModel, EntityNotFoundError | EntityConflictError>> {
@@ -163,7 +237,7 @@ export abstract class BaseDirectRepository<
     }
   }
 
-  protected async safeDelete(id: string): Promise<Result<void, EntityNotFoundError>> {
+  protected async deleteRecord(id: string): Promise<Result<void, EntityNotFoundError>> {
     try {
       await this.delegate.delete({
         where: { id },
@@ -182,7 +256,7 @@ export abstract class BaseDirectRepository<
     }
   }
 
-  protected async safeDeleteMany(
+  protected async deleteManyRecord(
     where: Parameters<TDelegate['deleteMany']>[0]['where'],
   ): Promise<Result<number, Error>> {
     try {
@@ -191,10 +265,5 @@ export abstract class BaseDirectRepository<
     } catch (error) {
       throw new UnexpectedPrismaErrorException(error);
     }
-  }
-
-  protected async findById(id: string): Promise<TDbModel | null> {
-    const result = await this.delegate.findUnique({ where: { id } });
-    return result || null;
   }
 }

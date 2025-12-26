@@ -1,12 +1,12 @@
 import { BrandId } from '@workspace/common';
 
-export interface AbstractEntityProps<TId extends string> {
+export interface AbstractEntityProps<TId extends BrandId> {
   id: TId;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface AbstractCreateEntityProps<T, TId extends string> {
+export interface AbstractCreateEntityProps<T, TId extends BrandId> {
   id: TId;
   props: T;
   createdAt?: Date;

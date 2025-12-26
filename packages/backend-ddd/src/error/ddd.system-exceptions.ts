@@ -52,6 +52,16 @@ export class InvalidMessageException extends BaseInternalServerException<
   }
 }
 
+export class InvalidAggregationStatusChangeException extends BaseInternalServerException<
+  'InvalidAggregationStatusChange',
+  { from: string; to: string }
+> {
+  readonly code = 'InvalidAggregationStatusChange';
+  constructor(from: string, to: string) {
+    super(`Invalid aggregation status change from ${from} to ${to}`, { from, to });
+  }
+}
+
 /**
  * 타입 시스템 상 발생하지 않아야 하는 불변식 위반 상황이 발생했음을 나타냅니다
  */
@@ -68,4 +78,5 @@ export class InvariantViolationException extends BaseInternalServerException<
 export type DDDSystemException =
   | InternalServerErrorException
   | UnexpectedDomainErrorException
-  | InvariantViolationException;
+  | InvariantViolationException
+  | InvalidAggregationStatusChangeException;

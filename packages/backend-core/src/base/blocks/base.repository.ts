@@ -8,24 +8,22 @@ import {
   EntityNotFoundError,
   EntityConflictError,
   DomainResult,
+  DeletedAggregate,
 } from '@workspace/backend-ddd';
+import {
+  createPaginatedResult,
+  getPaginationSkip,
+  PaginatedResult,
+  PaginationOptions,
+} from '@workspace/common';
 import { PrismaClient, Prisma } from '@workspace/database';
 import { ModelId } from '@workspace/domain';
 
 import { UnexpectedPrismaErrorException } from '../core.exceptions';
 import { BaseDomainEvent, BaseDomainEventProps, DomainEventPublisherPort } from '../messages';
+import { AbstractCrudDelegate } from './base.types';
 
 import { TransactionContext } from '@/modules';
-
-type AbstractCrudDelegate<R> = {
-  findUnique(args: unknown): Promise<R | null>;
-  create(args: unknown): Promise<R>;
-  createMany(args: unknown): Promise<{
-    count: number;
-  }>;
-  update(args: unknown): Promise<R>;
-  delete(args: unknown): Promise<R>;
-};
 
 export abstract class BaseRepository<
   TAggregate extends AbstractAggregateRoot<
@@ -35,8 +33,9 @@ export abstract class BaseRepository<
     BaseDomainEvent<BaseDomainEventProps<any>>
   >,
   TDbModel extends { id: string },
+  TDelegate extends AbstractCrudDelegate<TDbModel> = AbstractCrudDelegate<TDbModel>,
 > implements RepositoryPort<TAggregate> {
-  protected abstract get delegate(): AbstractCrudDelegate<TDbModel>;
+  protected abstract get delegate(): TDelegate;
 
   constructor(
     protected readonly prisma: PrismaClient,
@@ -67,6 +66,88 @@ export abstract class BaseRepository<
   // --------------------------------------------------------------------------
   // Protected Helpers: 구체적인 Repository의 public 메서드(save 등)에서 호출하여 사용
   // --------------------------------------------------------------------------
+
+  protected async findManyPaginatedEntities(
+    options: PaginationOptions,
+    args: Omit<Parameters<TDelegate['findMany']>[0], 'skip' | 'take'>,
+  ): Promise<PaginatedResult<TAggregate>> {
+    const { skip, take } = getPaginationSkip(options);
+
+    const [records, totalItems] = await Promise.all([
+      this.delegate.findMany({
+        ...args,
+        skip,
+        take,
+      }),
+      this.delegate.count({
+        where: args.where,
+      }),
+    ]);
+
+    const entities = (records as TDbModel[]).map((record) => this.mapper.toDomain(record));
+
+    return createPaginatedResult({
+      items: entities,
+      totalItems,
+      options,
+    });
+  }
+
+  protected async findOneEntity(
+    args: Omit<Parameters<TDelegate['findUnique']>[0], 'where'> & {
+      where: Record<string, unknown>;
+    },
+  ): Promise<TAggregate | null> {
+    const record = await this.delegate.findUnique({
+      ...args,
+    });
+    return record ? this.mapper.toDomain(record) : null;
+  }
+
+  protected async getOneEntity(
+    args: Omit<Parameters<TDelegate['findUnique']>[0], 'where'> & {
+      where: Record<string, unknown>;
+    },
+  ): Promise<DomainResult<TAggregate, EntityNotFoundError>> {
+    const record = await this.delegate.findUnique({
+      ...args,
+    });
+    if (!record) {
+      return err(
+        new EntityNotFoundError({
+          entityName: this.constructor.name.replace('Repository', ''),
+          entityId: JSON.stringify(args.where),
+        }),
+      );
+    }
+    return ok(this.mapper.toDomain(record));
+  }
+
+  protected async findAllEntities(
+    args: Omit<Parameters<TDelegate['findMany']>[0], 'skip' | 'take'>,
+  ): Promise<TAggregate[]> {
+    const records = await this.delegate.findMany({
+      ...args,
+    });
+    return (records as TDbModel[]).map((record) => this.mapper.toDomain(record));
+  }
+
+  protected async countEntities(
+    args: Omit<Parameters<TDelegate['count']>[0], 'skip' | 'take'>,
+  ): Promise<number> {
+    return this.delegate.count({
+      ...args,
+    });
+  }
+
+  protected async existsEntity(
+    args: Omit<Parameters<TDelegate['count']>[0], 'skip' | 'take'>,
+  ): Promise<boolean> {
+    const count = await this.delegate.count({
+      ...args,
+    });
+    return count > 0;
+  }
 
   protected async createEntity(
     entity: TAggregate,
@@ -184,13 +265,14 @@ export abstract class BaseRepository<
   }
 
   protected async deleteEntity(
-    entity: TAggregate,
+    entity: DeletedAggregate<TAggregate>,
   ): Promise<DomainResult<void, EntityNotFoundError>> {
     try {
       await this.delegate.delete({
         where: { id: entity.id },
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await this.publishEvents(entity);
       return ok(undefined);
     } catch (error: unknown) {
