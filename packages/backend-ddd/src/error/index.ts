@@ -5,3 +5,4 @@ export * from './ddd.system-exceptions';
 export * from './domain-exception';
 export * from './error.types';
 export * from './utils';
+export * from './result.types';
