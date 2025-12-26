@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import z from 'zod';
 
 import { BrandId } from '@workspace/common';
 
 import { AbstractMessage, AbstractMessageProps } from './abstract.message';
 import { AbstractDrivenMessageMetadata } from '../abstract.message-metadata.type';
+
+import { DomainError, DomainResultAsync } from '@/error';
 
 export type AbstractJobProps<T = unknown> = AbstractMessageProps<T>;
 
@@ -13,7 +16,14 @@ export abstract class AbstractJob<
   JobCodeType extends CausationCodeType = CausationCodeType,
   TProps extends AbstractJobProps = AbstractJobProps,
   TOptions = void,
-> extends AbstractMessage<CausationCodeType, ResourceCodeType, JobCodeType, TProps, unknown, void> {
+> extends AbstractMessage<
+  CausationCodeType,
+  ResourceCodeType,
+  JobCodeType,
+  TProps,
+  any,
+  DomainResultAsync<any, DomainError>
+> {
   abstract readonly queueName: string;
   abstract override get schema(): z.ZodType<TProps['data']>;
 

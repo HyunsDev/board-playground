@@ -1,5 +1,6 @@
 import { err, ok } from 'neverthrow';
 
+import { HandlerResult } from '@workspace/backend-common';
 import {
   BaseCommand,
   BaseCommandProps,
@@ -7,7 +8,7 @@ import {
   ICommandHandler,
   TransactionManager,
 } from '@workspace/backend-core';
-import { HandlerResult, matchError } from '@workspace/backend-ddd';
+import { matchError } from '@workspace/backend-ddd';
 import { UserId } from '@workspace/common';
 import { AggregateCodeEnum, asCommandCode, BoardSlug } from '@workspace/domain';
 

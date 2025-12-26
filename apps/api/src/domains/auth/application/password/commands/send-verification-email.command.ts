@@ -1,5 +1,6 @@
 import { ok } from 'neverthrow';
 
+import { HandlerResult } from '@workspace/backend-common';
 import {
   BaseCommand,
   BaseCommandProps,
@@ -10,7 +11,6 @@ import {
   MailPublisher,
   TransactionManager,
 } from '@workspace/backend-core';
-import { HandlerResult } from '@workspace/backend-ddd';
 import { UserEmail } from '@workspace/common';
 import { asCommandCode, DomainCodeEnums } from '@workspace/domain';
 
