@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
 import {
@@ -7,7 +7,12 @@ import {
   PrismaService,
   TransactionContext,
 } from '@workspace/backend-core';
-import { DomainResult, matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
+import {
+  DeletedAggregate,
+  DomainResult,
+  matchError,
+  UnexpectedDomainErrorException,
+} from '@workspace/backend-ddd';
 import { Session, PrismaClient, Prisma } from '@workspace/database';
 
 import { RefreshTokenMapper } from './refresh-token.mapper';
@@ -29,7 +34,7 @@ export class SessionRepository
     protected readonly refreshTokenMapper: RefreshTokenMapper,
     protected readonly eventDispatcher: DomainEventPublisherPort,
   ) {
-    super(prisma, txContext, mapper, eventDispatcher, new Logger(SessionRepository.name));
+    super(prisma, txContext, mapper, eventDispatcher);
   }
 
   protected get delegate(): PrismaClient['session'] {
@@ -132,7 +137,7 @@ export class SessionRepository
     return ok(result.value);
   }
 
-  async delete(session: SessionEntity) {
+  async delete(session: DeletedAggregate<SessionEntity>) {
     return (await this.deleteEntity(session)).match(
       () => ok(undefined),
       (error) =>

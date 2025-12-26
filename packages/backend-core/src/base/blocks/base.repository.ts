@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
 import {
@@ -40,7 +39,6 @@ export abstract class BaseRepository<
     protected readonly txContext: TransactionContext,
     protected readonly mapper: AbstractMapper<TAggregate, TDbModel>,
     protected readonly eventDispatcher: DomainEventPublisherPort,
-    protected readonly logger: Logger,
   ) {}
 
   protected get entityName(): string {
@@ -136,7 +134,7 @@ export abstract class BaseRepository<
     return (records as TDbModel[]).map((record) => this.mapper.toDomain(record));
   }
 
-  protected async countEntities(
+  protected async count(
     args: Omit<Parameters<TDelegate['count']>[0], 'skip' | 'take'>,
   ): Promise<number> {
     return this.delegate.count({

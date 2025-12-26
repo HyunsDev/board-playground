@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import { err, ok, Result } from 'neverthrow';
 
 import {
@@ -30,7 +29,6 @@ export abstract class BaseDirectRepository<
   constructor(
     protected readonly prisma: PrismaClient,
     protected readonly txContext: TransactionContext,
-    protected readonly logger: Logger,
   ) {}
 
   protected get entityName(): string {

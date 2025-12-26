@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 import { v7 } from 'uuid';
 
@@ -22,7 +22,7 @@ export class AuditLogRepository
     protected readonly prisma: PrismaService,
     protected readonly txContext: TransactionContext,
   ) {
-    super(prisma, txContext.txHost, new Logger(AuditLogRepository.name));
+    super(prisma, txContext);
   }
 
   protected get delegate(): PrismaClient['auditLog'] {
@@ -44,7 +44,7 @@ export class AuditLogRepository
       occurredAt: param.occurredAt ?? now,
     };
 
-    return (await this.safeCreate(item)).match(
+    return (await this.createRecord(item)).match(
       (result) => ok(result),
       (error) =>
         matchError(error, {
@@ -70,7 +70,7 @@ export class AuditLogRepository
       occurredAt: param.occurredAt ?? now,
     }));
 
-    await this.safeCreateMany(items);
+    await this.createManyRecords(items);
 
     return ok(undefined);
   }
@@ -94,7 +94,7 @@ export class AuditLogRepository
         where,
         take: limit,
         skip: (page - 1) * limit,
-        orderBy: { occurredAt: 'desc' }, // 최신순 기본 정렬
+        orderBy: { occurredAt: 'desc' },
       }),
       this.delegate.count({ where }),
     ]);

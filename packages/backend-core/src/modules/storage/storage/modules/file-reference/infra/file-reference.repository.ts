@@ -1,6 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { TransactionHost } from '@nestjs-cls/transactional';
-import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
+import { Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 import { v7 } from 'uuid';
 
@@ -16,6 +14,7 @@ import {
 } from '../domain/file-reference.repository.port';
 
 import { BaseDirectRepository } from '@/base';
+import { TransactionContext } from '@/modules/foundation';
 import { PrismaService } from '@/modules/persistence/database';
 
 @Injectable()
@@ -25,9 +24,9 @@ export class FileReferenceRepository
 {
   constructor(
     protected readonly prisma: PrismaService,
-    protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+    protected readonly txContext: TransactionContext,
   ) {
-    super(prisma, txHost, new Logger(FileReferenceRepository.name));
+    super(prisma, txContext);
   }
 
   protected get delegate(): PrismaClient['fileReference'] {
@@ -53,7 +52,7 @@ export class FileReferenceRepository
       ...param,
     };
 
-    return (await this.safeCreate(item)).match(
+    return (await this.createRecord(item)).match(
       (result) => ok(result),
       (error) =>
         matchError(error, {
@@ -75,7 +74,7 @@ export class FileReferenceRepository
       targetId: param.targetId,
     }));
 
-    return (await this.safeCreateMany(items)).match(
+    return (await this.createManyRecords(items)).match(
       () => ok(undefined),
       (error) =>
         matchError(error, {
@@ -87,7 +86,7 @@ export class FileReferenceRepository
   }
 
   async deleteById(id: string): Promise<DomainResult<void, FileReferenceNotFoundError>> {
-    return (await this.safeDelete(id)).match(
+    return (await this.deleteRecord(id)).match(
       () => ok(undefined),
       (error) =>
         matchError(error, {

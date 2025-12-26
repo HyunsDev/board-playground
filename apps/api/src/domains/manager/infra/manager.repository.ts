@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
 import {
@@ -7,7 +7,11 @@ import {
   PrismaService,
   TransactionContext,
 } from '@workspace/backend-core';
-import { matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
+import {
+  DeletedAggregate,
+  matchError,
+  UnexpectedDomainErrorException,
+} from '@workspace/backend-ddd';
 import { UserId } from '@workspace/common';
 import { Manager, PrismaClient } from '@workspace/database';
 import { BoardId, BoardSlug, ManagerId } from '@workspace/domain';
@@ -26,7 +30,7 @@ export class ManagerRepository
     protected readonly mapper: ManagerMapper,
     protected readonly eventDispatcher: DomainEventPublisherPort,
   ) {
-    super(prisma, txContext, mapper, eventDispatcher, new Logger(ManagerRepository.name));
+    super(prisma, txContext, mapper, eventDispatcher);
   }
 
   protected get delegate(): PrismaClient['manager'] {
@@ -114,7 +118,7 @@ export class ManagerRepository
     );
   }
 
-  async delete(manager: ManagerEntity) {
+  async delete(manager: DeletedAggregate<ManagerEntity>) {
     return (await this.deleteEntity(manager)).match(
       () => ok(undefined),
       (error) =>

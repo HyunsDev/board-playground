@@ -5,7 +5,7 @@ import { UserId } from '@workspace/common';
 import { Manager, Prisma } from '@workspace/database';
 import { BoardId, ManagerId } from '@workspace/domain';
 
-import { ManagerEntity } from '../domain';
+import { ManagerEntity, ManagerProps } from '../domain';
 
 import { BoardMapper } from '@/domains/board/infra/board.mapper';
 import { UserMapper } from '@/domains/user/infra/user.mapper';
@@ -28,7 +28,7 @@ export class ManagerMapper extends BaseMapper<ManagerEntity, Manager> {
   }
 
   toDomain(record: Manager | ManagerWithBoard | ManagerWithUser): ManagerEntity {
-    return ManagerEntity.reconstruct({
+    const props: ManagerProps = {
       id: record.id as ManagerId,
       boardId: record.boardId as BoardId,
       userId: record.userId as UserId,
@@ -39,7 +39,8 @@ export class ManagerMapper extends BaseMapper<ManagerEntity, Manager> {
       user: 'user' in record && record.user ? this.userMapper.toDomain(record.user) : undefined,
       board:
         'board' in record && record.board ? this.boardMapper.toDomain(record.board) : undefined,
-    });
+    };
+    return ManagerEntity.reconstruct(props);
   }
 
   toPersistence(entity: ManagerEntity): Manager {

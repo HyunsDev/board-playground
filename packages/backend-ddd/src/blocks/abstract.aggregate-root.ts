@@ -63,12 +63,10 @@ export abstract class AbstractAggregateRoot<
     return this as DeletedAggregate<this>;
   }
 
-  static reconstruct<
-    TProps,
-    TId extends BrandId,
-    TDomainEvent extends AbstractDomainEvent,
-    TAggregate extends AbstractAggregateRoot<TProps, TId, TDomainEvent>,
-  >(this: { prototype: TAggregate }, props: TProps): TAggregate {
+  static reconstruct<TProps, TId extends BrandId, TAggregate extends AbstractEntity<TProps, TId>>(
+    this: { prototype: TAggregate },
+    props: TProps,
+  ): TAggregate {
     const ctor = this as unknown as new (props: TProps) => TAggregate;
     const instance = new ctor(props);
     return instance;

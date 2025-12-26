@@ -67,9 +67,5 @@ export class RefreshTokenEntity extends BaseEntity<RefreshTokenProps, RefreshTok
     return this.props.expiresAt <= new Date();
   }
 
-  static reconstruct(props: RefreshTokenProps): RefreshTokenEntity {
-    return new RefreshTokenEntity(props);
-  }
-
   public validate(): void {}
 }

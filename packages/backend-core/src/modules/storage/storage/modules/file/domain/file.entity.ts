@@ -40,11 +40,12 @@ const AccessTypeKeyMap = {
 };
 
 export class FileEntity extends BaseAggregateRoot<FileProps, FileId> {
-  private constructor(props: FileProps) {
+  protected constructor(props: FileProps) {
     super({
       id: props.id,
       props,
     });
+    return this;
   }
 
   get id() {
@@ -138,9 +139,9 @@ export class FileEntity extends BaseAggregateRoot<FileProps, FileId> {
     }
   }
 
-  static reconstruct(props: FileProps): FileEntity {
-    return new FileEntity(props);
-  }
+  validate() {}
 
-  validate(): void {}
+  delete() {
+    return ok(this.toDeleted());
+  }
 }

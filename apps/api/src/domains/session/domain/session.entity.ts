@@ -180,7 +180,7 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps, SessionId> {
     return ok(null);
   }
 
-  public delete(): void {
+  public delete() {
     this.addEvent(
       new SessionDeletedEvent({
         userId: this.props.userId,
@@ -188,15 +188,13 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps, SessionId> {
         sessionName: this.props.name,
       }),
     );
+
+    return ok(this.toDeleted());
   }
 
   private revoke(): void {
     this.props.status = SESSION_STATUS.REVOKED;
     this.props.revokedAt = new Date();
-  }
-
-  static reconstruct(props: SessionProps): SessionEntity {
-    return new SessionEntity(props);
   }
 
   public validate() {}

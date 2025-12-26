@@ -1,3 +1,4 @@
+import { ok } from 'neverthrow';
 import { v7 } from 'uuid';
 
 import { BaseAggregateRoot, BaseEntityProps } from '@workspace/backend-core';
@@ -87,7 +88,9 @@ export class BoardEntity extends BaseAggregateRoot<BoardProps, BoardId> {
     this.props.updatedAt = new Date();
   }
 
-  public beforeDelete(actorId: UserId): void {
+  public validate(): void {}
+
+  public delete(actorId: UserId) {
     this.addEvent(
       new BoardDeletedEvent({
         boardId: this.id,
@@ -96,11 +99,7 @@ export class BoardEntity extends BaseAggregateRoot<BoardProps, BoardId> {
         actorId,
       }),
     );
-  }
 
-  static reconstruct(props: BoardProps): BoardEntity {
-    return new BoardEntity(props);
+    return ok(this.toDeleted());
   }
-
-  public validate(): void {}
 }

@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
 import {
@@ -7,7 +7,12 @@ import {
   PrismaService,
   TransactionContext,
 } from '@workspace/backend-core';
-import { DomainResult, matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
+import {
+  DeletedAggregate,
+  DomainResult,
+  matchError,
+  UnexpectedDomainErrorException,
+} from '@workspace/backend-ddd';
 import {
   createPaginatedResult,
   getPaginationSkip,
@@ -36,7 +41,7 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     protected readonly mapper: UserMapper,
     protected readonly eventDispatcher: DomainEventPublisherPort,
   ) {
-    super(prisma, txContext, mapper, eventDispatcher, new Logger(UserRepository.name));
+    super(prisma, txContext, mapper, eventDispatcher);
   }
 
   protected get delegate(): PrismaClient['user'] {
@@ -175,7 +180,7 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     }
   }
 
-  async delete(user: UserEntity) {
+  async delete(user: DeletedAggregate<UserEntity>) {
     return (await this.deleteEntity(user)).match(
       () => ok(undefined),
       (error) =>

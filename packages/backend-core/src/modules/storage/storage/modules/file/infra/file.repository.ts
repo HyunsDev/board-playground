@@ -1,7 +1,12 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
-import { DomainResult, matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
+import {
+  DeletedAggregate,
+  DomainResult,
+  matchError,
+  UnexpectedDomainErrorException,
+} from '@workspace/backend-ddd';
 import { FileId } from '@workspace/common';
 import { File, PrismaClient } from '@workspace/database';
 
@@ -23,7 +28,7 @@ export class FileRepository extends BaseRepository<FileEntity, File> implements 
     protected readonly mapper: FileMapper,
     protected readonly eventPublisher: DomainEventPublisherPort,
   ) {
-    super(prisma, txContext, mapper, eventPublisher, new Logger(FileRepository.name));
+    super(prisma, txContext, mapper, eventPublisher);
   }
 
   protected get delegate(): PrismaClient['file'] {
@@ -81,7 +86,7 @@ export class FileRepository extends BaseRepository<FileEntity, File> implements 
     );
   }
 
-  async delete(file: FileEntity): Promise<DomainResult<void, FileNotFoundError>> {
+  async delete(file: DeletedAggregate<FileEntity>): Promise<DomainResult<void, FileNotFoundError>> {
     return (await this.deleteEntity(file)).match(
       () => ok(undefined),
       (error) =>

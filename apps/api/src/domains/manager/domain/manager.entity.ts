@@ -26,8 +26,8 @@ export interface ManagerProps extends BaseEntityProps<ManagerId> {
   appointedById: UserId;
   role: ManagerRole;
 
-  user?: UserEntity;
-  board?: BoardEntity;
+  user?: UserEntity | undefined;
+  board?: BoardEntity | undefined;
 }
 
 export interface CreateMainManagerProps {
@@ -187,7 +187,7 @@ export class ManagerEntity extends BaseAggregateRoot<ManagerProps, ManagerId> {
     return ok({ from, to });
   }
 
-  public validateDelete(mainManager: ManagerEntity) {
+  public delete(mainManager: ManagerEntity) {
     if (this.role === MANAGER_ROLE.MAIN_MANAGER) {
       return err(new CannotDismissMainManagerError());
     }
@@ -208,11 +208,8 @@ export class ManagerEntity extends BaseAggregateRoot<ManagerProps, ManagerId> {
         dismissedById: mainManager.userId,
       }),
     );
-    return ok();
-  }
 
-  static reconstruct(props: ManagerProps): ManagerEntity {
-    return new ManagerEntity(props);
+    return ok(this.toDeleted());
   }
 
   public validate(): void {}

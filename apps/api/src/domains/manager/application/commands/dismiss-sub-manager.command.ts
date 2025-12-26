@@ -55,7 +55,7 @@ export class DismissSubManagerCommandHandler implements ICommandHandler<DismissS
       if (targetManagerResult.isErr()) return err(targetManagerResult.error);
       const targetManager = targetManagerResult.value;
 
-      const beforeDeleteResult = targetManager.validateDelete(actManager);
+      const beforeDeleteResult = targetManager.delete(actManager);
       if (beforeDeleteResult.isErr()) return err(beforeDeleteResult.error);
 
       const deleteResult = await this.repo.delete(targetManager);

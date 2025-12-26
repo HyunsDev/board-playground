@@ -25,7 +25,8 @@ export class FileMapper extends BaseMapper<FileEntity, File> {
       accessType: record.accessType,
       originalName: record.originalName,
     };
-    return FileEntity.reconstruct(props);
+    const entity = FileEntity.reconstruct(props);
+    return entity;
   }
 
   toPersistence(entity: FileEntity): File {

@@ -130,16 +130,13 @@ export class UserEntity extends BaseAggregateRoot<UserProps, UserId> {
     );
   }
 
-  public validateDelete() {
+  public validate(): void {}
+
+  public delete() {
     if (this.props.role === USER_ROLE.ADMIN) {
       return err(new UserAdminCannotBeDeletedError());
     }
-    return ok();
+    this.props.deletedAt = new Date();
+    return ok(this.toDeleted());
   }
-
-  static reconstruct(props: UserProps): UserEntity {
-    return new UserEntity(props);
-  }
-
-  public validate(): void {}
 }

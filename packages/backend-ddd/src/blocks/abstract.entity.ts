@@ -69,4 +69,13 @@ export abstract class AbstractEntity<TProps, TId extends BrandId> {
   }
 
   abstract validate(): void;
+
+  static reconstruct<TProps, TId extends BrandId, TEntity extends AbstractEntity<TProps, TId>>(
+    this: { prototype: TEntity },
+    props: TProps,
+  ): TEntity {
+    const ctor = this as unknown as new (props: TProps) => TEntity;
+    const instance = new ctor(props);
+    return instance;
+  }
 }
