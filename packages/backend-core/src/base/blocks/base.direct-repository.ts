@@ -46,11 +46,10 @@ export abstract class BaseDirectRepository<
 
   protected abstract get delegate(): TDelegate;
 
-  async findOneById(id: string): Promise<TDbModel | null> {
-    const record = await this.delegate.findUnique({
+  findOneById(id: string): DomainResultAsync<TDbModel | null, never> {
+    return this.findOneRecord({
       where: { id },
     });
-    return record ?? null;
   }
 
   protected findOneRecord(
@@ -87,8 +86,8 @@ export abstract class BaseDirectRepository<
   }
 
   protected findManyPaginatedRecords(
-    options: PaginationOptions,
     args: Omit<Parameters<TDelegate['findMany']>[0], 'skip' | 'take'>,
+    options: PaginationOptions,
   ): DomainResultAsync<PaginatedResult<TDbModel>, never> {
     const { skip, take } = getPaginationSkip(options);
 

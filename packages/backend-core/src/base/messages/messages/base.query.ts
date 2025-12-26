@@ -3,7 +3,7 @@ import {
   AbstractQuery,
   AbstractQueryProps,
   DomainError,
-  DomainResult,
+  DomainResultAsync,
   RESULT_TYPE_SYMBOL,
 } from '@workspace/backend-ddd';
 import { PaginationQuery } from '@workspace/common';
@@ -24,7 +24,7 @@ export type BasePaginatedQueryProps<T> = AbstractPaginatedQueryProps<PaginationQ
 export abstract class BaseQuery<
   TProps extends BaseQueryProps<unknown>,
   TOk,
-  TRes extends DomainResult<TOk, DomainError>,
+  TRes extends DomainResultAsync<TOk, DomainError>,
 > extends AbstractQuery<CausationCode, DomainCode, QueryCode, TProps, TOk, TRes> {
   static readonly code: QueryCode;
   declare [RESULT_TYPE_SYMBOL]: TRes;

@@ -4,8 +4,8 @@ import {
   AbstractHttpRequestProps,
   AbstractHttpRequest,
   DomainError,
-  DomainResult,
   RESULT_TYPE_SYMBOL,
+  DomainResultAsync,
 } from '@workspace/backend-ddd';
 import { CausationCode, DomainCode, HttpRequestCode, ModelId } from '@workspace/domain';
 
@@ -63,10 +63,10 @@ export abstract class BaseHttpRequest<
   HttpRequestCode,
   TProps,
   TOk,
-  DomainResult<TOk, HttpRequestError>,
+  DomainResultAsync<TOk, HttpRequestError>,
   HttpRequestOptions
 > {
-  declare [RESULT_TYPE_SYMBOL]: DomainResult<TOk, HttpRequestError>;
+  declare [RESULT_TYPE_SYMBOL]: DomainResultAsync<TOk, HttpRequestError>;
   static readonly code: HttpRequestCode;
 
   constructor(

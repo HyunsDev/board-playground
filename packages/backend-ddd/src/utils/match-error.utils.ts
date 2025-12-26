@@ -1,6 +1,6 @@
-import { DomainError } from '../base.domain-errors';
-import { InvariantViolationException } from '../ddd.system-exceptions';
-import { PublicDomainError } from '../error.types';
+import { DomainError } from '../error/base.domain-errors';
+import { InvariantViolationException } from '../error/ddd.system-exceptions';
+import { PublicDomainError } from '../error/error.types';
 
 export function matchError<
   E extends DomainError,
