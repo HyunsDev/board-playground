@@ -21,7 +21,10 @@ import { TransactionContext } from '@/modules/foundation/context';
 import { PrismaService } from '@/modules/persistence/database';
 
 @Injectable()
-export class FileRepository extends BaseRepository<FileEntity, File> implements FileRepositoryPort {
+export class FileRepository
+  extends BaseRepository<FileEntity, File, PrismaClient['file']>
+  implements FileRepositoryPort
+{
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly txContext: TransactionContext,

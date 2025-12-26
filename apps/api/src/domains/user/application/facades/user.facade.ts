@@ -26,15 +26,15 @@ export class UserFacade {
   }
 
   async getOneByEmail(email: UserEmail) {
-    return await this.userRepo.getOneByEmail(email);
+    return await this.userRepo.getOne({ email });
   }
 
   async usernameExists(username: Username) {
-    return await this.userRepo.usernameExists(username);
+    return await this.userRepo.exists({ username });
   }
 
   async userEmailExists(email: UserEmail) {
-    return await this.userRepo.userEmailExists(email);
+    return await this.userRepo.exists({ email });
   }
 
   async updatePassword(userId: UserId, newHashedPassword: string) {

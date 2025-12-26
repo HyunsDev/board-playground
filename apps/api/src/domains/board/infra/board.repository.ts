@@ -26,7 +26,7 @@ import { BoardMapper } from './board.mapper';
 
 @Injectable()
 export class BoardRepository
-  extends BaseRepository<BoardEntity, Board>
+  extends BaseRepository<BoardEntity, Board, PrismaClient['board']>
   implements BoardRepositoryPort
 {
   constructor(

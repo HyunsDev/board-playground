@@ -18,11 +18,9 @@ import {
   getPaginationSkip,
   PaginatedResult,
   PaginationQuery,
-  UserEmail,
   UserId,
-  Username,
 } from '@workspace/common';
-import { Prisma, PrismaClient, User } from '@workspace/database';
+import { PrismaClient, User } from '@workspace/database';
 
 import { UserMapper } from './user.mapper';
 import {
@@ -31,10 +29,17 @@ import {
   UserUsernameAlreadyExistsError,
 } from '../domain/user.domain-errors';
 import { UserEntity } from '../domain/user.entity';
-import { UserRepositoryPort } from '../domain/user.repository.port';
+import {
+  UserExistsParams,
+  UserFindOneParams,
+  UserRepositoryPort,
+} from '../domain/user.repository.port';
 
 @Injectable()
-export class UserRepository extends BaseRepository<UserEntity, User> implements UserRepositoryPort {
+export class UserRepository
+  extends BaseRepository<UserEntity, User, PrismaClient['user']>
+  implements UserRepositoryPort
+{
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly txContext: TransactionContext,
@@ -48,6 +53,28 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     return this.client.user;
   }
 
+  async findOne(params: UserFindOneParams): Promise<UserEntity | null> {
+    return await this.findOneEntity({
+      where: {
+        id: params.id,
+        email: params.email,
+        username: params.username,
+      },
+    });
+  }
+
+  async getOne(params: UserFindOneParams): Promise<DomainResult<UserEntity, UserNotFoundError>> {
+    return (
+      await this.getOneEntity({
+        where: {
+          id: params.id,
+          email: params.email,
+          username: params.username,
+        },
+      })
+    ).mapErr(() => new UserNotFoundError());
+  }
+
   async getOneById(id: UserId): Promise<DomainResult<UserEntity, UserNotFoundError>> {
     const result = await this.findOneById(id);
     if (!result) {
@@ -56,40 +83,14 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
     return ok(result);
   }
 
-  async getOneByEmail(email: UserEmail): Promise<DomainResult<UserEntity, UserNotFoundError>> {
-    const result = await this.findOneByEmail(email);
-    if (!result) {
-      return err(new UserNotFoundError());
-    }
-    return ok(result);
-  }
-
-  async findOneByEmail(email: UserEmail): Promise<UserEntity | null> {
-    const record = await this.delegate.findUnique({
-      where: { email },
+  async exists(params: UserExistsParams): Promise<boolean> {
+    return await this.existsEntity({
+      where: {
+        id: params.id,
+        email: params.email,
+        username: params.username,
+      },
     });
-    return record ? this.mapper.toDomain(record) : null;
-  }
-
-  async findOneByUsername(username: Username): Promise<UserEntity | null> {
-    const record = await this.delegate.findUnique({
-      where: { username },
-    });
-    return record ? this.mapper.toDomain(record) : null;
-  }
-
-  async usernameExists(username: Username): Promise<boolean> {
-    const count = await this.delegate.count({
-      where: { username },
-    });
-    return count > 0;
-  }
-
-  async userEmailExists(email: UserEmail): Promise<boolean> {
-    const count = await this.delegate.count({
-      where: { email },
-    });
-    return count > 0;
   }
 
   async searchUsers(
@@ -119,10 +120,6 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
       totalItems: total,
       options: { page: params.page, limit: params.limit },
     });
-  }
-
-  async count(): Promise<number> {
-    return this.delegate.count();
   }
 
   async create(user: UserEntity) {
@@ -163,21 +160,24 @@ export class UserRepository extends BaseRepository<UserEntity, User> implements 
   }
 
   async updateLastActiveAt(userId: string) {
-    try {
-      void (await this.delegate.update({
+    return (
+      await this.updateOneDirectly({
         where: { id: userId },
         data: { lastActiveAt: new Date() },
-        select: { id: true },
-      }));
-      return ok(undefined);
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          return err(new UserNotFoundError());
-        }
-      }
-      throw error;
-    }
+        select: {
+          id: true,
+        },
+      })
+    ).match(
+      () => ok(undefined),
+      (error) =>
+        matchError(error, {
+          EntityNotFound: () => err(new UserNotFoundError()),
+          EntityConflict: (e) => {
+            throw new UnexpectedDomainErrorException(e);
+          },
+        }),
+    );
   }
 
   async delete(user: DeletedAggregate<UserEntity>) {

@@ -8,17 +8,27 @@ import {
 } from './user.domain-errors';
 import { UserEntity } from '../domain/user.entity';
 
+export type UserFindOneParams = {
+  id?: UserId;
+  email?: UserEmail;
+  username?: Username;
+};
+
+export type UserExistsParams = {
+  id?: UserId;
+  email?: UserEmail;
+  username?: Username;
+};
+
 export abstract class UserRepositoryPort extends RepositoryPort<UserEntity> {
-  abstract getOneById(id: UserId): Promise<DomainResult<UserEntity, UserNotFoundError>>;
-  abstract getOneByEmail(email: UserEmail): Promise<DomainResult<UserEntity, UserNotFoundError>>;
-  abstract findOneByEmail(email: UserEmail): Promise<UserEntity | null>;
-  abstract findOneByUsername(username: Username): Promise<UserEntity | null>;
-  abstract usernameExists(username: Username): Promise<boolean>;
-  abstract userEmailExists(email: UserEmail): Promise<boolean>;
+  abstract findOne(params: UserFindOneParams): Promise<UserEntity | null>;
+  abstract getOne(params: UserFindOneParams): Promise<DomainResult<UserEntity, UserNotFoundError>>;
+  abstract getOneById(userId: UserId): Promise<DomainResult<UserEntity, UserNotFoundError>>;
+  abstract exists(params: UserExistsParams): Promise<boolean>;
   abstract searchUsers(
     params: PaginationQuery<{ nickname?: string }>,
   ): Promise<PaginatedResult<UserEntity>>;
-  abstract count(): Promise<number>;
+
   abstract create(
     user: UserEntity,
   ): Promise<

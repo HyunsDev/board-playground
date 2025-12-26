@@ -21,7 +21,7 @@ import { ManagerMapper } from './manager.mapper';
 
 @Injectable()
 export class ManagerRepository
-  extends BaseRepository<ManagerEntity, Manager>
+  extends BaseRepository<ManagerEntity, Manager, PrismaClient['manager']>
   implements ManagerRepositoryPort
 {
   constructor(

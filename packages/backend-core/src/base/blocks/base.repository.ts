@@ -32,7 +32,7 @@ export abstract class BaseRepository<
     BaseDomainEvent<BaseDomainEventProps<any>>
   >,
   TDbModel extends { id: string },
-  TDelegate extends AbstractCrudDelegate<TDbModel> = AbstractCrudDelegate<TDbModel>,
+  TDelegate extends AbstractCrudDelegate<TDbModel>,
 > implements RepositoryPort<TAggregate> {
   constructor(
     protected readonly prisma: PrismaClient,
@@ -96,9 +96,7 @@ export abstract class BaseRepository<
   }
 
   protected async findOneEntity(
-    args: Omit<Parameters<TDelegate['findUnique']>[0], 'where'> & {
-      where: Record<string, unknown>;
-    },
+    args: Parameters<TDelegate['findUnique']>[0],
   ): Promise<TAggregate | null> {
     const record = await this.delegate.findUnique({
       ...args,
@@ -107,9 +105,7 @@ export abstract class BaseRepository<
   }
 
   protected async getOneEntity(
-    args: Omit<Parameters<TDelegate['findUnique']>[0], 'where'> & {
-      where: Record<string, unknown>;
-    },
+    args: Parameters<TDelegate['findUnique']>[0],
   ): Promise<DomainResult<TAggregate, EntityNotFoundError>> {
     const record = await this.delegate.findUnique({
       ...args,
@@ -125,8 +121,8 @@ export abstract class BaseRepository<
     return ok(this.mapper.toDomain(record));
   }
 
-  protected async findAllEntities(
-    args: Omit<Parameters<TDelegate['findMany']>[0], 'skip' | 'take'>,
+  protected async findManyEntities(
+    args: Parameters<TDelegate['findMany']>[0],
   ): Promise<TAggregate[]> {
     const records = await this.delegate.findMany({
       ...args,
@@ -134,17 +130,13 @@ export abstract class BaseRepository<
     return (records as TDbModel[]).map((record) => this.mapper.toDomain(record));
   }
 
-  protected async count(
-    args: Omit<Parameters<TDelegate['count']>[0], 'skip' | 'take'>,
-  ): Promise<number> {
+  protected async count(args: Parameters<TDelegate['count']>[0]): Promise<number> {
     return this.delegate.count({
       ...args,
     });
   }
 
-  protected async existsEntity(
-    args: Omit<Parameters<TDelegate['count']>[0], 'skip' | 'take'>,
-  ): Promise<boolean> {
+  protected async existsEntity(args: Parameters<TDelegate['count']>[0]): Promise<boolean> {
     const count = await this.delegate.count({
       ...args,
     });
@@ -236,17 +228,39 @@ export abstract class BaseRepository<
     }
   }
 
-  protected async updateManyDirectly(
-    where: Parameters<TDelegate['updateMany']>[0]['where'],
-    data: Parameters<TDelegate['updateMany']>[0]['data'],
-  ) {
+  protected async updateOneDirectly(
+    args: Parameters<TDelegate['update']>[0],
+  ): Promise<DomainResult<TAggregate, EntityNotFoundError | EntityConflictError>> {
     try {
-      const { count } = await this.delegate.updateMany({
-        where,
-        data,
-      });
+      const result = await this.delegate.update(args);
+
+      return ok(this.mapper.toDomain(result));
+    } catch (error: unknown) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        const notFoundResult = this.handleP2025((args.where as { id: ModelId }).id, error);
+        if (notFoundResult) return notFoundResult;
+
+        const conflictResult = this.handleP2002(args.data as Record<string, unknown>, error);
+        if (conflictResult) return conflictResult;
+      }
+
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'updateOneDirectly', error);
+    }
+  }
+
+  protected async updateManyDirectly(args: Parameters<TDelegate['updateMany']>[0]) {
+    try {
+      const { count } = await this.delegate.updateMany(args);
       return ok(count);
-    } catch (error) {
+    } catch (error: unknown) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        const notFoundResult = this.handleP2025(undefined, error);
+        if (notFoundResult) return notFoundResult;
+
+        const conflictResult = this.handleP2002(undefined, error);
+        if (conflictResult) return conflictResult;
+      }
+
       throw new UnexpectedPrismaErrorException(this.constructor.name, 'updateManyDirectly', error);
     }
   }
@@ -278,26 +292,26 @@ export abstract class BaseRepository<
     }
   }
 
-  protected handleP2025(id: ModelId, error: Prisma.PrismaClientKnownRequestError) {
+  protected handleP2025(id: ModelId | undefined, error: Prisma.PrismaClientKnownRequestError) {
     if (error.code === 'P2025') {
       return err(
         new EntityNotFoundError({
           entityName: this.entityName,
-          entityId: id,
+          entityId: id || undefined,
         }),
       );
     }
   }
 
   protected handleP2002(
-    data: Record<string, unknown>,
+    data: Record<string, unknown> | undefined,
     error: Prisma.PrismaClientKnownRequestError,
   ) {
     if (error.code === 'P2002') {
       const targets = (error.meta?.target as string[]) || [];
       const details = targets.map((field) => ({
         field,
-        value: data[field],
+        value: data ? data[field] : undefined,
       }));
 
       return err(

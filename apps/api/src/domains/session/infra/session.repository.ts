@@ -24,7 +24,7 @@ import { InvalidRefreshTokenError } from '../domain/token.domain-errors';
 
 @Injectable()
 export class SessionRepository
-  extends BaseRepository<SessionEntity, Session>
+  extends BaseRepository<SessionEntity, Session, PrismaClient['session']>
   implements SessionRepositoryPort
 {
   constructor(
