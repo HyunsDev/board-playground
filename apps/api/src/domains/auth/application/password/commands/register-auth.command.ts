@@ -3,7 +3,6 @@ import { err, ok } from 'neverthrow';
 import { HandlerResult } from '@workspace/backend-common';
 import {
   AccessTokenProvider,
-  CacheService,
   CommandHandler,
   DrivenMessageMetadata,
   ICommandHandler,
@@ -52,7 +51,6 @@ export class RegisterAuthCommandHandler implements ICommandHandler<RegisterAuthC
     private readonly sessionFacade: SessionFacade,
     private readonly accessTokenProvider: AccessTokenProvider,
     private readonly passwordProvider: PasswordProvider,
-    private readonly cacheService: CacheService,
     private readonly txManager: TransactionManager,
     private readonly emailVerificationCodeStore: EmailVerificationCodeStorePort,
   ) {}

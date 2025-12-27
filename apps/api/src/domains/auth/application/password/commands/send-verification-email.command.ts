@@ -60,7 +60,7 @@ export class SendVerificationEmailCommandHandler implements ICommandHandler<Send
         return ok(undefined);
       }
 
-      return this.emailVerificationCodeStore
+      return await this.emailVerificationCodeStore
         .generate(command.data.email, 10 * 60)
         .andThrough((verificationCode) =>
           ResultAsync.fromSafePromise(

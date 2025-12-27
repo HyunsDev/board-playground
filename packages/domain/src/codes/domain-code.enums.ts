@@ -5,8 +5,8 @@ import {
   type ExtractEnumValues,
 } from '@workspace/common';
 
-import type { BCCodeEnumKey } from './bounded-context-code.enums.js';
-import type { ValidateDomainCodes } from './internal/validate-domain-codes.utils.js';
+import type { BCCodeEnumKey } from './bounded-context-code.enums';
+import type { ValidateDomainCodes } from './internal/validate-domain-codes.utils';
 
 const defineDomainCodeEnum = <const T extends { [K in BCCodeEnumKey]: Record<string, unknown> }>(
   codes: T & ValidateDomainCodes<T>,

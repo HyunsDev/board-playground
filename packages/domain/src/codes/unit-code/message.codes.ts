@@ -1,4 +1,4 @@
-import type { UnitCode, ValidateUnitCode } from './unit-code.utils.js';
+import type { UnitCode, ValidateUnitCode } from './unit-code.utils';
 
 export type MessageCodeType = 'trg' | 'cmd' | 'evt' | 'qry' | 'job' | 'rpc' | 'pub' | 'web';
 
