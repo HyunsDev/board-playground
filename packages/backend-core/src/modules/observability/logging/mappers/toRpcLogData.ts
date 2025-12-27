@@ -6,7 +6,7 @@ import { BaseRpc } from '@/base';
 
 export const toRpcLogData = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  result: MeasureResult<any>,
+  result: MeasureResult<any, any>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   message: BaseRpc<any, any, any>,
   handlerName: string,

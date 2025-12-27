@@ -1,13 +1,9 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { AxiosError } from 'axios';
-import { ResultAsync } from 'neverthrow';
+import { err, ok } from 'neverthrow';
 
-import {
-  DomainResult,
-  DomainResultAsync,
-  InternalServerErrorException,
-} from '@workspace/backend-ddd';
+import { DomainResult, InternalServerErrorException } from '@workspace/backend-ddd';
 import { TriggerCodeEnum } from '@workspace/domain';
 
 import {
@@ -30,101 +26,81 @@ export class HttpClient {
     private readonly messageContext: MessageContext,
   ) {}
 
-  request<
+  async request<
     TOk extends HttpRequestResponseData,
-    TResult extends DomainResultAsync<TOk, HttpRequestError>,
+    TResult extends DomainResult<TOk, HttpRequestError>,
     TReq extends BaseHttpRequest<BaseHttpRequestProps<BaseHttpRequestData>, TOk>,
-  >(httpRequest: TReq): TResult {
+  >(httpRequest: TReq): Promise<TResult> {
     const metadata = this.messageContext.getOrCreateDrivenMetadata(TriggerCodeEnum.SystemBoot);
     httpRequest.updateMetadata(metadata);
 
-    const axiosRequest = () =>
-      ResultAsync.fromPromise(
-        this.httpService.axiosRef.request({
+    const axiosRequest = async () => {
+      try {
+        const res = await this.httpService.axiosRef.request({
           url: httpRequest.data.url,
           method: httpRequest.data.method,
           headers: httpRequest.data.headers,
           params: httpRequest.data.params,
           data: httpRequest.data.data,
           timeout: httpRequest.data.timeoutMs,
-        }),
-        (error) => {
-          if (error instanceof AxiosError) {
-            return new HttpRequestError('HTTP Request Error', {
+        });
+
+        const responseData: HttpRequestResponseData = {
+          status: res.status,
+          data: res.data,
+          headers: res.headers,
+        };
+
+        return ok(responseData) as TResult;
+      } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+          return err(
+            new HttpRequestError('HTTP Request Error', {
               isRequestError: !!error.request,
               originalError: error,
               status: error.response?.status,
               data: error.response?.data,
               headers: error.response?.headers,
-            });
-          }
-          throw new InternalServerErrorException(
-            'Unexpected error occurred during HTTP request',
-            {},
-            error,
-          );
-        },
-      ).map(
-        (res) =>
-          ({
-            status: res.status,
-            data: res.data,
-            headers: res.headers,
-          }) as TOk,
-      );
+            }),
+          ) as TResult;
+        }
+
+        throw new InternalServerErrorException(
+          'Unexpected error occurred during HTTP request',
+          {},
+          error,
+        );
+      }
+    };
 
     const retryCount = httpRequest.options?.retryCount ?? 0;
     const delayMs = httpRequest.options?.retryDelayMs ?? 1000;
+    const executor = async () => {
+      for (let attempt = 0; attempt <= retryCount; attempt++) {
+        const result = await axiosRequest();
+        if (result.isOk() || attempt === retryCount) {
+          return result;
+        }
+        if (!this.shouldRetry(result.error)) {
+          return result;
+        }
 
-    const executor = (): DomainResultAsync<TOk, HttpRequestError> => {
-      return new ResultAsync(
-        (async (): Promise<DomainResult<TOk, HttpRequestError>> => {
-          let lastResult: DomainResult<TOk, HttpRequestError>;
-
-          for (let attempt = 0; attempt <= retryCount; attempt++) {
-            // 1. 요청 실행 (ResultAsync를 await하여 Result<T, E>로 받음)
-            lastResult = await axiosRequest();
-
-            // 2. 성공했으면 즉시 반환
-            if (lastResult.isOk()) {
-              return lastResult;
-            }
-
-            // 3. 재시도 불가능한 상황인지 체크
-            // (마지막 시도이거나, 재시도 대상 에러가 아닌 경우)
-            const isLastAttempt = attempt === retryCount;
-            const isNotRetryable = !this.shouldRetry(lastResult.error);
-
-            if (isLastAttempt || isNotRetryable) {
-              return lastResult;
-            }
-
-            // 4. 대기 (재시도 전 딜레이)
-            if (delayMs > 0) {
-              await new Promise((resolve) => setTimeout(resolve, delayMs));
-            }
+        if (result.isErr() && result.error.details?.status)
+          if (delayMs > 0) {
+            await new Promise((resolve) => setTimeout(resolve, delayMs));
           }
-
-          // 루프 로직상 도달할 수 없지만 TS 타입 추론을 위해 추가
-          // (위의 if 문들에서 반드시 리턴됨)
-          return lastResult!;
-        })(),
-      );
+      }
+      return axiosRequest();
     };
 
-    return new ResultAsync(
-      measureAndLog({
-        logType: LogTypeEnum.HttpRequest,
-        message: httpRequest,
-        executor: executor,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
-        toLogData: (result, message) => toHttpRequestLogData(result as any, message),
-        logger: this.logger,
-        handlerName: `${httpRequest.constructor.name}Handler`,
-      }).then((measured) => {
-        return measured.value;
-      }),
-    ) as TResult;
+    return await measureAndLog({
+      logType: LogTypeEnum.HttpRequest,
+      message: httpRequest,
+      executor: executor,
+      toLogData: toHttpRequestLogData,
+      logger: this.logger,
+      handlerName: `${httpRequest.constructor.name}Handler`,
+    });
   }
 
   private shouldRetry(error?: HttpRequestError): boolean {

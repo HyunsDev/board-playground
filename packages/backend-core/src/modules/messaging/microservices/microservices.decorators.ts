@@ -33,7 +33,7 @@ export const RpcHandler = (rpc: MessageConstructor<BaseRpc<any, any, any>>) => {
       return await measureAndLog({
         logType: LogTypeEnum.Rpc,
         message: args[0],
-        executor: async () => await originalMethod.apply(this, args),
+        executor: originalMethod.bind(this, ...args),
         toLogData: toRpcLogData,
         handlerName: String(propertyKey),
         logger: logger,
@@ -71,7 +71,7 @@ export const IntegrationEventHandler = (pub: MessageConstructor<BaseIntegrationE
       return await measureAndLog({
         logType: LogTypeEnum.IntegrationEvent,
         message: args[0], // 첫 번째 인자를 메시지(DTO)로 가정
-        executor: async () => await originalMethod.apply(this, args), // this 바인딩 유지
+        executor: originalMethod.bind(this, ...args), // this 바인딩 유지
         toLogData: toIntegrationEventLogData,
         handlerName: String(propertyKey),
         logger: logger,

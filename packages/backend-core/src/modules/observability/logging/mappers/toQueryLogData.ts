@@ -6,7 +6,7 @@ import { BaseQuery } from '@/base';
 
 export const toQueryLogData = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  result: MeasureResult<any>,
+  result: MeasureResult<any, any>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   message: BaseQuery<any, any, any>,
   _handlerName: string,

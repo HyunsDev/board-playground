@@ -36,11 +36,11 @@ import { CoreContext, TokenContext } from '@/modules/foundation/context';
 
         // 2. [Development] 개발 환경 설정 (Pretty Console + Optional Loki)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const streams: { stream: any }[] = [];
+        const streams: { stream: any; level?: string }[] = [];
 
         // 2-1. 기존 Pretty Logger Stream (콘솔용)
         const devStream = await createDevLoggerStream();
-        streams.push({ stream: devStream });
+        streams.push({ level: 'debug', stream: devStream });
 
         // 2-2. Loki Stream (Loki 컨테이너로 전송)
         if (useLocalLoki) {
@@ -53,7 +53,7 @@ import { CoreContext, TokenContext } from '@/modules/foundation/context';
               labels: { application: 'board-playground-local' },
             },
           });
-          streams.push({ stream: lokiStream });
+          streams.push({ level: 'debug', stream: lokiStream });
         }
 
         return {

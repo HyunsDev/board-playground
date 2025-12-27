@@ -1,14 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { Logger } from '@nestjs/common';
 import { Span, SpanStatusCode, trace } from '@opentelemetry/api';
 
-import {
-  DomainError,
-  DomainResult,
-  DomainResultAsync,
-  SystemException,
-} from '@workspace/backend-ddd';
+import { DomainError, DomainResult, SystemException } from '@workspace/backend-ddd';
 
 import { MessageLogType } from '../log.enums';
 import { MessageResultLogData } from '../types';
@@ -24,52 +19,7 @@ import {
   BaseRpc,
 } from '@/base';
 
-export const measure = async <
-  const TResult extends
-    | DomainResultAsync<any, DomainError>
-    | Promise<DomainResult<any, DomainError>>,
->(
-  executor: () => TResult,
-): Promise<MeasureResult<Awaited<TResult>>> => {
-  const start = performance.now();
-
-  try {
-    const result = await executor();
-    const duration = (performance.now() - start).toFixed(0);
-
-    if (result?.isErr?.()) {
-      return {
-        duration,
-        result: 'DomainError',
-        value: result,
-        error: result.error,
-      } as const;
-    }
-
-    return {
-      duration,
-      result: 'Success',
-      value: result,
-    } as const;
-  } catch (error) {
-    const duration = (performance.now() - start).toFixed(0);
-
-    if (error instanceof SystemException) {
-      return {
-        duration,
-        result: 'SystemException',
-        error,
-      } as const;
-    }
-
-    return {
-      duration,
-      result: 'UnexpectedException',
-      error,
-    } as const;
-  }
-};
-
+// 1. 측정 대상 메세지 타입 정의
 export type MeasureMessage =
   | BaseCommand<any, any, any>
   | BaseQuery<any, any, any>
@@ -79,26 +29,64 @@ export type MeasureMessage =
   | BaseRpc<any, any, any>
   | BaseHttpRequest<any, any>;
 
-export type LogDataMapper<
-  TMessage extends MeasureMessage,
-  TLogData extends MessageResultLogData,
-> = (result: MeasureResult<any>, message: TMessage, handlerName: string) => TLogData;
+// 2. 실행 시간 측정 함수
+// TResult는 DomainResult<TOk, TError> 형태여야 합니다.
+export const measure = async <
+  TOk,
+  TError extends DomainError,
+  TResult extends DomainResult<TOk, TError>,
+>(
+  executor: () => Promise<TResult>,
+): Promise<MeasureResult<TResult, TError>> => {
+  const start = performance.now();
 
-const resultLogLevel = {
-  Success: 'log',
-  DomainError: 'warn',
-  SystemException: 'error',
-  UnexpectedException: 'error',
-} as const;
+  try {
+    const result = await executor();
+    const duration = (performance.now() - start).toFixed(0);
+
+    // neverthrow Result 패턴 체크
+    if (result.isErr()) {
+      return {
+        result: 'DomainError',
+        duration,
+        value: result,
+        error: result.error,
+      };
+    }
+
+    return {
+      result: 'Success',
+      duration,
+      value: result,
+    };
+  } catch (error) {
+    const duration = (performance.now() - start).toFixed(0);
+
+    if (error instanceof SystemException) {
+      return {
+        result: 'SystemException',
+        duration,
+        error,
+      };
+    }
+
+    return {
+      result: 'UnexpectedException',
+      duration,
+      error,
+    };
+  }
+};
 
 const tracer = trace.getTracer('board-playground-core');
 
+// 3. 측정 및 로깅 통합 함수
 export const measureAndLog = async <
   const TLogType extends MessageLogType,
   const TMessage extends MeasureMessage,
-  const TResult extends
-    | DomainResultAsync<any, DomainError>
-    | Promise<DomainResult<any, DomainError>>,
+  TOk,
+  TError extends DomainError,
+  TResult extends DomainResult<TOk, TError>,
 >({
   logType,
   message,
@@ -109,38 +97,53 @@ export const measureAndLog = async <
 }: {
   logType: TLogType;
   message: TMessage;
-  executor: () => TResult;
+  executor: () => Promise<TResult>;
+  // toLogData의 타입을 정확하게 매칭
   toLogData: (
-    result: MeasureResult<Awaited<TResult>>,
+    result: MeasureResult<TResult, TError>,
     message: TMessage,
     handlerName: string,
   ) => Extract<MessageResultLogData, { type: TLogType }>;
   logger: Logger;
   handlerName: string;
-}) => {
+}): Promise<TResult> => {
+  // 반환 타입 명시
   const targetName = message?.constructor?.name || 'UnknownMessage';
   const spanName = `${logType} ${targetName}`;
 
   return tracer.startActiveSpan(spanName, async (span) => {
     try {
+      // Span 기본 속성 설정
       span.setAttribute('app.handler.name', handlerName);
       span.setAttribute('app.message.type', logType);
       span.setAttribute('app.message.name', targetName);
 
-      const result = await measure(executor);
+      // 실행 및 측정
+      const measurement = await measure<TOk, TError, TResult>(executor);
 
-      updateSpanStatus(span, result);
+      // Span 상태 업데이트
+      updateSpanStatus(span, measurement);
 
-      const logLevel = resultLogLevel[result.result];
-      logger[logLevel](toLogData(result, message, handlerName), targetName);
+      // 로깅 수행
+      const logData = toLogData(measurement, message, handlerName);
+      const logLevel = getLogLevel(measurement.result);
 
-      if (result.result !== 'Success' && result.result !== 'DomainError') {
-        span.recordException(result.error as Error);
-        throw result.error;
+      logger[logLevel](logData, targetName);
+
+      // 결과 처리: 예외인 경우 throw, 그 외(성공/도메인 에러)는 값 반환
+      if (
+        measurement.result === 'SystemException' ||
+        measurement.result === 'UnexpectedException'
+      ) {
+        // measure 내부에서 catch 되었던 에러를 다시 던져서
+        // 상위 레이어(Exception Filter 등)가 처리할 수 있게 함
+        throw measurement.error;
       }
 
-      return result;
+      // Success 혹은 DomainError (Result 객체 반환)
+      return measurement.value;
     } catch (error) {
+      // 예상치 못한 스코프 내 에러 기록
       if (error instanceof Error) {
         span.recordException(error);
       }
@@ -155,7 +158,25 @@ export const measureAndLog = async <
   });
 };
 
-function updateSpanStatus(span: Span, result: MeasureResult<any>) {
+// 4. 헬퍼 함수: 로그 레벨 결정
+function getLogLevel(
+  resultType: MeasureResult<unknown, unknown>['result'],
+): 'log' | 'warn' | 'error' {
+  switch (resultType) {
+    case 'Success':
+      return 'log';
+    case 'DomainError':
+      return 'warn';
+    case 'SystemException':
+    case 'UnexpectedException':
+      return 'error';
+    default:
+      return 'error';
+  }
+}
+
+// 5. 헬퍼 함수: Span 상태 업데이트
+function updateSpanStatus(span: Span, result: MeasureResult<unknown, any>) {
   span.setAttribute('app.result.status', result.result);
   span.setAttribute('app.duration_ms', result.duration);
 
@@ -165,23 +186,25 @@ function updateSpanStatus(span: Span, result: MeasureResult<any>) {
       break;
 
     case 'DomainError':
-      // DomainError는 비즈니스 로직상 '실패'이지만, 시스템 관점에서는 '정상 처리'입니다.
-      // 따라서 Span Status는 OK로 두되, 속성으로 에러 내용을 남깁니다.
+      // DomainError는 예측 가능한 비즈니스 예외이므로 Span은 OK로 처리하되
+      // 속성에 에러 정보를 상세히 남깁니다.
       span.setStatus({ code: SpanStatusCode.OK });
-      span.setAttribute('app.domain_error.code', result.error.code);
-      span.setAttribute('app.domain_error.message', result.error.message);
-      // 검색 편의를 위해 error 태그를 붙일 수도 있습니다.
-      span.setAttribute('error', true);
+      if (result.error && typeof result.error === 'object') {
+        span.setAttribute('app.domain_error.code', (result.error as any).code || 'UNKNOWN');
+        span.setAttribute('app.domain_error.message', (result.error as any).message || '');
+      }
+      span.setAttribute('error', true); // 검색 편의성 태그
       break;
 
     case 'SystemException':
     case 'UnexpectedException':
-      // 시스템 예외는 명백한 오류(Error)입니다.
       span.setStatus({
         code: SpanStatusCode.ERROR,
-        message: (result.error as Error).message,
+        message: result.error instanceof Error ? result.error.message : String(result.error),
       });
-      span.recordException(result.error as Error);
+      if (result.error instanceof Error) {
+        span.recordException(result.error);
+      }
       break;
   }
 }

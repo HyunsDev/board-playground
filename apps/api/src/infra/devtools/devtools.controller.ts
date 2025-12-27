@@ -29,6 +29,7 @@ export class DevtoolsController {
           nickname: body.nickname,
         }),
       );
+
       return result.match(
         (tokens) => apiOk(200, tokens),
         (error) =>

@@ -6,7 +6,7 @@ import { BaseDomainEvent } from '@/base';
 
 export const toEventLogData = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  result: MeasureResult<any>,
+  result: MeasureResult<any, any>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   message: BaseDomainEvent<any>,
   handlerName: string,

@@ -42,7 +42,7 @@ export const QueryHandler = <
       return await measureAndLog({
         logType: LogTypeEnum.Query,
         message: message,
-        executor: async () => await originalMethod.apply(this, args),
+        executor: originalMethod.bind(this, ...args),
         toLogData: toQueryLogData,
         handlerName: target.name,
         logger: logger,
@@ -79,7 +79,7 @@ export const CommandHandler = <
       return await measureAndLog({
         logType: LogTypeEnum.Command,
         message: message,
-        executor: async () => await originalMethod.apply(this, args),
+        executor: originalMethod.bind(this, ...args),
         toLogData: toCommandLogData,
         handlerName: target.name,
         logger: logger,

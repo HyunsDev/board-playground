@@ -19,6 +19,6 @@ export class CommandDispatcher implements CommandDispatcherPort {
     command: TCommand,
   ): Promise<MessageResult<TCommand>> {
     command.updateMetadata(this.messageContext.getOrThrowDrivenMetadata());
-    return this.commandBus.execute<TCommand>(command);
+    return await this.commandBus.execute<TCommand>(command);
   }
 }
