@@ -16,6 +16,7 @@ import { PrismaClient, Prisma } from '@workspace/database';
 import { ModelId } from '@workspace/domain';
 
 import { UnexpectedPrismaErrorException } from '../core.exceptions';
+import { BasePrismaRepository } from './base.prisma-repository';
 import { AbstractCrudDelegate } from './base.types';
 
 import { TransactionContext } from '@/modules';
@@ -27,24 +28,10 @@ import { TransactionContext } from '@/modules';
 export abstract class BaseDirectRepository<
   TDbModel extends { id: string },
   TDelegate extends AbstractCrudDelegate<TDbModel>,
-> implements DirectRepositoryPort<TDbModel> {
-  constructor(
-    protected readonly prisma: PrismaClient,
-    protected readonly txContext: TransactionContext,
-  ) {}
-
-  protected get entityName(): string {
-    return this.constructor.name.replace('Repository', '');
+> extends BasePrismaRepository<TDelegate> implements DirectRepositoryPort<TDbModel> {
+  constructor(prisma: PrismaClient, txContext: TransactionContext) {
+    super(prisma, txContext);
   }
-
-  protected get client(): PrismaClient | Prisma.TransactionClient {
-    if (this.txContext.txHost.isTransactionActive()) {
-      return this.txContext.txHost.tx as unknown as Prisma.TransactionClient;
-    }
-    return this.prisma;
-  }
-
-  protected abstract get delegate(): TDelegate;
 
   findOneById(id: string): DomainResultAsync<TDbModel | null, never> {
     return this.findUniqueRecord({
@@ -244,35 +231,5 @@ export abstract class BaseDirectRepository<
     return ResultAsync.fromPromise(this.delegate.deleteMany(args), (error) => {
       throw new UnexpectedPrismaErrorException(this.constructor.name, 'deleteManyRecords', error);
     }).map((result) => result.count);
-  }
-
-  protected handleP2002(
-    data: Record<string, unknown> | undefined,
-    error: Prisma.PrismaClientKnownRequestError,
-  ): EntityConflictError | undefined {
-    if (error.code === 'P2002') {
-      const targets = (error.meta?.target as string[]) || [];
-      const details = targets.map((field) => ({
-        field,
-        value: data ? data[field] : undefined,
-      }));
-
-      return new EntityConflictError({
-        entityName: this.entityName,
-        conflicts: details,
-      });
-    }
-  }
-
-  protected handleP2025(
-    id: ModelId | undefined,
-    error: Prisma.PrismaClientKnownRequestError,
-  ): EntityNotFoundError | undefined {
-    if (error.code === 'P2025') {
-      return new EntityNotFoundError({
-        entityName: this.entityName,
-        entityId: id || undefined,
-      });
-    }
   }
 }
