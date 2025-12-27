@@ -1,7 +1,7 @@
 import { AbstractIntegrationEventProps, AbstractIntegrationEvent } from '@workspace/backend-ddd';
 import { CausationCode, DomainCode, IntegrationEventCode, ModelId } from '@workspace/domain';
 
-import { DrivenMessageMetadata } from '../message-metadata';
+import { DrivenMessageMetadata } from './message-metadata';
 
 export type BaseIntegrationEventProps<T> = AbstractIntegrationEventProps<T>;
 

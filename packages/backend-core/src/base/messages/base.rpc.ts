@@ -7,7 +7,7 @@ import {
 } from '@workspace/backend-ddd';
 import { CausationCode, DomainCode, ModelId, RpcCode } from '@workspace/domain';
 
-import { DrivenMessageMetadata } from '../message-metadata';
+import { DrivenMessageMetadata } from './message-metadata';
 
 export type RpcOptions = {
   timeoutMs?: number;

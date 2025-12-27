@@ -7,7 +7,7 @@ import {
 import { DomainResult } from '@workspace/backend-ddd';
 import { CausationCode, CommandCode, DomainCode, ModelId } from '@workspace/domain';
 
-import { DrivenMessageMetadata } from '../message-metadata';
+import { DrivenMessageMetadata } from './message-metadata';
 
 export type BaseCommandProps<T> = AbstractCommandProps<T>;
 

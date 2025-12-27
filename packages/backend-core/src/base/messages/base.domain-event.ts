@@ -1,7 +1,7 @@
 import { AbstractDomainEvent, AbstractDomainEventProps } from '@workspace/backend-ddd';
 import { CausationCode, DomainCode, DomainEventCode, ModelId } from '@workspace/domain';
 
-import { DrivenMessageMetadata } from '../message-metadata';
+import { DrivenMessageMetadata } from './message-metadata';
 
 export type BaseDomainEventProps<T> = AbstractDomainEventProps<T>;
 

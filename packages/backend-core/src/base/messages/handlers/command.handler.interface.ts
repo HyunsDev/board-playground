@@ -1,6 +1,6 @@
 import { MessageResult } from '@workspace/backend-ddd';
 
-import { BaseCommand, BaseJobProps } from '../messages';
+import { BaseCommand, BaseJobProps } from '..';
 
 export interface ICommandHandler<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
