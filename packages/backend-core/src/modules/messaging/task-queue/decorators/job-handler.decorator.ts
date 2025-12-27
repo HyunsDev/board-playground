@@ -34,7 +34,7 @@ export const JobHandler = (job: MessageConstructor<BaseJob<any>>) => {
       return await measureAndLog({
         logType: LogTypeEnum.Job,
         message: message,
-        executor: async () => await originalMethod.apply(this, args),
+        executor: originalMethod.bind(this, ...args),
         toLogData: toJobLogData,
         handlerName: target.name,
         logger: logger,

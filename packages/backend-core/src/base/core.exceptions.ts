@@ -4,6 +4,8 @@ import { Prisma } from '@workspace/database';
 export class UnexpectedPrismaErrorException extends BaseInternalServerException<
   'UnexpectedPrismaError',
   {
+    repositoryName: string;
+    action: string;
     prismaCode?: string;
     prismaMeta?: unknown;
     originalError: unknown;
@@ -12,7 +14,7 @@ export class UnexpectedPrismaErrorException extends BaseInternalServerException<
   readonly code = 'UnexpectedPrismaError' as const;
   readonly scope = 'private' as const;
 
-  constructor(error: unknown) {
+  constructor(repositoryName: string, action: string, error: unknown) {
     const errorMessage =
       error instanceof Error
         ? `데이터베이스 오류: ${error.message}`
@@ -30,6 +32,8 @@ export class UnexpectedPrismaErrorException extends BaseInternalServerException<
     super(
       errorMessage,
       {
+        repositoryName,
+        action,
         prismaCode,
         prismaMeta,
         originalError: error,

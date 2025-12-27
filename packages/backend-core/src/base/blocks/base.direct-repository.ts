@@ -1,30 +1,24 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Logger } from '@nestjs/common';
-import { TransactionHost } from '@nestjs-cls/transactional';
-import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
-import { err, ok, Result } from 'neverthrow';
+import { err, ok, ResultAsync } from 'neverthrow';
 
 import {
   EntityNotFoundError,
   EntityConflictError,
   DirectRepositoryPort,
+  DomainResultAsync,
 } from '@workspace/backend-ddd';
+import {
+  createPaginatedResult,
+  getPaginationSkip,
+  PaginatedResult,
+  PaginationOptions,
+} from '@workspace/common';
 import { PrismaClient, Prisma } from '@workspace/database';
+import { ModelId } from '@workspace/domain';
 
 import { UnexpectedPrismaErrorException } from '../core.exceptions';
+import { AbstractCrudDelegate } from './base.types';
 
-type AbstractCrudDelegate<R> = {
-  findUnique(args: any): Promise<R | null>;
-  findMany(args: any): Promise<R[]>;
-  create(args: any): Promise<R>;
-  createMany(args: any): Promise<{
-    count: number;
-  }>;
-  update(args: any): Promise<R>;
-  delete(args: any): Promise<R>;
-  deleteMany(args: any): Promise<{ count: number }>;
-  count(args: any): Promise<number>;
-};
+import { TransactionContext } from '@/modules';
 
 /**
  * Entity, Mapper, EventPublisher를 거치지 않고
@@ -34,167 +28,251 @@ export abstract class BaseDirectRepository<
   TDbModel extends { id: string },
   TDelegate extends AbstractCrudDelegate<TDbModel>,
 > implements DirectRepositoryPort<TDbModel> {
-  protected abstract get delegate(): TDelegate;
-
   constructor(
     protected readonly prisma: PrismaClient,
-    protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
-    protected readonly logger: Logger,
+    protected readonly txContext: TransactionContext,
   ) {}
 
-  /**
-   * 현재 트랜잭션 컨텍스트가 있으면 트랜잭션 클라이언트를, 없으면 기본 클라이언트를 반환합니다.
-   * (nestjs-cls가 자동으로 처리하지만, 명시적인 제어를 위해 유지)
-   */
+  protected get entityName(): string {
+    return this.constructor.name.replace('Repository', '');
+  }
+
   protected get client(): PrismaClient | Prisma.TransactionClient {
-    if (this.txHost.isTransactionActive()) {
-      return this.txHost.tx as unknown as Prisma.TransactionClient;
+    if (this.txContext.txHost.isTransactionActive()) {
+      return this.txContext.txHost.tx as unknown as Prisma.TransactionClient;
     }
     return this.prisma;
   }
 
-  async findOneById(id: string): Promise<TDbModel | null> {
-    const record = await this.delegate.findUnique({
+  protected abstract get delegate(): TDelegate;
+
+  findOneById(id: string): DomainResultAsync<TDbModel | null, never> {
+    return this.findUniqueRecord({
       where: { id },
     });
-    return record ?? null;
   }
 
-  protected async safeCreate(
-    data: Parameters<TDelegate['create']>[0]['data'],
-  ): Promise<Result<TDbModel, EntityConflictError>> {
-    try {
-      const result = await this.delegate.create({ data });
-      return ok(result);
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        // Unique Constraint Violation
-        if (error.code === 'P2002') {
-          const targets = (error.meta?.target as string[]) || [];
-          const details = targets.map((field) => ({
-            field,
-            value: (data as Record<string, unknown>)[field],
-          }));
-
-          return err(
-            new EntityConflictError({
-              entityName: this.constructor.name.replace('Repository', ''),
-              conflicts: details,
-            }),
-          );
-        }
-      }
-
-      throw new UnexpectedPrismaErrorException(error);
-    }
+  protected findUniqueRecord(
+    args: Parameters<TDelegate['findUnique']>[0],
+  ): DomainResultAsync<TDbModel | null, never> {
+    return ResultAsync.fromPromise(this.delegate.findUnique({ ...args }), (error) => {
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'findUniqueRecord', error);
+    });
   }
 
-  protected async safeCreateMany(
-    data: Parameters<TDelegate['createMany']>[0]['data'],
-  ): Promise<Result<void, EntityConflictError>> {
-    try {
-      await this.delegate.createMany({
-        data,
-        skipDuplicates: true, // 필요에 따라 파라미터화 가능
-      });
-      return ok(undefined);
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        // Unique Constraint Violation
-        if (error.code === 'P2002') {
-          const targets = (error.meta?.target as string[]) || [];
-          const details = targets.map((field) => ({
-            field,
-            value: (data as Record<string, unknown>)[field],
-          }));
-
-          return err(
-            new EntityConflictError({
-              entityName: this.constructor.name.replace('Repository', ''),
-              conflicts: details,
-            }),
-          );
-        }
-      }
-
-      throw new UnexpectedPrismaErrorException(error);
-    }
-  }
-
-  protected async safeUpdate(
-    id: string,
-    data: Parameters<TDelegate['update']>[0]['data'],
-  ): Promise<Result<TDbModel, EntityNotFoundError | EntityConflictError>> {
-    try {
-      const result = await this.delegate.update({
-        where: { id },
-        data,
-      });
-      return ok(result);
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        // Unique Constraint Violation
-        if (error.code === 'P2002') {
-          const targets = (error.meta?.target as string[]) || [];
-          const details = targets.map((field) => ({
-            field,
-            value: (data as Record<string, unknown>)[field],
-          }));
-
-          return err(
-            new EntityConflictError({
-              entityName: this.constructor.name.replace('Repository', ''),
-              conflicts: details,
-            }),
-          );
-        }
-        // Record Not Found (update 대상 없음)
-        if (error.code === 'P2025') {
-          return err(
+  protected getUniqueRecord(
+    args: Parameters<TDelegate['findUnique']>[0] & {
+      where: Record<string, unknown>;
+    },
+  ): DomainResultAsync<TDbModel, EntityNotFoundError> {
+    return this.findUniqueRecord(args).andThen((record) =>
+      record
+        ? ok(record)
+        : err(
             new EntityNotFoundError({
-              entityName: this.constructor.name.replace('Repository', ''),
-              entityId: id,
+              entityName: this.entityName,
+              entityId: JSON.stringify(args.where),
             }),
-          );
+          ),
+    );
+  }
+
+  protected findFirstRecord(
+    args: Parameters<TDelegate['findFirst']>[0],
+  ): DomainResultAsync<TDbModel | null, never> {
+    return ResultAsync.fromPromise(this.delegate.findFirst({ ...args }), (error) => {
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'findFirstRecord', error);
+    });
+  }
+
+  protected getFirstRecord(
+    args: Parameters<TDelegate['findFirst']>[0] & {
+      where: Record<string, unknown>;
+    },
+  ): DomainResultAsync<TDbModel, EntityNotFoundError> {
+    return this.findFirstRecord(args).andThen((record) =>
+      record
+        ? ok(record)
+        : err(
+            new EntityNotFoundError({
+              entityName: this.entityName,
+              entityId: JSON.stringify(args.where),
+            }),
+          ),
+    );
+  }
+
+  protected findManyRecords(
+    args: Parameters<TDelegate['findMany']>[0],
+  ): DomainResultAsync<TDbModel[], never> {
+    return ResultAsync.fromPromise(this.delegate.findMany({ ...args }), (error) => {
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'findManyRecords', error);
+    });
+  }
+
+  protected findManyPaginatedRecords(
+    args: Omit<Parameters<TDelegate['findMany']>[0], 'skip' | 'take'>,
+    options: PaginationOptions,
+  ): DomainResultAsync<PaginatedResult<TDbModel>, never> {
+    const { skip, take } = getPaginationSkip(options);
+
+    return ResultAsync.fromPromise(
+      Promise.all([
+        this.delegate.findMany({
+          ...args,
+          skip,
+          take,
+        }),
+        this.delegate.count({
+          where: args.where,
+        }),
+      ]),
+      (error) => {
+        throw new UnexpectedPrismaErrorException(
+          this.constructor.name,
+          'findManyPaginatedRecords',
+          error,
+        );
+      },
+    ).map(([items, totalItems]) =>
+      createPaginatedResult({
+        items,
+        totalItems,
+        options,
+      }),
+    );
+  }
+
+  protected countRecords(
+    args: Parameters<TDelegate['count']>[0]['where'],
+  ): DomainResultAsync<number, never> {
+    return ResultAsync.fromPromise(this.delegate.count({ where: args }), (error) => {
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'countRecords', error);
+    });
+  }
+
+  protected existsRecord(
+    args: Parameters<TDelegate['count']>[0]['where'],
+  ): DomainResultAsync<boolean, never> {
+    return this.countRecords(args).map((count) => count > 0);
+  }
+
+  protected createRecord(
+    args: Parameters<TDelegate['create']>[0],
+  ): DomainResultAsync<TDbModel, EntityConflictError> {
+    return ResultAsync.fromPromise(this.delegate.create(args), (error) => {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        const conflictResult = this.handleP2002(args.data as Record<string, unknown>, error);
+        if (conflictResult) return conflictResult;
+      }
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'createRecord', error);
+    });
+  }
+
+  protected createManyRecords(
+    args: Parameters<TDelegate['createMany']>[0],
+  ): DomainResultAsync<void, EntityConflictError> {
+    return ResultAsync.fromPromise(this.delegate.createMany(args), (error) => {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        // Unique Constraint Violation (P2002)
+        if (error.code === 'P2002') {
+          const targets = (error.meta?.target as string[]) || [];
+
+          // Bulk Insert 실패 시, 구체적으로 어떤 레코드가 실패했는지 Prisma가 알려주지 않음
+          // 따라서 충돌 필드 정보만이라도 반환하도록 구성
+          const details = targets.map((field) => ({
+            field,
+            value: 'Batch insert conflict',
+          }));
+
+          return new EntityConflictError({
+            entityName: args.data[0]?.constructor.name || 'UnknownAggregate',
+            conflicts: details,
+          });
         }
       }
 
-      throw new UnexpectedPrismaErrorException(error);
-    }
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'createManyRecords', error);
+    }).map(() => undefined);
   }
 
-  protected async safeDelete(id: string): Promise<Result<void, EntityNotFoundError>> {
-    try {
-      await this.delegate.delete({
-        where: { id },
-      });
-      return ok(undefined);
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-        return err(
-          new EntityNotFoundError({
-            entityName: this.constructor.name.replace('Repository', ''),
-            entityId: id,
-          }),
-        );
+  protected updateRecord(
+    args: Parameters<TDelegate['update']>[0],
+  ): DomainResultAsync<TDbModel, EntityNotFoundError | EntityConflictError> {
+    return ResultAsync.fromPromise(this.delegate.update(args), (error) => {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        const notFoundResult = this.handleP2025(args.where.id as ModelId, error);
+        if (notFoundResult) return notFoundResult;
+
+        const conflictResult = this.handleP2002(args.data as Record<string, unknown>, error);
+        if (conflictResult) return conflictResult;
       }
-      throw new UnexpectedPrismaErrorException(error);
+
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'updateRecord', error);
+    });
+  }
+
+  protected updateManyRecords(
+    args: Parameters<TDelegate['updateMany']>[0],
+  ): DomainResultAsync<number, EntityConflictError> {
+    return ResultAsync.fromPromise(this.delegate.updateMany(args), (error) => {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        const conflictResult = this.handleP2002(args.data as Record<string, unknown>, error);
+        if (conflictResult) return conflictResult;
+      }
+
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'updateManyRecords', error);
+    }).map((result) => result.count);
+  }
+
+  protected deleteRecord(
+    args: Parameters<TDelegate['delete']>[0],
+  ): DomainResultAsync<void, EntityNotFoundError> {
+    return ResultAsync.fromPromise(this.delegate.delete(args), (error) => {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        const notFoundResult = this.handleP2025(args.where.id as ModelId, error);
+        if (notFoundResult) return notFoundResult;
+      }
+
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'deleteRecord', error);
+    }).map(() => undefined);
+  }
+
+  protected deleteManyRecords(
+    args: Parameters<TDelegate['deleteMany']>[0],
+  ): DomainResultAsync<number, never> {
+    return ResultAsync.fromPromise(this.delegate.deleteMany(args), (error) => {
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'deleteManyRecords', error);
+    }).map((result) => result.count);
+  }
+
+  protected handleP2002(
+    data: Record<string, unknown> | undefined,
+    error: Prisma.PrismaClientKnownRequestError,
+  ): EntityConflictError | undefined {
+    if (error.code === 'P2002') {
+      const targets = (error.meta?.target as string[]) || [];
+      const details = targets.map((field) => ({
+        field,
+        value: data ? data[field] : undefined,
+      }));
+
+      return new EntityConflictError({
+        entityName: this.entityName,
+        conflicts: details,
+      });
     }
   }
 
-  protected async safeDeleteMany(
-    where: Parameters<TDelegate['deleteMany']>[0]['where'],
-  ): Promise<Result<number, Error>> {
-    try {
-      const { count } = await this.delegate.deleteMany({ where });
-      return ok(count);
-    } catch (error) {
-      throw new UnexpectedPrismaErrorException(error);
+  protected handleP2025(
+    id: ModelId | undefined,
+    error: Prisma.PrismaClientKnownRequestError,
+  ): EntityNotFoundError | undefined {
+    if (error.code === 'P2025') {
+      return new EntityNotFoundError({
+        entityName: this.entityName,
+        entityId: id || undefined,
+      });
     }
-  }
-
-  protected async findById(id: string): Promise<TDbModel | null> {
-    const result = await this.delegate.findUnique({ where: { id } });
-    return result || null;
   }
 }

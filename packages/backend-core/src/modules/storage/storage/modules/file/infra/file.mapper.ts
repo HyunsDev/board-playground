@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
+import { FileId } from '@workspace/common';
 import { File, FileAccessType, FileStatus } from '@workspace/database';
 
 import { FileEntity, FileProps } from '../domain/file.entity';
@@ -10,7 +11,7 @@ import { BaseMapper } from '@/base/mappers/base.mapper';
 export class FileMapper extends BaseMapper<FileEntity, File> {
   toDomain(record: File): FileEntity {
     const props: FileProps = {
-      id: record.id,
+      id: record.id as FileId,
       key: record.key,
       bucket: record.bucket || null,
       mimeType: record.mimeType,
@@ -24,7 +25,8 @@ export class FileMapper extends BaseMapper<FileEntity, File> {
       accessType: record.accessType,
       originalName: record.originalName,
     };
-    return FileEntity.reconstruct(props);
+    const entity = FileEntity.reconstruct(props);
+    return entity;
   }
 
   toPersistence(entity: FileEntity): File {

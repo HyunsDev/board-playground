@@ -5,7 +5,8 @@ import { IntegrationEventLogData } from '../types';
 import { BaseIntegrationEvent } from '@/base';
 
 export const toIntegrationEventLogData = (
-  result: MeasureResult,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  result: MeasureResult<any, any>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   message: BaseIntegrationEvent<any>,
   handlerName: string,

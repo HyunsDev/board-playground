@@ -1,10 +1,11 @@
 import { z } from 'zod';
 
 import { paginatedResultSchemaOf, withPagination } from '@workspace/common';
+import { CommentIdSchema, PostIdSchema } from '@workspace/domain';
 
-import { CommandDtoSchema, CreateCommentDtoSchema, UpdateCommentDtoSchema } from './comment.dto';
+import { CommentDtoSchema, CreateCommentDtoSchema, UpdateCommentDtoSchema } from './comment.dto';
 
-import { ACCESS, ID } from '@/common';
+import { ACCESS } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';
 import { USER_ROLE } from '@/contracts/user';
 import { c } from '@/internal/c';
@@ -14,11 +15,11 @@ export const getComment = c.query({
   method: 'GET',
   path: '/comments/:commentId',
   pathParams: z.object({
-    commentId: ID,
+    commentId: CommentIdSchema,
   }),
   responses: {
     200: z.object({
-      comment: CommandDtoSchema,
+      comment: CommentDtoSchema,
     }),
     ...toApiErrorResponses([ApiErrors.Comment.NotFound]),
   },
@@ -32,11 +33,11 @@ export const listComments = c.query({
   path: '/comments',
   queryParams: withPagination(
     z.object({
-      postId: ID,
+      postId: PostIdSchema,
     }),
   ),
   responses: {
-    200: paginatedResultSchemaOf(CommandDtoSchema),
+    200: paginatedResultSchemaOf(CommentDtoSchema),
     ...toApiErrorResponses([ApiErrors.Post.NotFound]),
   },
   metadata: {
@@ -50,7 +51,7 @@ export const createComment = c.mutation({
   body: CreateCommentDtoSchema,
   responses: {
     200: z.object({
-      comment: CommandDtoSchema,
+      comment: CommentDtoSchema,
     }),
     ...toApiErrorResponses([ApiErrors.Comment.DepthExceeded, ApiErrors.Post.NotFound]),
   },
@@ -63,12 +64,12 @@ export const updateComment = c.mutation({
   method: 'PUT',
   path: '/comments/:commentId',
   pathParams: z.object({
-    commentId: ID,
+    commentId: CommentIdSchema,
   }),
   body: UpdateCommentDtoSchema,
   responses: {
     200: z.object({
-      comment: CommandDtoSchema,
+      comment: CommentDtoSchema,
     }),
     ...toApiErrorResponses([ApiErrors.Comment.NotFound, ApiErrors.Comment.PermissionDenied]),
   },
@@ -81,7 +82,7 @@ export const deleteComment = c.mutation({
   method: 'DELETE',
   path: '/comments/:commentId',
   pathParams: z.object({
-    commentId: ID,
+    commentId: CommentIdSchema,
   }),
   body: c.noBody(),
   responses: {

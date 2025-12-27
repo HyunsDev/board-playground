@@ -4,8 +4,10 @@ import { DeleteSessionCommandHandler } from './application/commands/delete-sessi
 import { SessionFacade } from './application/facades/session.facade';
 import { GetSessionQueryHandler } from './application/queries/get-session.query';
 import { ListSessionsQueryHandler } from './application/queries/list-sessions.query';
+import { RefreshTokenRepositoryPort } from './domain/refresh-token.repository.port';
 import { SessionRepositoryPort } from './domain/session.repository.port';
 import { RefreshTokenMapper } from './infra/refresh-token.mapper';
+import { RefreshTokenRepository } from './infra/refresh-token.repository';
 import { SessionMapper } from './infra/session.mapper';
 import { SessionRepository } from './infra/session.repository';
 import { SessionDtoMapper } from './interface/session.dto-mapper';
@@ -22,6 +24,10 @@ const repositories: Provider[] = [
   {
     provide: SessionRepositoryPort,
     useClass: SessionRepository,
+  },
+  {
+    provide: RefreshTokenRepositoryPort,
+    useClass: RefreshTokenRepository,
   },
 ];
 

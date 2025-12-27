@@ -34,7 +34,7 @@ export const DomainEventsHandler = (...events: MessageConstructor<BaseDomainEven
       return await measureAndLog({
         logType: LogTypeEnum.Event,
         message: message,
-        executor: async () => await originalMethod.apply(this, args),
+        executor: originalMethod.bind(this, ...args),
         toLogData: toEventLogData,
         handlerName: target.name,
         logger: logger,

@@ -1,9 +1,9 @@
-import { createPaginatedResult, PaginatedResult } from '@workspace/common';
+import { BrandId, createPaginatedResult, PaginatedResult } from '@workspace/common';
 
 import { AbstractEntity } from '@/blocks';
 
 export abstract class AbstractMapper<
-  Entity extends AbstractEntity<unknown>,
+  Entity extends AbstractEntity<unknown, BrandId>,
   DbRecord extends Record<string, unknown>,
 > {
   abstract toDomain(record: DbRecord): Entity;

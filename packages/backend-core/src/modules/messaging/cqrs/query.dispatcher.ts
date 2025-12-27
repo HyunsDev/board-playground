@@ -18,6 +18,6 @@ export class QueryDispatcher implements QueryDispatcherPort {
     query: TQuery,
   ): Promise<MessageResult<TQuery>> {
     query.updateMetadata(this.messageContext.getOrThrowDrivenMetadata());
-    return this.queryBus.execute<TQuery>(query);
+    return await this.queryBus.execute<TQuery>(query);
   }
 }

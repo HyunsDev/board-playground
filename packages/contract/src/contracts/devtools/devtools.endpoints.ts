@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { UserEmailSchema, UsernameSchema } from '@workspace/common';
+
 import { ApiErrors } from '../api-errors';
 
 import { ACCESS } from '@/common/access';
@@ -10,8 +12,8 @@ export const forceRegisterForDev = c.mutation({
   method: 'POST',
   path: '/_devtools/force-register',
   body: z.object({
-    email: z.email(),
-    username: z.string().min(3).max(30),
+    email: UserEmailSchema,
+    username: UsernameSchema,
     nickname: z.string().min(2).max(20),
   }),
   responses: {
@@ -33,7 +35,7 @@ export const forceLoginForDev = c.mutation({
   method: 'POST',
   path: '/_devtools/force-login',
   body: z.object({
-    email: z.email(),
+    email: UserEmailSchema,
   }),
   responses: {
     200: z.object({

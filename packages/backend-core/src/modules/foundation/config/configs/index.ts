@@ -5,4 +5,3 @@ export * from './prisma.config';
 export * from './redis.config';
 export * from './ssm.config';
 export * from './mailer.config';
-export * from './otel.config';

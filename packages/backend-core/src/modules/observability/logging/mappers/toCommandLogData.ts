@@ -5,7 +5,8 @@ import { CommandLogData } from '../types';
 import { BaseCommand } from '@/base';
 
 export const toCommandLogData = (
-  result: MeasureResult,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  result: MeasureResult<any, any>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   message: BaseCommand<any, any, any>,
   _handlerName: string,

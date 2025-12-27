@@ -1,6 +1,8 @@
 import { v7 as uuidv7 } from 'uuid';
 import { z } from 'zod';
 
+import { BrandId } from '@workspace/common';
+
 import {
   AbstractCreateMessageMetadata,
   AbstractDrivenMessageMetadata,
@@ -38,7 +40,7 @@ export abstract class AbstractMessage<
   MessageCodeType extends CausationCodeType = CausationCodeType,
   TProps extends AbstractMessageProps = AbstractMessageProps,
   TOk = unknown,
-  TRes extends DomainResult<TOk, DomainError> | void = DomainResult<TOk, DomainError> | void,
+  TRes extends DomainResult<TOk, DomainError> = DomainResult<TOk, DomainError>,
 > {
   declare readonly [RESULT_TYPE_SYMBOL]: TRes;
 
@@ -71,7 +73,7 @@ export abstract class AbstractMessage<
   }
 
   constructor(
-    resourceId: string | null,
+    resourceId: BrandId | null,
     data: TProps['data'],
     metadata?: AbstractCreateMessageMetadata<CausationCodeType, ResourceCodeType>,
     id?: string | null,

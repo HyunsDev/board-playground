@@ -7,3 +7,11 @@ export class InvalidCredentialsError extends BaseBadRequestError<'InvalidCredent
     super('Invalid credentials');
   }
 }
+
+export class InvalidEmailVerificationCodeError extends BaseBadRequestError<'InvalidEmailVerificationCode'> {
+  public readonly code = 'InvalidEmailVerificationCode';
+  public readonly scope = 'public';
+  constructor() {
+    super('유효하지 않은 이메일 인증 코드입니다');
+  }
+}

@@ -3,12 +3,13 @@ import {
   BaseDomainEventProps,
   DrivenMessageMetadata,
 } from '@workspace/backend-core';
+import { UserEmail, UserId, Username } from '@workspace/common';
 import { AggregateCodeEnum, asDomainEventCode } from '@workspace/domain';
 
 type IUserCreatedEvent = BaseDomainEventProps<{
-  userId: string;
-  email: string;
-  username: string;
+  userId: UserId;
+  email: UserEmail;
+  username: Username;
   nickname: string;
 }>;
 

@@ -29,6 +29,7 @@ export class DevtoolsController {
           nickname: body.nickname,
         }),
       );
+
       return result.match(
         (tokens) => apiOk(200, tokens),
         (error) =>
@@ -46,12 +47,9 @@ export class DevtoolsController {
   async forceLogin() {
     return tsRestHandler(contract.devtools.forceLogin, async ({ body }) => {
       const result = await this.commandDispatcher.execute(
-        new ForceLoginCommand(
-          {
-            email: body.email,
-          },
-          this.messageContext.createMetadata(TriggerCodeEnum.Http),
-        ),
+        new ForceLoginCommand({
+          email: body.email,
+        }),
       );
       return result.match(
         (tokens) => apiOk(200, tokens),
@@ -68,9 +66,7 @@ export class DevtoolsController {
   @Public()
   async resetDB() {
     return tsRestHandler(contract.devtools.resetDB, async () => {
-      const result = await this.commandDispatcher.execute(
-        new ResetDBCommand(undefined, this.messageContext.createMetadata(TriggerCodeEnum.Http)),
-      );
+      const result = await this.commandDispatcher.execute(new ResetDBCommand(undefined));
       return result.match(
         () => apiOk(200, undefined),
         () => apiOk(200, undefined),

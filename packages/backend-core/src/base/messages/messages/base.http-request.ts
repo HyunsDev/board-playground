@@ -4,10 +4,10 @@ import {
   AbstractHttpRequestProps,
   AbstractHttpRequest,
   DomainError,
-  DomainResult,
   RESULT_TYPE_SYMBOL,
+  DomainResult,
 } from '@workspace/backend-ddd';
-import { CausationCode, DomainCode, HttpRequestCode } from '@workspace/domain';
+import { CausationCode, DomainCode, HttpRequestCode, ModelId } from '@workspace/domain';
 
 import { DrivenMessageMetadata } from '../message-metadata';
 
@@ -57,24 +57,26 @@ export type BaseHttpRequestProps<T extends BaseHttpRequestData> = AbstractHttpRe
 export abstract class BaseHttpRequest<
   const TProps extends BaseHttpRequestProps<BaseHttpRequestData>,
   const TOk extends HttpRequestResponseData,
+  const TRes extends DomainResult<TOk, HttpRequestError> = DomainResult<TOk, HttpRequestError>,
 > extends AbstractHttpRequest<
   CausationCode,
   DomainCode,
   HttpRequestCode,
   TProps,
   TOk,
-  DomainResult<TOk, HttpRequestError>,
+  TRes,
   HttpRequestOptions
 > {
-  declare [RESULT_TYPE_SYMBOL]: DomainResult<TOk, HttpRequestError>;
+  declare [RESULT_TYPE_SYMBOL]: TRes;
   static readonly code: HttpRequestCode;
 
   constructor(
+    resourceId: ModelId | null,
     data: TProps['data'],
     metadata?: DrivenMessageMetadata,
     options?: HttpRequestOptions,
   ) {
-    super(null, data, metadata, options);
+    super(resourceId, data, metadata, options);
   }
 
   get options(): HttpRequestOptions {

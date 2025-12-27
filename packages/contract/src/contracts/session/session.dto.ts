@@ -1,12 +1,13 @@
 import { z } from 'zod';
 
+import { UserIdSchema } from '@workspace/common';
+import { SessionIdSchema } from '@workspace/domain';
+
 import { DevicePlatform, SessionStatus } from './session.enums';
 
-import { ID } from '@/common';
-
 export const SessionBaseDtoSchema = z.object({
-  id: ID,
-  userId: ID,
+  id: SessionIdSchema,
+  userId: UserIdSchema,
   name: z.string(),
   os: z.string(),
   device: z.string(),

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { withPagination, paginatedResultSchemaOf } from '@workspace/common';
+import { BoardSlugSchema } from '@workspace/domain';
 
 import { BoardDtoSchema, CreateBoardDtoSchema, UpdateBoardDtoSchema } from './board.dto';
 
@@ -13,7 +14,7 @@ export const getBoard = c.query({
   method: 'GET',
   path: '/boards/:boardSlug',
   pathParams: z.object({
-    boardSlug: z.string(),
+    boardSlug: BoardSlugSchema,
   }),
   responses: {
     200: z.object({
@@ -61,7 +62,7 @@ export const updateBoard = c.mutation({
   method: 'PATCH',
   path: '/boards/:boardSlug',
   pathParams: z.object({
-    boardSlug: z.string(),
+    boardSlug: BoardSlugSchema,
   }),
   body: UpdateBoardDtoSchema,
   responses: {
@@ -80,7 +81,7 @@ export const deleteBoard = c.mutation({
   path: '/boards/:boardSlug',
   body: c.noBody(),
   pathParams: z.object({
-    boardSlug: z.string(),
+    boardSlug: BoardSlugSchema,
   }),
   responses: {
     200: z.object({

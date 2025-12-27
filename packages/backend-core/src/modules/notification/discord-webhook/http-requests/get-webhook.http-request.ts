@@ -23,6 +23,6 @@ export class GetWebhookHttpRequest extends BaseHttpRequest<
   static readonly code = asHttpRequestCode('system:notification:web:get_webhook');
 
   constructor(url: string) {
-    super({ url, method: 'GET' });
+    super(null, { url, method: 'GET' });
   }
 }

@@ -2,17 +2,19 @@ import { err, ok } from 'neverthrow';
 import { v7 as uuidv7 } from 'uuid';
 
 import { BaseAggregateRoot, BaseEntityProps } from '@workspace/backend-core';
+import { UserEmail, UserId, Username } from '@workspace/common';
 import { USER_ROLE, USER_STATUS, UserRole, UserStatus } from '@workspace/contract';
 
+import { UserPasswordChangedEvent } from './events';
 import { UserCreatedEvent } from './events/user-created.event';
 import { UserUsernameChangedEvent } from './events/user-username-changed.event';
 import { UserPasswordVO } from './user-password.vo';
 import { UserAdminCannotBeDeletedError } from './user.domain-errors';
 
-export interface UserProps extends BaseEntityProps {
-  username: string;
+export interface UserProps extends BaseEntityProps<UserId> {
+  username: Username;
   nickname: string;
-  email: string;
+  email: UserEmail;
   bio: string | null;
   avatarUrl: string | null;
   role: UserRole;
@@ -24,21 +26,21 @@ export interface UserProps extends BaseEntityProps {
 }
 
 export interface CreateUserProps {
-  username: string;
+  username: Username;
   nickname: string;
-  email: string;
+  email: UserEmail;
   hashedPassword: string | null;
 }
 
-export class UserEntity extends BaseAggregateRoot<UserProps> {
+export class UserEntity extends BaseAggregateRoot<UserProps, UserId> {
   private constructor(props: UserProps) {
     super({
-      id: props.id || uuidv7(),
+      id: props.id || (uuidv7() as UserId),
       props,
     });
   }
 
-  get username(): string {
+  get username(): Username {
     return this.props.username;
   }
 
@@ -46,7 +48,7 @@ export class UserEntity extends BaseAggregateRoot<UserProps> {
     return this.props.nickname;
   }
 
-  get email(): string {
+  get email(): UserEmail {
     return this.props.email;
   }
 
@@ -59,7 +61,7 @@ export class UserEntity extends BaseAggregateRoot<UserProps> {
   }
 
   public static create(createProps: CreateUserProps): UserEntity {
-    const id = uuidv7();
+    const id = uuidv7() as UserId;
     const props: UserProps = {
       id,
       username: createProps.username,
@@ -101,9 +103,10 @@ export class UserEntity extends BaseAggregateRoot<UserProps> {
       this.props.bio = data.bio;
     }
     this.props.updatedAt = new Date();
+    return ok(this);
   }
 
-  public updateUsername(username: string) {
+  public updateUsername(username: Username) {
     this.props.username = username;
     this.props.updatedAt = new Date();
 
@@ -114,18 +117,29 @@ export class UserEntity extends BaseAggregateRoot<UserProps> {
         newUsername: username,
       }),
     );
+    return ok(this);
   }
 
-  public validateDelete() {
-    if (this.props.role === USER_ROLE.ADMIN) {
-      return err(new UserAdminCannotBeDeletedError());
-    }
-    return ok();
-  }
+  public changePassword(newHashedPassword: string) {
+    this.props.password = UserPasswordVO.fromHash(newHashedPassword);
+    this.props.updatedAt = new Date();
 
-  static reconstruct(props: UserProps): UserEntity {
-    return new UserEntity(props);
+    this.addEvent(
+      new UserPasswordChangedEvent({
+        userEmail: this.email,
+        userId: this.id,
+      }),
+    );
+    return ok(this);
   }
 
   public validate(): void {}
+
+  public delete() {
+    if (this.props.role === USER_ROLE.ADMIN) {
+      return err(new UserAdminCannotBeDeletedError());
+    }
+    this.props.deletedAt = new Date();
+    return ok(this.toDeleted());
+  }
 }

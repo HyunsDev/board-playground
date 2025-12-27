@@ -1,9 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { err, ok } from 'neverthrow';
+import { Injectable } from '@nestjs/common';
 import { v7 } from 'uuid';
 
 import { matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
-import { createPaginatedResult, PaginatedResult } from '@workspace/common';
 import { AuditLog, Prisma, PrismaClient } from '@workspace/database';
 
 import { AuditLogNotFoundError } from './audit-log.errors';
@@ -22,14 +20,14 @@ export class AuditLogRepository
     protected readonly prisma: PrismaService,
     protected readonly txContext: TransactionContext,
   ) {
-    super(prisma, txContext.txHost, new Logger(AuditLogRepository.name));
+    super(prisma, txContext);
   }
 
   protected get delegate(): PrismaClient['auditLog'] {
     return this.client.auditLog;
   }
 
-  async create(param: CreateAuditLogParam) {
+  create(param: CreateAuditLogParam) {
     const now = new Date();
     const item: Prisma.AuditLogCreateInput = {
       id: v7(),
@@ -44,18 +42,18 @@ export class AuditLogRepository
       occurredAt: param.occurredAt ?? now,
     };
 
-    return (await this.safeCreate(item)).match(
-      (result) => ok(result),
-      (error) =>
-        matchError(error, {
-          EntityConflict: (e) => {
-            throw new UnexpectedDomainErrorException(e);
-          },
-        }),
+    return this.createRecord({
+      data: item,
+    }).mapErr((e) =>
+      matchError(e, {
+        EntityConflict: (e) => {
+          throw new UnexpectedDomainErrorException(e);
+        },
+      }),
     );
   }
 
-  async createMany(params: CreateAuditLogParam[]) {
+  createMany(params: CreateAuditLogParam[]) {
     const now = new Date();
     const items: Prisma.AuditLogCreateInput[] = params.map((param) => ({
       id: v7(),
@@ -70,53 +68,42 @@ export class AuditLogRepository
       occurredAt: param.occurredAt ?? now,
     }));
 
-    await this.safeCreateMany(items);
-
-    return ok(undefined);
+    return this.createManyRecords({
+      data: items,
+    })
+      .mapErr((e) =>
+        matchError(e, {
+          EntityConflict: (e) => {
+            throw new UnexpectedDomainErrorException(e);
+          },
+        }),
+      )
+      .map(() => undefined);
   }
 
-  async getOneById(id: string) {
-    const record = await this.delegate.findUnique({
-      where: { id },
-    });
-    if (!record) {
-      return err(new AuditLogNotFoundError(id));
-    }
-    return ok(record);
-  }
-
-  async findMany(query: AuditLogQueryParam): Promise<PaginatedResult<AuditLog>> {
-    const where = this.buildWhereInput(query);
-    const { page, limit } = query;
-
-    const [items, totalItems] = await Promise.all([
-      this.delegate.findMany({
-        where,
-        take: limit,
-        skip: (page - 1) * limit,
-        orderBy: { occurredAt: 'desc' }, // 최신순 기본 정렬
+  getOneById(id: string) {
+    return this.getUniqueRecord({ where: { id } }).mapErr((e) =>
+      matchError(e, {
+        EntityNotFound: () => new AuditLogNotFoundError(id),
       }),
-      this.delegate.count({ where }),
-    ]);
+    );
+  }
 
-    return createPaginatedResult({
-      items,
-      totalItems: totalItems,
-      options: {
-        page,
-        limit,
+  findMany(query: AuditLogQueryParam) {
+    return this.findManyPaginatedRecords(
+      {
+        where: this.buildWhereInput(query),
       },
-    });
+      query,
+    );
   }
 
-  async count(filter: AuditLogFilterOptions): Promise<number> {
-    return this.delegate.count({
-      where: this.buildWhereInput(filter),
-    });
+  count(filter: AuditLogFilterOptions) {
+    return this.countRecords(this.buildWhereInput(filter));
   }
 
-  async findRetentionCandidates(olderThan: Date, limit: number): Promise<AuditLog[]> {
-    return this.delegate.findMany({
+  findRetentionCandidates(olderThan: Date, limit: number) {
+    return this.findManyRecords({
       where: {
         occurredAt: {
           lt: olderThan,

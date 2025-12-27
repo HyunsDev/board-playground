@@ -1,11 +1,12 @@
 import { z } from 'zod';
 
-import { ManagerWithBoardDtoSchema, ManagerWithUserDtoSchema } from './manager.dto';
-import { ManagerRole } from './manager.enums';
+import { UserEmailSchema, UserIdSchema } from '@workspace/common';
+import { BoardSlugSchema } from '@workspace/domain';
 
-import { ACCESS, ID } from '@/common';
+import { ManagerWithBoardDtoSchema, ManagerWithUserDtoSchema } from './manager.dto';
+
+import { ACCESS } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';
-import { BoardSlug } from '@/contracts/board/board.schemas';
 import { c } from '@/internal/c';
 import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
 
@@ -13,7 +14,7 @@ export const listManagersOfBoard = c.query({
   method: 'GET',
   path: '/boards/:boardSlug/managers',
   pathParams: z.object({
-    boardSlug: BoardSlug,
+    boardSlug: BoardSlugSchema,
   }),
   responses: {
     200: z.object({
@@ -30,7 +31,7 @@ export const listManagerOfMe = c.query({
   method: 'GET',
   path: '/me/managers',
   pathParams: z.object({
-    userId: ID,
+    userId: UserIdSchema,
   }),
   responses: {
     200: z.object({
@@ -47,17 +48,21 @@ export const appointManagerToBoard = c.mutation({
   method: 'POST',
   path: '/boards/:boardSlug/managers',
   pathParams: z.object({
-    boardSlug: BoardSlug,
+    boardSlug: BoardSlugSchema,
   }),
   body: z.object({
-    userId: ID,
+    targetUserEmail: UserEmailSchema,
   }),
   responses: {
     200: z.object({
       manager: ManagerWithUserDtoSchema,
     }),
-    ...toApiErrorResponses([ApiErrors.Manager.Forbidden]),
-    ...toApiErrorResponses([ApiErrors.Board.NotFound, ApiErrors.User.NotFound]),
+    ...toApiErrorResponses([
+      ApiErrors.Manager.NotMainManager,
+      ApiErrors.Board.NotFound,
+      ApiErrors.User.NotFound,
+      ApiErrors.Manager.AlreadyManager,
+    ]),
   },
   metadata: {
     ...ACCESS.signedIn,
@@ -69,13 +74,13 @@ export const dismissManagerFromBoard = c.mutation({
   path: '/boards/:boardSlug/managers/:userId',
   body: c.noBody(),
   pathParams: z.object({
-    boardSlug: BoardSlug,
-    userId: ID,
+    boardSlug: BoardSlugSchema,
+    userId: UserIdSchema,
   }),
   responses: {
     204: c.noBody(),
     ...toApiErrorResponses([
-      ApiErrors.Manager.Forbidden,
+      ApiErrors.Manager.NotMainManager,
       ApiErrors.Board.NotFound,
       ApiErrors.User.NotFound,
       ApiErrors.Manager.NotFound,
@@ -86,22 +91,20 @@ export const dismissManagerFromBoard = c.mutation({
   },
 });
 
-export const changeManagerRole = c.mutation({
+export const transferMainManager = c.mutation({
   method: 'PATCH',
-  path: '/boards/:boardSlug/managers/:userId/role',
+  path: '/boards/:boardSlug/managers/:userId/transfer-main-manager',
   pathParams: z.object({
-    boardSlug: BoardSlug,
-    userId: ID,
+    boardSlug: BoardSlugSchema,
+    userId: UserIdSchema,
   }),
-  body: z.object({
-    role: ManagerRole,
-  }),
+  body: c.noBody(),
   responses: {
     200: z.object({
       manager: ManagerWithUserDtoSchema,
     }),
     ...toApiErrorResponses([
-      ApiErrors.Manager.Forbidden,
+      ApiErrors.Manager.NotMainManager,
       ApiErrors.Board.NotFound,
       ApiErrors.User.NotFound,
       ApiErrors.Manager.NotFound,

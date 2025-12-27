@@ -4,16 +4,17 @@ import { HandlerResult } from '@workspace/backend-common';
 import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import { DrivenMessageMetadata, TransactionManager } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
-import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
+import { UserId } from '@workspace/common';
+import { AggregateCodeEnum, asCommandCode, SessionId } from '@workspace/domain';
 
 import { CurrentSessionCannotBeDeletedError } from '../../domain/session.domain-errors';
 
 import { SessionRepositoryPort } from '@/domains/session/domain/session.repository.port';
 
 type IDeleteSessionCommand = BaseCommandProps<{
-  sessionId: string;
-  userId: string;
-  currentSessionId: string;
+  sessionId: SessionId;
+  userId: UserId;
+  currentSessionId: SessionId;
 }>;
 
 export class DeleteSessionCommand extends BaseCommand<
@@ -24,7 +25,7 @@ export class DeleteSessionCommand extends BaseCommand<
   static readonly code = asCommandCode('account:session:cmd:delete');
   readonly resourceType = AggregateCodeEnum.Account.Session;
 
-  constructor(data: IDeleteSessionCommand['data'], metadata: DrivenMessageMetadata) {
+  constructor(data: IDeleteSessionCommand['data'], metadata?: DrivenMessageMetadata) {
     super(data.sessionId, data, metadata);
   }
 }

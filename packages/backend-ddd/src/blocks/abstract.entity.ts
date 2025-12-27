@@ -1,23 +1,25 @@
-export interface AbstractEntityProps {
-  id: string;
+import { BrandId } from '@workspace/common';
+
+export interface AbstractEntityProps<TId extends BrandId> {
+  id: TId;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface AbstractCreateEntityProps<T> {
-  id: string;
+export interface AbstractCreateEntityProps<T, TId extends BrandId> {
+  id: TId;
   props: T;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-export abstract class AbstractEntity<TProps> {
-  protected _id: string;
+export abstract class AbstractEntity<TProps, TId extends BrandId> {
+  protected _id: TId;
   protected readonly props: TProps;
   protected readonly _createdAt: Date;
   protected _updatedAt: Date;
 
-  constructor({ id, props, createdAt, updatedAt }: AbstractCreateEntityProps<TProps>) {
+  constructor({ id, props, createdAt, updatedAt }: AbstractCreateEntityProps<TProps, TId>) {
     this._id = id;
     const now = new Date();
     this._createdAt = createdAt || now;
@@ -27,7 +29,7 @@ export abstract class AbstractEntity<TProps> {
     this.validate();
   }
 
-  get id(): string {
+  get id(): TId {
     return this._id;
   }
 
@@ -39,7 +41,7 @@ export abstract class AbstractEntity<TProps> {
     return this._updatedAt;
   }
 
-  getProps(): TProps & AbstractEntityProps {
+  getProps(): TProps & AbstractEntityProps<TId> {
     const propsCopy = {
       id: this._id,
       createdAt: this._createdAt,
@@ -49,7 +51,7 @@ export abstract class AbstractEntity<TProps> {
     return Object.freeze(propsCopy);
   }
 
-  equals(object?: AbstractEntity<TProps>): boolean {
+  equals(object?: AbstractEntity<TProps, TId>): boolean {
     if (object === null || object === undefined) {
       return false;
     }
@@ -62,9 +64,18 @@ export abstract class AbstractEntity<TProps> {
     return this.id ? this.id === object.id : false;
   }
 
-  static isEntity(entity: unknown): entity is AbstractEntity<unknown> {
+  static isEntity(entity: unknown): entity is AbstractEntity<unknown, BrandId> {
     return entity instanceof AbstractEntity;
   }
 
   abstract validate(): void;
+
+  static reconstruct<TProps, TId extends BrandId, TEntity extends AbstractEntity<TProps, TId>>(
+    this: { prototype: TEntity },
+    props: TProps,
+  ): TEntity {
+    const ctor = this as unknown as new (props: TProps) => TEntity;
+    const instance = new ctor(props);
+    return instance;
+  }
 }

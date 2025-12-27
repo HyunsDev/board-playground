@@ -1,21 +1,18 @@
 import { z } from 'zod';
 
-import { BoardSlug } from './board.schemas';
-
-import { ID } from '@/common';
+import { BoardIdSchema, BoardSlugSchema } from '@workspace/domain';
 
 export const BoardDtoSchema = z.object({
-  id: ID,
-  slug: BoardSlug,
+  id: BoardIdSchema,
+  slug: BoardSlugSchema,
   name: z.string().min(3).max(50),
   description: z.string().max(200).nullable(),
-  managerId: ID,
   createdAt: z.iso.datetime(),
 });
 export type BoardDto = z.infer<typeof BoardDtoSchema>;
 
 export const CreateBoardDtoSchema = z.object({
-  slug: BoardSlug,
+  slug: BoardSlugSchema,
   name: z.string().min(3).max(50),
   description: z.string().max(200).nullable(),
 });

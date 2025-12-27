@@ -3,8 +3,10 @@ import { UAParser } from 'ua-parser-js';
 import { v7 as uuidv7 } from 'uuid';
 
 import { BaseAggregateRoot, BaseEntityProps } from '@workspace/backend-core';
-import { matchError, typedOk } from '@workspace/backend-ddd';
+import { EntityCollection, matchError, typedOk } from '@workspace/backend-ddd';
+import { UserId } from '@workspace/common';
 import { DevicePlatform, SESSION_STATUS, SessionStatus } from '@workspace/contract';
+import { SessionId } from '@workspace/domain';
 
 import { RefreshTokenReuseDetectedEvent } from './events/refresh-token-reuse-detected.event';
 import { SessionCreatedEvent } from './events/session-created.event';
@@ -14,8 +16,8 @@ import { RefreshTokenEntity } from './refresh-token.entity';
 import { SessionClosedError, SessionRevokedError } from './session.domain-errors';
 import { InvalidRefreshTokenError } from './token.domain-errors';
 
-export interface SessionProps extends BaseEntityProps {
-  userId: string;
+export interface SessionProps extends BaseEntityProps<SessionId> {
+  userId: UserId;
   name: string;
   userAgent: string;
   os: string;
@@ -30,11 +32,11 @@ export interface SessionProps extends BaseEntityProps {
   closedAt: Date | null;
   revokedAt: Date | null;
   status: SessionStatus;
-  refreshTokens: RefreshTokenEntity[]; // 전체 토큰이 아닌 관련된 토큰만 Lazy Load
+  refreshTokenCollection: EntityCollection<RefreshTokenEntity>;
 }
 
 export interface CreateSessionProps {
-  userId: string;
+  userId: UserId;
   userAgent: string;
   platform: DevicePlatform;
   ipAddress: string;
@@ -42,16 +44,16 @@ export interface CreateSessionProps {
   expiresAt: Date;
 }
 
-export class SessionEntity extends BaseAggregateRoot<SessionProps> {
+export class SessionEntity extends BaseAggregateRoot<SessionProps, SessionId> {
   private constructor(props: SessionProps) {
     super({
-      id: props.id || uuidv7(),
+      id: props.id || (uuidv7() as SessionId),
       props,
     });
   }
 
   public static create(createProps: CreateSessionProps): SessionEntity {
-    const id = uuidv7();
+    const id = uuidv7() as SessionId;
     const userAgentResult = new UAParser(createProps.userAgent).getResult();
     const props: SessionProps = {
       id,
@@ -70,13 +72,13 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps> {
       updatedAt: new Date(),
       closedAt: null,
       revokedAt: null,
-      refreshTokens: [
+      refreshTokenCollection: EntityCollection.fromArray([
         RefreshTokenEntity.create({
           token: createProps.refreshTokenHash,
-          expiresAt: createProps.expiresAt, // 30 days
+          expiresAt: createProps.expiresAt,
           sessionId: id,
         }),
-      ],
+      ]),
     };
     const session = new SessionEntity(props);
 
@@ -91,8 +93,12 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps> {
     return session;
   }
 
-  get userId(): string {
+  get userId(): UserId {
     return this.props.userId;
+  }
+
+  get isActive(): boolean {
+    return this.props.status === SESSION_STATUS.ACTIVE;
   }
 
   public rotateRefreshToken({
@@ -112,7 +118,9 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps> {
       return err(new SessionClosedError());
     }
 
-    const currentToken = this.props.refreshTokens.find((t) => t.token === currentTokenHash);
+    const currentToken = this.props.refreshTokenCollection.find(
+      (t) => t.token === currentTokenHash,
+    );
     if (!currentToken) {
       return err(new InvalidRefreshTokenError());
     }
@@ -143,7 +151,7 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps> {
       sessionId: this.id,
     });
 
-    this.props.refreshTokens = [...this.props.refreshTokens, newToken];
+    void this.props.refreshTokenCollection.add(newToken);
     this.props.lastRefreshedAt = new Date();
     this.props.expiresAt = expiresAt;
 
@@ -171,10 +179,10 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps> {
 
     this.props.status = SESSION_STATUS.CLOSED;
     this.props.closedAt = new Date();
-    return ok(null);
+    return ok(this);
   }
 
-  public delete(): void {
+  public delete() {
     this.addEvent(
       new SessionDeletedEvent({
         userId: this.props.userId,
@@ -182,15 +190,13 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps> {
         sessionName: this.props.name,
       }),
     );
+
+    return ok(this.toDeleted());
   }
 
   private revoke(): void {
     this.props.status = SESSION_STATUS.REVOKED;
     this.props.revokedAt = new Date();
-  }
-
-  static reconstruct(props: SessionProps): SessionEntity {
-    return new SessionEntity(props);
   }
 
   public validate() {}

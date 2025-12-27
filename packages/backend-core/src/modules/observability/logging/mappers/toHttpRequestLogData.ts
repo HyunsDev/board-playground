@@ -1,5 +1,3 @@
-import { MessageResult } from '@workspace/backend-ddd';
-
 import { MeasureResult } from '../instrumentations/instrumentation.types';
 import { LogTypeEnum } from '../log.enums';
 import { HttpRequestLogData } from '../types';
@@ -8,7 +6,8 @@ import { BaseHttpRequest } from '@/base';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const toHttpRequestLogData = <TMessage extends BaseHttpRequest<any, any>>(
-  result: MeasureResult<MessageResult<TMessage>>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  result: MeasureResult<any, any>,
   message: TMessage,
 ): HttpRequestLogData => {
   if (result.result === 'Success') {

@@ -1,7 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { err, ok } from 'neverthrow';
+import { Injectable } from '@nestjs/common';
 
-import { DomainResult, matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
+import {
+  DeletedAggregate,
+  matchError,
+  UnexpectedDomainErrorException,
+} from '@workspace/backend-ddd';
+import { FileId } from '@workspace/common';
 import { File, PrismaClient } from '@workspace/database';
 
 import { FileMapper } from './file.mapper';
@@ -15,83 +19,76 @@ import { TransactionContext } from '@/modules/foundation/context';
 import { PrismaService } from '@/modules/persistence/database';
 
 @Injectable()
-export class FileRepository extends BaseRepository<FileEntity, File> implements FileRepositoryPort {
+export class FileRepository
+  extends BaseRepository<FileEntity, File, PrismaClient['file']>
+  implements FileRepositoryPort
+{
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly txContext: TransactionContext,
     protected readonly mapper: FileMapper,
     protected readonly eventPublisher: DomainEventPublisherPort,
   ) {
-    super(prisma, txContext, mapper, eventPublisher, new Logger(FileRepository.name));
+    super(prisma, txContext, mapper, eventPublisher);
   }
 
   protected get delegate(): PrismaClient['file'] {
     return this.client.file;
   }
 
-  async findOneByKey(key: string): Promise<FileEntity | null> {
-    const record = await this.delegate.findFirst({
+  findOneByKey(key: string) {
+    return this.findUniqueEntity({
       where: { key },
     });
-    if (!record) {
-      return null;
-    }
-    return this.mapper.toDomain(record);
   }
 
-  async getOneById(id: string): Promise<DomainResult<FileEntity, FileNotFoundError>> {
-    const result = await this.findOneById(id);
-    if (!result) {
-      return err(new FileNotFoundError());
-    }
-    return ok(result);
-  }
-
-  async create(file: FileEntity): Promise<DomainResult<FileEntity, FileAlreadyExistsError>> {
-    return (await this.createEntity(file)).match(
-      (file) => ok(file),
-      (error) =>
-        matchError(error, {
-          EntityConflict: (e) => {
-            if (e.details?.conflicts.some((conflict) => conflict.field === 'key')) {
-              return err(new FileAlreadyExistsError('File with the same key already exists.'));
-            }
-            throw new UnexpectedDomainErrorException(e);
-          },
-        }),
+  getOneById(id: FileId) {
+    return this.getUniqueEntity({
+      where: { id },
+    }).mapErr((error) =>
+      matchError(error, {
+        EntityNotFound: () => new FileNotFoundError(),
+      }),
     );
   }
 
-  async update(
-    file: FileEntity,
-  ): Promise<DomainResult<FileEntity, FileNotFoundError | FileAlreadyExistsError>> {
-    return (await this.updateEntity(file)).match(
-      (file) => ok(file),
-      (error) =>
-        matchError(error, {
-          EntityNotFound: () => err(new FileNotFoundError()),
-          EntityConflict: (e) => {
-            if (e.details?.conflicts.some((conflict) => conflict.field === 'key')) {
-              return err(new FileAlreadyExistsError('File with the same key already exists.'));
-            }
-            throw new UnexpectedDomainErrorException(e);
-          },
-        }),
+  create(file: FileEntity) {
+    return this.createEntity(file).mapErr((error) =>
+      matchError(error, {
+        EntityConflict: (e) => {
+          if (e.details?.conflicts.some((conflict) => conflict.field === 'key')) {
+            return new FileAlreadyExistsError('File with the same key already exists.');
+          }
+          throw new UnexpectedDomainErrorException(e);
+        },
+      }),
     );
   }
 
-  async delete(file: FileEntity): Promise<DomainResult<void, FileNotFoundError>> {
-    return (await this.deleteEntity(file)).match(
-      () => ok(undefined),
-      (error) =>
-        matchError(error, {
-          EntityNotFound: () => err(new FileNotFoundError()),
-        }),
+  update(file: FileEntity) {
+    return this.updateEntity(file).mapErr((error) =>
+      matchError(error, {
+        EntityNotFound: () => new FileNotFoundError(),
+        EntityConflict: (e) => {
+          if (e.details?.conflicts.some((conflict) => conflict.field === 'key')) {
+            return new FileAlreadyExistsError('File with the same key already exists.');
+          }
+          throw new UnexpectedDomainErrorException(e);
+        },
+      }),
     );
   }
 
-  async findOrphans(limit: number, retentionThreshold: Date): Promise<FileEntity[]> {
-    const records = await this.delegate.findMany({
+  delete(file: DeletedAggregate<FileEntity>) {
+    return this.deleteEntity(file).mapErr((error) =>
+      matchError(error, {
+        EntityNotFound: () => new FileNotFoundError(),
+      }),
+    );
+  }
+
+  findOrphans(limit: number, retentionThreshold: Date) {
+    return this.findManyEntities({
       where: {
         references: {
           none: {},
@@ -102,11 +99,10 @@ export class FileRepository extends BaseRepository<FileEntity, File> implements 
       },
       take: limit,
     });
-    return records.map((record) => this.mapper.toDomain(record));
   }
 
-  async deleteManyDirectly(ids: string[]): Promise<void> {
-    await this.delegate.deleteMany({
+  deleteManyDirectly(ids: FileId[]) {
+    return this.deleteManyEntitiesDirectly({
       where: {
         id: {
           in: ids,

@@ -1,8 +1,13 @@
-import { createPaginatedResult, PaginatedResult, PaginationMetadata } from '@workspace/common';
+import {
+  BrandId,
+  createPaginatedResult,
+  PaginatedResult,
+  PaginationMetadata,
+} from '@workspace/common';
 
 import { AbstractEntity } from '@/blocks';
 
-export abstract class AbstractDtoMapper<E extends AbstractEntity<unknown>> {
+export abstract class AbstractDtoMapper<E extends AbstractEntity<unknown, BrandId>> {
   protected mapNullable<Dto>(entity: E | null, mapFn: (entity: E) => Dto): Dto | null {
     if (!entity) return null;
     return mapFn(entity);

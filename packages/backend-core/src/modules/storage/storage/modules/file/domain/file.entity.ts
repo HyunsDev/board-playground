@@ -3,6 +3,8 @@ import path from 'path';
 import { err, ok } from 'neverthrow';
 import { v7 as uuidv7 } from 'uuid';
 
+import { FileId } from '@workspace/common';
+
 import { FILE_ACCESS_TYPE, FILE_STATUS, FileAccessType, FileStatus } from './file.enums';
 import { InvalidFileError } from './file.errors';
 import { FileMetadataResult } from './file.storage.port';
@@ -10,7 +12,7 @@ import { FileMetadataResult } from './file.storage.port';
 import { BaseAggregateRoot } from '@/base/blocks/base.aggregate-root';
 import { BaseEntityProps } from '@/base/blocks/base.entity';
 
-export interface FileProps extends BaseEntityProps {
+export interface FileProps extends BaseEntityProps<FileId> {
   key: string;
   bucket: string | null;
   mimeType: string;
@@ -37,12 +39,13 @@ const AccessTypeKeyMap = {
   [FILE_ACCESS_TYPE.PUBLIC]: 'public',
 };
 
-export class FileEntity extends BaseAggregateRoot<FileProps> {
-  private constructor(props: FileProps) {
+export class FileEntity extends BaseAggregateRoot<FileProps, FileId> {
+  protected constructor(props: FileProps) {
     super({
       id: props.id,
       props,
     });
+    return this;
   }
 
   get id() {
@@ -62,7 +65,7 @@ export class FileEntity extends BaseAggregateRoot<FileProps> {
   }
 
   static create({ originalName, accessType, mimeType, uploaderId, size }: CreateFileProps) {
-    const id = uuidv7();
+    const id = uuidv7() as FileId;
 
     // 유효성 검사 예시
     if (!mimeType || !mimeType.includes('/')) {
@@ -136,9 +139,9 @@ export class FileEntity extends BaseAggregateRoot<FileProps> {
     }
   }
 
-  static reconstruct(props: FileProps): FileEntity {
-    return new FileEntity(props);
-  }
+  validate() {}
 
-  validate(): void {}
+  delete() {
+    return ok(this.toDeleted());
+  }
 }

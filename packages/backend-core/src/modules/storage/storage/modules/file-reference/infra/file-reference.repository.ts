@@ -1,19 +1,25 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { TransactionHost } from '@nestjs-cls/transactional';
-import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
+import { Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 import { v7 } from 'uuid';
 
-import { DomainResult, matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
+import {
+  DomainResultAsync,
+  matchError,
+  UnexpectedDomainErrorException,
+} from '@workspace/backend-ddd';
+import { FileId } from '@workspace/common';
 import { FileReference, PrismaClient } from '@workspace/database';
+import { ModelId } from '@workspace/domain';
 
 import { FileReferenceNotFoundError } from '../domain/file-reference.errors';
 import {
   CreateFileReferenceParam,
+  ExistsFileReferenceParam,
   FileReferenceRepositoryPort,
 } from '../domain/file-reference.repository.port';
 
 import { BaseDirectRepository } from '@/base';
+import { TransactionContext } from '@/modules/foundation';
 import { PrismaService } from '@/modules/persistence/database';
 
 @Injectable()
@@ -23,46 +29,44 @@ export class FileReferenceRepository
 {
   constructor(
     protected readonly prisma: PrismaService,
-    protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+    protected readonly txContext: TransactionContext,
   ) {
-    super(prisma, txHost, new Logger(FileReferenceRepository.name));
+    super(prisma, txContext);
   }
 
   protected get delegate(): PrismaClient['fileReference'] {
     return this.client.fileReference;
   }
 
-  async getOneById(id: string) {
-    const record = await this.delegate.findUnique({
+  getOneById(id: string) {
+    return this.getUniqueRecord({
       where: { id },
+    }).mapErr((error) => {
+      return matchError(error, {
+        EntityNotFound: () => new FileReferenceNotFoundError(),
+      });
     });
-    if (!record) {
-      return err(new FileReferenceNotFoundError());
-    }
-    return ok(record);
   }
 
-  async create(param: CreateFileReferenceParam) {
+  create(param: CreateFileReferenceParam) {
     const now = new Date();
-    const item: FileReference = {
-      id: v7(),
-      createdAt: now,
-      updatedAt: now,
-      ...param,
-    };
-
-    return (await this.safeCreate(item)).match(
-      (result) => ok(result),
-      (error) =>
-        matchError(error, {
-          EntityConflict: (e) => {
-            throw new UnexpectedDomainErrorException(e);
-          },
-        }),
+    return this.createRecord({
+      data: {
+        id: v7(),
+        createdAt: now,
+        updatedAt: now,
+        ...param,
+      },
+    }).mapErr((error) =>
+      matchError(error, {
+        EntityConflict: (e) => {
+          throw new UnexpectedDomainErrorException(e);
+        },
+      }),
     );
   }
 
-  async createMany(params: CreateFileReferenceParam[]) {
+  createMany(params: CreateFileReferenceParam[]) {
     const now = new Date();
     const items: FileReference[] = params.map((param) => ({
       id: v7(),
@@ -72,79 +76,48 @@ export class FileReferenceRepository
       targetType: param.targetType,
       targetId: param.targetId,
     }));
-
-    return (await this.safeCreateMany(items)).match(
-      () => ok(undefined),
-      (error) =>
-        matchError(error, {
-          EntityConflict: (e) => {
-            throw new UnexpectedDomainErrorException(e);
-          },
-        }),
+    return this.createManyRecords({
+      data: items,
+    }).mapErr((error) =>
+      matchError(error, {
+        EntityConflict: (e) => {
+          throw new UnexpectedDomainErrorException(e);
+        },
+      }),
     );
   }
 
-  async deleteById(id: string): Promise<DomainResult<void, FileReferenceNotFoundError>> {
-    return (await this.safeDelete(id)).match(
-      () => ok(undefined),
-      (error) =>
-        matchError(error, {
-          EntityNotFound: () => err(new FileReferenceNotFoundError()),
-        }),
-    );
-  }
-
-  async deleteByFileIdAndTarget(
-    fileId: string,
-    targetType: string,
-    targetId: string,
-  ): Promise<DomainResult<void, FileReferenceNotFoundError>> {
-    const deleteCount = await this.delegate.deleteMany({
+  deleteByFileIdAndTarget(fileId: FileId, targetType: string, targetId: ModelId) {
+    return this.deleteManyRecords({
       where: {
         fileId,
         targetType,
         targetId,
       },
+    }).andThen((deletedCount) => {
+      if (deletedCount === 0) {
+        return err(new FileReferenceNotFoundError());
+      }
+      return ok(undefined);
     });
-
-    if (deleteCount.count === 0) {
-      return err(new FileReferenceNotFoundError());
-    }
-
-    return ok(undefined);
   }
 
-  async deleteByTarget(targetType: string, targetId: string): Promise<DomainResult<void, never>> {
-    await this.delegate.deleteMany({
+  deleteByTarget(targetType: string, targetId: string) {
+    return this.deleteManyRecords({
       where: {
         targetType,
         targetId,
       },
-    });
-    return ok(undefined);
+    }).map(() => undefined);
   }
 
-  async checkExistenceByFileIdAndTarget(
-    fileId: string,
-    targetType: string,
-    targetId: string,
-  ): Promise<boolean> {
-    const count = await this.delegate.count({
+  exists(params: ExistsFileReferenceParam): DomainResultAsync<boolean, never> {
+    return this.existsRecord({
       where: {
-        fileId,
-        targetType,
-        targetId,
+        fileId: params.fileId,
+        targetType: params.targetType,
+        targetId: params.targetId,
       },
     });
-    return count > 0;
-  }
-
-  async checkExistenceByFileId(fileId: string): Promise<boolean> {
-    const count = await this.delegate.count({
-      where: {
-        fileId,
-      },
-    });
-    return count > 0;
   }
 }

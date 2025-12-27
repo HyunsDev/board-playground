@@ -1,18 +1,13 @@
 import { HandlerResult } from '@workspace/backend-common';
-import {
-  BaseQuery,
-  BaseQueryProps,
-  DrivenMessageMetadata,
-  IQueryHandler,
-  QueryHandler,
-} from '@workspace/backend-core';
+import { BaseQuery, BaseQueryProps, IQueryHandler, QueryHandler } from '@workspace/backend-core';
+import { UserId } from '@workspace/common';
 import { asQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserEntity } from '../../../domain/user.entity';
 import { UserRepositoryPort } from '../../../domain/user.repository.port';
 
 type IGetUserForAdminQuery = BaseQueryProps<{
-  userId: string;
+  userId: UserId;
 }>;
 export class GetUserForAdminQuery extends BaseQuery<
   IGetUserForAdminQuery,
@@ -22,8 +17,8 @@ export class GetUserForAdminQuery extends BaseQuery<
   static readonly code = asQueryCode('account:user:qry:get_for_admin');
   readonly resourceType = DomainCodeEnums.Account.User;
 
-  constructor(data: IGetUserForAdminQuery['data'], metadata: DrivenMessageMetadata) {
-    super(data.userId, data, metadata);
+  constructor(data: IGetUserForAdminQuery['data']) {
+    super(data.userId, data);
   }
 }
 

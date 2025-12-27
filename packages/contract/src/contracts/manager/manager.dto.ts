@@ -1,14 +1,17 @@
 import { z } from 'zod';
 
+import { UserIdSchema } from '@workspace/common';
+import { BoardIdSchema, ManagerIdSchema } from '@workspace/domain';
+
 import { ManagerRole } from './manager.enums';
 
 import { BoardDtoSchema } from '@/contracts/board';
 import { UserSummaryDtoSchema } from '@/contracts/user';
 
 export const ManagerDtoSchema = z.object({
-  id: z.uuid(),
-  boardId: z.uuid(),
-  userId: z.uuid(),
+  id: ManagerIdSchema,
+  boardId: BoardIdSchema,
+  userId: UserIdSchema,
   role: ManagerRole,
   createdAt: z.iso.datetime(),
 });

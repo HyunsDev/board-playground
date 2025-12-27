@@ -6,6 +6,7 @@ import {
   MessageContext,
   QueryDispatcherPort,
   Token,
+  Trigger,
 } from '@workspace/backend-core';
 import { apiOk, matchError, apiErr, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
 import { contract, ApiErrors } from '@workspace/contract';
@@ -26,14 +27,12 @@ export class SessionHttpController {
     private readonly messageContext: MessageContext,
   ) {}
 
+  @Trigger(TriggerCodeEnum.Http)
   @TsRestHandler(contract.session.get)
   async getSession(@Token() token: TokenPayload) {
     return tsRestHandler(contract.session.get, async ({ params }) => {
       const result = await this.queryDispatcher.execute(
-        new GetSessionQuery(
-          { userId: token.sub, sessionId: params.sessionId },
-          this.messageContext.createMetadata(TriggerCodeEnum.Http),
-        ),
+        new GetSessionQuery({ userId: token.sub, sessionId: params.sessionId }),
       );
 
       return result.match(
@@ -45,15 +44,12 @@ export class SessionHttpController {
       );
     });
   }
-
+  @Trigger(TriggerCodeEnum.Http)
   @TsRestHandler(contract.session.list)
   async listSessions(@Token() token: TokenPayload) {
     return tsRestHandler(contract.session.list, async () => {
       const result = await this.queryDispatcher.execute(
-        new ListSessionsQuery(
-          { userId: token.sub },
-          this.messageContext.createMetadata(TriggerCodeEnum.Http),
-        ),
+        new ListSessionsQuery({ userId: token.sub }),
       );
 
       return result.match(
@@ -68,18 +64,16 @@ export class SessionHttpController {
     });
   }
 
+  @Trigger(TriggerCodeEnum.Http)
   @TsRestHandler(contract.session.delete)
   async deleteSession(@Token() token: TokenPayload) {
     return tsRestHandler(contract.session.delete, async ({ params }) => {
       const result = await this.commandDispatcher.execute(
-        new DeleteSessionCommand(
-          {
-            sessionId: params.sessionId,
-            userId: token.sub,
-            currentSessionId: token.sessionId,
-          },
-          this.messageContext.createMetadata(TriggerCodeEnum.Http),
-        ),
+        new DeleteSessionCommand({
+          sessionId: params.sessionId,
+          userId: token.sub,
+          currentSessionId: token.sessionId,
+        }),
       );
 
       return result.match(

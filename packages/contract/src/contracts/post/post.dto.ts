@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
-import { ID } from '@/common';
-import { BoardSlug } from '@/contracts/board/board.schemas';
+import { BoardSlugSchema, PostIdSchema } from '@workspace/domain';
+
 import { UserSummaryDtoSchema } from '@/contracts/user';
 
 export const PostDtoSchema = z.object({
-  id: ID,
-  boardSlug: BoardSlug,
+  id: PostIdSchema,
+  boardSlug: BoardSlugSchema,
   author: UserSummaryDtoSchema,
   title: z.string().min(1).max(100),
   content: z.string().min(1).max(5000),

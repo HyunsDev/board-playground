@@ -4,6 +4,7 @@ import { HandlerResult } from '@workspace/backend-common';
 import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import { AccessTokenProvider, DrivenMessageMetadata } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
+import { UserEmail, Username } from '@workspace/common';
 import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
@@ -11,8 +12,8 @@ import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { AuthTokens } from '@/shared/types/tokens';
 
 type ForceRegisterCommandProps = BaseCommandProps<{
-  email: string;
-  username: string;
+  email: UserEmail;
+  username: Username;
   nickname: string;
 }>;
 

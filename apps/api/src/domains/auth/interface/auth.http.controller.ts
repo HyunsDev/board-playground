@@ -4,8 +4,6 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 
 import {
   Public,
-  IpAddress,
-  UserAgent,
   MessageContext,
   QueryDispatcherPort,
   CommandDispatcherPort,
@@ -20,11 +18,9 @@ import {
 import { contract, ApiErrors } from '@workspace/contract';
 import { TriggerCodeEnum } from '@workspace/domain';
 
-import { LoginAuthCommand } from '../application/commands/login-auth.command';
-import { LogoutAuthCommand } from '../application/commands/logout-auth.command';
-import { RefreshTokenAuthCommand } from '../application/commands/refresh-token-auth.command';
-import { RegisterAuthCommand } from '../application/commands/register-auth.command';
-import { CheckUsernameAvailableQuery } from '../application/queries/check-username-available.query';
+import { LogoutAuthCommand } from '../application/common/commands/logout-auth.command';
+import { RefreshTokenAuthCommand } from '../application/common/commands/refresh-token-auth.command';
+import { CheckUsernameAvailableQuery } from '../application/common/queries/check-username-available.query';
 
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from '@/shared/constants/cookie.constant';
 
@@ -38,79 +34,9 @@ export class AuthHttpController {
 
   @Trigger(TriggerCodeEnum.Http)
   @Public()
-  @TsRestHandler(contract.auth.register)
-  async register(
-    @Res({ passthrough: true }) res: FastifyReply,
-    @IpAddress() ipAddress: string,
-    @UserAgent() ua: string,
-  ) {
-    return tsRestHandler(contract.auth.register, async ({ body }) => {
-      const result = await this.commandDispatcher.execute(
-        new RegisterAuthCommand({
-          email: body.email,
-          username: body.username,
-          nickname: body.nickname,
-          password: body.password,
-          ipAddress: ipAddress,
-          userAgent: ua,
-        }),
-      );
-
-      return result.match(
-        (data) => {
-          void res.setCookie('refreshToken', data.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
-          return apiOk(200, {
-            accessToken: data.accessToken,
-          });
-        },
-        (error) =>
-          matchPublicError(error, {
-            UserEmailAlreadyExists: () => apiErr(ApiErrors.User.EmailAlreadyExists),
-            UserUsernameAlreadyExists: () => apiErr(ApiErrors.User.UsernameAlreadyExists),
-            ValidationError: () => apiErr(ApiErrors.Common.ValidationError),
-          }),
-      );
-    });
-  }
-
-  @Trigger(TriggerCodeEnum.Http)
-  @Public()
-  @TsRestHandler(contract.auth.login)
-  async login(
-    @Res({ passthrough: true }) res: FastifyReply,
-    @IpAddress() ipAddress: string,
-    @UserAgent() ua: string,
-  ) {
-    return tsRestHandler(contract.auth.login, async ({ body }) => {
-      const result = await this.commandDispatcher.execute(
-        new LoginAuthCommand({
-          email: body.email,
-          password: body.password,
-          ipAddress: ipAddress,
-          userAgent: ua,
-        }),
-      );
-
-      return result.match(
-        (data) => {
-          void res.setCookie('refreshToken', data.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
-          return apiOk(200, {
-            accessToken: data.accessToken,
-          });
-        },
-        (error) =>
-          matchPublicError(error, {
-            InvalidCredentials: () => apiErr(ApiErrors.Auth.InvalidCredentials),
-          }),
-      );
-    });
-  }
-
-  @Trigger(TriggerCodeEnum.Http)
-  @Public()
-  @TsRestHandler(contract.auth.refreshToken)
-  async refreshToken(@Req() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
-    return tsRestHandler(contract.auth.refreshToken, async () => {
+  @TsRestHandler(contract.auth.refresh)
+  async refresh(@Req() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
+    return tsRestHandler(contract.auth.refresh, async () => {
       const refreshToken = req.cookies?.['refreshToken'];
 
       if (!refreshToken) {
@@ -176,9 +102,9 @@ export class AuthHttpController {
 
   @Trigger(TriggerCodeEnum.Http)
   @Public()
-  @TsRestHandler(contract.auth.checkUsername)
-  async checkUsername() {
-    return tsRestHandler(contract.auth.checkUsername, async ({ query }) => {
+  @TsRestHandler(contract.auth.checkUsernameAvailability)
+  async checkUsernameAvailability() {
+    return tsRestHandler(contract.auth.checkUsernameAvailability, async ({ query }) => {
       const result = await this.queryDispatcher.execute(
         new CheckUsernameAvailableQuery({
           username: query.username,

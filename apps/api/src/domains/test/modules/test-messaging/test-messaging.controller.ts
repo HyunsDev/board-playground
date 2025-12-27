@@ -43,6 +43,7 @@ export class TestController {
   @IntegrationEventHandler(TestPub)
   async handleTestPub(@Pub() pub: TestPub) {
     this.logger.debug(`Received TestPub with message: ${pub.data.message}`);
+    return ok(undefined);
   }
 
   @Get('ping')

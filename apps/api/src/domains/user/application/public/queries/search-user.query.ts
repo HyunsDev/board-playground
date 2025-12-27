@@ -1,8 +1,6 @@
-import { ok } from 'neverthrow';
-
 import { HandlerResult } from '@workspace/backend-common';
 import { IQueryHandler, QueryHandler } from '@workspace/backend-core';
-import { BasePaginatedQueryProps, BaseQuery, DrivenMessageMetadata } from '@workspace/backend-core';
+import { BasePaginatedQueryProps, BaseQuery } from '@workspace/backend-core';
 import { PaginatedResult } from '@workspace/common';
 import { asQueryCode, DomainCodeEnums } from '@workspace/domain';
 
@@ -21,8 +19,8 @@ export class SearchUserQuery extends BaseQuery<
   static readonly code = asQueryCode('account:user:qry:search');
   readonly resourceType = DomainCodeEnums.Account.User;
 
-  constructor(data: ISearchUserQuery['data'], metadata: DrivenMessageMetadata) {
-    super(null, data, metadata);
+  constructor(data: ISearchUserQuery['data']) {
+    super(null, data);
   }
 }
 
@@ -31,12 +29,10 @@ export class SearchUserQueryHandler implements IQueryHandler<SearchUserQuery> {
   constructor(private readonly userRepo: UserRepositoryPort) {}
 
   async execute({ data }: ISearchUserQuery) {
-    const { items, meta } = await this.userRepo.searchUsers({
+    return this.userRepo.searchUsers({
       nickname: data.nickname,
       page: data.page,
-      take: data.limit,
+      limit: data.limit,
     });
-
-    return ok({ items, meta });
   }
 }

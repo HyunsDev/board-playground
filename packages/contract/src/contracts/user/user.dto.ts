@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
+import { UserEmailSchema, UserIdSchema, UsernameSchema } from '@workspace/common';
+
 import { UserRole, UserStatus } from './user.enums';
 
-import { ID } from '@/common';
-
 export const UserBaseDtoSchema = z.object({
-  id: ID,
-  email: z.email(),
-  username: z.string().min(3).max(30),
+  id: UserIdSchema,
+  email: UserEmailSchema,
+  username: UsernameSchema,
   nickname: z.string().min(2).max(20),
   bio: z.string().max(160).nullable(),
   avatarUrl: z.url().nullable(),

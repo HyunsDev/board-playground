@@ -2,7 +2,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 
-import { MESSAGING_SERVICE_TOKEN } from './microservies.constant';
+import { MESSAGING_SERVICE_TOKEN } from './microservices.constant';
 
 import { BaseIntegrationEvent, IntegrationEventPublisherPort } from '@/base';
 import { MessageContext, OutboxContext, TransactionContext } from '@/modules/foundation/context';

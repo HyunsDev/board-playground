@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import dayjs from 'dayjs';
-import { err, ok } from 'neverthrow';
+import { ok, Result, ResultAsync } from 'neverthrow';
 
 import {
   matchError,
@@ -8,7 +8,9 @@ import {
   typedOk,
   UnexpectedDomainErrorException,
 } from '@workspace/backend-ddd';
+import { UserId } from '@workspace/common';
 import { DevicePlatform } from '@workspace/contract';
+import { SessionId } from '@workspace/domain';
 
 import { SessionEntity } from '../../domain/session.entity';
 import { SessionRepositoryPort } from '../../domain/session.repository.port';
@@ -25,17 +27,12 @@ export class SessionFacade {
     private readonly tokenConfig: RefreshTokenConfig,
   ) {}
 
-  async getOneById(id: string) {
+  async getOneById(id: SessionId) {
     return this.sessionRepo.getOneById(id);
   }
 
-  getExpiresAtDate(): Date {
-    const expirationDays = this.tokenConfig.refreshTokenExpirationDays;
-    return dayjs().add(expirationDays, 'day').toDate();
-  }
-
-  async create(props: {
-    userId: string;
+  create(props: {
+    userId: UserId;
     userAgent: string;
     platform: DevicePlatform;
     ipAddress: string;
@@ -49,14 +46,10 @@ export class SessionFacade {
       refreshTokenHash: refreshTokenSet.refreshTokenHash,
       expiresAt: this.getExpiresAtDate(),
     });
-    return (await this.sessionRepo.create(session)).match(
-      (data) =>
-        ok({
-          session: data,
-          refreshToken: refreshTokenSet.refreshToken,
-        }),
-      (error) => err(error),
-    );
+    return this.sessionRepo.create(session).map((data) => ({
+      session: data,
+      refreshToken: refreshTokenSet.refreshToken,
+    }));
   }
 
   async rotate(currentRefreshToken: string) {
@@ -109,5 +102,33 @@ export class SessionFacade {
     if (updateResult.isErr()) return updateResult;
 
     return ok(updateResult.value);
+  }
+
+  closeAllActives(userId: UserId, exceptSessionId?: SessionId) {
+    return this.sessionRepo
+      .listActiveByUserId(userId)
+      .map((sessions) => sessions.filter((s) => s.id !== exceptSessionId))
+      .andThen((sessions) => Result.combine(sessions.map((session) => session.close())))
+      .andThen((sessions) =>
+        ResultAsync.combine(sessions.map((session) => this.sessionRepo.update(session))),
+      )
+      .mapErr((error) =>
+        matchError(error, {
+          SessionNotFound: (e) => {
+            throw new UnexpectedDomainErrorException(e);
+          },
+          SessionClosed: (e) => {
+            throw new UnexpectedDomainErrorException(e);
+          },
+          SessionRevoked: (e) => {
+            throw new UnexpectedDomainErrorException(e);
+          },
+        }),
+      );
+  }
+
+  private getExpiresAtDate(): Date {
+    const expirationDays = this.tokenConfig.refreshTokenExpirationDays;
+    return dayjs().add(expirationDays, 'day').toDate();
   }
 }

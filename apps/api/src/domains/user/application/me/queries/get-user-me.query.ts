@@ -1,12 +1,13 @@
 import { HandlerResult } from '@workspace/backend-common';
 import { BaseQuery, BaseQueryProps, IQueryHandler, QueryHandler } from '@workspace/backend-core';
+import { UserId } from '@workspace/common';
 import { asQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';
 
 type IGetUserMeQuery = BaseQueryProps<{
-  userId: string;
+  userId: UserId;
 }>;
 export class GetUserMeQuery extends BaseQuery<
   IGetUserMeQuery,

@@ -10,6 +10,6 @@ const mappers: Provider[] = [UserMapper];
 
 @Module({
   providers: [...repositories, ...mappers],
-  exports: [UserRepositoryPort],
+  exports: [UserRepositoryPort, ...mappers],
 })
 export class UserInfraModule {}

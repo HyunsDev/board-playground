@@ -22,7 +22,7 @@ export class ResetDBCommand extends BaseCommand<
   static readonly code = asCommandCode('system:devtools:cmd:reset_db');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: ResetDbCommandProps['data'], metadata: DrivenMessageMetadata) {
+  constructor(data: ResetDbCommandProps['data'], metadata?: DrivenMessageMetadata) {
     super(null, data, metadata);
   }
 }

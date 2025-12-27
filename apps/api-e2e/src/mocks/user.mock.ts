@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { expect } from '@jest/globals';
 
+import { UserEmail, Username } from '@workspace/common';
 import { UserBaseDto, UserPrivateProfileDto, UserPublicProfileDto } from '@workspace/contract';
 
 import { Matchable } from '@/utils/expect-res';
@@ -9,6 +10,9 @@ type TestUserLocalData = {
   password: string;
 };
 
+export const getTestUserName = () =>
+  faker.internet.username().toLowerCase().replaceAll('-', '_') as Username;
+
 export class TestUser {
   private _serverState: Partial<UserBaseDto> = {};
   private _localState: TestUserLocalData;
@@ -16,8 +20,8 @@ export class TestUser {
   constructor(init?: { server?: Partial<UserBaseDto>; local?: Partial<TestUserLocalData> }) {
     // 초기 더미 데이터 생성
     this._serverState = {
-      email: faker.internet.email(),
-      username: faker.internet.username(),
+      email: faker.internet.email() as UserEmail,
+      username: getTestUserName(),
       nickname: faker.person.firstName(),
       ...init?.server,
     };

@@ -3,11 +3,12 @@ import {
   BaseDomainEventProps,
   DrivenMessageMetadata,
 } from '@workspace/backend-core';
-import { AggregateCodeEnum, asDomainEventCode } from '@workspace/domain';
+import { UserId } from '@workspace/common';
+import { AggregateCodeEnum, asDomainEventCode, SessionId } from '@workspace/domain';
 
 type ISessionCreatedEvent = BaseDomainEventProps<{
-  userId: string;
-  sessionId: string;
+  userId: UserId;
+  sessionId: SessionId;
   sessionName: string;
 }>;
 export class SessionCreatedEvent extends BaseDomainEvent<ISessionCreatedEvent> {

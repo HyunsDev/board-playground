@@ -1,7 +1,10 @@
 import { Module, Provider } from '@nestjs/common';
 
+import { MailerModule } from '@workspace/backend-core';
+
 import { GetUserForAdminQueryHandler } from './admin/queries/get-user-for-admin.query';
 import { UserActivityEventHandler } from './events/user-activity.event-handler';
+import { UserPasswordChangedEventHandler } from './events/user-password-changed.event-handler';
 import { UserFacade } from './facades/user.facade';
 import { UserInfraModule } from '../infra/user-infra.module';
 import { DeleteUserMeCommandHandler } from './me/commands/delete-user-me.command';
@@ -12,8 +15,6 @@ import { GetUserQueryHandler } from './public/queries/get-user.query';
 import { SearchUserQueryHandler } from './public/queries/search-user.query';
 
 const commonHandlers: Provider[] = [
-  // EventHandlers
-  UserActivityEventHandler,
   // QueryHandlers
   GetUserQueryHandler,
   SearchUserQueryHandler,
@@ -34,11 +35,13 @@ const adminHandlers: Provider[] = [
   GetUserForAdminQueryHandler,
 ];
 
+const eventHandlers: Provider[] = [UserActivityEventHandler, UserPasswordChangedEventHandler];
+
 const facades: Provider[] = [UserFacade];
 
 @Module({
-  imports: [UserInfraModule],
-  providers: [...commonHandlers, ...meHandlers, ...adminHandlers, ...facades],
+  imports: [UserInfraModule, MailerModule.forFeature()],
+  providers: [...commonHandlers, ...meHandlers, ...adminHandlers, ...eventHandlers, ...facades],
   exports: [UserFacade],
 })
 export class UserApplicationModule {}

@@ -4,14 +4,15 @@ import { HandlerResult } from '@workspace/backend-common';
 import { IQueryHandler, QueryHandler } from '@workspace/backend-core';
 import { BaseQueryProps, BaseQuery, DrivenMessageMetadata } from '@workspace/backend-core';
 import { matchError } from '@workspace/backend-ddd';
-import { asQueryCode, DomainCodeEnums } from '@workspace/domain';
+import { UserId } from '@workspace/common';
+import { asQueryCode, DomainCodeEnums, SessionId } from '@workspace/domain';
 
 import { SessionEntity } from '../../domain/session.entity';
 import { SessionRepositoryPort } from '../../domain/session.repository.port';
 
 type ISessionQuery = BaseQueryProps<{
-  userId: string;
-  sessionId: string;
+  userId: UserId;
+  sessionId: SessionId;
 }>;
 
 export class GetSessionQuery extends BaseQuery<
@@ -22,7 +23,7 @@ export class GetSessionQuery extends BaseQuery<
   static readonly code = asQueryCode('account:session:qry:get');
   readonly resourceType = DomainCodeEnums.Account.Session;
 
-  constructor(data: ISessionQuery['data'], metadata: DrivenMessageMetadata) {
+  constructor(data: ISessionQuery['data'], metadata?: DrivenMessageMetadata) {
     super(data.sessionId, data, metadata);
   }
 }

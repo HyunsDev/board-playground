@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-import { paginatedResultSchemaOf, withPagination } from '@workspace/common';
+import { paginatedResultSchemaOf, UserIdSchema, withPagination } from '@workspace/common';
+import { BoardSlugSchema, PostIdSchema } from '@workspace/domain';
 
 import { PostDtoSchema } from './post.dto';
-import { BoardSlug } from '../board/board.schemas';
 
-import { ACCESS, ID } from '@/common';
+import { ACCESS } from '@/common';
 import { ApiErrors } from '@/contracts/api-errors';
 import { c } from '@/internal/c';
 import { toApiErrorResponses } from '@/internal/utils/to-api-error-responses';
@@ -14,7 +14,7 @@ export const getPost = c.query({
   method: 'GET',
   path: '/posts/:postId',
   pathParams: z.object({
-    postId: ID,
+    postId: PostIdSchema,
   }),
   responses: {
     200: z.object({
@@ -32,9 +32,9 @@ export const queryPosts = c.query({
   path: '/posts',
   query: withPagination(
     z.object({
-      boardSlug: z.string().optional(),
+      boardSlug: BoardSlugSchema.optional(),
       title: z.string().min(1).max(100).optional(),
-      authorId: ID.optional(),
+      authorId: UserIdSchema.optional(),
     }),
   ),
   responses: {
@@ -50,7 +50,7 @@ export const createPost = c.mutation({
   method: 'POST',
   path: '/posts',
   body: z.object({
-    boardSlug: BoardSlug,
+    boardSlug: BoardSlugSchema,
     title: z.string().min(1).max(100),
     content: z.string().min(1).max(5000),
   }),
@@ -69,7 +69,7 @@ export const updatePost = c.mutation({
   method: 'PATCH',
   path: '/posts/:postId',
   pathParams: z.object({
-    postId: ID,
+    postId: PostIdSchema,
   }),
   body: z.object({
     title: z.string().min(1).max(100).optional(),
@@ -95,7 +95,7 @@ export const deletePost = c.mutation({
   path: '/posts/:postId',
   body: c.noBody(),
   pathParams: z.object({
-    postId: ID,
+    postId: PostIdSchema,
   }),
   responses: {
     200: z.object({

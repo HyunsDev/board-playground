@@ -1,4 +1,4 @@
-import { DirectRepositoryPort, DomainResult } from '@workspace/backend-ddd';
+import { DirectRepositoryPort, DomainResultAsync } from '@workspace/backend-ddd';
 import { PaginatedResult } from '@workspace/common';
 import { AuditLog } from '@workspace/database';
 
@@ -20,11 +20,14 @@ export interface CreateAuditLogParam {
 }
 
 export abstract class AuditLogRepositoryPort extends DirectRepositoryPort<AuditLog> {
-  abstract create(param: CreateAuditLogParam): Promise<DomainResult<AuditLog, never>>;
-  abstract createMany(params: CreateAuditLogParam[]): Promise<DomainResult<void, never>>;
+  abstract create(param: CreateAuditLogParam): DomainResultAsync<AuditLog, never>;
+  abstract createMany(params: CreateAuditLogParam[]): DomainResultAsync<void, never>;
 
-  abstract getOneById(id: string): Promise<DomainResult<AuditLog, AuditLogNotFoundError>>;
-  abstract findMany(query: AuditLogQueryParam): Promise<PaginatedResult<AuditLog>>;
-  abstract count(filter: AuditLogFilterOptions): Promise<number>;
-  abstract findRetentionCandidates(olderThan: Date, limit: number): Promise<AuditLog[]>;
+  abstract getOneById(id: string): DomainResultAsync<AuditLog, AuditLogNotFoundError>;
+  abstract findMany(query: AuditLogQueryParam): DomainResultAsync<PaginatedResult<AuditLog>, never>;
+  abstract count(filter: AuditLogFilterOptions): DomainResultAsync<number, never>;
+  abstract findRetentionCandidates(
+    olderThan: Date,
+    limit: number,
+  ): DomainResultAsync<AuditLog[], never>;
 }

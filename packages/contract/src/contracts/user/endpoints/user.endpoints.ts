@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { withPagination, paginatedResultSchemaOf } from '@workspace/common';
+import { withPagination, paginatedResultSchemaOf, UserIdSchema } from '@workspace/common';
 
 import { UserPublicProfileDtoSchema } from '../user.dto';
 
@@ -13,7 +13,7 @@ export const getUser = c.query({
   method: 'GET',
   path: '/users/:userId',
   pathParams: z.object({
-    userId: z.uuid(),
+    userId: UserIdSchema,
   }),
   responses: {
     200: z.object({

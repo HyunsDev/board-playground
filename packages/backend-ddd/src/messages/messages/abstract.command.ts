@@ -1,7 +1,7 @@
 import { RESULT_TYPE_SYMBOL } from '../message.constant';
 import { AbstractMessage, AbstractMessageProps } from './abstract.message';
 
-import { DomainResult, DomainError } from '@/error';
+import { DomainError, DomainResult } from '@/error';
 
 export type AbstractCommandProps<T = unknown> = AbstractMessageProps<T>;
 

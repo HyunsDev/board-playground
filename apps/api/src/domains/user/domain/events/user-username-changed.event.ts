@@ -3,10 +3,11 @@ import {
   BaseDomainEventProps,
   DrivenMessageMetadata,
 } from '@workspace/backend-core';
+import { UserId } from '@workspace/common';
 import { AggregateCodeEnum, asDomainEventCode } from '@workspace/domain';
 
 type IUserNameChangedEvent = BaseDomainEventProps<{
-  userId: string;
+  userId: UserId;
   oldUsername: string;
   newUsername: string;
 }>;

@@ -60,6 +60,16 @@ export class SystemExceptionFilter implements ExceptionFilter<SystemException> {
           );
           return apiErr(ApiErrors.Common.InternalServerError);
         },
+        InvalidAggregationStatusChange: (err) => {
+          this.logger.warn(
+            systemLog(DomainCodeEnums.System.Exception, SystemLogActionEnum.InternalError, {
+              msg: `Invalid aggregation status change from ${err.details?.from} to ${err.details?.to}`,
+              error: err,
+            }),
+            exception?.stack,
+          );
+          return apiErr(ApiErrors.Common.InternalServerError);
+        },
       });
 
       // 4. 응답 전송
