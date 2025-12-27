@@ -42,3 +42,34 @@ export class UnexpectedPrismaErrorException extends BaseInternalServerException<
     );
   }
 }
+
+export class UnexpectedRedisErrorException extends BaseInternalServerException<
+  'UnexpectedRedisError',
+  {
+    storeName: string;
+    action: string;
+    key?: string;
+    originalError: unknown;
+  }
+> {
+  readonly code = 'UnexpectedRedisError' as const;
+  readonly scope = 'private' as const;
+
+  constructor(storeName: string, action: string, key: string | undefined, error: unknown) {
+    const errorMessage =
+      error instanceof Error
+        ? `Redis 오류: ${error.message}`
+        : `Redis 알 수 없는 오류: ${String(error)}`;
+
+    super(
+      errorMessage,
+      {
+        storeName: storeName,
+        action,
+        key,
+        originalError: error,
+      },
+      error,
+    );
+  }
+}

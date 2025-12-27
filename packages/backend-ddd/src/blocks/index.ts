@@ -5,3 +5,4 @@ export * from './direct-repository.port';
 export * from './logger.port';
 export * from './repository.port';
 export * from './entity-collection';
+export * from './store.port';
