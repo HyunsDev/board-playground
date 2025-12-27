@@ -1,5 +1,3 @@
-import { ok } from 'neverthrow';
-
 import { asJobCode, DomainCodeEnums, TaskQueueCodeEnum } from '@workspace/domain';
 
 import { MailerService } from './mailer.service';
@@ -26,9 +24,6 @@ export class SendMailJobHandler implements IJobHandler<SendMailJob> {
   async execute(job: SendMailJob) {
     const { to, subject, html, text } = job.data;
     const result = await this.mailerService.sendEmail({ to, subject, html, text });
-    if (result.isErr()) {
-      throw result.error;
-    }
-    return ok(undefined);
+    return result.map(() => undefined);
   }
 }

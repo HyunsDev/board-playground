@@ -7,19 +7,19 @@ import { AuditLogFilterOptions, AuditLogQueryParam } from './audit.log.types';
 export class AuditLogService {
   constructor(private readonly auditLogRepository: AuditLogRepositoryPort) {}
 
-  async getOneById(id: string) {
+  getOneById(id: string) {
     return this.auditLogRepository.getOneById(id);
   }
 
-  async findMany(query: AuditLogQueryParam) {
+  findMany(query: AuditLogQueryParam) {
     return this.auditLogRepository.findMany(query);
   }
 
-  async count(filter: AuditLogFilterOptions) {
+  count(filter: AuditLogFilterOptions) {
     return this.auditLogRepository.count(filter);
   }
 
-  async findRetentionCandidates(olderThan: Date, limit: number) {
+  findRetentionCandidates(olderThan: Date, limit: number) {
     return this.auditLogRepository.findRetentionCandidates(olderThan, limit);
   }
 }
