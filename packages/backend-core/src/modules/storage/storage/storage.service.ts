@@ -79,7 +79,7 @@ export class StorageService {
   }
 
   async deleteFile(fileId: FileId) {
-    const refExists = await this.fileReferenceRepo.checkExistenceByFileId(fileId);
+    const refExists = await this.fileReferenceRepo.exists({ fileId });
     if (refExists) {
       return err(new ReferencedFileCannotBeDeletedError());
     }

@@ -8,7 +8,7 @@ import { BaseHttpRequest } from '@/base';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const toHttpRequestLogData = <TMessage extends BaseHttpRequest<any, any>>(
-  result: MeasureResult<MessageResult<TMessage>>,
+  result: MeasureResult<Awaited<MessageResult<TMessage>>>,
   message: TMessage,
 ): HttpRequestLogData => {
   if (result.result === 'Success') {

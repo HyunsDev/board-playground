@@ -2,6 +2,7 @@ import { Prisma, PrismaClient } from '@workspace/database';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type AbstractCrudDelegate<R> = {
+  findFirst(args: any): Promise<R | null>;
   findUnique(args: any): Promise<R | null>;
   findMany(args: any): Promise<R[]>;
   create(args: any): Promise<R>;

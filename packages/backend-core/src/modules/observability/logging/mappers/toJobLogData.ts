@@ -5,7 +5,8 @@ import { JobLogData } from '../types';
 import { BaseJob } from '@/base';
 
 export const toJobLogData = (
-  result: MeasureResult,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  result: MeasureResult<any>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   message: BaseJob<any>,
   _handlerName: string,

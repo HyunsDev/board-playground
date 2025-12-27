@@ -7,8 +7,14 @@ export class EntityCollection<T extends AbstractEntity<AbstractEntityProps<Brand
   private _removedItems: T[] = []; // 삭제된 아이템들 (DB 반영용)
   private _newItems: Set<T> = new Set(); // 새로 추가된 아이템들
 
-  constructor(initialItems: T[] = []) {
+  private constructor(initialItems: T[] = []) {
     this._currentItems = [...initialItems];
+  }
+
+  static fromArray<U extends AbstractEntity<AbstractEntityProps<BrandId>, BrandId>>(
+    items: U[],
+  ): EntityCollection<U> {
+    return new EntityCollection<U>(items);
   }
 
   // 1. 조회
@@ -18,6 +24,10 @@ export class EntityCollection<T extends AbstractEntity<AbstractEntityProps<Brand
 
   get removedItems(): T[] {
     return this._removedItems;
+  }
+
+  find(predicate: (item: T) => boolean): T | undefined {
+    return this._currentItems.find(predicate);
   }
 
   // 2. 추가

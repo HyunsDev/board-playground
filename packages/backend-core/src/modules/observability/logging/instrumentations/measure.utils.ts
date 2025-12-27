@@ -3,7 +3,12 @@
 import { Logger } from '@nestjs/common';
 import { Span, SpanStatusCode, trace } from '@opentelemetry/api';
 
-import { DomainError, DomainResult, SystemException } from '@workspace/backend-ddd';
+import {
+  DomainError,
+  DomainResult,
+  DomainResultAsync,
+  SystemException,
+} from '@workspace/backend-ddd';
 
 import { MessageLogType } from '../log.enums';
 import { MessageResultLogData } from '../types';
@@ -19,9 +24,13 @@ import {
   BaseRpc,
 } from '@/base';
 
-export const measure = async <TResult extends DomainResult<any, DomainError>>(
-  executor: () => Promise<TResult>,
-): Promise<MeasureResult<TResult>> => {
+export const measure = async <
+  const TResult extends
+    | DomainResultAsync<any, DomainError>
+    | Promise<DomainResult<any, DomainError>>,
+>(
+  executor: () => TResult,
+): Promise<MeasureResult<Awaited<TResult>>> => {
   const start = performance.now();
 
   try {
@@ -87,7 +96,9 @@ const tracer = trace.getTracer('board-playground-core');
 export const measureAndLog = async <
   const TLogType extends MessageLogType,
   const TMessage extends MeasureMessage,
-  const TResult extends DomainResult<any, DomainError>,
+  const TResult extends
+    | DomainResultAsync<any, DomainError>
+    | Promise<DomainResult<any, DomainError>>,
 >({
   logType,
   message,
@@ -98,9 +109,9 @@ export const measureAndLog = async <
 }: {
   logType: TLogType;
   message: TMessage;
-  executor: () => Promise<TResult>;
+  executor: () => TResult;
   toLogData: (
-    result: MeasureResult<TResult>,
+    result: MeasureResult<Awaited<TResult>>,
     message: TMessage,
     handlerName: string,
   ) => Extract<MessageResultLogData, { type: TLogType }>;
@@ -128,7 +139,7 @@ export const measureAndLog = async <
         throw result.error;
       }
 
-      return result.value;
+      return result;
     } catch (error) {
       if (error instanceof Error) {
         span.recordException(error);

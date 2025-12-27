@@ -9,7 +9,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Inject, Injectable } from '@nestjs/common';
-import { err, ok } from 'neverthrow';
+import { ok, ResultAsync } from 'neverthrow';
 
 import { FileNotFoundError } from '../domain';
 import { InvalidS3MetadataException, UnexpectedS3Exception } from '../domain/file.exceptions';
@@ -30,33 +30,35 @@ export class S3Storage implements FileStoragePort {
     this.bucket = this.config.aws.s3.bucketName;
   }
 
-  async generatePresignedPutUrl(options: PresignedUrlOptions) {
+  generatePresignedPutUrl(options: PresignedUrlOptions) {
     const command = new PutObjectCommand({
       Bucket: this.bucket,
       Key: options.key,
       ContentType: options.mimetype,
     });
 
-    try {
-      const result = await getSignedUrl(this.client, command, {
+    return ResultAsync.fromPromise(
+      getSignedUrl(this.client, command, {
         expiresIn: options.expiresIn ?? 3600,
-      });
-
-      return ok(result);
-    } catch (error) {
-      throw new UnexpectedS3Exception(error);
-    }
+      }),
+      (error) => {
+        throw new UnexpectedS3Exception(error);
+      },
+    );
   }
 
-  async getFileMetadata(key: string) {
+  getFileMetadata(key: string) {
     const command = new HeadObjectCommand({
       Bucket: this.bucket,
       Key: key,
     });
 
-    try {
-      const response = await this.client.send(command);
-
+    return ResultAsync.fromPromise(this.client.send(command), (error) => {
+      if (this.isNotFoundError(error)) {
+        return new FileNotFoundError(key);
+      }
+      throw new UnexpectedS3Exception(error);
+    }).andThen((response) => {
       if (!response.ContentLength || !response.ContentType || !response.LastModified) {
         throw new InvalidS3MetadataException();
       }
@@ -66,47 +68,38 @@ export class S3Storage implements FileStoragePort {
         mimetype: response.ContentType,
         lastModified: response.LastModified,
       });
-    } catch (error) {
-      if (this.isNotFoundError(error)) {
-        return err(new FileNotFoundError(key));
-      }
-
-      throw new UnexpectedS3Exception(error);
-    }
+    });
   }
 
-  async generatePresignedGetUrl(key: string) {
+  generatePresignedGetUrl(key: string) {
     const command = new GetObjectCommand({
       Bucket: this.bucket,
       Key: key,
     });
 
-    try {
-      const result = await getSignedUrl(this.client, command, {
+    return ResultAsync.fromPromise(
+      getSignedUrl(this.client, command, {
         expiresIn: 3600, // 1 hour
-      });
-
-      return ok(result);
-    } catch (error) {
-      throw new UnexpectedS3Exception(error);
-    }
+      }),
+      (error) => {
+        throw new UnexpectedS3Exception(error);
+      },
+    );
   }
 
-  async delete(key: string) {
+  delete(key: string) {
     const command = new DeleteObjectCommand({
       Bucket: this.bucket,
       Key: key,
     });
-    try {
-      await this.client.send(command);
-      return ok(undefined);
-    } catch (error) {
+
+    return ResultAsync.fromPromise(this.client.send(command), (error) => {
       throw new UnexpectedS3Exception(error);
-    }
+    }).map(() => undefined);
   }
 
-  async deleteMany(keys: string[]) {
-    if (keys.length === 0) return ok(undefined);
+  deleteMany(keys: string[]) {
+    if (keys.length === 0) return new ResultAsync(Promise.resolve(ok(undefined)));
 
     const command = new DeleteObjectsCommand({
       Bucket: this.bucket,
@@ -116,12 +109,9 @@ export class S3Storage implements FileStoragePort {
       },
     });
 
-    try {
-      await this.client.send(command);
-      return ok(undefined);
-    } catch (error) {
+    return ResultAsync.fromPromise(this.client.send(command), (error) => {
       throw new UnexpectedS3Exception(error);
-    }
+    }).map(() => undefined);
   }
 
   private isNotFoundError(error: unknown): boolean {

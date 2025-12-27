@@ -57,16 +57,20 @@ export type BaseHttpRequestProps<T extends BaseHttpRequestData> = AbstractHttpRe
 export abstract class BaseHttpRequest<
   const TProps extends BaseHttpRequestProps<BaseHttpRequestData>,
   const TOk extends HttpRequestResponseData,
+  const TRes extends DomainResultAsync<TOk, HttpRequestError> = DomainResultAsync<
+    TOk,
+    HttpRequestError
+  >,
 > extends AbstractHttpRequest<
   CausationCode,
   DomainCode,
   HttpRequestCode,
   TProps,
   TOk,
-  DomainResultAsync<TOk, HttpRequestError>,
+  TRes,
   HttpRequestOptions
 > {
-  declare [RESULT_TYPE_SYMBOL]: DomainResultAsync<TOk, HttpRequestError>;
+  declare [RESULT_TYPE_SYMBOL]: TRes;
   static readonly code: HttpRequestCode;
 
   constructor(

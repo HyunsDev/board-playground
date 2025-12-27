@@ -126,27 +126,19 @@ export class FileService {
     return ok(undefined);
   }
 
-  async cleanUpOrphans(limit: number, retentionThreshold: Date) {
-    const orphans = await this.fileRepo.findOrphans(limit, retentionThreshold);
-    if (orphans.length === 0) {
-      return ok(0);
-    }
+  cleanUpOrphans(limit: number, retentionThreshold: Date) {
+    return this.fileRepo.findOrphans(limit, retentionThreshold).andThen((orphans) => {
+      if (orphans.length === 0) {
+        return ok(0);
+      }
 
-    const keysToDelete: string[] = [];
-    const idsToDelete: FileId[] = [];
+      const ids = orphans.map((o) => o.id);
+      const keys = orphans.map((o) => o.key);
 
-    for (const orphan of orphans) {
-      keysToDelete.push(orphan.key);
-      idsToDelete.push(orphan.id);
-    }
-
-    await this.fileRepo.deleteManyDirectly(idsToDelete);
-
-    const s3DeleteResult = await this.s3Port.deleteMany(keysToDelete);
-    if (s3DeleteResult.isErr()) {
-      return err(s3DeleteResult.error);
-    }
-
-    return ok(orphans.length);
+      return this.fileRepo
+        .deleteManyDirectly(ids)
+        .andThen(() => this.s3Port.deleteMany(keys))
+        .map(() => orphans.length);
+    });
   }
 }

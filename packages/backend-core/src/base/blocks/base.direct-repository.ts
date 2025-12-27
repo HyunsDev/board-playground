@@ -47,25 +47,50 @@ export abstract class BaseDirectRepository<
   protected abstract get delegate(): TDelegate;
 
   findOneById(id: string): DomainResultAsync<TDbModel | null, never> {
-    return this.findOneRecord({
+    return this.findUniqueRecord({
       where: { id },
     });
   }
 
-  protected findOneRecord(
+  protected findUniqueRecord(
     args: Parameters<TDelegate['findUnique']>[0],
   ): DomainResultAsync<TDbModel | null, never> {
     return ResultAsync.fromPromise(this.delegate.findUnique({ ...args }), (error) => {
-      throw new UnexpectedPrismaErrorException(this.constructor.name, 'findOneEntity', error);
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'findUniqueRecord', error);
     });
   }
 
-  protected getOneRecord(
+  protected getUniqueRecord(
     args: Parameters<TDelegate['findUnique']>[0] & {
       where: Record<string, unknown>;
     },
   ): DomainResultAsync<TDbModel, EntityNotFoundError> {
-    return this.findOneRecord(args).andThen((record) =>
+    return this.findUniqueRecord(args).andThen((record) =>
+      record
+        ? ok(record)
+        : err(
+            new EntityNotFoundError({
+              entityName: this.entityName,
+              entityId: JSON.stringify(args.where),
+            }),
+          ),
+    );
+  }
+
+  protected findFirstRecord(
+    args: Parameters<TDelegate['findFirst']>[0],
+  ): DomainResultAsync<TDbModel | null, never> {
+    return ResultAsync.fromPromise(this.delegate.findFirst({ ...args }), (error) => {
+      throw new UnexpectedPrismaErrorException(this.constructor.name, 'findFirstRecord', error);
+    });
+  }
+
+  protected getFirstRecord(
+    args: Parameters<TDelegate['findFirst']>[0] & {
+      where: Record<string, unknown>;
+    },
+  ): DomainResultAsync<TDbModel, EntityNotFoundError> {
+    return this.findFirstRecord(args).andThen((record) =>
       record
         ? ok(record)
         : err(
