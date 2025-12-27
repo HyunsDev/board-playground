@@ -1,10 +1,9 @@
-import { ok } from 'neverthrow';
+import { ok, ResultAsync } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
 import {
   BaseCommand,
   BaseCommandProps,
-  CacheService,
   CommandHandler,
   DomainEventPublisherPort,
   ICommandHandler,
@@ -14,7 +13,7 @@ import {
 import { UserEmail } from '@workspace/common';
 import { asCommandCode, DomainCodeEnums } from '@workspace/domain';
 
-import { getEmailVerificationCodeKey } from '@/domains/auth/auth.utils';
+import { EmailVerificationCodeStorePort } from '@/domains/auth/domain/email-verification-code.store.port';
 import { EmailVerificationSentEvent } from '@/domains/auth/domain/events/email-verification-sent.event';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 
@@ -41,8 +40,8 @@ export class SendVerificationEmailCommandHandler implements ICommandHandler<Send
     private readonly userFacade: UserFacade,
     private readonly txManager: TransactionManager,
     private readonly mailPublisher: MailPublisher,
-    private readonly cacheService: CacheService,
     private readonly domainEventPublisher: DomainEventPublisherPort,
+    private readonly emailVerificationCodeStore: EmailVerificationCodeStorePort,
   ) {}
 
   async execute(command: sendVerificationEmailProps) {
@@ -61,30 +60,30 @@ export class SendVerificationEmailCommandHandler implements ICommandHandler<Send
         return ok(undefined);
       }
 
-      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-      void (await this.cacheService.setOrThrow(
-        getEmailVerificationCodeKey(command.data.email),
-        verificationCode,
-        10 * 60, // 10 minutes
-      ));
-
-      void (await this.mailPublisher.send({
-        to: command.data.email,
-        subject: '[Board Playground] 이메일 인증 코드',
-        html: `<p>안녕하세요, Board Playground입니다.</p>
-                <p>이메일 인증 코드는 <strong>${verificationCode}</strong> 입니다.</p>
-                <p>이 코드는 10분 동안 유효합니다.</p>
-                <p>감사합니다.</p>`,
-      }));
-
-      void (await this.domainEventPublisher.publish(
-        new EmailVerificationSentEvent({
-          email: command.data.email,
-        }),
-      ));
-
-      return ok(undefined);
+      return this.emailVerificationCodeStore
+        .generate(command.data.email, 10 * 60)
+        .andThrough((verificationCode) =>
+          ResultAsync.fromSafePromise(
+            this.mailPublisher.send({
+              to: command.data.email,
+              subject: '[Board Playground] 이메일 인증 코드',
+              html: `<p>안녕하세요, Board Playground입니다.</p>
+                  <p>이메일 인증 코드는 <strong>${verificationCode}</strong> 입니다.</p>
+                  <p>이 코드는 10분 동안 유효합니다.</p>
+                  <p>감사합니다.</p>`,
+            }),
+          ),
+        )
+        .andThrough(() =>
+          ResultAsync.fromSafePromise(
+            this.domainEventPublisher.publish(
+              new EmailVerificationSentEvent({
+                email: command.data.email,
+              }),
+            ),
+          ),
+        )
+        .map(() => undefined);
     });
   }
 }

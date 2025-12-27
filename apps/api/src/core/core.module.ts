@@ -23,6 +23,7 @@ import {
   mailerConfig,
   MailerModule,
   AuditLogModule,
+  RedisModule,
 } from '@workspace/backend-core';
 
 import { discordWebhookConfig } from './configs';
@@ -51,6 +52,7 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
     }),
     TaskQueueModule.forRoot(),
     PrismaModule,
+    RedisModule,
     CacheModule,
     StorageModule,
     StorageWorkerModule,

@@ -1,12 +1,9 @@
-import { randomUUID } from 'crypto';
-
-import { ok } from 'neverthrow';
+import { err, ok } from 'neverthrow';
 
 import { HandlerResult } from '@workspace/backend-common';
 import {
   BaseCommand,
   BaseCommandProps,
-  CacheService,
   CommandHandler,
   DomainEventPublisherPort,
   ICommandHandler,
@@ -16,9 +13,9 @@ import {
 import { UserEmail } from '@workspace/common';
 import { asCommandCode, DomainCodeEnums } from '@workspace/domain';
 
-import { getPasswordResetCodeKey } from '@/domains/auth/auth.utils';
 import { ResetEmailSentEvent } from '@/domains/auth/domain/events/reset-email-sent.event';
 import { UserLessResetEmailSentEvent } from '@/domains/auth/domain/events/userless-reset-email-sent.event';
+import { PasswordResetCodeStorePort } from '@/domains/auth/domain/password-reset-code.store.port';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 
 type SendResetEmailCommandProps = BaseCommandProps<{
@@ -43,9 +40,9 @@ export class SendResetEmailCommandHandler implements ICommandHandler<SendResetEm
   constructor(
     private readonly userFacade: UserFacade,
     private readonly mailPublisher: MailPublisher,
-    private readonly cacheService: CacheService,
     private readonly domainEventPublisher: DomainEventPublisherPort,
     private readonly txManager: TransactionManager,
+    private readonly passwordResetCodeStore: PasswordResetCodeStorePort,
   ) {}
 
   async execute({ data }: SendResetEmailCommandProps) {
@@ -58,13 +55,12 @@ export class SendResetEmailCommandHandler implements ICommandHandler<SendResetEm
         return ok(undefined);
       }
 
-      const verificationCode = randomUUID();
-
-      void (await this.cacheService.setOrThrow(
-        getPasswordResetCodeKey(data.email),
-        verificationCode,
+      const generateResult = await this.passwordResetCodeStore.generate(
+        data.email,
         10 * 60, // 10 minutes
-      ));
+      );
+      if (generateResult.isErr()) return err(generateResult.error);
+      const verificationCode = generateResult.value;
 
       void (await this.mailPublisher.send({
         to: data.email,
