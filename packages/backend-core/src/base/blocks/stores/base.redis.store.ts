@@ -38,8 +38,8 @@ export class BaseRedisStoreClient {
   }
 
   exec<T>(operation: string, key: string, promise: Promise<T>): ResultAsync<T, never> {
-    return ResultAsync.fromPromise(promise, (e) => {
-      throw new UnexpectedRedisErrorException(this.constructor.name, operation, key, e);
+    return ResultAsync.fromPromise(promise, (error) => {
+      throw this.unexpected(operation, key, error);
     });
   }
 
@@ -53,6 +53,34 @@ export class BaseRedisStoreClient {
       keys.join(','),
       this.redis.eval(script, keys.length, ...keys, ...args),
     ) as ResultAsync<T, never>;
+  }
+
+  protected resolveTtl(ttl?: number) {
+    return ttl ?? this.options.defaultTtl;
+  }
+
+  protected serializeJson(value: unknown): ResultAsync<string, never> {
+    return ResultAsync.fromSafePromise(Promise.resolve().then(() => JSON.stringify(value)));
+  }
+
+  protected serializeJsonList(values: unknown[]): ResultAsync<string[], never> {
+    return ResultAsync.fromSafePromise(
+      Promise.resolve().then(() => values.map((v) => JSON.stringify(v))),
+    );
+  }
+
+  protected parseJson<T>(value: string): ResultAsync<T, never> {
+    return ResultAsync.fromSafePromise(Promise.resolve().then(() => JSON.parse(value) as T));
+  }
+
+  protected parseJsonArray<T>(values: string[]): ResultAsync<T[], never> {
+    return ResultAsync.fromSafePromise(
+      Promise.resolve().then(() => values.map((value) => JSON.parse(value) as T)),
+    );
+  }
+
+  protected unexpected(operation: string, key: string, error: unknown) {
+    return new UnexpectedRedisErrorException(this.constructor.name, operation, key, error);
   }
 }
 

@@ -1,13 +1,11 @@
 // packages/backend-core/src/modules/persistence/store/base/base-number.store.ts
 
 import Redis from 'ioredis';
-import { ResultAsync } from 'neverthrow';
 
+import { DomainResultAsync } from '@workspace/backend-ddd';
 import { StoreCode } from '@workspace/domain';
 
 import { BaseRedisStore, BaseRedisStoreClient, StoreOptions } from './base.redis.store';
-
-import { UnexpectedRedisErrorException } from '@/base/core.exceptions';
 
 class BaseNumberStoreClient extends BaseRedisStoreClient {
   constructor(
@@ -19,37 +17,38 @@ class BaseNumberStoreClient extends BaseRedisStoreClient {
   }
 
   /** 초기 값 설정 (주의: atomic 아님, 초기화 용도만) */
-  set(id: string, value: number, ttl?: number): ResultAsync<void, UnexpectedRedisErrorException> {
+  set(id: string, value: number, ttl?: number): DomainResultAsync<void, never> {
     const key = this.getKey(id);
-    const command = ttl
-      ? this.redis.set(key, value.toString(), 'EX', ttl)
+    const ttlToUse = this.resolveTtl(ttl);
+    const command = ttlToUse
+      ? this.redis.set(key, value.toString(), 'EX', ttlToUse)
       : this.redis.set(key, value.toString());
 
     return this.exec('set', key, command).map(() => undefined);
   }
 
-  get(id: string): ResultAsync<number | null, UnexpectedRedisErrorException> {
+  get(id: string): DomainResultAsync<number | null, never> {
     const key = this.getKey(id);
 
     return this.exec('get', key, this.redis.get(key)).map((res) => (res === null ? null : +res));
   }
 
-  incr(id: string): ResultAsync<number, UnexpectedRedisErrorException> {
+  incr(id: string): DomainResultAsync<number, never> {
     const key = this.getKey(id);
     return this.exec('incr', key, this.redis.incr(key));
   }
 
-  decr(id: string): ResultAsync<number, UnexpectedRedisErrorException> {
+  decr(id: string): DomainResultAsync<number, never> {
     const key = this.getKey(id);
     return this.exec('decr', key, this.redis.decr(key));
   }
 
-  incrBy(id: string, amount: number): ResultAsync<number, UnexpectedRedisErrorException> {
+  incrBy(id: string, amount: number): DomainResultAsync<number, never> {
     const key = this.getKey(id);
     return this.exec('incrBy', key, this.redis.incrby(key, amount));
   }
 
-  decrBy(id: string, amount: number): ResultAsync<number, UnexpectedRedisErrorException> {
+  decrBy(id: string, amount: number): DomainResultAsync<number, never> {
     const key = this.getKey(id);
     return this.exec('decrBy', key, this.redis.decrby(key, amount));
   }

@@ -1,11 +1,9 @@
 import Redis from 'ioredis';
-import { ResultAsync } from 'neverthrow';
+import { ResultAsync, okAsync } from 'neverthrow';
 
 import { StoreCode } from '@workspace/domain';
 
 import { BaseRedisStore, BaseRedisStoreClient, StoreOptions } from './base.redis.store';
-
-import { UnexpectedRedisErrorException } from '@/base/core.exceptions';
 
 class BaseObjectStoreClient<T> extends BaseRedisStoreClient {
   constructor(
@@ -16,28 +14,38 @@ class BaseObjectStoreClient<T> extends BaseRedisStoreClient {
     super(redis, prefix, options);
   }
 
-  set(id: string, value: T, ttl?: number): ResultAsync<void, UnexpectedRedisErrorException> {
+  set(id: string, value: T, ttl?: number): ResultAsync<void, never> {
     const key = this.getKey(id);
-    const serialized = JSON.stringify(value);
-    const command = ttl
-      ? this.redis.set(key, serialized, 'EX', ttl)
-      : this.redis.set(key, serialized);
+    return this.serializeJson(value)
+      .andThen((serialized) => {
+        const ttlToUse = this.resolveTtl(ttl);
+        const command = ttlToUse
+          ? this.redis.set(key, serialized, 'EX', ttlToUse)
+          : this.redis.set(key, serialized);
 
-    return this.exec('set', key, command).map(() => undefined);
+        return this.exec('set', key, command);
+      })
+      .map(() => undefined);
   }
 
-  get(id: string): ResultAsync<T | null, UnexpectedRedisErrorException> {
+  get(id: string): ResultAsync<T | null, never> {
     const key = this.getKey(id);
-    return this.exec('get', key, this.redis.get(key)).map((res) =>
-      res ? (JSON.parse(res) as T) : null,
-    );
+    return this.exec('get', key, this.redis.get(key)).andThen((res) => {
+      if (res === null) {
+        return okAsync(null);
+      }
+      return this.parseJson<T>(res);
+    });
   }
 
-  getDel(id: string): ResultAsync<T | null, UnexpectedRedisErrorException> {
+  getDel(id: string): ResultAsync<T | null, never> {
     const key = this.getKey(id);
-    return this.exec('getdel', key, this.redis.getdel(key)).map((res) =>
-      res ? (JSON.parse(res) as T) : null,
-    );
+    return this.exec('getdel', key, this.redis.getdel(key)).andThen((res) => {
+      if (res === null) {
+        return okAsync(null);
+      }
+      return this.parseJson<T>(res);
+    });
   }
 }
 

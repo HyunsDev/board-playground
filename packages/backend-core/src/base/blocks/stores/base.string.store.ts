@@ -16,7 +16,10 @@ class BaseStringStoreClient<T extends string> extends BaseRedisStoreClient {
 
   set(id: string, value: T, ttl?: number): ResultAsync<void, never> {
     const key = this.getKey(id);
-    const command = ttl ? this.redis.set(key, value, 'EX', ttl) : this.redis.set(key, value);
+    const ttlToUse = this.resolveTtl(ttl);
+    const command = ttlToUse
+      ? this.redis.set(key, value, 'EX', ttlToUse)
+      : this.redis.set(key, value);
 
     return this.exec('set', key, command).map(() => undefined);
   }

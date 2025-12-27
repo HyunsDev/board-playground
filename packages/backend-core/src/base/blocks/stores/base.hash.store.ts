@@ -5,7 +5,7 @@ import { StoreCode } from '@workspace/domain';
 
 import { BaseRedisStore, BaseRedisStoreClient, StoreOptions } from './base.redis.store';
 
-class BaseHashStoreClient extends BaseRedisStoreClient {
+class BaseHashStoreClient<T extends string> extends BaseRedisStoreClient {
   constructor(
     protected readonly redis: Redis,
     protected readonly prefix: StoreCode,
@@ -14,24 +14,24 @@ class BaseHashStoreClient extends BaseRedisStoreClient {
     super(redis, prefix, options);
   }
 
-  baseHSet(id: string, field: string, value: string | number): ResultAsync<void, never> {
+  baseHSet(id: string, field: string, value: T): ResultAsync<void, never> {
     const key = this.getKey(id);
     return this.exec('baseHSet', key, this.redis.hset(key, field, value)).map(() => undefined);
   }
 
-  baseHGet(id: string, field: string): ResultAsync<string | null, never> {
+  baseHGet(id: string, field: string): ResultAsync<T | null, never> {
     const key = this.getKey(id);
-    return this.exec('baseHGet', key, this.redis.hget(key, field));
+    return this.exec('baseHGet', key, this.redis.hget(key, field) as Promise<T | null>);
   }
 
-  baseHGetAll(id: string): ResultAsync<Record<string, string>, never> {
+  baseHGetAll(id: string): ResultAsync<Record<string, T>, never> {
     const key = this.getKey(id);
-    return this.exec('baseHGetAll', key, this.redis.hgetall(key));
+    return this.exec('baseHGetAll', key, this.redis.hgetall(key) as Promise<Record<string, T>>);
   }
 }
 
-export abstract class BaseHashStore extends BaseRedisStore {
-  protected client: BaseHashStoreClient;
+export abstract class BaseHashStore<T extends string = string> extends BaseRedisStore {
+  protected client: BaseHashStoreClient<T>;
   constructor(
     protected readonly redis: Redis,
     protected readonly prefix: StoreCode,

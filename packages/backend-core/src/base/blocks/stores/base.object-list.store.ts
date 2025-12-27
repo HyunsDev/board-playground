@@ -1,10 +1,11 @@
 import Redis from 'ioredis';
-import { ResultAsync } from 'neverthrow';
+import { ResultAsync, okAsync } from 'neverthrow';
 
 import { StoreCode } from '@workspace/domain';
 
 import { BaseRedisStore, BaseRedisStoreClient, StoreOptions } from './base.redis.store';
 
+import { UnexpectedRedisErrorException } from '@/base/core.exceptions';
 class BaseObjectListStoreClient<T> extends BaseRedisStoreClient {
   constructor(
     protected readonly redis: Redis,
@@ -16,27 +17,37 @@ class BaseObjectListStoreClient<T> extends BaseRedisStoreClient {
 
   lpush(id: string, ...values: T[]): ResultAsync<number, never> {
     const key = this.getKey(id);
-    const serialized = values.map((v) => JSON.stringify(v));
-    return this.exec('lpush', key, this.redis.lpush(key, ...serialized));
+    return this.serializeJsonList(values).andThen((serialized) =>
+      this.exec('lpush', key, this.redis.lpush(key, ...serialized)),
+    );
   }
   rpush(id: string, ...values: T[]): ResultAsync<number, never> {
     const key = this.getKey(id);
-    const serialized = values.map((v) => JSON.stringify(v));
-    return this.exec('rpush', key, this.redis.rpush(key, ...serialized));
+    return this.serializeJsonList(values).andThen((serialized) =>
+      this.exec('rpush', key, this.redis.rpush(key, ...serialized)),
+    );
   }
 
   lpop(id: string): ResultAsync<T | null, never> {
     const key = this.getKey(id);
-    return this.exec('lpop', key, this.redis.lpop(key)).map((res) =>
-      res ? (JSON.parse(res) as T) : null,
-    );
+    return this.exec('lpop', key, this.redis.lpop(key)).andThen((res) => {
+      if (res === null) {
+        return okAsync(null);
+      }
+
+      return this.parseJson<T>(res);
+    });
   }
 
   rpop(id: string): ResultAsync<T | null, never> {
     const key = this.getKey(id);
-    return this.exec('rpop', key, this.redis.rpop(key)).map((res) =>
-      res ? (JSON.parse(res) as T) : null,
-    );
+    return this.exec('rpop', key, this.redis.rpop(key)).andThen((res) => {
+      if (res === null) {
+        return okAsync(null);
+      }
+
+      return this.parseJson<T>(res);
+    });
   }
 
   llen(id: string): ResultAsync<number, never> {
@@ -44,10 +55,10 @@ class BaseObjectListStoreClient<T> extends BaseRedisStoreClient {
     return this.exec('llen', key, this.redis.llen(key));
   }
 
-  lrange(id: string, start: number, stop: number): ResultAsync<T[], never> {
+  lrange(id: string, start: number, stop: number): ResultAsync<T[], UnexpectedRedisErrorException> {
     const key = this.getKey(id);
-    return this.exec('lrange', key, this.redis.lrange(key, start, stop)).map((res) =>
-      res.map((item) => JSON.parse(item) as T),
+    return this.exec('lrange', key, this.redis.lrange(key, start, stop)).andThen((res) =>
+      this.parseJsonArray<T>(res),
     );
   }
 }

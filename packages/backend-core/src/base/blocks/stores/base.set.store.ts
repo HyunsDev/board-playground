@@ -5,7 +5,7 @@ import { StoreCode } from '@workspace/domain';
 
 import { BaseRedisStore, BaseRedisStoreClient, StoreOptions } from './base.redis.store';
 
-class BaseSetStoreClient extends BaseRedisStoreClient {
+class BaseSetStoreClient<T extends string> extends BaseRedisStoreClient {
   constructor(
     protected readonly redis: Redis,
     protected readonly prefix: StoreCode,
@@ -14,24 +14,24 @@ class BaseSetStoreClient extends BaseRedisStoreClient {
     super(redis, prefix, options);
   }
 
-  sadd(id: string, ...members: string[]): ResultAsync<number, never> {
+  sadd(id: string, ...members: T[]): ResultAsync<number, never> {
     const key = this.getKey(id);
     return this.exec('sadd', key, this.redis.sadd(key, ...members));
   }
 
-  srem(id: string, ...members: string[]): ResultAsync<number, never> {
+  srem(id: string, ...members: T[]): ResultAsync<number, never> {
     const key = this.getKey(id);
     return this.exec('srem', key, this.redis.srem(key, ...members));
   }
 
-  sismember(id: string, member: string): ResultAsync<number, never> {
+  sismember(id: string, member: T): ResultAsync<number, never> {
     const key = this.getKey(id);
     return this.exec('sismember', key, this.redis.sismember(key, member));
   }
 
-  smembers(id: string): ResultAsync<string[], never> {
+  smembers(id: string): ResultAsync<T[], never> {
     const key = this.getKey(id);
-    return this.exec('smembers', key, this.redis.smembers(key));
+    return this.exec('smembers', key, this.redis.smembers(key) as Promise<T[]>);
   }
 
   scard(id: string): ResultAsync<number, never> {
@@ -40,8 +40,8 @@ class BaseSetStoreClient extends BaseRedisStoreClient {
   }
 }
 
-export abstract class BaseSetStore extends BaseRedisStore {
-  protected client: BaseSetStoreClient;
+export abstract class BaseSetStore<T extends string = string> extends BaseRedisStore {
+  protected client: BaseSetStoreClient<T>;
   constructor(
     protected readonly redis: Redis,
     protected readonly prefix: StoreCode,
