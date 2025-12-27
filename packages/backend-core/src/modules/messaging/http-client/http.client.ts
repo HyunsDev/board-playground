@@ -1,9 +1,13 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { AxiosError } from 'axios';
-import { err, ok } from 'neverthrow';
+import { err, ok, ResultAsync } from 'neverthrow';
 
-import { DomainResult, InternalServerErrorException } from '@workspace/backend-ddd';
+import {
+  DomainResult,
+  DomainResultAsync,
+  InternalServerErrorException,
+} from '@workspace/backend-ddd';
 import { TriggerCodeEnum } from '@workspace/domain';
 
 import {
@@ -26,11 +30,11 @@ export class HttpClient {
     private readonly messageContext: MessageContext,
   ) {}
 
-  async request<
+  request<
     TOk extends HttpRequestResponseData,
     TResult extends DomainResult<TOk, HttpRequestError>,
     TReq extends BaseHttpRequest<BaseHttpRequestProps<BaseHttpRequestData>, TOk>,
-  >(httpRequest: TReq): Promise<TResult> {
+  >(httpRequest: TReq): DomainResultAsync<TOk, HttpRequestError> {
     const metadata = this.messageContext.getOrCreateDrivenMetadata(TriggerCodeEnum.SystemBoot);
     httpRequest.updateMetadata(metadata);
 
@@ -93,14 +97,16 @@ export class HttpClient {
       return axiosRequest();
     };
 
-    return await measureAndLog({
-      logType: LogTypeEnum.HttpRequest,
-      message: httpRequest,
-      executor: executor,
-      toLogData: toHttpRequestLogData,
-      logger: this.logger,
-      handlerName: `${httpRequest.constructor.name}Handler`,
-    });
+    return ResultAsync.fromSafePromise(
+      measureAndLog({
+        logType: LogTypeEnum.HttpRequest,
+        message: httpRequest,
+        executor: executor,
+        toLogData: toHttpRequestLogData,
+        logger: this.logger,
+        handlerName: `${httpRequest.constructor.name}Handler`,
+      }),
+    ).andThen((res) => res);
   }
 
   private shouldRetry(error?: HttpRequestError): boolean {
