@@ -2,7 +2,7 @@ import { Global, Module } from '@nestjs/common';
 
 import {
   ConfigModule,
-  DatabaseModule,
+  PrismaModule,
   DomainEventModule,
   LoggingModule,
   AccessControlModule,
@@ -50,7 +50,7 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
       type: 'http',
     }),
     TaskQueueModule.forRoot(),
-    DatabaseModule,
+    PrismaModule,
     CacheModule,
     StorageModule,
     StorageWorkerModule,
@@ -75,7 +75,7 @@ import { ExceptionFilterModule } from './exception-filter/exception-filter.modul
   ],
   exports: [
     ContextModule,
-    DatabaseModule,
+    PrismaModule,
     DomainEventModule,
     LoggingModule,
     AccessControlModule,

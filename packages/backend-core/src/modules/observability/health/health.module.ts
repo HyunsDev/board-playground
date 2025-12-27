@@ -6,7 +6,7 @@ import { HEALTH_OPTIONS, HealthModuleOptions } from './health.interface';
 import { CacheHealthIndicator } from './indicators/cache.indicator';
 
 import { CacheModule } from '@/modules/persistence/cache';
-import { DatabaseModule } from '@/modules/persistence/database';
+import { PrismaModule } from '@/modules/persistence/prisma';
 
 @Module({})
 export class HealthModule {
@@ -23,7 +23,7 @@ export class HealthModule {
 
     // Prisma 체크
     if (options.check?.prisma) {
-      imports.push(DatabaseModule);
+      imports.push(PrismaModule);
       providers.push(PrismaHealthIndicator);
     }
 
