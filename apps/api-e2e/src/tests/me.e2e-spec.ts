@@ -3,7 +3,7 @@ import { beforeAll, describe, it } from '@jest/globals';
 
 import { ApiErrors } from '@workspace/contract';
 
-import { TestUser } from '@/mocks/user.mock';
+import { getTestUserName, TestUser } from '@/mocks/user.mock';
 import { expectRes } from '@/utils/expect-res';
 import { TestClient } from '@/utils/test-client';
 
@@ -16,6 +16,7 @@ describe('Me E2E', () => {
     user = new TestUser({});
     user2 = new TestUser({});
     client = new TestClient();
+
     await client.registerAs(user);
     await client.registerAs(user2);
     await client.loginAs(user);
@@ -61,7 +62,7 @@ describe('Me E2E', () => {
 
   describe('사용자 이름 변경', () => {
     it('사용자 이름 변경', async () => {
-      const newUsername = faker.internet.username();
+      const newUsername = getTestUserName();
       const res = await client.api.user.me.updateUsername({
         body: {
           username: newUsername,
