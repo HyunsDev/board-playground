@@ -5,7 +5,7 @@ import {
   AbstractHttpRequest,
   DomainError,
   RESULT_TYPE_SYMBOL,
-  DomainResultAsync,
+  DomainResult,
 } from '@workspace/backend-ddd';
 import { CausationCode, DomainCode, HttpRequestCode, ModelId } from '@workspace/domain';
 
@@ -57,10 +57,7 @@ export type BaseHttpRequestProps<T extends BaseHttpRequestData> = AbstractHttpRe
 export abstract class BaseHttpRequest<
   const TProps extends BaseHttpRequestProps<BaseHttpRequestData>,
   const TOk extends HttpRequestResponseData,
-  const TRes extends DomainResultAsync<TOk, HttpRequestError> = DomainResultAsync<
-    TOk,
-    HttpRequestError
-  >,
+  const TRes extends DomainResult<TOk, HttpRequestError> = DomainResult<TOk, HttpRequestError>,
 > extends AbstractHttpRequest<
   CausationCode,
   DomainCode,

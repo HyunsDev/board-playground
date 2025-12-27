@@ -3,7 +3,6 @@ import { RESULT_TYPE_SYMBOL } from './message.constant';
 import { AbstractMessage } from './messages';
 
 export type MessageResult<C extends AbstractMessage> = C[typeof RESULT_TYPE_SYMBOL];
-export type AwaitedMessageResult<C extends AbstractMessage> = Awaited<MessageResult<C>>;
 
 export interface MessageConstructor<T extends AbstractMessage> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

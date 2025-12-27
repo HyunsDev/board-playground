@@ -6,7 +6,7 @@ import { BrandId } from '@workspace/common';
 import { AbstractMessage, AbstractMessageProps } from './abstract.message';
 import { AbstractDrivenMessageMetadata } from '../abstract.message-metadata.type';
 
-import { DomainError, DomainResultAsync } from '@/error';
+import { DomainError, DomainResult } from '@/error';
 
 export type AbstractJobProps<T = unknown> = AbstractMessageProps<T>;
 
@@ -22,7 +22,7 @@ export abstract class AbstractJob<
   JobCodeType,
   TProps,
   any,
-  DomainResultAsync<any, DomainError>
+  DomainResult<any, DomainError>
 > {
   abstract readonly queueName: string;
   abstract override get schema(): z.ZodType<TProps['data']>;

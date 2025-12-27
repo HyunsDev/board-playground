@@ -5,5 +5,5 @@ import { SimplifyResult } from '@workspace/common';
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HandlerResult<T extends { execute: (...args: any[]) => any }> = SimplifyResult<
-  ReturnType<T['execute']>
+  Awaited<ReturnType<T['execute']>>
 >;

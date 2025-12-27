@@ -3,7 +3,7 @@ import { PaginationQuery } from '@workspace/common';
 import { AbstractMessage, AbstractMessageProps } from './abstract.message';
 import { RESULT_TYPE_SYMBOL } from '../message.constant';
 
-import { DomainError, DomainResultAsync } from '@/error';
+import { DomainError, DomainResult } from '@/error';
 
 export type AbstractQueryProps<T = unknown> = AbstractMessageProps<T>;
 
@@ -22,7 +22,7 @@ export abstract class AbstractQuery<
   QueryCodeType extends CausationCodeType = CausationCodeType,
   TProps extends AbstractQueryProps = AbstractQueryProps,
   TOk = unknown,
-  TRes extends DomainResultAsync<TOk, DomainError> = DomainResultAsync<TOk, DomainError>,
+  TRes extends DomainResult<TOk, DomainError> = DomainResult<TOk, DomainError>,
 > extends AbstractMessage<CausationCodeType, ResourceCodeType, QueryCodeType, TProps, TOk, TRes> {
   declare [RESULT_TYPE_SYMBOL]: TRes;
 }

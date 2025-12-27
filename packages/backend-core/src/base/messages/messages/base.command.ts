@@ -2,9 +2,9 @@ import {
   AbstractCommand,
   AbstractCommandProps,
   DomainError,
-  DomainResultAsync,
   RESULT_TYPE_SYMBOL,
 } from '@workspace/backend-ddd';
+import { DomainResult } from '@workspace/backend-ddd';
 import { CausationCode, CommandCode, DomainCode, ModelId } from '@workspace/domain';
 
 import { DrivenMessageMetadata } from '../message-metadata';
@@ -21,7 +21,7 @@ export type BaseCommandProps<T> = AbstractCommandProps<T>;
 export abstract class BaseCommand<
   TProps extends BaseCommandProps<unknown>,
   TOk,
-  TRes extends DomainResultAsync<TOk, DomainError>,
+  TRes extends DomainResult<TOk, DomainError>,
 > extends AbstractCommand<CausationCode, DomainCode, CommandCode, TProps, TOk, TRes> {
   static readonly code: CommandCode;
 

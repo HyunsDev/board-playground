@@ -12,7 +12,7 @@ import { RESULT_TYPE_SYMBOL } from '../message.constant';
 
 import {
   DomainError,
-  DomainResultAsync,
+  DomainResult,
   InvalidMessageException,
   MessageCodeMismatchException,
 } from '@/error';
@@ -40,10 +40,7 @@ export abstract class AbstractMessage<
   MessageCodeType extends CausationCodeType = CausationCodeType,
   TProps extends AbstractMessageProps = AbstractMessageProps,
   TOk = unknown,
-  TRes extends DomainResultAsync<TOk, DomainError> | void = DomainResultAsync<
-    TOk,
-    DomainError
-  > | void,
+  TRes extends DomainResult<TOk, DomainError> = DomainResult<TOk, DomainError>,
 > {
   declare readonly [RESULT_TYPE_SYMBOL]: TRes;
 

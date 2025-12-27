@@ -4,5 +4,7 @@ import { MessageResult } from '@workspace/backend-ddd';
 import { BaseQuery, BaseQueryProps } from '../messages/base.query';
 
 export abstract class QueryDispatcherPort {
-  abstract execute<C extends BaseQuery<BaseQueryProps<any>, any, any>>(query: C): MessageResult<C>;
+  abstract execute<C extends BaseQuery<BaseQueryProps<any>, any, any>>(
+    query: C,
+  ): Promise<MessageResult<C>>;
 }

@@ -6,5 +6,5 @@ export interface ICommandHandler<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TCommand extends BaseCommand<BaseJobProps<any>, any, any>,
 > {
-  execute(command: TCommand): MessageResult<TCommand>;
+  execute(command: TCommand): Promise<MessageResult<TCommand>>;
 }

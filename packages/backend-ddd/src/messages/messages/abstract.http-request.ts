@@ -4,7 +4,7 @@ import { AbstractMessage, AbstractMessageProps } from './abstract.message';
 import { AbstractDrivenMessageMetadata } from '../abstract.message-metadata.type';
 import { RESULT_TYPE_SYMBOL } from '../message.constant';
 
-import { DomainError, DomainResultAsync } from '@/error';
+import { DomainError, DomainResult } from '@/error';
 
 export type AbstractHttpRequestProps<T = unknown> = AbstractMessageProps<T>;
 
@@ -14,7 +14,7 @@ export abstract class AbstractHttpRequest<
   RpcCodeType extends CausationCodeType = CausationCodeType,
   TProps extends AbstractHttpRequestProps = AbstractHttpRequestProps,
   TOk = unknown,
-  TRes extends DomainResultAsync<TOk, DomainError> = DomainResultAsync<TOk, DomainError>,
+  TRes extends DomainResult<TOk, DomainError> = DomainResult<TOk, DomainError>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TOptions = any,
 > extends AbstractMessage<CausationCodeType, ResourceCodeType, RpcCodeType, TProps, TOk, TRes> {
