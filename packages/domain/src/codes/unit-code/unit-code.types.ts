@@ -1,3 +1,6 @@
-import { type MessageType } from './message-code.types';
+import { type MessageCodeType } from './message.codes';
 
-export type UnitType = MessageType;
+import type { CacheCodeType } from './cache.code';
+import type { StoreCodeType } from './store.code';
+
+export type UnitType = MessageCodeType | CacheCodeType | StoreCodeType;

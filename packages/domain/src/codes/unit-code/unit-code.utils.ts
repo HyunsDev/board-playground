@@ -1,12 +1,8 @@
 import type { IsCodeLiteral } from '@workspace/common';
 
-import {
-  DomainCodeEnums,
-  type DomainCode,
-  type DomainCodeEnumKeyEnum,
-} from '../domain-code.enums.js';
+import { DomainCodeEnums, type DomainCode, type DomainCodeEnumKeyEnum } from '../domain-code.enums';
 
-import type { BCCodeEnumKey } from '../bounded-context-code.enums.js';
+import type { BCCodeEnumKey } from '../bounded-context-code.enums';
 
 export type UnitCode<
   T extends string,
