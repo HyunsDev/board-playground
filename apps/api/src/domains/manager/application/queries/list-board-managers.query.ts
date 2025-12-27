@@ -1,5 +1,3 @@
-import { ok } from 'neverthrow';
-
 import { HandlerResult } from '@workspace/backend-common';
 import { BaseQuery, BaseQueryProps, QueryHandler } from '@workspace/backend-core';
 import { AggregateCodeEnum, asQueryCode, BoardSlug } from '@workspace/domain';
@@ -28,7 +26,8 @@ export class ListBoardManagersQueryHandler {
   constructor(private readonly repo: ManagerRepositoryPort) {}
 
   async execute({ data }: ListBoardManagersQueryProps) {
-    const managers = await this.repo.findAllByBoardSlug(data.boardSlug);
-    return ok(managers);
+    return await this.repo.findMany({
+      boardSlug: data.boardSlug,
+    });
   }
 }

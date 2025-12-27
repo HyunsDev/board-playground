@@ -3,7 +3,7 @@ import { UAParser } from 'ua-parser-js';
 import { v7 as uuidv7 } from 'uuid';
 
 import { BaseAggregateRoot, BaseEntityProps } from '@workspace/backend-core';
-import { matchError, typedOk } from '@workspace/backend-ddd';
+import { EntityCollection, matchError, typedOk } from '@workspace/backend-ddd';
 import { UserId } from '@workspace/common';
 import { DevicePlatform, SESSION_STATUS, SessionStatus } from '@workspace/contract';
 import { SessionId } from '@workspace/domain';
@@ -32,7 +32,7 @@ export interface SessionProps extends BaseEntityProps<SessionId> {
   closedAt: Date | null;
   revokedAt: Date | null;
   status: SessionStatus;
-  refreshTokens: RefreshTokenEntity[]; // 전체 토큰이 아닌 관련된 토큰만 Lazy Load
+  refreshTokenCollection: EntityCollection<RefreshTokenEntity>;
 }
 
 export interface CreateSessionProps {
@@ -72,13 +72,13 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps, SessionId> {
       updatedAt: new Date(),
       closedAt: null,
       revokedAt: null,
-      refreshTokens: [
+      refreshTokenCollection: EntityCollection.fromArray([
         RefreshTokenEntity.create({
           token: createProps.refreshTokenHash,
-          expiresAt: createProps.expiresAt, // 30 days
+          expiresAt: createProps.expiresAt,
           sessionId: id,
         }),
-      ],
+      ]),
     };
     const session = new SessionEntity(props);
 
@@ -118,7 +118,9 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps, SessionId> {
       return err(new SessionClosedError());
     }
 
-    const currentToken = this.props.refreshTokens.find((t) => t.token === currentTokenHash);
+    const currentToken = this.props.refreshTokenCollection.find(
+      (t) => t.token === currentTokenHash,
+    );
     if (!currentToken) {
       return err(new InvalidRefreshTokenError());
     }
@@ -149,7 +151,7 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps, SessionId> {
       sessionId: this.id,
     });
 
-    this.props.refreshTokens = [...this.props.refreshTokens, newToken];
+    void this.props.refreshTokenCollection.add(newToken);
     this.props.lastRefreshedAt = new Date();
     this.props.expiresAt = expiresAt;
 
@@ -177,7 +179,7 @@ export class SessionEntity extends BaseAggregateRoot<SessionProps, SessionId> {
 
     this.props.status = SESSION_STATUS.CLOSED;
     this.props.closedAt = new Date();
-    return ok(null);
+    return ok(this);
   }
 
   public delete() {

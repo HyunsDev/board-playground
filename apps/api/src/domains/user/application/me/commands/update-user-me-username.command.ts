@@ -1,5 +1,3 @@
-import { err, ok } from 'neverthrow';
-
 import { HandlerResult } from '@workspace/backend-common';
 import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import { BaseCommandProps, BaseCommand } from '@workspace/backend-core';
@@ -33,22 +31,36 @@ export class UpdateUserMeUsernameCommandHandler implements ICommandHandler<Updat
   constructor(private readonly userRepo: UserRepositoryPort) {}
 
   async execute({ data }: IUpdateUserMeUsernameCommand) {
-    const userResult = await this.userRepo.getOneById(data.userId);
-    if (userResult.isErr()) return userResult;
-    const user = userResult.value;
-
-    user.updateUsername(data.newUsername);
-
-    return (await this.userRepo.update(user)).match(
-      (updatedUser) => ok(updatedUser),
-      (error) =>
+    return await this.userRepo
+      .getOneById(data.userId)
+      .andThen((user) => user.updateUsername(data.newUsername))
+      .andThen((user) => this.userRepo.update(user))
+      .mapErr((error) =>
         matchError(error, {
-          UserNotFound: (e) => err(e),
           UserEmailAlreadyExists: (e) => {
             throw new UnexpectedDomainErrorException(e);
           },
-          UserUsernameAlreadyExists: (e) => err(e),
+          UserNotFound: (e) => e,
+          UserUsernameAlreadyExists: (e) => e,
         }),
-    );
+      );
+
+    // const userResult = await this.userRepo.getOneById(data.userId);
+    // if (userResult.isErr()) return userResult;
+    // const user = userResult.value;
+
+    // user.updateUsername(data.newUsername);
+
+    // return (await this.userRepo.update(user)).match(
+    //   (updatedUser) => ok(updatedUser),
+    //   (error) =>
+    //     matchError(error, {
+    //       UserNotFound: (e) => err(e),
+    //       UserEmailAlreadyExists: (e) => {
+    //         throw new UnexpectedDomainErrorException(e);
+    //       },
+    //       UserUsernameAlreadyExists: (e) => err(e),
+    //     }),
+    // );
   }
 }

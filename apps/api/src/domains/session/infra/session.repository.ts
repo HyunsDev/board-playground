@@ -1,5 +1,5 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { err, ok } from 'neverthrow';
+import { Injectable } from '@nestjs/common';
+import { ResultAsync } from 'neverthrow';
 
 import {
   BaseRepository,
@@ -9,14 +9,14 @@ import {
 } from '@workspace/backend-core';
 import {
   DeletedAggregate,
-  DomainResult,
   matchError,
   UnexpectedDomainErrorException,
 } from '@workspace/backend-ddd';
-import { Session, PrismaClient, Prisma } from '@workspace/database';
+import { Session, PrismaClient } from '@workspace/database';
 
 import { RefreshTokenMapper } from './refresh-token.mapper';
 import { SessionMapper } from './session.mapper';
+import { RefreshTokenRepositoryPort } from '../domain/refresh-token.repository.port';
 import { SessionConflictError, SessionNotFoundError } from '../domain/session.domain-errors';
 import { SessionEntity } from '../domain/session.entity';
 import { SessionRepositoryPort } from '../domain/session.repository.port';
@@ -33,6 +33,7 @@ export class SessionRepository
     protected readonly mapper: SessionMapper,
     protected readonly refreshTokenMapper: RefreshTokenMapper,
     protected readonly eventDispatcher: DomainEventPublisherPort,
+    protected readonly refreshTokenRepo: RefreshTokenRepositoryPort,
   ) {
     super(prisma, txContext, mapper, eventDispatcher);
   }
@@ -41,131 +42,87 @@ export class SessionRepository
     return this.client.session;
   }
 
-  async getOneById(id: string): Promise<DomainResult<SessionEntity, SessionNotFoundError>> {
-    const result = await this.findOneById(id);
-    if (!result) {
-      return err(new SessionNotFoundError());
-    }
-    return ok(result);
-  }
-
-  async getOneByIdAndUserId(
-    id: string,
-    userId: string,
-  ): Promise<DomainResult<SessionEntity, SessionNotFoundError>> {
-    const record = await this.delegate.findFirst({
-      where: { id, userId },
-    });
-    if (!record) {
-      return err(new SessionNotFoundError());
-    }
-    return ok(this.mapper.toDomain(record));
-  }
-
-  async listAllByUserId(userId: string): Promise<SessionEntity[]> {
-    const records = await this.delegate.findMany({
-      where: { userId },
-    });
-    return this.mapper.toDomainMany(records);
-  }
-
-  async listActiveByUserId(userId: string): Promise<SessionEntity[]> {
-    const records = await this.delegate.findMany({
-      where: { userId, status: 'ACTIVE' },
-    });
-    return this.mapper.toDomainMany(records);
-  }
-
-  async create(session: SessionEntity) {
-    const result = await this.createEntity(session);
-    if (result.isErr()) {
-      return matchError(result.error, {
-        EntityConflict: () => {
-          throw new UnexpectedDomainErrorException(new SessionConflictError());
-        },
-      });
-    }
-
-    for (const token of session.getProps().refreshTokens) {
-      try {
-        const record = this.refreshTokenMapper.toPersistence(token);
-        void (await this.client.refreshToken.create({
-          data: record,
-        }));
-      } catch (error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          if (error.code === 'P2002') {
-            // 토큰 중복은 표시 방지를 위해 InvalidRefreshTokenError 로 변환
-            throw new InternalServerErrorException();
-          }
-        }
-        throw error;
-      }
-    }
-    return ok(result.value);
-  }
-
-  async update(session: SessionEntity) {
-    const result = await this.updateEntity(session);
-    if (result.isErr()) {
-      return matchError(result.error, {
-        EntityNotFound: () => err(new SessionNotFoundError()),
-        EntityConflict: () => {
-          throw new UnexpectedDomainErrorException(new SessionConflictError());
-        },
-      });
-    }
-
-    for (const token of session.getProps().refreshTokens) {
-      try {
-        const record = this.refreshTokenMapper.toPersistence(token);
-        void (await this.client.refreshToken.upsert({
-          where: { id: record.id },
-          create: record,
-          update: record,
-        }));
-      } catch (error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          if (error.code === 'P2002') {
-            // 토큰 중복은 표시 방지를 위해 InvalidRefreshTokenError 로 변환
-            throw new InternalServerErrorException();
-          }
-        }
-        throw error;
-      }
-    }
-    return ok(result.value);
-  }
-
-  async delete(session: DeletedAggregate<SessionEntity>) {
-    return (await this.deleteEntity(session)).match(
-      () => ok(undefined),
-      (error) =>
-        matchError(error, {
-          EntityNotFound: () => err(new SessionNotFoundError()),
-        }),
+  getOneById(id: string) {
+    return this.getUniqueEntity({ where: { id } }).mapErr((e) =>
+      matchError(e, {
+        EntityNotFound: () => new SessionNotFoundError(),
+      }),
     );
   }
 
-  async getOneByHashedRefreshToken(
-    hashedRefreshToken: string,
-  ): Promise<DomainResult<SessionEntity, InvalidRefreshTokenError>> {
-    const tokenRecord = await this.client.refreshToken.findUnique({
-      where: {
-        hashedToken: hashedRefreshToken,
-      },
-      select: {
-        sessionId: true,
-      },
+  getOneByIdAndUserId(id: string, userId: string) {
+    return this.getUniqueEntity({
+      where: { id, userId },
+    }).mapErr((e) =>
+      matchError(e, {
+        EntityNotFound: () => new SessionNotFoundError(),
+      }),
+    );
+  }
+
+  listAllByUserId(userId: string) {
+    return this.findManyEntities({
+      where: { userId },
     });
+  }
 
-    if (!tokenRecord) {
-      return err(new InvalidRefreshTokenError());
-    }
+  listActiveByUserId(userId: string) {
+    return this.findManyEntities({
+      where: { userId, status: 'ACTIVE' },
+    });
+  }
 
-    const session = await this.delegate.findUnique({
+  create(session: SessionEntity) {
+    return this.createEntity(session)
+      .mapErr((e) =>
+        matchError(e, {
+          EntityConflict: () => {
+            throw new UnexpectedDomainErrorException(new SessionConflictError());
+          },
+        }),
+      )
+      .andTee(() => {
+        const { added } = session.getProps().refreshTokenCollection.getChanges();
+        return this.refreshTokenRepo.createMany(added);
+      });
+  }
+
+  update(session: SessionEntity) {
+    return this.updateEntity(session)
+      .mapErr((e) =>
+        matchError(e, {
+          EntityNotFound: () => new SessionNotFoundError(),
+          EntityConflict: () => {
+            throw new UnexpectedDomainErrorException(new SessionConflictError());
+          },
+        }),
+      )
+      .andTee(() => {
+        const { added, current, removed } = session.getProps().refreshTokenCollection.getChanges();
+        return ResultAsync.combine([
+          this.refreshTokenRepo.createMany(added),
+          this.refreshTokenRepo.updateMany(current),
+          this.refreshTokenRepo.deleteMany(removed),
+        ]);
+      });
+  }
+
+  delete(session: DeletedAggregate<SessionEntity>) {
+    return this.deleteEntity(session).mapErr((error) =>
+      matchError(error, {
+        EntityNotFound: () => new SessionNotFoundError(),
+      }),
+    );
+  }
+
+  getOneByHashedRefreshToken(hashedRefreshToken: string) {
+    return this.getFirstEntity({
       where: {
-        id: tokenRecord.sessionId,
+        refreshTokens: {
+          some: {
+            hashedToken: hashedRefreshToken,
+          },
+        },
       },
       include: {
         refreshTokens: {
@@ -174,11 +131,10 @@ export class SessionRepository
           },
         },
       },
-    });
-
-    if (!session) {
-      return err(new InvalidRefreshTokenError());
-    }
-    return ok(this.mapper.toDomain(session));
+    }).mapErr((e) =>
+      matchError(e, {
+        EntityNotFound: () => new InvalidRefreshTokenError(),
+      }),
+    );
   }
 }

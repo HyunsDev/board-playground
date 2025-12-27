@@ -1,4 +1,4 @@
-import { DomainResult, RepositoryPort } from '@workspace/backend-ddd';
+import { DomainResultAsync, RepositoryPort } from '@workspace/backend-ddd';
 import { PaginatedResult, PaginationQuery, UserEmail, UserId, Username } from '@workspace/common';
 
 import {
@@ -21,27 +21,23 @@ export type UserExistsParams = {
 };
 
 export abstract class UserRepositoryPort extends RepositoryPort<UserEntity> {
-  abstract findOne(params: UserFindOneParams): Promise<UserEntity | null>;
-  abstract getOne(params: UserFindOneParams): Promise<DomainResult<UserEntity, UserNotFoundError>>;
-  abstract getOneById(userId: UserId): Promise<DomainResult<UserEntity, UserNotFoundError>>;
-  abstract exists(params: UserExistsParams): Promise<boolean>;
+  abstract findOne(params: UserFindOneParams): DomainResultAsync<UserEntity | null, never>;
+  abstract getOne(params: UserFindOneParams): DomainResultAsync<UserEntity, UserNotFoundError>;
+  abstract getOneById(userId: UserId): DomainResultAsync<UserEntity, UserNotFoundError>;
+  abstract exists(params: UserExistsParams): DomainResultAsync<boolean, never>;
   abstract searchUsers(
     params: PaginationQuery<{ nickname?: string }>,
-  ): Promise<PaginatedResult<UserEntity>>;
+  ): DomainResultAsync<PaginatedResult<UserEntity>, never>;
 
   abstract create(
     user: UserEntity,
-  ): Promise<
-    DomainResult<UserEntity, UserEmailAlreadyExistsError | UserUsernameAlreadyExistsError>
-  >;
+  ): DomainResultAsync<UserEntity, UserEmailAlreadyExistsError | UserUsernameAlreadyExistsError>;
   abstract update(
     user: UserEntity,
-  ): Promise<
-    DomainResult<
-      UserEntity,
-      UserNotFoundError | UserEmailAlreadyExistsError | UserUsernameAlreadyExistsError
-    >
+  ): DomainResultAsync<
+    UserEntity,
+    UserNotFoundError | UserEmailAlreadyExistsError | UserUsernameAlreadyExistsError
   >;
-  abstract updateLastActiveAt(userId: UserId): Promise<DomainResult<void, UserNotFoundError>>;
-  abstract delete(user: UserEntity): Promise<DomainResult<void, UserNotFoundError>>;
+  abstract updateLastActiveAt(userId: UserId): DomainResultAsync<void, UserNotFoundError>;
+  abstract delete(user: UserEntity): DomainResultAsync<void, UserNotFoundError>;
 }

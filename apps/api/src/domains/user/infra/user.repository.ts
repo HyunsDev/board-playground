@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { err, ok } from 'neverthrow';
 
 import {
   BaseRepository,
@@ -9,17 +8,10 @@ import {
 } from '@workspace/backend-core';
 import {
   DeletedAggregate,
-  DomainResult,
   matchError,
   UnexpectedDomainErrorException,
 } from '@workspace/backend-ddd';
-import {
-  createPaginatedResult,
-  getPaginationSkip,
-  PaginatedResult,
-  PaginationQuery,
-  UserId,
-} from '@workspace/common';
+import { PaginationQuery, UserId } from '@workspace/common';
 import { PrismaClient, User } from '@workspace/database';
 
 import { UserMapper } from './user.mapper';
@@ -53,8 +45,8 @@ export class UserRepository
     return this.client.user;
   }
 
-  async findOne(params: UserFindOneParams): Promise<UserEntity | null> {
-    return await this.findOneEntity({
+  findOne(params: UserFindOneParams) {
+    return this.findUniqueEntity({
       where: {
         id: params.id,
         email: params.email,
@@ -63,28 +55,22 @@ export class UserRepository
     });
   }
 
-  async getOne(params: UserFindOneParams): Promise<DomainResult<UserEntity, UserNotFoundError>> {
-    return (
-      await this.getOneEntity({
-        where: {
-          id: params.id,
-          email: params.email,
-          username: params.username,
-        },
-      })
-    ).mapErr(() => new UserNotFoundError());
+  getOne(params: UserFindOneParams) {
+    return this.getUniqueEntity({
+      where: {
+        id: params.id,
+        email: params.email,
+        username: params.username,
+      },
+    }).mapErr(() => new UserNotFoundError());
   }
 
-  async getOneById(id: UserId): Promise<DomainResult<UserEntity, UserNotFoundError>> {
-    const result = await this.findOneById(id);
-    if (!result) {
-      return err(new UserNotFoundError());
-    }
-    return ok(result);
+  getOneById(id: UserId) {
+    return this.getUniqueEntity({ where: { id } }).mapErr(() => new UserNotFoundError());
   }
 
-  async exists(params: UserExistsParams): Promise<boolean> {
-    return await this.existsEntity({
+  exists(params: UserExistsParams) {
+    return this.existsEntity({
       where: {
         id: params.id,
         email: params.email,
@@ -93,9 +79,7 @@ export class UserRepository
     });
   }
 
-  async searchUsers(
-    params: PaginationQuery<{ nickname?: string }>,
-  ): Promise<PaginatedResult<UserEntity>> {
+  searchUsers(params: PaginationQuery<{ nickname?: string }>) {
     const whereClause = params.nickname
       ? {
           nickname: {
@@ -105,88 +89,69 @@ export class UserRepository
         }
       : {};
 
-    const options = getPaginationSkip(params);
-
-    const users = await this.delegate.findMany({
+    return this.findManyPaginatedEntities(params, {
       where: whereClause,
-      skip: options.skip,
-      take: options.take,
       orderBy: { createdAt: 'desc' },
     });
-    const total = await this.delegate.count({ where: whereClause });
-
-    return createPaginatedResult({
-      items: this.mapper.toDomainMany(users),
-      totalItems: total,
-      options: { page: params.page, limit: params.limit },
-    });
   }
 
-  async create(user: UserEntity) {
-    return (await this.createEntity(user)).match(
-      (user) => ok(user),
-      (error) =>
-        matchError(error, {
-          EntityConflict: (e) => {
-            if (e.details?.conflicts.some((conflict) => conflict.field === 'email')) {
-              return err(new UserEmailAlreadyExistsError());
-            }
-            if (e.details?.conflicts.some((conflict) => conflict.field === 'username')) {
-              return err(new UserUsernameAlreadyExistsError());
-            }
-            throw new UnexpectedDomainErrorException(e);
-          },
-        }),
-    );
-  }
-
-  async update(user: UserEntity) {
-    return (await this.updateEntity(user)).match(
-      (user) => ok(user),
-      (error) =>
-        matchError(error, {
-          EntityNotFound: () => err(new UserNotFoundError()),
-          EntityConflict: (e) => {
-            if (e.details?.conflicts.some((conflict) => conflict.field === 'email')) {
-              return err(new UserEmailAlreadyExistsError());
-            }
-            if (e.details?.conflicts.some((conflict) => conflict.field === 'username')) {
-              return err(new UserUsernameAlreadyExistsError());
-            }
-            throw new UnexpectedDomainErrorException(e);
-          },
-        }),
-    );
-  }
-
-  async updateLastActiveAt(userId: string) {
-    return (
-      await this.updateOneDirectly({
-        where: { id: userId },
-        data: { lastActiveAt: new Date() },
-        select: {
-          id: true,
+  create(user: UserEntity) {
+    return this.createEntity(user).mapErr((error) =>
+      matchError(error, {
+        EntityConflict: (e) => {
+          if (e.details?.conflicts.some((conflict) => conflict.field === 'email')) {
+            return new UserEmailAlreadyExistsError();
+          }
+          if (e.details?.conflicts.some((conflict) => conflict.field === 'username')) {
+            return new UserUsernameAlreadyExistsError();
+          }
+          throw new UnexpectedDomainErrorException(e);
         },
-      })
-    ).match(
-      () => ok(undefined),
-      (error) =>
+      }),
+    );
+  }
+
+  update(user: UserEntity) {
+    return this.updateEntity(user).mapErr((error) =>
+      matchError(error, {
+        EntityNotFound: () => new UserNotFoundError(),
+        EntityConflict: (e) => {
+          if (e.details?.conflicts.some((conflict) => conflict.field === 'email')) {
+            return new UserEmailAlreadyExistsError();
+          }
+          if (e.details?.conflicts.some((conflict) => conflict.field === 'username')) {
+            return new UserUsernameAlreadyExistsError();
+          }
+          throw new UnexpectedDomainErrorException(e);
+        },
+      }),
+    );
+  }
+
+  updateLastActiveAt(userId: string) {
+    return this.updateOneDirectly({
+      where: { id: userId },
+      data: { lastActiveAt: new Date() },
+      select: {
+        id: true,
+      },
+    })
+      .map(() => undefined)
+      .mapErr((error) =>
         matchError(error, {
-          EntityNotFound: () => err(new UserNotFoundError()),
+          EntityNotFound: () => new UserNotFoundError(),
           EntityConflict: (e) => {
             throw new UnexpectedDomainErrorException(e);
           },
         }),
-    );
+      );
   }
 
-  async delete(user: DeletedAggregate<UserEntity>) {
-    return (await this.deleteEntity(user)).match(
-      () => ok(undefined),
-      (error) =>
-        matchError(error, {
-          EntityNotFound: () => err(new UserNotFoundError()),
-        }),
+  delete(user: DeletedAggregate<UserEntity>) {
+    return this.deleteEntity(user).mapErr((error) =>
+      matchError(error, {
+        EntityNotFound: () => new UserNotFoundError(),
+      }),
     );
   }
 }

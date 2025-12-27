@@ -1,5 +1,3 @@
-import { ok } from 'neverthrow';
-
 import { HandlerResult } from '@workspace/backend-common';
 import { IQueryHandler, QueryHandler } from '@workspace/backend-core';
 import { BaseQuery, BaseQueryProps, DrivenMessageMetadata } from '@workspace/backend-core';
@@ -32,7 +30,6 @@ export class ListSessionsQueryHandler implements IQueryHandler<ListSessionsQuery
   constructor(private readonly sessionRepo: SessionRepositoryPort) {}
 
   async execute({ data }: ISessionsQuery) {
-    const sessions = await this.sessionRepo.listAllByUserId(data.userId);
-    return ok(sessions);
+    return await this.sessionRepo.listAllByUserId(data.userId);
   }
 }

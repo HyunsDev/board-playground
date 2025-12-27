@@ -103,6 +103,7 @@ export class UserEntity extends BaseAggregateRoot<UserProps, UserId> {
       this.props.bio = data.bio;
     }
     this.props.updatedAt = new Date();
+    return ok(this);
   }
 
   public updateUsername(username: Username) {
@@ -116,6 +117,7 @@ export class UserEntity extends BaseAggregateRoot<UserProps, UserId> {
         newUsername: username,
       }),
     );
+    return ok(this);
   }
 
   public changePassword(newHashedPassword: string) {
@@ -128,6 +130,7 @@ export class UserEntity extends BaseAggregateRoot<UserProps, UserId> {
         userId: this.id,
       }),
     );
+    return ok(this);
   }
 
   public validate(): void {}

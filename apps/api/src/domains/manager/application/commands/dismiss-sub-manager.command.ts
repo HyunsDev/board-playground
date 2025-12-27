@@ -41,17 +41,17 @@ export class DismissSubManagerCommandHandler implements ICommandHandler<DismissS
 
   async execute({ data }: DismissSubManagerCommandProps) {
     return await this.txManager.run(async () => {
-      const actManagerResult = await this.repo.getOneByBoardSlugAndUserId(
-        data.boardSlug,
-        data.actManagerUserId,
-      );
+      const actManagerResult = await this.repo.getOne({
+        boardSlug: data.boardSlug,
+        userId: data.actManagerUserId,
+      });
       if (actManagerResult.isErr()) return err(actManagerResult.error);
       const actManager = actManagerResult.value;
 
-      const targetManagerResult = await this.repo.getOneByBoardSlugAndUserId(
-        data.boardSlug,
-        data.targetManagerUserId,
-      );
+      const targetManagerResult = await this.repo.getOne({
+        boardSlug: data.boardSlug,
+        userId: data.targetManagerUserId,
+      });
       if (targetManagerResult.isErr()) return err(targetManagerResult.error);
       const targetManager = targetManagerResult.value;
 

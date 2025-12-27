@@ -1,5 +1,3 @@
-import { ok } from 'neverthrow';
-
 import { HandlerResult } from '@workspace/backend-common';
 import { BaseQueryProps, BaseQuery, QueryHandler } from '@workspace/backend-core';
 import { UserId } from '@workspace/common';
@@ -29,7 +27,8 @@ export class ListUserManagersQueryHandler {
   constructor(private readonly repo: ManagerRepositoryPort) {}
 
   async execute({ data }: ListUserManagersQueryProps) {
-    const managers = await this.repo.findAllByUserId(data.userId);
-    return ok(managers);
+    return await this.repo.findMany({
+      userId: data.userId,
+    });
   }
 }

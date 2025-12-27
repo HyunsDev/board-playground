@@ -1,4 +1,4 @@
-import { DomainResult, RepositoryPort } from '@workspace/backend-ddd';
+import { DomainResultAsync, RepositoryPort } from '@workspace/backend-ddd';
 import { PaginatedResult, PaginationQuery } from '@workspace/common';
 import { BoardId, BoardSlug } from '@workspace/domain';
 
@@ -11,14 +11,14 @@ export type SearchBoardParams = PaginationQuery<{
 }>;
 
 export abstract class BoardRepositoryPort extends RepositoryPort<BoardEntity> {
-  abstract getOneById(id: BoardId): Promise<DomainResult<BoardEntity, BoardNotFoundError>>;
-  abstract findOneBySlug(slug: BoardSlug): Promise<BoardEntity | null>;
-  abstract getOneBySlug(slug: BoardSlug): Promise<DomainResult<BoardEntity, BoardNotFoundError>>;
-  abstract slugExists(slug: BoardSlug): Promise<boolean>;
-  abstract searchBoards(params: SearchBoardParams): Promise<PaginatedResult<BoardEntity>>;
-  abstract create(
-    board: BoardEntity,
-  ): Promise<DomainResult<BoardEntity, BoardSlugAlreadyExistsError>>;
-  abstract update(board: BoardEntity): Promise<DomainResult<BoardEntity, BoardNotFoundError>>;
-  abstract delete(board: BoardEntity): Promise<DomainResult<void, BoardNotFoundError>>;
+  abstract getOneById(id: BoardId): DomainResultAsync<BoardEntity, BoardNotFoundError>;
+  abstract getOneBySlug(slug: BoardSlug): DomainResultAsync<BoardEntity, BoardNotFoundError>;
+  abstract findOneBySlug(slug: BoardSlug): DomainResultAsync<BoardEntity | null, never>;
+  abstract slugExists(slug: BoardSlug): DomainResultAsync<boolean, never>;
+  abstract search(
+    params: SearchBoardParams,
+  ): DomainResultAsync<PaginatedResult<BoardEntity>, never>;
+  abstract create(board: BoardEntity): DomainResultAsync<BoardEntity, BoardSlugAlreadyExistsError>;
+  abstract update(board: BoardEntity): DomainResultAsync<BoardEntity, BoardNotFoundError>;
+  abstract delete(board: BoardEntity): DomainResultAsync<void, BoardNotFoundError>;
 }

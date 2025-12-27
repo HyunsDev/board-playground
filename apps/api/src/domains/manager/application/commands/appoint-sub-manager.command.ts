@@ -46,10 +46,10 @@ export class AppointSubManagerCommandHandler implements ICommandHandler<AppointS
 
   async execute({ data }: AppointSubManagerCommandProps) {
     return await this.txManager.run(async () => {
-      const actorResult = await this.repo.getOneByBoardSlugAndUserId(
-        data.boardSlug,
-        data.actorUserId,
-      );
+      const actorResult = await this.repo.getOne({
+        boardSlug: data.boardSlug,
+        userId: data.actorUserId,
+      });
       if (actorResult.isErr()) return err(actorResult.error);
       const actor = actorResult.value;
 

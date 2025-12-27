@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { err, ok } from 'neverthrow';
 
 import {
   BaseRepository,
@@ -12,7 +11,6 @@ import {
   matchError,
   UnexpectedDomainErrorException,
 } from '@workspace/backend-ddd';
-import { createPaginatedResult } from '@workspace/common';
 import { Board, PrismaClient } from '@workspace/database';
 
 import {
@@ -42,98 +40,69 @@ export class BoardRepository
     return this.client.board;
   }
 
-  async getOneById(id: string) {
-    const result = await this.findOneById(id);
-    if (!result) {
-      return err(new BoardNotFoundError());
-    }
-    return ok(result);
+  getOneById(id: string) {
+    return this.getUniqueEntity({
+      where: { id },
+    }).mapErr(() => new BoardNotFoundError());
   }
 
-  async findOneBySlug(slug: string) {
-    const record = await this.delegate.findUnique({
+  findOneBySlug(slug: string) {
+    return this.findUniqueEntity({
       where: { slug },
     });
-    return record ? this.mapper.toDomain(record) : null;
   }
 
-  async getOneBySlug(slug: string) {
-    const record = await this.findOneBySlug(slug);
-    if (!record) {
-      return err(new BoardNotFoundError());
-    }
-    return ok(record);
+  getOneBySlug(slug: string) {
+    return this.getUniqueEntity({
+      where: { slug },
+    }).mapErr(() => new BoardNotFoundError());
   }
 
-  async slugExists(slug: string) {
-    const count = await this.delegate.count({
+  slugExists(slug: string) {
+    return this.existsEntity({
       where: { slug },
     });
-    return count > 0;
   }
 
-  async searchBoards({ name, slug, limit, page }: SearchBoardParams) {
-    const where = {
-      slug: slug ? { contains: slug } : undefined,
-      name: name ? { contains: name } : undefined,
-    };
-
-    const [items, totalItem] = await Promise.all([
-      this.delegate.findMany({
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.delegate.count({ where }),
-    ]);
-
-    const entities = items.map((item) => this.mapper.toDomain(item));
-    return createPaginatedResult({
-      items: entities,
-      totalItems: totalItem,
-      options: {
-        page,
-        limit,
+  search(params: SearchBoardParams) {
+    return this.findManyPaginatedEntities(params, {
+      where: {
+        slug: params.slug ? { contains: params.slug } : undefined,
+        name: params.name ? { contains: params.name } : undefined,
       },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
-  async create(entity: BoardEntity) {
-    return (await this.createEntity(entity)).match(
-      (board) => ok(board),
-      (error) =>
-        matchError(error, {
-          EntityConflict: (e) => {
-            if (e.details?.conflicts.some((conflict) => conflict.field === 'slug')) {
-              return err(new BoardSlugAlreadyExistsError());
-            }
-            throw new UnexpectedDomainErrorException(e);
-          },
-        }),
+  create(entity: BoardEntity) {
+    return this.createEntity(entity).mapErr((error) =>
+      matchError(error, {
+        EntityConflict: (e) => {
+          if (e.details?.conflicts.some((conflict) => conflict.field === 'slug')) {
+            return new BoardSlugAlreadyExistsError();
+          }
+          throw new UnexpectedDomainErrorException(e);
+        },
+      }),
     );
   }
 
-  async update(board: BoardEntity) {
-    return (await this.updateEntity(board)).match(
-      (board) => ok(board),
-      (error) =>
-        matchError(error, {
-          EntityNotFound: () => err(new BoardNotFoundError()),
-          EntityConflict: (e) => {
-            throw new UnexpectedDomainErrorException(e);
-          },
-        }),
+  update(board: BoardEntity) {
+    return this.updateEntity(board).mapErr((error) =>
+      matchError(error, {
+        EntityNotFound: () => new BoardNotFoundError(),
+        EntityConflict: (e) => {
+          throw new UnexpectedDomainErrorException(e);
+        },
+      }),
     );
   }
 
-  async delete(board: DeletedAggregate<BoardEntity>) {
-    return (await this.deleteEntity(board)).match(
-      () => ok(undefined),
-      (error) =>
-        matchError(error, {
-          EntityNotFound: () => err(new BoardNotFoundError()),
-        }),
+  delete(board: DeletedAggregate<BoardEntity>) {
+    return this.deleteEntity(board).mapErr((error) =>
+      matchError(error, {
+        EntityNotFound: () => new BoardNotFoundError(),
+      }),
     );
   }
 }

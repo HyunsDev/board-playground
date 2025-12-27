@@ -1,5 +1,3 @@
-import { ok } from 'neverthrow';
-
 import { HandlerResult } from '@workspace/backend-common';
 import { IQueryHandler, QueryHandler } from '@workspace/backend-core';
 import { BasePaginatedQueryProps, BaseQuery } from '@workspace/backend-core';
@@ -31,12 +29,10 @@ export class SearchUserQueryHandler implements IQueryHandler<SearchUserQuery> {
   constructor(private readonly userRepo: UserRepositoryPort) {}
 
   async execute({ data }: ISearchUserQuery) {
-    const { items, meta } = await this.userRepo.searchUsers({
+    return this.userRepo.searchUsers({
       nickname: data.nickname,
       page: data.page,
       limit: data.limit,
     });
-
-    return ok({ items, meta });
   }
 }

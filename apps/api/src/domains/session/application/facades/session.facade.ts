@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import dayjs from 'dayjs';
-import { err, ok } from 'neverthrow';
+import { ok, Result, ResultAsync } from 'neverthrow';
 
 import {
   matchError,
@@ -31,7 +31,7 @@ export class SessionFacade {
     return this.sessionRepo.getOneById(id);
   }
 
-  async create(props: {
+  create(props: {
     userId: UserId;
     userAgent: string;
     platform: DevicePlatform;
@@ -46,14 +46,10 @@ export class SessionFacade {
       refreshTokenHash: refreshTokenSet.refreshTokenHash,
       expiresAt: this.getExpiresAtDate(),
     });
-    return (await this.sessionRepo.create(session)).match(
-      (data) =>
-        ok({
-          session: data,
-          refreshToken: refreshTokenSet.refreshToken,
-        }),
-      (error) => err(error),
-    );
+    return this.sessionRepo.create(session).map((data) => ({
+      session: data,
+      refreshToken: refreshTokenSet.refreshToken,
+    }));
   }
 
   async rotate(currentRefreshToken: string) {
@@ -108,21 +104,16 @@ export class SessionFacade {
     return ok(updateResult.value);
   }
 
-  async closeAll(userId: UserId, exceptSessionId?: SessionId) {
-    const sessions = await this.sessionRepo.listActiveByUserId(userId);
-    const closeResults = await Promise.all(
-      sessions
-        .filter((s) => s.id !== exceptSessionId && s.isActive)
-        .map(async (session) => {
-          const closeResult = session.close();
-          if (closeResult.isErr()) return closeResult;
-          return this.sessionRepo.update(session);
-        }),
-    );
-
-    for (const result of closeResults) {
-      if (result.isErr())
-        return matchError(result.error, {
+  closeAllActives(userId: UserId, exceptSessionId?: SessionId) {
+    return this.sessionRepo
+      .listActiveByUserId(userId)
+      .map((sessions) => sessions.filter((s) => s.id !== exceptSessionId))
+      .andThen((sessions) => Result.combine(sessions.map((session) => session.close())))
+      .andThen((sessions) =>
+        ResultAsync.combine(sessions.map((session) => this.sessionRepo.update(session))),
+      )
+      .mapErr((error) =>
+        matchError(error, {
           SessionNotFound: (e) => {
             throw new UnexpectedDomainErrorException(e);
           },
@@ -132,10 +123,8 @@ export class SessionFacade {
           SessionRevoked: (e) => {
             throw new UnexpectedDomainErrorException(e);
           },
-        });
-    }
-
-    return ok(undefined);
+        }),
+      );
   }
 
   private getExpiresAtDate(): Date {

@@ -40,17 +40,17 @@ export class TransferMainManagerCommandHandler {
 
   async execute({ data }: TransferMainManagerCommandProps) {
     return await this.txManager.run(async () => {
-      const fromManagerResult = await this.repo.getOneByBoardSlugAndUserId(
-        data.boardSlug,
-        data.fromManagerUserId,
-      );
+      const fromManagerResult = await this.repo.getOne({
+        boardSlug: data.boardSlug,
+        userId: data.fromManagerUserId,
+      });
       if (fromManagerResult.isErr()) return err(fromManagerResult.error);
       const fromManager = fromManagerResult.value;
 
-      const toManagerResult = await this.repo.getOneByBoardSlugAndUserId(
-        data.boardSlug,
-        data.toManagerUserId,
-      );
+      const toManagerResult = await this.repo.getOne({
+        boardSlug: data.boardSlug,
+        userId: data.toManagerUserId,
+      });
       if (toManagerResult.isErr()) return err(toManagerResult.error);
       const toManager = toManagerResult.value;
 

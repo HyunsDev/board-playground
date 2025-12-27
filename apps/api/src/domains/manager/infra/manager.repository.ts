@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { err, ok } from 'neverthrow';
 
 import {
   BaseRepository,
@@ -9,14 +8,19 @@ import {
 } from '@workspace/backend-core';
 import {
   DeletedAggregate,
+  DomainResultAsync,
   matchError,
   UnexpectedDomainErrorException,
 } from '@workspace/backend-ddd';
-import { UserId } from '@workspace/common';
 import { Manager, PrismaClient } from '@workspace/database';
-import { BoardId, BoardSlug, ManagerId } from '@workspace/domain';
 
-import { ManagerEntity, ManagerNotFoundError, ManagerRepositoryPort } from '../domain';
+import {
+  FindManyManagers,
+  FindOneManager,
+  ManagerEntity,
+  ManagerNotFoundError,
+  ManagerRepositoryPort,
+} from '../domain';
 import { ManagerMapper } from './manager.mapper';
 
 @Injectable()
@@ -37,94 +41,70 @@ export class ManagerRepository
     return this.client.manager;
   }
 
-  async getOneById(id: ManagerId) {
-    const result = await this.findOneById(id);
-    if (!result) {
-      return err(new ManagerNotFoundError());
-    }
-    return ok(result);
+  getOne(params: FindOneManager) {
+    return this.getFirstEntity({
+      where: {
+        id: params.id,
+        boardId: params.boardId,
+        userId: params.userId,
+        board: {
+          slug: params.boardSlug,
+        },
+      },
+    }).mapErr(() => new ManagerNotFoundError());
   }
 
-  async findAllByBoardSlug(boardSlug: BoardSlug): Promise<ManagerEntity[]> {
-    const board = await this.prisma.board.findUnique({
-      where: { slug: boardSlug },
-      select: { id: true },
+  findOne(params: FindOneManager): DomainResultAsync<ManagerEntity | null, never> {
+    return this.findFirstEntity({
+      where: {
+        id: params.id,
+        boardId: params.boardId,
+        userId: params.userId,
+        board: {
+          slug: params.boardSlug,
+        },
+      },
     });
-    if (!board) {
-      return [];
-    }
-    const boardId = board.id;
-
-    const records = await this.delegate.findMany({
-      where: { boardId },
-      include: { user: true },
-    });
-    return records.map((record) => this.mapper.toDomain(record));
   }
 
-  async findAllByUserId(userId: UserId): Promise<ManagerEntity[]> {
-    const records = await this.delegate.findMany({
-      where: { userId },
-      include: { board: true },
+  findMany(params: FindManyManagers): DomainResultAsync<ManagerEntity[], never> {
+    return this.findManyEntities({
+      where: {
+        boardId: params.boardId,
+        userId: params.userId,
+        board: {
+          slug: params.boardSlug,
+        },
+      },
     });
-    return records.map((record) => this.mapper.toDomain(record));
   }
 
-  async getOneByBoardSlugAndUserId(boardSlug: BoardSlug, userId: UserId) {
-    const board = await this.prisma.board.findUnique({
-      where: { slug: boardSlug },
-      select: { id: true },
-    });
-    if (!board) {
-      return err(new ManagerNotFoundError());
-    }
-    const boardId = board.id as BoardId;
-
-    return await this.getOneByBoardIdAndUserId(boardId, userId);
-  }
-
-  async getOneByBoardIdAndUserId(boardId: BoardId, userId: UserId) {
-    const record = await this.delegate.findFirst({
-      where: { boardId, userId },
-    });
-    if (!record) {
-      return err(new ManagerNotFoundError());
-    }
-    return ok(this.mapper.toDomain(record));
-  }
-
-  async create(manager: ManagerEntity) {
-    return (await this.createEntity(manager)).match(
-      (createdManager) => ok(createdManager),
-      (error) =>
-        matchError(error, {
-          EntityConflict: (e) => {
-            throw new UnexpectedDomainErrorException(e);
-          },
-        }),
+  create(manager: ManagerEntity) {
+    return this.createEntity(manager).mapErr((error) =>
+      matchError(error, {
+        EntityConflict: (e) => {
+          throw new UnexpectedDomainErrorException(e);
+        },
+      }),
     );
   }
 
-  async update(manager: ManagerEntity) {
-    return (await this.updateEntity(manager)).match(
-      (updatedManager) => ok(updatedManager),
-      (error) =>
-        matchError(error, {
-          EntityNotFound: () => err(new ManagerNotFoundError()),
-          EntityConflict: (e) => {
-            throw new UnexpectedDomainErrorException(e);
-          },
-        }),
+  update(manager: ManagerEntity) {
+    return this.updateEntity(manager).mapErr((error) =>
+      matchError(error, {
+        EntityNotFound: () => new ManagerNotFoundError(),
+        EntityConflict: (e) => {
+          throw new UnexpectedDomainErrorException(e);
+        },
+      }),
     );
   }
 
-  async delete(manager: DeletedAggregate<ManagerEntity>) {
-    return (await this.deleteEntity(manager)).match(
-      () => ok(undefined),
-      (error) =>
-        matchError(error, {
-          EntityNotFound: () => err(new ManagerNotFoundError()),
-        }),
+  delete(manager: DeletedAggregate<ManagerEntity>) {
+    return this.deleteEntity(manager).mapErr((error) =>
+      matchError(error, {
+        EntityNotFound: () => new ManagerNotFoundError(),
+      }),
     );
   }
 }

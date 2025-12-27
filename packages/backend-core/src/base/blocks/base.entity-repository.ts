@@ -63,7 +63,7 @@ export abstract class BaseEntityRepository<
   protected findManyPaginatedEntities(
     options: PaginationOptions,
     args: Omit<Parameters<TDelegate['findMany']>[0], 'skip' | 'take'>,
-  ): DomainResultAsync<PaginatedResult<TEntity>> {
+  ): DomainResultAsync<PaginatedResult<TEntity>, never> {
     const { skip, take } = getPaginationSkip(options);
 
     return ResultAsync.fromPromise(

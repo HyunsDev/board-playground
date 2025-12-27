@@ -93,7 +93,10 @@ export class ChangePasswordCommandHandler implements ICommandHandler<ChangePassw
 
       // 세션 종료
       if (data.logoutAllSessions) {
-        const closeAllResult = await this.sessionFacade.closeAll(user.id, data.currentSessionId);
+        const closeAllResult = await this.sessionFacade.closeAllActives(
+          user.id,
+          data.currentSessionId,
+        );
         if (closeAllResult.isErr()) return matchError(closeAllResult.error, {});
       }
 

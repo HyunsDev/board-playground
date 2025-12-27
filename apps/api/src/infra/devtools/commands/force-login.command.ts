@@ -23,7 +23,7 @@ export class ForceLoginCommand extends BaseCommand<
   static readonly code = asCommandCode('system:devtools:cmd:force_login');
   readonly resourceType = AggregateCodeEnum.Account.User;
 
-  constructor(data: IForceLoginCommand['data'], metadata: DrivenMessageMetadata) {
+  constructor(data: IForceLoginCommand['data'], metadata?: DrivenMessageMetadata) {
     super(null, data, metadata);
   }
 }
