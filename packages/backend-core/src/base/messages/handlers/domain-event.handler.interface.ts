@@ -1,6 +1,6 @@
 import { MessageResult } from '@workspace/backend-ddd';
 
-import { BaseDomainEvent, BaseDomainEventProps } from '../messages';
+import { BaseDomainEvent, BaseDomainEventProps } from '..';
 
 export interface IDomainEventHandler<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

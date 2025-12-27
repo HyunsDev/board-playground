@@ -1,6 +1,6 @@
 import type { UnitCode, ValidateUnitCode } from './unit-code.utils.js';
 
-export type MessageType = 'trg' | 'cmd' | 'evt' | 'qry' | 'job' | 'rpc' | 'pub' | 'web';
+export type MessageCodeType = 'trg' | 'cmd' | 'evt' | 'qry' | 'job' | 'rpc' | 'pub' | 'web';
 
 // Message Code Types
 export type CommandCode<T extends string = string> = UnitCode<T, 'cmd'>;
@@ -10,7 +10,7 @@ export type JobCode<T extends string = string> = UnitCode<T, 'job'>;
 export type RpcCode<T extends string = string> = UnitCode<T, 'rpc'>;
 export type IntegrationEventCode<T extends string = string> = UnitCode<T, 'pub'>;
 export type HttpRequestCode<T extends string = string> = UnitCode<T, 'web'>;
-export type MessageCode<T extends string = string> = UnitCode<T, MessageType>;
+export type MessageCode<T extends string = string> = UnitCode<T, MessageCodeType>;
 export type CausationCode<T extends string = string> = MessageCode<T>;
 
 /**
@@ -74,5 +74,6 @@ export const asHttpRequestCode = <const T extends string>(
  * @example const code = asMessageCode('account:user:cmd:create');
  */
 export const asMessageCode = <const T extends string>(
-  code: ValidateUnitCode<T, MessageType>,
-): ValidateUnitCode<T, MessageType> => code as unknown as T & ValidateUnitCode<T, MessageType>;
+  code: ValidateUnitCode<T, MessageCodeType>,
+): ValidateUnitCode<T, MessageCodeType> =>
+  code as unknown as T & ValidateUnitCode<T, MessageCodeType>;

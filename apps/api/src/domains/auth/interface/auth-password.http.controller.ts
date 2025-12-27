@@ -176,7 +176,7 @@ export class AuthPasswordHttpController {
       const result = await this.commandDispatcher.execute(
         new ResetPasswordCommand({
           email: body.email,
-          emailVerificationCode: body.emailVerificationCode,
+          passwordResetCode: body.passwordResetCode,
           newPassword: body.newPassword,
         }),
       );

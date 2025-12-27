@@ -9,7 +9,7 @@ import { AuditLogJob } from './audit-log.job';
 
 import { BaseDomainEvent } from '@/base';
 import { JobDispatcherPort } from '@/base/messages/ports';
-import { TokenContext, ClientContext, MessageContext } from '@/modules/foundation/context';
+import { TokenContext, ClientContext } from '@/modules/foundation/context';
 
 @Injectable()
 export class AuditLogCollector implements OnModuleInit, OnModuleDestroy {
@@ -21,7 +21,6 @@ export class AuditLogCollector implements OnModuleInit, OnModuleDestroy {
     private readonly eventBus: EventBus,
     private readonly clientContext: ClientContext,
     private readonly tokenContext: TokenContext,
-    private readonly messageContext: MessageContext,
   ) {}
 
   onModuleInit() {

@@ -28,6 +28,7 @@
     "facades": "interface",
     "internal": "private",
     "persistence": "database",
+    "redis": "store",
 
     "api-e2e": "test",
     "jest-config": "test",

@@ -25,9 +25,9 @@ import { HttpApiErrorLoggingInterceptor } from './interceptors/http-api-error-lo
 import { MessageInterceptor } from './interceptors/message.interceptor';
 import { ContextMiddleware } from './middlewares/context.middleware';
 import { TransactionManager } from './transaction.manager';
-import { PrismaService } from '../../persistence/database/prisma.service';
+import { PrismaService } from '../../persistence/prisma/prisma.service';
 
-import { DatabaseModule } from '@/modules/persistence/database/database.module';
+import { PrismaModule } from '@/modules/persistence/prisma/prisma.module';
 
 /**
  * 모듈 설정 옵션
@@ -96,10 +96,10 @@ export class ContextModule implements NestModule {
     const clsPlugins: ClsPlugin[] = [];
 
     if (enableDatabase) {
-      imports.push(DatabaseModule);
+      imports.push(PrismaModule);
       clsPlugins.push(
         new ClsPluginTransactional({
-          imports: [DatabaseModule],
+          imports: [PrismaModule],
           adapter: new TransactionalAdapterPrisma({
             prismaInjectionToken: PrismaService,
           }),

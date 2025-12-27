@@ -9,7 +9,7 @@ import {
 } from '@workspace/backend-ddd';
 import { CausationCode, DomainCode, HttpRequestCode, ModelId } from '@workspace/domain';
 
-import { DrivenMessageMetadata } from '../message-metadata';
+import { DrivenMessageMetadata } from './message-metadata';
 
 export type HttpRequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
 

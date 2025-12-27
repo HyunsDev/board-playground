@@ -68,7 +68,7 @@ export class DiscordWebhookService<TName extends string = string> implements OnM
     );
   }
 
-  async send(
+  send(
     name: TName,
     data: { content?: string; embeds?: APIEmbed[]; username?: string; avatar_url?: string },
   ) {
@@ -76,8 +76,7 @@ export class DiscordWebhookService<TName extends string = string> implements OnM
     if (!webhook) {
       throw new DiscordWebhookUnregisteredException(name);
     }
-
-    return await this.httpClient.request(
+    return this.httpClient.request(
       new SendWebhookHttpRequest(webhook.url, {
         content: data.content || '',
         embeds: data.embeds,

@@ -13,10 +13,10 @@ import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { ValidationError } from '@workspace/backend-ddd';
 import { UserEmail, Username } from '@workspace/common';
 import { DEVICE_PLATFORM, passwordSchema } from '@workspace/contract';
-import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
+import { AggregateCodeEnum, asCommandCode, EmailVerificationCode } from '@workspace/domain';
 
 import { InvalidEmailVerificationCodeError } from '@/domains/auth/auth.domain-error';
-import { getEmailVerificationCodeKey } from '@/domains/auth/auth.utils';
+import { EmailVerificationCodeStorePort } from '@/domains/auth/domain/email-verification-code.store.port';
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { PasswordProvider } from '@/infra/crypto';
@@ -29,7 +29,7 @@ type IRegisterAuthCommand = BaseCommandProps<{
   password: string;
   ipAddress: string;
   userAgent: string;
-  emailVerificationCode: string;
+  emailVerificationCode: EmailVerificationCode;
 }>;
 
 export class RegisterAuthCommand extends BaseCommand<
@@ -54,6 +54,7 @@ export class RegisterAuthCommandHandler implements ICommandHandler<RegisterAuthC
     private readonly passwordProvider: PasswordProvider,
     private readonly cacheService: CacheService,
     private readonly txManager: TransactionManager,
+    private readonly emailVerificationCodeStore: EmailVerificationCodeStorePort,
   ) {}
 
   async execute(command: IRegisterAuthCommand) {
@@ -70,11 +71,11 @@ export class RegisterAuthCommandHandler implements ICommandHandler<RegisterAuthC
         );
       }
 
-      // 이메일 인증
-      const cachedCode = await this.cacheService.get<string>(
-        getEmailVerificationCodeKey(command.data.email),
+      const verifyResult = await this.emailVerificationCodeStore.verifyAndConsume(
+        command.data.email,
+        command.data.emailVerificationCode,
       );
-      if (cachedCode !== command.data.emailVerificationCode) {
+      if (verifyResult.isErr() || !verifyResult.value) {
         return err(new InvalidEmailVerificationCodeError());
       }
 

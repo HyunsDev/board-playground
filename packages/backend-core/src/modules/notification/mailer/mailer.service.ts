@@ -1,6 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { err, ok } from 'neverthrow';
+import { ResultAsync } from 'neverthrow';
 import * as nodemailer from 'nodemailer';
+
+import { FailedToSendMailError } from './mailer.errors';
 
 import { MailerConfig, mailerConfig } from '@/modules/foundation/config/configs/mailer.config';
 
@@ -13,7 +15,6 @@ export class MailerService {
     @Inject(mailerConfig.KEY)
     private readonly config: MailerConfig,
   ) {
-    // OAuth2 설정
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -26,19 +27,19 @@ export class MailerService {
     } as nodemailer.TransportOptions);
   }
 
-  async sendEmail(options: nodemailer.SendMailOptions) {
-    try {
-      const info = await this.transporter.sendMail({
+  sendEmail(options: nodemailer.SendMailOptions) {
+    return ResultAsync.fromPromise(
+      this.transporter.sendMail({
         from: this.config.mailFrom,
         to: options.to,
         subject: options.subject,
         html: options.html,
         text: options.text,
-      });
-      return ok(info);
-    } catch (error) {
-      this.logger.error(`Failed to send email to ${options.to}`, error);
-      return err(error as Error);
-    }
+      }),
+      (e) => {
+        this.logger.error(`Failed to send email to ${options.to}`, e);
+        return new FailedToSendMailError(options, e);
+      },
+    );
   }
 }

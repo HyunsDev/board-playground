@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { UserEmailSchema, UsernameSchema } from '@workspace/common';
+import { EmailVerificationCodeSchema, PasswordResetCodeSchema } from '@workspace/domain';
 
 import { ApiErrors } from '../api-errors';
 import { passwordSchema } from './auth.schemas';
@@ -30,7 +31,7 @@ export const registerWithPassword = c.mutation({
   body: z.object({
     email: UserEmailSchema,
     password: passwordSchema,
-    emailVerificationCode: z.string().length(6),
+    emailVerificationCode: EmailVerificationCodeSchema,
     username: UsernameSchema,
     nickname: z.string().min(2).max(20),
   }),
@@ -105,7 +106,7 @@ export const resetPassword = c.mutation({
   body: z.object({
     email: UserEmailSchema,
     newPassword: passwordSchema,
-    emailVerificationCode: z.uuid(),
+    passwordResetCode: PasswordResetCodeSchema,
   }),
   responses: {
     204: c.noBody(),

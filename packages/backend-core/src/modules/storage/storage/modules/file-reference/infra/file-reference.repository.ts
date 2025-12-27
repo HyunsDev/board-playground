@@ -20,7 +20,7 @@ import {
 
 import { BaseDirectRepository } from '@/base';
 import { TransactionContext } from '@/modules/foundation';
-import { PrismaService } from '@/modules/persistence/database';
+import { PrismaService } from '@/modules/persistence/prisma';
 
 @Injectable()
 export class FileReferenceRepository

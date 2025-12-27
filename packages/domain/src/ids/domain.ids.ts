@@ -2,6 +2,18 @@ import z from 'zod';
 
 import { brandedUuidSchema, type BrandId, type CoreId } from '@workspace/common';
 
+export type EmailVerificationCode = BrandId<string, 'EmailVerificationCode'>;
+export const asEmailVerificationCode = (value: string): EmailVerificationCode =>
+  value as EmailVerificationCode;
+export const EmailVerificationCodeSchema = z
+  .string()
+  .length(6)
+  .transform((val) => val as EmailVerificationCode);
+
+export type PasswordResetCode = BrandId<string, 'PasswordResetCode'>;
+export const asPasswordResetCode = (value: string): PasswordResetCode => value as PasswordResetCode;
+export const PasswordResetCodeSchema = brandedUuidSchema<PasswordResetCode>();
+
 export type BoardId = BrandId<string, 'BoardId'>;
 export const asBoardId = (value: string): BoardId => value as BoardId;
 export const BoardIdSchema = brandedUuidSchema<BoardId>();

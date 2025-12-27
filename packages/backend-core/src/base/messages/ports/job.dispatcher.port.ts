@@ -1,4 +1,4 @@
-import { BaseJob, BaseJobProps } from '../messages/base.job';
+import { BaseJob, BaseJobProps } from '../base.job';
 
 export abstract class JobDispatcherPort {
   abstract dispatch(

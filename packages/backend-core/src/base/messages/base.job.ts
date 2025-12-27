@@ -3,7 +3,7 @@ import { JobsOptions } from 'bullmq';
 import { AbstractJobProps, AbstractJob } from '@workspace/backend-ddd';
 import { CausationCode, DomainCode, JobCode, ModelId, TaskQueueCode } from '@workspace/domain';
 
-import { DrivenMessageMetadata } from '../message-metadata';
+import { DrivenMessageMetadata } from './message-metadata';
 
 export type BaseJobProps<T> = AbstractJobProps<T>;
 

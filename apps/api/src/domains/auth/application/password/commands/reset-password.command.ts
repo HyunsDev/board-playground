@@ -4,7 +4,6 @@ import { HandlerResult } from '@workspace/backend-common';
 import {
   BaseCommand,
   BaseCommandProps,
-  CacheService,
   CommandHandler,
   DomainEventPublisherPort,
   ICommandHandler,
@@ -13,18 +12,18 @@ import {
 import { matchError, ValidationError } from '@workspace/backend-ddd';
 import { UserEmail } from '@workspace/common';
 import { passwordSchema } from '@workspace/contract';
-import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
+import { AggregateCodeEnum, asCommandCode, PasswordResetCode } from '@workspace/domain';
 
 import { InvalidCredentialsError } from '@/domains/auth/auth.domain-error';
-import { getPasswordResetCodeKey } from '@/domains/auth/auth.utils';
 import { PasswordResetEvent } from '@/domains/auth/domain/events/password-reset.event';
+import { PasswordResetCodeStorePort } from '@/domains/auth/domain/password-reset-code.store.port';
 import { UserFacade } from '@/domains/user/application/facades/user.facade';
 import { PasswordProvider } from '@/infra/crypto';
 
 type ResetPasswordCommandProps = BaseCommandProps<{
   email: UserEmail;
   newPassword: string;
-  emailVerificationCode: string;
+  passwordResetCode: PasswordResetCode;
 }>;
 
 export class ResetPasswordCommand extends BaseCommand<
@@ -45,15 +44,18 @@ export class ResetPasswordCommandHandler implements ICommandHandler<ResetPasswor
   constructor(
     private readonly userFacade: UserFacade,
     private readonly passwordProvider: PasswordProvider,
-    private readonly cacheService: CacheService,
     private readonly txManager: TransactionManager,
     private readonly domainEventPublisher: DomainEventPublisherPort,
+    private readonly passwordResetCodeStore: PasswordResetCodeStorePort,
   ) {}
 
   async execute({ data }: ResetPasswordCommandProps) {
     return await this.txManager.run(async () => {
-      const cachedCode = await this.cacheService.get<string>(getPasswordResetCodeKey(data.email));
-      if (!cachedCode || cachedCode !== data.emailVerificationCode) {
+      const verifyResult = await this.passwordResetCodeStore.verifyAndConsume(
+        data.email,
+        data.passwordResetCode,
+      );
+      if (verifyResult.isErr() || !verifyResult.value) {
         return err(new InvalidCredentialsError());
       }
 
@@ -84,8 +86,6 @@ export class ResetPasswordCommandHandler implements ICommandHandler<ResetPasswor
           UserNotFound: () => err(new InvalidCredentialsError()),
         });
       }
-
-      void (await this.cacheService.del(getPasswordResetCodeKey(data.email)));
 
       void (await this.domainEventPublisher.publish(
         new PasswordResetEvent({

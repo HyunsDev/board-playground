@@ -1,6 +1,6 @@
 import { DomainError, DomainResult } from '@workspace/backend-ddd';
 
-import { BaseJob, BaseJobProps } from '../messages';
+import { BaseJob, BaseJobProps } from '..';
 
 export interface IJobHandler<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

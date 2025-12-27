@@ -12,9 +12,13 @@ import { RegisterAuthCommandHandler } from './application/password/commands/regi
 import { ResetPasswordCommandHandler } from './application/password/commands/reset-password.command';
 import { SendResetEmailCommandHandler } from './application/password/commands/send-reset-email.command';
 import { SendVerificationEmailCommandHandler } from './application/password/commands/send-verification-email.command';
+import { EmailVerificationCodeStorePort } from './domain/email-verification-code.store.port';
+import { EmailVerificationCodeStore } from './infra/email-verification-code.store';
 import { AuthPasswordHttpController } from './interface/auth-password.http.controller';
 import { AuthHttpController } from './interface/auth.http.controller';
 import { UserFacadeModule } from '../user/user.facade.module';
+import { PasswordResetCodeStorePort } from './domain/password-reset-code.store.port';
+import { PasswordResetCodeStore } from './infra/password-reset-code.store';
 
 import { CryptoModule } from '@/infra/crypto';
 
@@ -33,6 +37,16 @@ const queryHandlers: Provider[] = [CheckUsernameAvailableQueryHandler];
 const services: Provider[] = [];
 const mappers: Provider[] = [];
 const repositories: Provider[] = [];
+const stores: Provider[] = [
+  {
+    provide: PasswordResetCodeStorePort,
+    useClass: PasswordResetCodeStore,
+  },
+  {
+    provide: EmailVerificationCodeStorePort,
+    useClass: EmailVerificationCodeStore,
+  },
+];
 
 @Module({
   imports: [UserFacadeModule, CryptoModule, SessionModule, MailerModule.forFeature()],
@@ -43,6 +57,7 @@ const repositories: Provider[] = [];
     ...services,
     ...mappers,
     ...repositories,
+    ...stores,
   ],
   controllers: [...httpControllers],
   exports: [],

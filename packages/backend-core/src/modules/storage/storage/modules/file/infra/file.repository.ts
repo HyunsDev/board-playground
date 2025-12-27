@@ -16,7 +16,7 @@ import { FileRepositoryPort } from '../domain/file.repository.port';
 import { DomainEventPublisherPort } from '@/base';
 import { BaseRepository } from '@/base/blocks/base.repository';
 import { TransactionContext } from '@/modules/foundation/context';
-import { PrismaService } from '@/modules/persistence/database';
+import { PrismaService } from '@/modules/persistence/prisma';
 
 @Injectable()
 export class FileRepository
