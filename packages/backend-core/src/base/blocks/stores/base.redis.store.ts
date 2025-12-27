@@ -46,6 +46,14 @@ export class BaseRedisStoreClient {
   getKey(key: string) {
     return `${this.prefix}:${key}`;
   }
+
+  eval<T>(script: string, keys: string[], args: (string | number)[]): ResultAsync<T, never> {
+    return this.exec(
+      'eval',
+      keys.join(','),
+      this.redis.eval(script, keys.length, ...keys, ...args),
+    ) as ResultAsync<T, never>;
+  }
 }
 
 export abstract class BaseRedisStore implements StorePort {

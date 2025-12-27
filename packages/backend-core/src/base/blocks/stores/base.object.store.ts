@@ -32,6 +32,13 @@ class BaseObjectStoreClient<T> extends BaseRedisStoreClient {
       res ? (JSON.parse(res) as T) : null,
     );
   }
+
+  getDel(id: string): ResultAsync<T | null, UnexpectedRedisErrorException> {
+    const key = this.getKey(id);
+    return this.exec('getdel', key, this.redis.getdel(key)).map((res) =>
+      res ? (JSON.parse(res) as T) : null,
+    );
+  }
 }
 
 export abstract class BaseObjectStore<T> extends BaseRedisStore {
