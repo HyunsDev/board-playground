@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 
 import { BaseMapper } from '@workspace/backend-core';
 import { EntityCollection } from '@workspace/backend-ddd';
-import { UserId } from '@workspace/common';
 import { RefreshToken, Session } from '@workspace/database';
+import { UserId } from '@workspace/domain';
 import { SessionId } from '@workspace/domain';
 
 import { RefreshTokenMapper } from './refresh-token.mapper';

@@ -1,5 +1,5 @@
 import { BaseDomainEvent, BaseDomainEventProps } from '@workspace/backend-core';
-import { UserId } from '@workspace/common';
+import { UserId } from '@workspace/domain';
 import { asDomainEventCode, AggregateCodeEnum, BoardId, BoardSlug } from '@workspace/domain';
 
 type BoardDeletedEventProps = BaseDomainEventProps<{

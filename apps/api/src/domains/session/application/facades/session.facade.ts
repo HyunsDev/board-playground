@@ -8,8 +8,8 @@ import {
   typedOk,
   UnexpectedDomainErrorException,
 } from '@workspace/backend-ddd';
-import { UserId } from '@workspace/common';
 import { DevicePlatform } from '@workspace/contract';
+import { UserId } from '@workspace/domain';
 import { SessionId } from '@workspace/domain';
 
 import { SessionEntity } from '../../domain/session.entity';

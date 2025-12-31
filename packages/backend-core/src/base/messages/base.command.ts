@@ -5,9 +5,10 @@ import {
   RESULT_TYPE_SYMBOL,
 } from '@workspace/backend-ddd';
 import { DomainResult } from '@workspace/backend-ddd';
-import { CausationCode, CommandCode, DomainCode, ModelId } from '@workspace/domain';
+import { CommandCode, Id } from '@workspace/domain';
 
 import { DrivenMessageMetadata } from './message-metadata';
+import { BaseMessageGenerics } from './message.types';
 
 export type BaseCommandProps<T> = AbstractCommandProps<T>;
 
@@ -22,12 +23,12 @@ export abstract class BaseCommand<
   TProps extends BaseCommandProps<unknown>,
   TOk,
   TRes extends DomainResult<TOk, DomainError>,
-> extends AbstractCommand<CausationCode, DomainCode, CommandCode, TProps, TOk, TRes> {
+> extends AbstractCommand<BaseMessageGenerics<CommandCode>, TProps, TOk, TRes> {
   static readonly code: CommandCode;
 
   declare [RESULT_TYPE_SYMBOL]: TRes;
 
-  constructor(resourceId: ModelId | null, data: TProps['data'], metadata?: DrivenMessageMetadata) {
+  constructor(resourceId: Id | null, data: TProps['data'], metadata?: DrivenMessageMetadata) {
     super(resourceId, data, metadata);
   }
 }

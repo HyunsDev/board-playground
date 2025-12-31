@@ -1,7 +1,7 @@
 import { HandlerResult } from '@workspace/backend-common';
 import { IQueryHandler, QueryHandler } from '@workspace/backend-core';
 import { BaseQuery, BaseQueryProps, DrivenMessageMetadata } from '@workspace/backend-core';
-import { UserId } from '@workspace/common';
+import { UserId } from '@workspace/domain';
 import { asQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { SessionEntity } from '../../domain/session.entity';

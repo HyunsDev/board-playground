@@ -2,7 +2,7 @@ import { ok } from 'neverthrow';
 import { v7 } from 'uuid';
 
 import { BaseAggregateRoot, BaseEntityProps } from '@workspace/backend-core';
-import { UserId } from '@workspace/common';
+import { UserId } from '@workspace/domain';
 import { BoardId, BoardSlug } from '@workspace/domain';
 
 import { BoardCreatedEvent } from './events/board-created.event';

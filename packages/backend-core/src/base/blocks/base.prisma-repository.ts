@@ -1,6 +1,6 @@
 import { EntityConflictError, EntityNotFoundError } from '@workspace/backend-ddd';
 import { Prisma, PrismaClient } from '@workspace/database';
-import { ModelId } from '@workspace/domain';
+import { Id } from '@workspace/domain';
 
 import { AbstractCrudDelegate } from './base.types';
 
@@ -50,7 +50,7 @@ export abstract class BasePrismaRepository<TDelegate extends AbstractCrudDelegat
   }
 
   protected handleP2025(
-    id: ModelId | undefined,
+    id: Id | undefined,
     error: Prisma.PrismaClientKnownRequestError,
   ): EntityNotFoundError | undefined {
     if (error.code !== 'P2025') return;

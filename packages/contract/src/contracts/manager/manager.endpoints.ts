@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { UserEmailSchema, UserIdSchema } from '@workspace/common';
+import { UserEmailSchema, UserIdSchema } from '@workspace/domain';
 import { BoardSlugSchema } from '@workspace/domain';
 
 import { ManagerWithBoardDtoSchema, ManagerWithUserDtoSchema } from './manager.dto';

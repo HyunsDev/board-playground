@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 import { BaseMapper } from '@workspace/backend-core';
-import { UserEmail, UserId, Username } from '@workspace/common';
 import { User, UserRole, UserStatus } from '@workspace/database';
+import { UserEmail, UserId, Username } from '@workspace/domain';
 
 import { UserPasswordVO } from '../domain/user-password.vo';
 import { UserEntity, UserProps } from '../domain/user.entity';

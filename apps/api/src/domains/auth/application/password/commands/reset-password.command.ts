@@ -10,8 +10,8 @@ import {
   TransactionManager,
 } from '@workspace/backend-core';
 import { matchError, ValidationError } from '@workspace/backend-ddd';
-import { UserEmail } from '@workspace/common';
 import { passwordSchema } from '@workspace/contract';
+import { UserEmail } from '@workspace/domain';
 import { AggregateCodeEnum, asCommandCode, PasswordResetCode } from '@workspace/domain';
 
 import { InvalidCredentialsError } from '@/domains/auth/auth.domain-error';

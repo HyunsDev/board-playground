@@ -1,5 +1,5 @@
 import { RepositoryPort, DomainResultAsync } from '@workspace/backend-ddd';
-import { UserId } from '@workspace/common';
+import { UserId } from '@workspace/domain';
 import { SessionId } from '@workspace/domain';
 
 import { SessionNotFoundError } from './session.domain-errors';

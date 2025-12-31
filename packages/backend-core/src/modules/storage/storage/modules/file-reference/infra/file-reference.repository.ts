@@ -7,9 +7,9 @@ import {
   matchError,
   UnexpectedDomainErrorException,
 } from '@workspace/backend-ddd';
-import { FileId } from '@workspace/common';
 import { FileReference, PrismaClient } from '@workspace/database';
-import { ModelId } from '@workspace/domain';
+import { FileId } from '@workspace/domain';
+import { Id } from '@workspace/domain';
 
 import { FileReferenceNotFoundError } from '../domain/file-reference.errors';
 import {
@@ -87,7 +87,7 @@ export class FileReferenceRepository
     );
   }
 
-  deleteByFileIdAndTarget(fileId: FileId, targetType: string, targetId: ModelId) {
+  deleteByFileIdAndTarget(fileId: FileId, targetType: string, targetId: Id) {
     return this.deleteManyRecords({
       where: {
         fileId,

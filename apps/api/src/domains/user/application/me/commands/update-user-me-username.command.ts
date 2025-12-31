@@ -2,7 +2,7 @@ import { HandlerResult } from '@workspace/backend-common';
 import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import { BaseCommandProps, BaseCommand } from '@workspace/backend-core';
 import { matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
-import { UserId, Username } from '@workspace/common';
+import { UserId, Username } from '@workspace/domain';
 import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';

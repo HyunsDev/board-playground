@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 import { BaseMapper } from '@workspace/backend-core';
-import { UserId } from '@workspace/common';
 import { Manager, Prisma } from '@workspace/database';
+import { UserId } from '@workspace/domain';
 import { BoardId, ManagerId } from '@workspace/domain';
 
 import { ManagerEntity, ManagerProps } from '../domain';

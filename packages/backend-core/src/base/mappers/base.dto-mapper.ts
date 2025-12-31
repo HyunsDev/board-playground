@@ -1,8 +1,8 @@
 import { AbstractDtoMapper } from '@workspace/backend-ddd';
-import { ModelId } from '@workspace/domain';
+import { Id } from '@workspace/domain';
 
 import { BaseEntity } from '../blocks';
 
 export abstract class BaseDtoMapper<
-  TEntity extends BaseEntity<unknown, ModelId>,
+  TEntity extends BaseEntity<unknown, Id>,
 > extends AbstractDtoMapper<TEntity> {}

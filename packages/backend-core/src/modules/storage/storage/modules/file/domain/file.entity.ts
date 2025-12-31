@@ -3,7 +3,7 @@ import path from 'path';
 import { err, ok } from 'neverthrow';
 import { v7 as uuidv7 } from 'uuid';
 
-import { FileId } from '@workspace/common';
+import { FileId } from '@workspace/domain';
 
 import { FILE_ACCESS_TYPE, FILE_STATUS, FileAccessType, FileStatus } from './file.enums';
 import { InvalidFileError } from './file.errors';

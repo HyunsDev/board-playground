@@ -1,5 +1,5 @@
 import { BaseDomainEvent, BaseDomainEventProps } from '@workspace/backend-core';
-import { UserEmail, UserId } from '@workspace/common';
+import { UserEmail, UserId } from '@workspace/domain';
 import { AggregateCodeEnum, asDomainEventCode } from '@workspace/domain';
 
 type UserPasswordChangedEventProps = BaseDomainEventProps<{

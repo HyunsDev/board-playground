@@ -4,7 +4,7 @@ import { HandlerResult } from '@workspace/backend-common';
 import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import { DrivenMessageMetadata, TransactionManager } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
-import { UserId } from '@workspace/common';
+import { UserId } from '@workspace/domain';
 import { AggregateCodeEnum, asCommandCode, SessionId } from '@workspace/domain';
 
 import { CurrentSessionCannotBeDeletedError } from '../../domain/session.domain-errors';

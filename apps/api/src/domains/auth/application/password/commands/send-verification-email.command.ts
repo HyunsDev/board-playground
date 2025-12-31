@@ -10,7 +10,7 @@ import {
   MailPublisher,
   TransactionManager,
 } from '@workspace/backend-core';
-import { UserEmail } from '@workspace/common';
+import { UserEmail } from '@workspace/domain';
 import { asCommandCode, DomainCodeEnums } from '@workspace/domain';
 
 import { EmailVerificationCodeStorePort } from '@/domains/auth/domain/email-verification-code.store.port';

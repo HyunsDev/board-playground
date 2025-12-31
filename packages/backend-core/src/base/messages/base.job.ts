@@ -1,16 +1,15 @@
 import { JobsOptions } from 'bullmq';
 
 import { AbstractJobProps, AbstractJob } from '@workspace/backend-ddd';
-import { CausationCode, DomainCode, JobCode, ModelId, TaskQueueCode } from '@workspace/domain';
+import { JobCode, Id, TaskQueueCode } from '@workspace/domain';
 
 import { DrivenMessageMetadata } from './message-metadata';
+import { BaseMessageGenerics } from './message.types';
 
 export type BaseJobProps<T> = AbstractJobProps<T>;
 
 export abstract class BaseJob<TProps extends BaseJobProps<unknown>> extends AbstractJob<
-  CausationCode,
-  DomainCode,
-  JobCode,
+  BaseMessageGenerics<JobCode>,
   TProps,
   JobsOptions
 > {
@@ -25,7 +24,7 @@ export abstract class BaseJob<TProps extends BaseJobProps<unknown>> extends Abst
   }
 
   constructor(
-    resourceId: ModelId | null,
+    resourceId: Id | null,
     data: TProps['data'],
     metadata?: DrivenMessageMetadata,
     options?: JobsOptions,

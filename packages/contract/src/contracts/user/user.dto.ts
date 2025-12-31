@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { UserEmailSchema, UserIdSchema, UsernameSchema } from '@workspace/common';
+import { UserEmailSchema, UserIdSchema, UsernameSchema } from '@workspace/domain';
 
 import { UserRole, UserStatus } from './user.enums';
 

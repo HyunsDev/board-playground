@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-import { withPagination, paginatedResultSchemaOf, UserIdSchema } from '@workspace/common';
+import { withPagination, paginatedResultSchemaOf } from '@workspace/common';
+import { UserIdSchema } from '@workspace/domain';
 
 import { UserPublicProfileDtoSchema } from '../user.dto';
 

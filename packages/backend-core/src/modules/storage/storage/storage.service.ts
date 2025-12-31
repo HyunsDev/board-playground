@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
-import { FileId } from '@workspace/common';
-import { ModelId } from '@workspace/domain';
+import { FileId } from '@workspace/domain';
+import { Id } from '@workspace/domain';
 
 import { FileService, InitializeUploadParam } from './modules/file/application/file.service';
 import {
@@ -42,7 +42,7 @@ export class StorageService {
     return ok(result.value);
   }
 
-  async bindFiles(fileIds: FileId[], targetType: string, targetId: ModelId) {
+  async bindFiles(fileIds: FileId[], targetType: string, targetId: Id) {
     const refs = fileIds.map(
       (fileId) =>
         ({
@@ -70,7 +70,7 @@ export class StorageService {
     return ok(undefined);
   }
 
-  async unbindFilesByTarget(targetType: string, targetId: ModelId) {
+  async unbindFilesByTarget(targetType: string, targetId: Id) {
     const deleteResult = await this.fileReferenceRepo.deleteByTarget(targetType, targetId);
     if (deleteResult.isErr()) {
       return err(deleteResult.error);

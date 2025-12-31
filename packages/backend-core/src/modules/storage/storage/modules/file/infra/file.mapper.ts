@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { FileId } from '@workspace/common';
 import { File, FileAccessType, FileStatus } from '@workspace/database';
+import { FileId } from '@workspace/domain';
 
 import { FileEntity, FileProps } from '../domain/file.entity';
 

@@ -7,9 +7,10 @@ import {
   RESULT_TYPE_SYMBOL,
   DomainResult,
 } from '@workspace/backend-ddd';
-import { CausationCode, DomainCode, HttpRequestCode, ModelId } from '@workspace/domain';
+import { HttpRequestCode, Id } from '@workspace/domain';
 
 import { DrivenMessageMetadata } from './message-metadata';
+import { BaseMessageGenerics } from './message.types';
 
 export type HttpRequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
 
@@ -59,9 +60,7 @@ export abstract class BaseHttpRequest<
   const TOk extends HttpRequestResponseData,
   const TRes extends DomainResult<TOk, HttpRequestError> = DomainResult<TOk, HttpRequestError>,
 > extends AbstractHttpRequest<
-  CausationCode,
-  DomainCode,
-  HttpRequestCode,
+  BaseMessageGenerics<HttpRequestCode>,
   TProps,
   TOk,
   TRes,
@@ -71,7 +70,7 @@ export abstract class BaseHttpRequest<
   static readonly code: HttpRequestCode;
 
   constructor(
-    resourceId: ModelId | null,
+    resourceId: Id | null,
     data: TProps['data'],
     metadata?: DrivenMessageMetadata,
     options?: HttpRequestOptions,

@@ -2,8 +2,8 @@ import { err, ok } from 'neverthrow';
 import { v7 } from 'uuid';
 
 import { BaseAggregateRoot, BaseEntityProps } from '@workspace/backend-core';
-import { UserId } from '@workspace/common';
 import { MANAGER_ROLE, ManagerRole } from '@workspace/contract';
+import { UserId } from '@workspace/domain';
 import { BoardId, ManagerId } from '@workspace/domain';
 
 import { ManagerAppointedEvent } from './events/manager-appointed.event';

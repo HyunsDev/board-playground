@@ -11,8 +11,9 @@ import {
   matchError,
   UnexpectedDomainErrorException,
 } from '@workspace/backend-ddd';
-import { PaginationQuery, UserId } from '@workspace/common';
+import { PaginationQuery } from '@workspace/common';
 import { PrismaClient, User } from '@workspace/database';
+import { UserId } from '@workspace/domain';
 
 import { UserMapper } from './user.mapper';
 import {

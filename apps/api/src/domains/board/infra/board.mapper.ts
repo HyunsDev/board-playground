@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 import { BaseMapper } from '@workspace/backend-core';
-import { UserId } from '@workspace/common';
 import { Board } from '@workspace/database';
+import { UserId } from '@workspace/domain';
 import { BoardId, BoardSlug } from '@workspace/domain';
 
 import { BoardEntity } from '../domain';

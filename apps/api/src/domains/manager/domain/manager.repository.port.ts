@@ -1,5 +1,5 @@
 import { DomainResultAsync, RepositoryPort } from '@workspace/backend-ddd';
-import { UserId } from '@workspace/common';
+import { UserId } from '@workspace/domain';
 import { BoardId, BoardSlug, ManagerId } from '@workspace/domain';
 
 import { ManagerEntity } from './manager.entity';

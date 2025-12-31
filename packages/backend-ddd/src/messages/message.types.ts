@@ -17,3 +17,10 @@ export interface MessageConstructor<T extends AbstractMessage> {
 }
 
 export type PlainMessage<T extends AbstractMessage> = ReturnType<T['toPlain']>;
+
+export type AbstractMessageGenerics<T extends string = string, U extends T = T> = Readonly<{
+  readonly TCausationType: T;
+  readonly TResourceCode: string;
+  readonly TMessageCode: U;
+  readonly TUserId: string;
+}>;

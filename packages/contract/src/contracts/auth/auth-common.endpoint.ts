@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { UsernameSchema } from '@workspace/common';
+import { UsernameSchema } from '@workspace/domain';
 
 import { ApiErrors } from '../api-errors';
 

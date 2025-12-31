@@ -7,9 +7,10 @@ import {
   RESULT_TYPE_SYMBOL,
 } from '@workspace/backend-ddd';
 import { PaginationQuery } from '@workspace/common';
-import { CausationCode, DomainCode, ModelId, QueryCode } from '@workspace/domain';
+import { Id, QueryCode } from '@workspace/domain';
 
 import { DrivenMessageMetadata } from './message-metadata';
+import { BaseMessageGenerics } from './message.types';
 
 export type BaseQueryProps<T> = AbstractQueryProps<T>;
 export type BasePaginatedQueryProps<T> = AbstractPaginatedQueryProps<PaginationQuery<T>>;
@@ -25,12 +26,12 @@ export abstract class BaseQuery<
   TProps extends BaseQueryProps<unknown>,
   TOk,
   TRes extends DomainResult<TOk, DomainError>,
-> extends AbstractQuery<CausationCode, DomainCode, QueryCode, TProps, TOk, TRes> {
+> extends AbstractQuery<BaseMessageGenerics<QueryCode>, TProps, TOk, TRes> {
   static readonly code: QueryCode;
   declare [RESULT_TYPE_SYMBOL]: TRes;
 
   constructor(
-    resourceId: ModelId | null,
+    resourceId: Id | null,
     data: TProps['data'],
     metadata?: DrivenMessageMetadata,
     id?: string | null,

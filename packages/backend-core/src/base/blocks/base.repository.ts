@@ -10,7 +10,7 @@ import {
   DeletedAggregate,
 } from '@workspace/backend-ddd';
 import { PrismaClient } from '@workspace/database';
-import { ModelId } from '@workspace/domain';
+import { Id } from '@workspace/domain';
 
 import { DomainEventPublisherPort } from '../messages';
 import { BaseAggregateRoot } from './base.aggregate-root';
@@ -20,7 +20,7 @@ import { AbstractCrudDelegate } from './base.types';
 import { TransactionContext } from '@/modules';
 
 export abstract class BaseRepository<
-  TAggregate extends BaseAggregateRoot<unknown, ModelId>,
+  TAggregate extends BaseAggregateRoot<unknown, Id>,
   TDbModel extends { id: string },
   TDelegate extends AbstractCrudDelegate<TDbModel>,
 >

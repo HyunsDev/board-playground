@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { UserIdSchema } from '@workspace/common';
+import { UserIdSchema } from '@workspace/domain';
 import { CommentIdSchema, PostIdSchema } from '@workspace/domain';
 
 export const CommentDtoSchema = z.object({

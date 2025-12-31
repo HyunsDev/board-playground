@@ -1,6 +1,6 @@
 import { HandlerResult } from '@workspace/backend-common';
 import { BaseQueryProps, BaseQuery, QueryHandler } from '@workspace/backend-core';
-import { UserId } from '@workspace/common';
+import { UserId } from '@workspace/domain';
 import { asQueryCode, AggregateCodeEnum } from '@workspace/domain';
 
 import { ManagerEntity, ManagerRepositoryPort } from '../../domain';

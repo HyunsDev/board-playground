@@ -1,5 +1,5 @@
 import { BaseDomainEventProps, BaseDomainEvent } from '@workspace/backend-core';
-import { UserId } from '@workspace/common';
+import { UserId } from '@workspace/domain';
 import { asDomainEventCode, AggregateCodeEnum, ManagerId, BoardId } from '@workspace/domain';
 
 type ManagerDismissedEventProps = BaseDomainEventProps<{

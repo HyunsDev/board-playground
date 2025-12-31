@@ -1,4 +1,6 @@
-import { BrandId, UserId } from '@workspace/common';
+import { BrandId } from '@workspace/common';
+
+import { AbstractMessageGenerics } from './message.types';
 
 /**
  * @property createdAt - 이벤트 발생 시각 (Unix Timestamp)
@@ -9,36 +11,28 @@ import { BrandId, UserId } from '@workspace/common';
  * @property resourceId - 이벤트와 관련된 리소스의 Id
  * @property userId - 이벤트를 발생시킨 User의 Id
  */
-export type AbstractMessageMetadata<
-  CausationCodeType extends string = string,
-  ResourceCodeType extends string = string,
-> = {
+export type AbstractMessageMetadata<T extends AbstractMessageGenerics = AbstractMessageGenerics> = {
   readonly createdAt: number | null;
   readonly correlationId: string | null;
-  readonly causationType: CausationCodeType | null;
+  readonly causationType: T['TCausationType'] | null;
   readonly causationId: string | null;
-  readonly resourceType: ResourceCodeType | null;
+  readonly resourceType: T['TResourceCode'] | null;
   readonly resourceId: BrandId | null;
-  readonly userId: UserId | null;
+  readonly userId: T['TUserId'] | null;
 };
 
 export type AbstractDrivenMessageMetadata<
-  CausationCodeType extends string = string,
-  ResourceCodeType extends string = string,
-> = Omit<
-  AbstractMessageMetadata<CausationCodeType, ResourceCodeType>,
-  'createdAt' | 'resourceId' | 'resourceType'
->;
+  T extends AbstractMessageGenerics = AbstractMessageGenerics,
+> = Omit<AbstractMessageMetadata<T>, 'createdAt' | 'resourceId' | 'resourceType'>;
 
 export type AbstractCreateMessageMetadata<
-  CausationCodeType extends string = string,
-  ResourceCodeType extends string = string,
+  T extends AbstractMessageGenerics = AbstractMessageGenerics,
 > = {
   readonly createdAt?: number | null;
   readonly correlationId: string | null;
-  readonly causationType: CausationCodeType | null;
+  readonly causationType: T['TCausationType'] | null;
   readonly causationId: string | null;
-  readonly resourceType?: ResourceCodeType | null;
+  readonly resourceType?: T['TResourceCode'] | null;
   readonly resourceId?: BrandId | null;
-  readonly userId: UserId | null;
+  readonly userId: T['TUserId'] | null;
 };

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { FileId } from '@workspace/common';
-import { ModelId } from '@workspace/domain';
+import { FileId } from '@workspace/domain';
+import { Id } from '@workspace/domain';
 
 import { InitializeUploadParam } from './modules/file/application/file.service';
 import { StorageService } from './storage.service';
@@ -22,15 +22,15 @@ export class StorageFacade {
     return this.storageService.getDownloadUrl(fileId);
   }
 
-  async bindFiles(fileIds: FileId[], targetType: string, targetId: ModelId) {
+  async bindFiles(fileIds: FileId[], targetType: string, targetId: Id) {
     return this.storageService.bindFiles(fileIds, targetType, targetId);
   }
 
-  async unbindFile(fileId: FileId, targetType: string, targetId: ModelId) {
+  async unbindFile(fileId: FileId, targetType: string, targetId: Id) {
     return this.storageService.unbindFile(fileId, targetType, targetId);
   }
 
-  async unbindFilesByTarget(targetType: string, targetId: ModelId) {
+  async unbindFilesByTarget(targetType: string, targetId: Id) {
     return this.storageService.unbindFilesByTarget(targetType, targetId);
   }
 

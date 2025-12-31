@@ -3,7 +3,7 @@ import { err, ok } from 'neverthrow';
 import { HandlerResult } from '@workspace/backend-common';
 import { IQueryHandler, QueryHandler } from '@workspace/backend-core';
 import { BaseQueryProps, BaseQuery, DrivenMessageMetadata } from '@workspace/backend-core';
-import { Username } from '@workspace/common';
+import { Username } from '@workspace/domain';
 import { asQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserFacade } from '@/domains/user/application/facades/user.facade';

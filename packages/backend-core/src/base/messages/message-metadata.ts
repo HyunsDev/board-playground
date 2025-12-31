@@ -1,6 +1,8 @@
 import { AbstractDrivenMessageMetadata, AbstractMessageMetadata } from '@workspace/backend-ddd';
-import { CausationCode, DomainCode } from '@workspace/domain';
+import { MessageCode } from '@workspace/domain';
 
-export type MessageMetadata = AbstractMessageMetadata<CausationCode, DomainCode>;
+import { BaseMessageGenerics } from './message.types';
 
-export type DrivenMessageMetadata = AbstractDrivenMessageMetadata<CausationCode, DomainCode>;
+export type MessageMetadata = AbstractMessageMetadata<BaseMessageGenerics<MessageCode>>;
+
+export type DrivenMessageMetadata = AbstractDrivenMessageMetadata<BaseMessageGenerics<MessageCode>>;

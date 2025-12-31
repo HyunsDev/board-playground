@@ -15,7 +15,7 @@ import {
   PaginationOptions,
 } from '@workspace/common';
 import { PrismaClient, Prisma } from '@workspace/database';
-import { ModelId } from '@workspace/domain';
+import { Id } from '@workspace/domain';
 
 import { UnexpectedPrismaErrorException } from '../core.exceptions';
 import { BasePrismaRepository } from './base.prisma-repository';
@@ -24,10 +24,13 @@ import { AbstractCrudDelegate } from './base.types';
 import { TransactionContext } from '@/modules';
 
 export abstract class BaseEntityRepository<
-  TEntity extends AbstractEntity<unknown, ModelId>,
+  TEntity extends AbstractEntity<unknown, Id>,
   TDbModel extends { id: string },
   TDelegate extends AbstractCrudDelegate<TDbModel>,
-> extends BasePrismaRepository<TDelegate> implements RepositoryPort<TEntity> {
+>
+  extends BasePrismaRepository<TDelegate>
+  implements RepositoryPort<TEntity>
+{
   constructor(
     prisma: PrismaClient,
     txContext: TransactionContext,
@@ -196,7 +199,7 @@ export abstract class BaseEntityRepository<
   ): DomainResultAsync<TEntity, EntityNotFoundError | EntityConflictError> {
     return ResultAsync.fromPromise(this.delegate.update(args), (error) => {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        const notFoundResult = this.handleP2025((args.where as { id: ModelId }).id, error);
+        const notFoundResult = this.handleP2025((args.where as { id: Id }).id, error);
         if (notFoundResult) return notFoundResult;
 
         const conflictResult = this.handleP2002(args.data as Record<string, unknown>, error);

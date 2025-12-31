@@ -1,6 +1,6 @@
 import { BaseDomainEventProps, BaseDomainEvent } from '@workspace/backend-core';
-import { UserId } from '@workspace/common';
 import { ManagerRole } from '@workspace/contract';
+import { UserId } from '@workspace/domain';
 import { AggregateCodeEnum, asDomainEventCode, BoardId, ManagerId } from '@workspace/domain';
 
 type ManagerAppointedEventProps = BaseDomainEventProps<{

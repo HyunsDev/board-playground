@@ -8,7 +8,7 @@ import {
   ICommandHandler,
   TransactionManager,
 } from '@workspace/backend-core';
-import { UserEmail, UserId } from '@workspace/common';
+import { UserEmail, UserId } from '@workspace/domain';
 import { AggregateCodeEnum, asCommandCode, BoardSlug } from '@workspace/domain';
 
 import { ManagerEntity, ManagerRepositoryPort } from '../../domain';

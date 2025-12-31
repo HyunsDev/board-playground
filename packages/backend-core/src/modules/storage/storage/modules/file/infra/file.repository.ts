@@ -5,8 +5,8 @@ import {
   matchError,
   UnexpectedDomainErrorException,
 } from '@workspace/backend-ddd';
-import { FileId } from '@workspace/common';
 import { File, PrismaClient } from '@workspace/database';
+import { FileId } from '@workspace/domain';
 
 import { FileMapper } from './file.mapper';
 import { FileEntity } from '../domain/file.entity';

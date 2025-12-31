@@ -5,9 +5,10 @@ import {
   RESULT_TYPE_SYMBOL,
   DomainResult,
 } from '@workspace/backend-ddd';
-import { CausationCode, DomainCode, ModelId, RpcCode } from '@workspace/domain';
+import { Id, RpcCode } from '@workspace/domain';
 
 import { DrivenMessageMetadata } from './message-metadata';
+import { BaseMessageGenerics } from './message.types';
 
 export type RpcOptions = {
   timeoutMs?: number;
@@ -19,7 +20,7 @@ export abstract class BaseRpc<
   TProps extends BaseRpcProps<unknown>,
   TOk,
   TRes extends DomainResult<TOk, DomainError>,
-> extends AbstractRpc<CausationCode, DomainCode, RpcCode, TProps, TOk, TRes, RpcOptions> {
+> extends AbstractRpc<BaseMessageGenerics<RpcCode>, TProps, TOk, TRes, RpcOptions> {
   declare [RESULT_TYPE_SYMBOL]: TRes;
   static readonly code: RpcCode;
 
@@ -30,7 +31,7 @@ export abstract class BaseRpc<
   }
 
   constructor(
-    resourceId: ModelId | null,
+    resourceId: Id | null,
     data: TProps['data'],
     metadata?: DrivenMessageMetadata,
     options?: RpcOptions,

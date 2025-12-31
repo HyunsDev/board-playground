@@ -9,7 +9,7 @@ import {
   TransactionManager,
 } from '@workspace/backend-core';
 import { matchError } from '@workspace/backend-ddd';
-import { UserId } from '@workspace/common';
+import { UserId } from '@workspace/domain';
 import { AggregateCodeEnum, asCommandCode, BoardSlug } from '@workspace/domain';
 
 import { BoardEntity, BoardRepositoryPort } from '../../domain';

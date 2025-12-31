@@ -1,7 +1,8 @@
 import { AbstractDomainEvent, AbstractDomainEventProps } from '@workspace/backend-ddd';
-import { CausationCode, DomainCode, DomainEventCode, ModelId } from '@workspace/domain';
+import { DomainEventCode, Id } from '@workspace/domain';
 
 import { DrivenMessageMetadata } from './message-metadata';
+import { BaseMessageGenerics } from './message.types';
 
 export type BaseDomainEventProps<T> = AbstractDomainEventProps<T>;
 
@@ -12,11 +13,11 @@ export type BaseDomainEventProps<T> = AbstractDomainEventProps<T>;
  */
 export abstract class BaseDomainEvent<
   TProps extends BaseDomainEventProps<unknown>,
-> extends AbstractDomainEvent<CausationCode, DomainCode, DomainEventCode, TProps> {
+> extends AbstractDomainEvent<BaseMessageGenerics<DomainEventCode>, TProps> {
   abstract readonly audit: boolean;
   static readonly code: DomainEventCode;
 
-  constructor(resourceId: ModelId | null, data: TProps['data'], metadata?: DrivenMessageMetadata) {
+  constructor(resourceId: Id | null, data: TProps['data'], metadata?: DrivenMessageMetadata) {
     super(resourceId, data, metadata);
   }
 }

@@ -9,8 +9,8 @@ import {
   TransactionManager,
 } from '@workspace/backend-core';
 import { matchError, ValidationError } from '@workspace/backend-ddd';
-import { UserId } from '@workspace/common';
 import { passwordSchema } from '@workspace/contract';
+import { UserId } from '@workspace/domain';
 import { AggregateCodeEnum, asCommandCode, SessionId } from '@workspace/domain';
 
 import { InvalidCredentialsError } from '@/domains/auth/auth.domain-error';

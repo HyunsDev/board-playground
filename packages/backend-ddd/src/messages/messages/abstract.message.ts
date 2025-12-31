@@ -9,6 +9,7 @@ import {
   AbstractMessageMetadata,
 } from '../abstract.message-metadata.type';
 import { RESULT_TYPE_SYMBOL } from '../message.constant';
+import { AbstractMessageGenerics } from '../message.types';
 
 import {
   DomainError,
@@ -35,9 +36,7 @@ export type AbstractMessageProps<T = unknown> = {
 };
 
 export abstract class AbstractMessage<
-  CausationCodeType extends string = string,
-  ResourceCodeType extends string = string,
-  MessageCodeType extends CausationCodeType = CausationCodeType,
+  TGenerics extends AbstractMessageGenerics = AbstractMessageGenerics,
   TProps extends AbstractMessageProps = AbstractMessageProps,
   TOk = unknown,
   TRes extends DomainResult<TOk, DomainError> = DomainResult<TOk, DomainError>,
@@ -45,14 +44,11 @@ export abstract class AbstractMessage<
   declare readonly [RESULT_TYPE_SYMBOL]: TRes;
 
   static readonly code: string;
-  protected abstract readonly resourceType: ResourceCodeType;
+  protected abstract readonly resourceType: TGenerics['TResourceCode'];
 
   protected _id: string;
   protected _data: TProps['data'];
-  protected _metadata: Omit<
-    AbstractMessageMetadata<CausationCodeType, ResourceCodeType>,
-    'resourceType'
-  >;
+  protected _metadata: Omit<AbstractMessageMetadata<TGenerics>, 'resourceType'>;
   get id(): string {
     return this._id;
   }
@@ -62,20 +58,20 @@ export abstract class AbstractMessage<
   get schema(): z.ZodType<TProps['data']> | undefined {
     return undefined;
   }
-  get metadata(): AbstractMessageMetadata<CausationCodeType, ResourceCodeType> {
+  get metadata(): AbstractMessageMetadata<TGenerics> {
     return {
       ...this._metadata,
       resourceType: this.resourceType,
     };
   }
-  get code(): MessageCodeType {
-    return (this.constructor as typeof AbstractMessage).code as MessageCodeType;
+  get code(): TGenerics['TMessageCode'] {
+    return (this.constructor as typeof AbstractMessage).code as TGenerics['TMessageCode'];
   }
 
   constructor(
     resourceId: BrandId | null,
     data: TProps['data'],
-    metadata?: AbstractCreateMessageMetadata<CausationCodeType, ResourceCodeType>,
+    metadata?: AbstractCreateMessageMetadata<TGenerics>,
     id?: string | null,
   ) {
     const {
@@ -164,9 +160,7 @@ export abstract class AbstractMessage<
     return !!this._metadata.causationType;
   }
 
-  updateMetadata(
-    metadata: Partial<AbstractDrivenMessageMetadata<CausationCodeType, ResourceCodeType>>,
-  ): void {
+  updateMetadata(metadata: Partial<AbstractDrivenMessageMetadata<TGenerics>>): void {
     this._metadata = {
       ...this._metadata,
       ...metadata,
@@ -175,12 +169,12 @@ export abstract class AbstractMessage<
   }
 
   deriveMetadata(
-    overrides?: Partial<AbstractDrivenMessageMetadata<CausationCodeType, ResourceCodeType>>,
-  ): AbstractDrivenMessageMetadata<CausationCodeType, ResourceCodeType> {
+    overrides?: Partial<AbstractDrivenMessageMetadata<TGenerics>>,
+  ): AbstractDrivenMessageMetadata<TGenerics> {
     return {
       correlationId: this._metadata.correlationId, // 뿌리 유지
       causationId: this._id,
-      causationType: this.code as CausationCodeType,
+      causationType: this.code as TGenerics['TCausationType'],
       userId: this._metadata.userId,
       ...overrides,
     };

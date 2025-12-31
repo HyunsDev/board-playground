@@ -1,6 +1,6 @@
 import { HandlerResult } from '@workspace/backend-common';
 import { BaseQuery, BaseQueryProps, IQueryHandler, QueryHandler } from '@workspace/backend-core';
-import { UserId } from '@workspace/common';
+import { UserId } from '@workspace/domain';
 import { asQueryCode, DomainCodeEnums } from '@workspace/domain';
 
 import { UserEntity } from '../../../domain/user.entity';

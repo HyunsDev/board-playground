@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { UserIdSchema } from '@workspace/common';
+import { UserIdSchema } from '@workspace/domain';
 import { BoardIdSchema, ManagerIdSchema } from '@workspace/domain';
 
 import { ManagerRole } from './manager.enums';

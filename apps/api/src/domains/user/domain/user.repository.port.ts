@@ -1,5 +1,6 @@
 import { DomainResultAsync, RepositoryPort } from '@workspace/backend-ddd';
-import { PaginatedResult, PaginationQuery, UserEmail, UserId, Username } from '@workspace/common';
+import { PaginatedResult, PaginationQuery } from '@workspace/common';
+import { UserId, UserEmail, Username } from '@workspace/domain';
 
 import {
   UserEmailAlreadyExistsError,

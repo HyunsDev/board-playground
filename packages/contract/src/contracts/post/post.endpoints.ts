@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { paginatedResultSchemaOf, UserIdSchema, withPagination } from '@workspace/common';
-import { BoardSlugSchema, PostIdSchema } from '@workspace/domain';
+import { paginatedResultSchemaOf, withPagination } from '@workspace/common';
+import { BoardSlugSchema, PostIdSchema, UserIdSchema } from '@workspace/domain';
 
 import { PostDtoSchema } from './post.dto';
 

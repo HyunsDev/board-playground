@@ -4,7 +4,7 @@ import { HandlerResult } from '@workspace/backend-common';
 import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { matchError } from '@workspace/backend-ddd';
-import { UserId } from '@workspace/common';
+import { UserId } from '@workspace/domain';
 import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
 import { UserRepositoryPort } from '@/domains/user/domain/user.repository.port';

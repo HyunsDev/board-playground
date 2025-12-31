@@ -1,20 +1,20 @@
 import { DirectRepositoryPort, DomainResultAsync } from '@workspace/backend-ddd';
-import { FileId, FileReferenceId } from '@workspace/common';
 import { FileReference } from '@workspace/database';
-import { ModelId } from '@workspace/domain';
+import { FileId, FileReferenceId } from '@workspace/domain';
+import { Id } from '@workspace/domain';
 
 import { FileReferenceNotFoundError } from './file-reference.errors';
 
 export interface CreateFileReferenceParam {
   fileId: FileId;
   targetType: string;
-  targetId: ModelId;
+  targetId: Id;
 }
 
 export interface ExistsFileReferenceParam {
   fileId?: FileId;
   targetType?: string;
-  targetId?: ModelId;
+  targetId?: Id;
 }
 
 export abstract class FileReferenceRepositoryPort extends DirectRepositoryPort<FileReference> {
@@ -28,6 +28,6 @@ export abstract class FileReferenceRepositoryPort extends DirectRepositoryPort<F
     targetType: string,
     targetId: string,
   ): DomainResultAsync<void, FileReferenceNotFoundError>;
-  abstract deleteByTarget(targetType: string, targetId: ModelId): DomainResultAsync<void, never>;
+  abstract deleteByTarget(targetType: string, targetId: Id): DomainResultAsync<void, never>;
   abstract exists(params: ExistsFileReferenceParam): DomainResultAsync<boolean, never>;
 }

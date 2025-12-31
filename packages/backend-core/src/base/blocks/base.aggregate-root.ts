@@ -1,9 +1,9 @@
 import { AbstractAggregateRoot } from '@workspace/backend-ddd';
-import { ModelId } from '@workspace/domain';
+import { Id } from '@workspace/domain';
 
 import { BaseDomainEvent, BaseDomainEventProps } from '../messages/base.domain-event';
 
-export abstract class BaseAggregateRoot<TProps, TId extends ModelId> extends AbstractAggregateRoot<
+export abstract class BaseAggregateRoot<TProps, TId extends Id> extends AbstractAggregateRoot<
   TProps,
   TId,
   BaseDomainEvent<BaseDomainEventProps<unknown>>

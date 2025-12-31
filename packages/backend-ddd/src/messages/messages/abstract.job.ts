@@ -5,25 +5,17 @@ import { BrandId } from '@workspace/common';
 
 import { AbstractMessage, AbstractMessageProps } from './abstract.message';
 import { AbstractDrivenMessageMetadata } from '../abstract.message-metadata.type';
+import { AbstractMessageGenerics } from '../message.types';
 
 import { DomainError, DomainResult } from '@/error';
 
 export type AbstractJobProps<T = unknown> = AbstractMessageProps<T>;
 
 export abstract class AbstractJob<
-  CausationCodeType extends string = string,
-  ResourceCodeType extends string = string,
-  JobCodeType extends CausationCodeType = CausationCodeType,
+  TGenerics extends AbstractMessageGenerics = AbstractMessageGenerics,
   TProps extends AbstractJobProps = AbstractJobProps,
   TOptions = void,
-> extends AbstractMessage<
-  CausationCodeType,
-  ResourceCodeType,
-  JobCodeType,
-  TProps,
-  any,
-  DomainResult<any, DomainError>
-> {
+> extends AbstractMessage<TGenerics, TProps, any, DomainResult<any, DomainError>> {
   abstract readonly queueName: string;
   abstract override get schema(): z.ZodType<TProps['data']>;
 
@@ -32,7 +24,7 @@ export abstract class AbstractJob<
   constructor(
     resourceId: BrandId | null,
     data: TProps['data'],
-    metadata?: AbstractDrivenMessageMetadata<CausationCodeType, ResourceCodeType>,
+    metadata?: AbstractDrivenMessageMetadata<TGenerics>,
     options?: TOptions,
   ) {
     super(resourceId, data, metadata);

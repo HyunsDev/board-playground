@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { UserIdSchema } from '@workspace/common';
+import { UserIdSchema } from '@workspace/domain';
 import { SessionIdSchema } from '@workspace/domain';
 
 import { DevicePlatform, SessionStatus } from './session.enums';

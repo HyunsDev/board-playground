@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { UserId } from '@workspace/common';
 import { MANAGER_ROLE } from '@workspace/contract';
+import { UserId } from '@workspace/domain';
 import { BoardId, BoardSlug } from '@workspace/domain';
 
 import { ManagerEntity, ManagerRepositoryPort } from '../domain';

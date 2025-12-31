@@ -2,8 +2,8 @@ import { err, ok } from 'neverthrow';
 import { v7 as uuidv7 } from 'uuid';
 
 import { BaseAggregateRoot, BaseEntityProps } from '@workspace/backend-core';
-import { UserEmail, UserId, Username } from '@workspace/common';
 import { USER_ROLE, USER_STATUS, UserRole, UserStatus } from '@workspace/contract';
+import { UserEmail, UserId, Username } from '@workspace/domain';
 
 import { UserPasswordChangedEvent } from './events';
 import { UserCreatedEvent } from './events/user-created.event';

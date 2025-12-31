@@ -4,7 +4,7 @@ import { HandlerResult } from '@workspace/backend-common';
 import { IQueryHandler, QueryHandler } from '@workspace/backend-core';
 import { BaseQueryProps, BaseQuery, DrivenMessageMetadata } from '@workspace/backend-core';
 import { matchError } from '@workspace/backend-ddd';
-import { UserId } from '@workspace/common';
+import { UserId } from '@workspace/domain';
 import { asQueryCode, DomainCodeEnums, SessionId } from '@workspace/domain';
 
 import { SessionEntity } from '../../domain/session.entity';

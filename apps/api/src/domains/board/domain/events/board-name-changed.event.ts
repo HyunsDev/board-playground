@@ -6,7 +6,7 @@ type BoardNameChangedEventProps = BaseDomainEventProps<{
 }>;
 
 import { BaseDomainEvent, BaseDomainEventProps } from '@workspace/backend-core';
-import { UserId } from '@workspace/common';
+import { UserId } from '@workspace/domain';
 import { AggregateCodeEnum, asDomainEventCode, BoardId } from '@workspace/domain';
 
 export class BoardNameChangedEvent extends BaseDomainEvent<BoardNameChangedEventProps> {

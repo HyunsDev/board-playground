@@ -10,7 +10,7 @@ import {
   MailPublisher,
   TransactionManager,
 } from '@workspace/backend-core';
-import { UserEmail } from '@workspace/common';
+import { UserEmail } from '@workspace/domain';
 import { asCommandCode, DomainCodeEnums } from '@workspace/domain';
 
 import { ResetEmailSentEvent } from '@/domains/auth/domain/events/reset-email-sent.event';

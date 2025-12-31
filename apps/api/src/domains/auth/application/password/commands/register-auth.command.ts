@@ -10,8 +10,8 @@ import {
 } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
 import { ValidationError } from '@workspace/backend-ddd';
-import { UserEmail, Username } from '@workspace/common';
 import { DEVICE_PLATFORM, passwordSchema } from '@workspace/contract';
+import { UserEmail, Username } from '@workspace/domain';
 import { AggregateCodeEnum, asCommandCode, EmailVerificationCode } from '@workspace/domain';
 
 import { InvalidEmailVerificationCodeError } from '@/domains/auth/auth.domain-error';

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { err, ok } from 'neverthrow';
 
 import { matchError, UnexpectedDomainErrorException } from '@workspace/backend-ddd';
-import { UserEmail, UserId, Username } from '@workspace/common';
+import { UserEmail, UserId, Username } from '@workspace/domain';
 
 import { CreateUserProps, UserEntity } from '../../domain/user.entity';
 import { UserRepositoryPort } from '../../domain/user.repository.port';

@@ -4,7 +4,7 @@ import { HandlerResult } from '@workspace/backend-common';
 import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import { AccessTokenProvider, DrivenMessageMetadata } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
-import { UserEmail } from '@workspace/common';
+import { UserEmail } from '@workspace/domain';
 import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
 import { SessionFacade } from '@/domains/session/application/facades/session.facade';

@@ -4,8 +4,8 @@ import { v7 as uuidv7 } from 'uuid';
 
 import { BaseAggregateRoot, BaseEntityProps } from '@workspace/backend-core';
 import { EntityCollection, matchError, typedOk } from '@workspace/backend-ddd';
-import { UserId } from '@workspace/common';
 import { DevicePlatform, SESSION_STATUS, SessionStatus } from '@workspace/contract';
+import { UserId } from '@workspace/domain';
 import { SessionId } from '@workspace/domain';
 
 import { RefreshTokenReuseDetectedEvent } from './events/refresh-token-reuse-detected.event';

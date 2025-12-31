@@ -1,5 +1,5 @@
 import { DomainResultAsync, RepositoryPort } from '@workspace/backend-ddd';
-import { FileId } from '@workspace/common';
+import { FileId } from '@workspace/domain';
 
 import { FileEntity } from './file.entity';
 import { FileAlreadyExistsError, FileNotFoundError } from './file.errors';

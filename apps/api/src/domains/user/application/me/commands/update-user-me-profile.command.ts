@@ -3,7 +3,7 @@ import { err, ok } from 'neverthrow';
 import { HandlerResult } from '@workspace/backend-common';
 import { CommandHandler, ICommandHandler } from '@workspace/backend-core';
 import { BaseCommand, BaseCommandProps } from '@workspace/backend-core';
-import { UserId } from '@workspace/common';
+import { UserId } from '@workspace/domain';
 import { AggregateCodeEnum, asCommandCode } from '@workspace/domain';
 
 import { UserEntity } from '@/domains/user/domain/user.entity';
