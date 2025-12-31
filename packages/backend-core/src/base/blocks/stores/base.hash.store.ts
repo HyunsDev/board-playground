@@ -14,19 +14,19 @@ class BaseHashStoreClient<T extends string> extends BaseRedisStoreClient {
     super(redis, prefix, options);
   }
 
-  baseHSet(id: string, field: string, value: T): ResultAsync<void, never> {
+  hSet(id: string, field: string, value: T): ResultAsync<void, never> {
     const key = this.getKey(id);
-    return this.exec('baseHSet', key, this.redis.hset(key, field, value)).map(() => undefined);
+    return this.exec('hSet', key, this.redis.hset(key, field, value)).map(() => undefined);
   }
 
-  baseHGet(id: string, field: string): ResultAsync<T | null, never> {
+  hGet(id: string, field: string): ResultAsync<T | null, never> {
     const key = this.getKey(id);
-    return this.exec('baseHGet', key, this.redis.hget(key, field) as Promise<T | null>);
+    return this.exec('hGet', key, this.redis.hget(key, field) as Promise<T | null>);
   }
 
-  baseHGetAll(id: string): ResultAsync<Record<string, T>, never> {
+  hGetAll(id: string): ResultAsync<Record<string, T>, never> {
     const key = this.getKey(id);
-    return this.exec('baseHGetAll', key, this.redis.hgetall(key) as Promise<Record<string, T>>);
+    return this.exec('hGetAll', key, this.redis.hgetall(key) as Promise<Record<string, T>>);
   }
 }
 

@@ -88,7 +88,6 @@ export const IntegrationEventHandler = (pub: MessageConstructor<BaseIntegrationE
     UseInterceptors(ClsInterceptor),
     UsePipes(MessageTransformPipe(pub)),
     UsePipes(SetRequestIdFromMessagePipe()),
-    UseFilters(new GlobalRpcExceptionFilter()),
   );
 };
 
@@ -96,10 +95,8 @@ export const IntegrationEventHandler = (pub: MessageConstructor<BaseIntegrationE
  * 메시지의 본문(Data)을 추출합니다.
  * 기존 @Payload 대체
  */
-const MsgPayload = () => Payload();
-
-export const Rpc = MsgPayload;
-export const Pub = MsgPayload;
+export const Rpc = Payload;
+export const Pub = Payload;
 
 /**
  * 메시지의 컨텍스트(Redis 정보 등)를 추출합니다.

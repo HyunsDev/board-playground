@@ -12,6 +12,7 @@ import {
   UnexpectedDomainErrorException,
 } from '@workspace/backend-ddd';
 import { Board, PrismaClient } from '@workspace/database';
+import { BoardId, BoardSlug } from '@workspace/domain';
 
 import {
   BoardEntity,
@@ -40,13 +41,13 @@ export class BoardRepository
     return this.client.board;
   }
 
-  getOneById(id: string) {
+  getOneById(id: BoardId) {
     return this.getUniqueEntity({
       where: { id },
     }).mapErr(() => new BoardNotFoundError());
   }
 
-  findOneBySlug(slug: string) {
+  findOneBySlug(slug: BoardSlug) {
     return this.findUniqueEntity({
       where: { slug },
     });
